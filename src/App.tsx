@@ -11,4 +11,25 @@ import LiveReports from './pages/LiveReports'
 import FinancialHub from './pages/FinancialHub'
 import { EditableCustomers,EditableSubscriptions } from './pages/EditableRecords'
 import LiveSales from './pages/LiveSales'
-export default function App(){return <BrowserRouter><Routes><Route element={<Layout/>}><Route index element={<Dashboard/>}/><Route path="vendas" element={<LiveSales/>}/><Route path="transacoes" element={<LiveSales transactions/>}/><Route path="produtos" element={<ProductsPage/>}/><Route path="assinaturas" element={<EditableSubscriptions/>}/><Route path="clientes" element={<EditableCustomers/>}/><Route path="checkout" element={<CheckoutPage/>}/><Route path="links" element={<LinksPage/>}/><Route path="financeiro" element={<FinancialHub/>}/><Route path="saques" element={<WithdrawalsPage/>}/><Route path="premiacoes" element={<AwardsPage/>}/><Route path="assistente" element={<AssistantPage/>}/><Route path="relatorios" element={<LiveReports/>}/><Route path="notificacoes" element={<NotificationsPage/>}/><Route path="configuracoes" element={<Settings/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Route></Routes></BrowserRouter>}
+import LandingPage from './pages/public/LandingPage'
+import LegalPage from './pages/public/LegalPage'
+import LoginPage from './pages/auth/LoginPage'
+import SignupPage from './pages/auth/SignupPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from './pages/auth/ResetPasswordPage'
+import VerifyEmailPage from './pages/auth/VerifyEmailPage'
+import AuthCallbackPage from './pages/auth/AuthCallbackPage'
+import OnboardingPage from './pages/onboarding/OnboardingPage'
+import { ProtectedRoute } from './routes/ProtectedRoute'
+import { PublicOnlyRoute } from './routes/PublicOnlyRoute'
+
+const modules=[['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['assinaturas',<EditableSubscriptions/>],['clientes',<EditableCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['premiacoes',<AwardsPage/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+export default function App(){return <BrowserRouter><Routes>
+ <Route path="/" element={<LandingPage/>}/>
+ <Route path="/termos" element={<LegalPage type="terms"/>}/>
+ <Route path="/privacidade" element={<LegalPage type="privacy"/>}/>
+ <Route element={<PublicOnlyRoute/>}><Route path="/entrar" element={<LoginPage/>}/><Route path="/criar-conta" element={<SignupPage/>}/><Route path="/recuperar-senha" element={<ForgotPasswordPage/>}/><Route path="/verificar-email" element={<VerifyEmailPage/>}/></Route>
+ <Route path="/nova-senha" element={<ResetPasswordPage/>}/><Route path="/auth/callback" element={<AuthCallbackPage/>}/>
+ <Route element={<ProtectedRoute/>}><Route path="/onboarding" element={<OnboardingPage/>}/><Route path="/app" element={<Layout/>}><Route index element={<Dashboard/>}/>{modules.map(([path,element])=><Route path={path} element={element} key={path}/>)}<Route path="*" element={<Navigate to="/app" replace/>}/></Route>{modules.map(([path])=><Route path={`/${path}`} element={<Navigate to={`/app/${path}`} replace/>} key={`legacy-${path}`}/>)}<Route path="/dashboard" element={<Navigate to="/app" replace/>}/><Route path="/visao-geral" element={<Navigate to="/app" replace/>}/></Route>
+ <Route path="*" element={<Navigate to="/" replace/>}/>
+ </Routes></BrowserRouter>}

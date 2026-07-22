@@ -1,0 +1,2 @@
+import { passwordScore } from '../../lib/authValidation'
+export function PasswordStrength({value}:{value:string}){const score=passwordScore(value),label=score<2?'Fraca':score<4?'Média':'Forte';return <div className={`password-strength strength-${score}`}><div>{[1,2,3,4,5].map(item=><i className={item<=score?'active':''} key={item}/>)}</div><span>{value?`Força da senha: ${label}`:'Use 8+ caracteres, maiúscula, número e símbolo.'}</span></div>}

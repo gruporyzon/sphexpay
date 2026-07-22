@@ -12,6 +12,7 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('recharts') || id.includes('d3-')) return 'charts'
           if (id.includes('lucide-react')) return 'icons'
+          if (id.includes('@supabase')) return 'auth'
           if (id.includes('react-dom') || id.includes('react-router') || id.includes('/react/')) return 'react'
         }
       }

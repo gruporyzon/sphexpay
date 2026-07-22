@@ -11,7 +11,7 @@ export const notificationService = {
   show(title:string, body:string, path='/') {
     if (browserPermissionService.status() !== 'granted') return false
     try {
-      const notification = new Notification(title, { body, icon:'/sphexpay-mark.svg', tag:`sphexpay-${Date.now()}` })
+      const notification = new Notification(title, { body, icon:'/icons/sphexpay-app-192.png', tag:`sphexpay-${Date.now()}` })
       notification.onclick = () => { window.focus(); window.location.assign(path); notification.close() }
       return true
     } catch { return false }

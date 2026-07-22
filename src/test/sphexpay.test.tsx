@@ -9,10 +9,18 @@ import { NotificationQueue } from '../services/notificationQueueService'
 import { saleNotification } from '../services/notificationEventService'
 import { awardJourneyProgress } from '../services/awardProgressService'
 
-const renderAt=(path='/')=>{window.history.pushState({},'',path);return render(<App/>)}
-beforeEach(()=>{localStorage.clear();act(()=>useDemoStore.getState().reset());document.documentElement.dataset.theme='light'})
+const authState=vi.hoisted(()=>({user:{id:'test-user',email:'player@sphexpay.test',email_confirmed_at:'2026-01-01',user_metadata:{full_name:'Ronald Rodriguez',onboarding_complete:true}},loading:false,configured:true,signOut:vi.fn(async()=>undefined)}))
+vi.mock('../hooks/useAuth',()=>({useAuth:()=>authState}))
+const privatePath=(path:string)=>path==='/'?'/app':path.startsWith('/app')?path:`/app${path}`
+const renderAt=(path='/')=>{window.history.pushState({},'',privatePath(path));return render(<App/>)}
+const renderPublic=(path:string)=>{window.history.pushState({},'',path);return render(<App/>)}
+beforeEach(()=>{authState.user={id:'test-user',email:'player@sphexpay.test',email_confirmed_at:'2026-01-01',user_metadata:{full_name:'Ronald Rodriguez',onboarding_complete:true}};localStorage.clear();sessionStorage.clear();act(()=>useDemoStore.getState().reset());document.documentElement.dataset.theme='light'})
 
 describe('SphexPay integration',()=>{
+ it('abre a landing pública e navega para entrar e criar conta',async()=>{authState.user=null as never;const u=userEvent.setup();renderPublic('/');expect(screen.getByRole('heading',{name:/Venda, receba e escale/i})).toBeInTheDocument();await u.click(screen.getAllByRole('link',{name:'Entrar'})[0]);expect(screen.getByRole('heading',{name:'Bem-vindo de volta'})).toBeInTheDocument()})
+ it('redireciona acesso privado sem sessão e preserva a origem',()=>{authState.user=null as never;renderPublic('/app/configuracoes');expect(screen.getByRole('heading',{name:'Bem-vindo de volta'})).toBeInTheDocument();expect(window.location.pathname).toBe('/entrar')})
+ it('não simula OAuth quando os provedores não estão configurados',()=>{authState.user=null as never;renderPublic('/entrar');expect(screen.getByRole('button',{name:'Continuar com Google'})).toBeDisabled();expect(screen.getByRole('button',{name:'Continuar com Apple'})).toBeDisabled();expect(screen.getByText(/Supabase Auth não configurado/i)).toBeInTheDocument()})
+ it('redireciona rota privada desconhecida para a visão geral',()=>{renderPublic('/app/rota-inexistente');expect(window.location.pathname).toBe('/app');expect(screen.getByRole('heading',{name:'Visão geral'})).toBeInTheDocument()})
  it('navega por todos os módulos',async()=>{const u=userEvent.setup();renderAt();const labels=['Visão geral','Vendas','Transações','Produtos','Assinaturas','Clientes','Checkout','Links de pagamento','Financeiro','Saques','Premiações','Inteligência artificial','Relatórios','Notificações','Configurações'];for(const label of labels){await u.click(screen.getByRole('link',{name:label}));expect(screen.getByRole('heading',{name:label})).toBeInTheDocument()}expect(screen.queryByRole('link',{name:'Mapa de vendas'})).not.toBeInTheDocument()})
  it('alterna tema global e persiste a preferência',async()=>{const u=userEvent.setup();renderAt();await u.click(screen.getByRole('button',{name:'Alternar tema'}));expect(document.documentElement.dataset.theme).toBe('dark');expect(JSON.parse(localStorage.getItem('sphexpay-demo-v1')!).state.theme).toBe('dark');await u.click(screen.getByRole('button',{name:'Alternar tema'}));expect(document.documentElement.dataset.theme).toBe('light')})
  it('renderiza estruturas responsivas para menu, cartões, gráfico e tabelas',()=>{const {container}=renderAt();expect(container.querySelector('aside')).toHaveClass('max-lg:-translate-x-full');expect(container.querySelector('.dashboard-metrics')).toBeInTheDocument();expect(container.querySelector('.recharts-responsive-container')).toBeInTheDocument();fireEvent.click(screen.getByRole('link',{name:'Vendas'}));expect(container.querySelector('.table-wrap')).toBeInTheDocument()})
