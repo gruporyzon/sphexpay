@@ -1,0 +1,2 @@
+import type { Achievement } from '../types'
+export function awardJourneyProgress(revenue:number,achievements:Achievement[]){if(!achievements.length)return 0;const reached=achievements.filter(item=>revenue>=item.target).length;if(reached>=achievements.length)return 100;const next=achievements[reached],previous=reached?achievements[reached-1].target:0,segment=Math.max(1,next.target-previous),within=Math.max(0,Math.min(1,(revenue-previous)/segment));return((reached+within)/achievements.length)*100}
