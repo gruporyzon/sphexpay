@@ -42,6 +42,8 @@ create table if not exists public.push_subscriptions (
   browser text,
   enabled boolean not null default true,
   last_seen_at timestamptz not null default now(),
+  last_error text,
+  last_success_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

@@ -3,6 +3,7 @@ import { act,renderHook } from '@testing-library/react'
 import { defaultGeneratorConfig,formatGeneratorValue,generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,variedValue } from '../lib/notificationGenerator'
 import { useNotificationGenerator } from '../hooks/useNotificationGenerator'
 vi.mock('../lib/supabase',()=>({supabase:{functions:{invoke:vi.fn(async()=>({error:null}))}}}))
+vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
 
 describe('motor do gerador inteligente',()=>{
  beforeEach(()=>localStorage.clear())

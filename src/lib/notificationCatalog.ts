@@ -42,7 +42,7 @@ export function saleEventType(sale:Sale):CommerceNotificationType{
  if(sale.status==='Reembolsado')return'refund_done'
  if(sale.status==='Recusado')return sale.method==='Cartão de crédito'?'credit_card_refused':'payment_refused'
  if(sale.status==='Pendente')return sale.method==='Pix'?'pix_generated':sale.method==='Boleto'?'boleto_generated':'sale_pending'
- if(sale.status==='Aprovado')return sale.method==='Cartão de crédito'?'credit_card_approved':sale.method==='Assinatura'?'subscription_approved':sale.method==='Pix'?'pix_approved':sale.method==='Boleto'?'boleto_paid':'sale_approved'
+ if(sale.status==='Aprovado')return sale.method==='Cartão de crédito'?'credit_card_approved':sale.method==='Assinatura'?'subscription_approved':sale.method==='Pix'?'pix_paid':sale.method==='Boleto'?'boleto_paid':'sale_approved'
  return'sale_pending'
 }
 export function commercePayloadFromSale(sale:Sale):CommerceNotificationPayload{
