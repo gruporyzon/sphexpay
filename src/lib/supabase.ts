@@ -1,32 +1,33 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabasePublishableKey =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim();
 
-const isValidString=(value:unknown):value is string=>typeof value==='string'&&value.trim().length>0
-const isValidSupabaseUrl=(value:unknown):value is string=>{
- if(!isValidString(value))return false
- try{const parsed=new URL(value);return parsed.protocol==='https:'||import.meta.env.DEV&&parsed.protocol==='http:'}catch{return false}
+if (import.meta.env.DEV) {
+  console.info("Supabase config:", {
+    urlConfigured: Boolean(import.meta.env.VITE_SUPABASE_URL),
+    publishableKeyConfigured: Boolean(
+      import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+    ),
+  });
 }
 
-export const supabaseEnvironment={
- urlConfigured:isValidSupabaseUrl(supabaseUrl),
- publishableKeyConfigured:isValidString(supabasePublishableKey)
-}
+export const isSupabaseConfigured = Boolean(
+  supabaseUrl &&
+  supabasePublishableKey &&
+  supabaseUrl.startsWith("https://") &&
+  supabasePublishableKey.startsWith("sb_publishable_")
+);
 
-const initializeSupabase=()=>{
- if(!isValidSupabaseUrl(supabaseUrl)||!isValidString(supabasePublishableKey))return null
- return createClient(supabaseUrl,supabasePublishableKey,{
-  auth:{
-   persistSession:true,
-   autoRefreshToken:true,
-   detectSessionInUrl:true
-  }
- })
-}
-
-export const supabase=initializeSupabase()
-export const isSupabaseConfigured=supabase!==null
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl as string, supabasePublishableKey as string, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+      },
+    })
+  : null;
 export const oauthAvailability={google:isSupabaseConfigured&&import.meta.env.VITE_ENABLE_GOOGLE_OAUTH==='true',apple:isSupabaseConfigured&&import.meta.env.VITE_ENABLE_APPLE_OAUTH==='true'}
 export const authConfiguration={configured:isSupabaseConfigured,google:oauthAvailability.google,apple:oauthAvailability.apple,isDevelopment:import.meta.env.DEV}
