@@ -1,11 +1,45 @@
-import { BellRing,Volume2 } from 'lucide-react'
+import { BellRing, MonitorSmartphone, Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
+import { browserPermissionService, type BrowserNotificationStatus } from '../../services/browserPermissionService'
+import { notificationService } from '../../services/notificationService'
+import { pushSubscriptionService } from '../../services/pushSubscriptionService'
 import { useDemoStore } from '../../store/useDemoStore'
-import type { NotificationFrequency,NotificationPreferences } from '../../types'
-import { audioService } from '../../services/audioService'
-import { notificationToastService } from '../../services/notificationToastService'
+import type { NotificationPreferences } from '../../types'
 import { NotificationGeneratorPanel } from '../notifications/NotificationGeneratorPanel'
 
-const frequencies:[NotificationFrequency,string][]=[['realtime','Em tempo real'],['1ps','Até 1 por segundo'],['2ps','Até 2 por segundo'],['5ps','Até 5 por segundo'],['5s','A cada 5 segundos'],['15s','A cada 15 segundos'],['30s','A cada 30 segundos'],['60s','A cada minuto'],['digest5m','Resumo a cada 5 minutos']]
-export function NotificationDelivery(){const prefs=useDemoStore(s=>s.preferences.notifications),update=useDemoStore(s=>s.updatePreferences),set=(values:Partial<NotificationPreferences>)=>update('notifications',values),test=()=>notificationToastService.emit({id:`test-${Date.now()}`,type:'sale_approved',commission:3.83,currency:'BRL',createdAt:new Date().toISOString(),route:'/app/notificacoes',status:'Teste visual'});return <><div className="notification-delivery"><section><h3>Eventos e canais</h3><Toggle label="Notificações internas" checked={prefs.internal} onChange={internal=>set({internal})}/><Toggle label="Venda aprovada" checked={prefs.saleApproved!==false} onChange={saleApproved=>set({saleApproved})}/><Toggle label="Pix gerado" checked={prefs.pixGenerated!==false} onChange={pixGenerated=>set({pixGenerated})}/><Toggle label="Cartão aprovado" checked={prefs.cardApproved!==false} onChange={cardApproved=>set({cardApproved})}/><Toggle label="Assinaturas" checked={prefs.subscriptionEvents!==false} onChange={subscriptionEvents=>set({subscriptionEvents})}/><Toggle label="Saques" checked={prefs.withdrawalEvents!==false} onChange={withdrawalEvents=>set({withdrawalEvents})}/><button className="btn mt-3" onClick={test}><BellRing/> Testar notificação</button></section><section><h3>Frequência e entrega</h3><label><span className="label">Frequência das notificações internas</span><select className="input" value={prefs.frequency} onChange={event=>set({frequency:event.target.value as NotificationFrequency})}>{frequencies.map(([value,label])=><option value={value} key={value}>{label}</option>)}</select></label><Toggle label="Agrupar eventos semelhantes" checked={prefs.groupSimilar} onChange={groupSimilar=>set({groupSimilar})}/><Toggle label="Silenciar notificações repetidas" checked={prefs.muteRepeated} onChange={muteRepeated=>set({muteRepeated})}/><Toggle label="Som de notificações" checked={prefs.sound} onChange={sound=>set({sound})}/><Toggle label="Vibração" checked={prefs.vibration} onChange={vibration=>set({vibration})}/><Range label="Volume" value={prefs.soundVolume} onChange={soundVolume=>set({soundVolume})}/><label className="block mt-4"><span className="label">Som de nova venda</span><select className="input" value={prefs.soundStyle} onChange={event=>set({soundStyle:event.target.value as NotificationPreferences['soundStyle']})}><option value="signal">Signal</option><option value="pulse">Pulse</option><option value="soft">Soft</option></select></label><button className="btn mt-3" onClick={()=>audioService.playSale(prefs.soundVolume,prefs.soundStyle,'settings-preview')}><Volume2/> Testar som</button></section><section><h3>Prioridades e silêncio</h3><Toggle label="Priorizar vendas aprovadas" checked={prefs.priorityApproved} onChange={priorityApproved=>set({priorityApproved})}/><Toggle label="Priorizar Pix" checked={prefs.priorityPix} onChange={priorityPix=>set({priorityPix})}/><Toggle label="Priorizar cartão" checked={prefs.priorityCard} onChange={priorityCard=>set({priorityCard})}/><Toggle label="Somente eventos importantes" checked={prefs.importantOnly} onChange={importantOnly=>set({importantOnly})}/><Toggle label="Não perturbe" checked={prefs.doNotDisturb} onChange={doNotDisturb=>set({doNotDisturb})}/><Toggle label="Horário silencioso" checked={prefs.quietHours} onChange={quietHours=>set({quietHours})}/>{prefs.quietHours&&<div className="quiet-hours"><label><span className="label">Início</span><input className="input" type="time" value={prefs.quietFrom} onChange={event=>set({quietFrom:event.target.value})}/></label><label><span className="label">Fim</span><input className="input" type="time" value={prefs.quietTo} onChange={event=>set({quietTo:event.target.value})}/></label></div>}</section></div><NotificationGeneratorPanel/></>}
+const statusText:Record<BrowserNotificationStatus,string>={
+ unsupported:'Navegador incompatível',
+ insecure:'Conexão segura necessária',
+ default:'Não autorizadas',
+ granted:'Ativadas',
+ denied:'Permissão negada',
+}
+
+export function NotificationDelivery(){
+ const {user}=useAuth(),preferences=useDemoStore(state=>state.preferences.notifications),update=useDemoStore(state=>state.updatePreferences)
+ const [status,setStatus]=useState<BrowserNotificationStatus>(()=>browserPermissionService.status()),[subscribed,setSubscribed]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('')
+ const set=(values:Partial<NotificationPreferences>)=>update('notifications',values)
+ useEffect(()=>{let active=true;void pushSubscriptionService.current().then(subscription=>{if(active)setSubscribed(Boolean(subscription))});return()=>{active=false}},[])
+ const activate=async()=>{
+  if(!user){setMessage('Entre novamente para registrar este dispositivo.');return}
+  setBusy(true)
+  const result=await pushSubscriptionService.subscribe(user.id)
+  setBusy(false);setStatus(browserPermissionService.status());setSubscribed(result.ok);set({device:result.ok,internal:false,sound:false})
+  setMessage(result.message)
+ }
+ const remove=async()=>{setBusy(true);const ok=await pushSubscriptionService.unsubscribe();setBusy(false);if(ok){setSubscribed(false);set({device:false});setMessage('Dispositivo removido.')}}
+ const test=async()=>{const ok=await notificationService.show('Teste de notificação','Notificações do dispositivo configuradas.','/configuracoes?secao=Notificações');setMessage(ok?'Notificação enviada ao dispositivo.':'Não foi possível enviar a notificação ao dispositivo.')}
+ return <><div className="notification-delivery device-only-settings">
+  <section>
+   <h3>Dispositivo atual</h3>
+   <div className="device-permission"><div className={`permission-dot ${subscribed?'granted':status}`}/><MonitorSmartphone/><div><span className="label">Status da permissão</span><b>{subscribed?'Dispositivo registrado':statusText[status]}</b><small>{pushSubscriptionService.deviceLabel()}</small></div></div>
+   <div className="flex flex-wrap gap-2 mt-5"><button className="btn btn-primary" onClick={activate} disabled={busy||status==='unsupported'||status==='insecure'||status==='denied'}>{busy?'Processando...':'Ativar notificações neste dispositivo'}</button><button className="btn" onClick={test} disabled={!subscribed||status!=='granted'}><BellRing/> Testar no dispositivo</button>{subscribed&&<button className="btn text-red-500" onClick={remove} disabled={busy}><Trash2/> Remover este dispositivo</button>}</div>
+   {message&&<p className="text-xs muted mt-3" role="status">{message}</p>}
+   <p className="text-[11px] muted mt-5">No iPhone, instale a SphexPay pela Tela de Início antes de ativar. O som é controlado pelo sistema, pelo modo silencioso e pelo Foco.</p>
+  </section>
+  <section><h3>Eventos enviados ao dispositivo</h3><Toggle label="Notificações de vendas" checked={preferences.sales} onChange={sales=>set({sales})}/><Toggle label="Notificações de Pix" checked={preferences.pixGenerated!==false} onChange={pixGenerated=>set({pixGenerated})}/><Toggle label="Notificações de cartão" checked={preferences.cardApproved!==false} onChange={cardApproved=>set({cardApproved})}/><Toggle label="Notificações de boleto" checked={preferences.boletoEvents!==false} onChange={boletoEvents=>set({boletoEvents})}/><Toggle label="Notificações de assinaturas" checked={preferences.subscriptionEvents!==false} onChange={subscriptionEvents=>set({subscriptionEvents})}/><Toggle label="Notificações de saques" checked={preferences.withdrawalEvents!==false} onChange={withdrawalEvents=>set({withdrawalEvents})}/></section>
+  <section><h3>Entrega nativa</h3><div className="generator-fixed-destination"><BellRing/><span><b>Notificação do sistema</b><small>Som controlado pelo dispositivo</small></span></div><p className="text-xs muted mt-4">Eventos comerciais não são exibidos como toast, card, banner ou item do sino dentro da SphexPay.</p></section>
+ </div><NotificationGeneratorPanel/></>
+}
 function Toggle({label,checked,onChange}:{label:string;checked:boolean;onChange:(value:boolean)=>void}){return <label className="setting-toggle"><span>{label}</span><input type="checkbox" checked={checked} onChange={event=>onChange(event.target.checked)}/><i/></label>}
-function Range({label,value,onChange}:{label:string;value:number;onChange:(value:number)=>void}){return <label className="block mt-4"><span className="label">{label}: {Math.round(value*100)}%</span><input aria-label={label} className="w-full accent-orange-600" type="range" min="0" max="1" step=".05" value={value} onChange={event=>onChange(Number(event.target.value))}/></label>}

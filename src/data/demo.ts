@@ -2,26 +2,18 @@ import type { DemoState } from '../types'
 
 const d=(days:number,h=12)=>new Date(Date.now()-days*86400000+h*3600000).toISOString()
 export const initialData:DemoState={
- storageVersion:2,revenue:284750,available:124820.40,pending:38920.80,goal:350000,period:{preset:'30d'},liveSales:true,theme:'light',
+ storageVersion:3,revenue:284750,available:124820.40,pending:38920.80,goal:350000,period:{preset:'30d'},liveSales:true,theme:'light',
  notifications:[
   {id:'NTF-18',kind:'security',category:'Segurança',title:'Aviso de segurança',description:'Revise os dispositivos com acesso autorizado à sua conta.',createdAt:d(0,11),read:false,detailPath:'/configuracoes'},
   {id:'NTF-17',kind:'goal',category:'Sistema',title:'Meta de faturamento alcançada',description:'A meta configurada para o período foi alcançada.',createdAt:d(0,10),read:false,detailPath:'/'},
-  {id:'NTF-16',kind:'withdrawal',category:'Saques',title:'Saque aprovado',description:'Sua solicitação de saque avançou para processamento.',createdAt:d(0,10),read:false,detailPath:'/saques'},
-  {id:'NTF-15',kind:'subscription',category:'Assinaturas',title:'Assinatura cancelada',description:'Uma assinatura foi cancelada pelo cliente.',createdAt:d(0,9),read:true,detailPath:'/assinaturas'},
-  {id:'NTF-14',kind:'withdrawal',category:'Saques',title:'Saque solicitado',description:'Uma nova solicitação de saque foi recebida.',createdAt:d(0,9),read:true,detailPath:'/saques'},
   {id:'NTF-13',kind:'system',category:'Sistema',title:'Atualização importante da plataforma',description:'Melhorias de desempenho e segurança foram aplicadas à sua conta.',createdAt:d(0,9),read:false,detailPath:'/configuracoes'},
-  {id:'NTF-12',kind:'sale',category:'Vendas',title:'Nova venda aprovada',description:'Uma venda de R$ 1.297,00 para Scale Pro foi aprovada.',createdAt:d(0,8),read:false,detailPath:'/vendas'},
-  {id:'NTF-11',kind:'payment',category:'Financeiro',title:'Pagamento pendente',description:'Um pagamento via boleto aguarda confirmação.',createdAt:d(0,7),read:false,detailPath:'/transacoes'},
-  {id:'NTF-10',kind:'subscription',category:'Assinaturas',title:'Assinatura criada',description:'Uma nova assinatura do plano Growth Club foi iniciada.',createdAt:d(1,10),read:false,detailPath:'/assinaturas'},
   {id:'NTF-09',kind:'achievement',category:'Sistema',title:'Nova conquista desbloqueada',description:'O marco de R$ 100 mil em faturamento foi alcançado.',createdAt:d(1,8),read:true,detailPath:'/premiacoes'},
   {id:'NTF-08',kind:'security',category:'Segurança',title:'Acesso em novo dispositivo',description:'Um novo acesso foi identificado em São Paulo, Brasil.',createdAt:d(2,6),read:true,detailPath:'/configuracoes'},
-  {id:'NTF-07',kind:'withdrawal',category:'Saques',title:'Saque concluído',description:'O último saque solicitado foi concluído.',createdAt:d(3,5),read:true,detailPath:'/saques'},
-  {id:'NTF-06',kind:'payment',category:'Financeiro',title:'Pagamento recusado',description:'Um pagamento por cartão não foi autorizado.',createdAt:d(4,4),read:true,detailPath:'/transacoes'},
  ],
  preferences:{
-  notifications:{internal:true,device:false,sales:true,withdrawals:true,subscriptions:true,security:true,achievements:true,sound:false,vibration:false,frequency:'realtime',groupSimilar:true,muteRepeated:true,priorityApproved:true,priorityPix:true,priorityCard:true,saleApproved:true,pixGenerated:true,cardApproved:true,subscriptionEvents:true,withdrawalEvents:true,soundVolume:.35,soundStyle:'signal',quietHours:false,quietFrom:'22:00',quietTo:'07:00',doNotDisturb:false,importantOnly:false},
+  notifications:{internal:false,device:false,sales:true,withdrawals:true,subscriptions:true,security:true,achievements:true,sound:false,vibration:false,frequency:'realtime',groupSimilar:true,muteRepeated:true,priorityApproved:true,priorityPix:true,priorityCard:true,saleApproved:true,pixGenerated:true,cardApproved:true,subscriptionEvents:true,withdrawalEvents:true,soundVolume:.35,soundStyle:'signal',quietHours:false,quietFrom:'22:00',quietTo:'07:00',doNotDisturb:false,importantOnly:false},
   assistant:{microphone:true,readAloud:true,voice:'',voiceGender:'female',language:'pt-BR',speechRate:.96,pitch:1.04,volume:1,interruptOnSend:true,autoSendVoice:false},
-  sales:{automaticUpdates:true,updateFrequency:18,saleSound:false,showNotifications:true,recentCount:7}
+  sales:{automaticUpdates:true,updateFrequency:18,saleSound:false,showNotifications:false,recentCount:7}
  },
  sales:[
   {id:'SPX-84291',customer:'Marina Costa',email:'marina@example.local',product:'Scale Pro',amount:1297,currency:'BRL',method:'Pix',status:'Aprovado',date:d(0,8),country:'Brasil',fee:25.94},

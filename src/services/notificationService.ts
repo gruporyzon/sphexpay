@@ -1,36 +1,24 @@
-import type { Sale } from '../types'
-import { money } from '../lib/utils'
 import { browserPermissionService } from './browserPermissionService'
 import { formatCommission,notificationTitles,type CommerceNotificationPayload } from '../lib/notificationCatalog'
 
-export const notificationService = {
-  async registerWorker() {
-    if ('serviceWorker' in navigator) {
-      try { return await navigator.serviceWorker.register('/sw.js') } catch { return undefined }
-    }
-  },
-  async show(title:string, body:string, path='/') {
-    if (browserPermissionService.status() !== 'granted') return false
-    try {
-      if('serviceWorker'in navigator){
-        const registration=await navigator.serviceWorker.ready
-        const options:NotificationOptions&{renotify:boolean}={body,icon:'/icons/sphexpay-app-192.png',badge:'/icons/sphexpay-app-192.png',tag:`sphexpay-${Date.now()}`,renotify:true,data:{path}}
-        await registration.showNotification(title,options)
-        return true
-      }
-      const notification = new Notification(title, { body, icon:'/icons/sphexpay-app-192.png', tag:`sphexpay-${Date.now()}` })
-      notification.onclick = () => { window.focus(); window.location.assign(path); notification.close() }
-      return true
-    } catch { return false }
-  },
-  showCommerce(payload:CommerceNotificationPayload){
-    return this.show(payload.title||notificationTitles[payload.type],payload.body||formatCommission(payload.commission,payload.currency),payload.route)
-  },
-  sale(sale:Sale) { return nativeSaleAggregator.enqueue(sale) },
-  dispose(){nativeSaleAggregator.dispose()}
+export interface DeviceNotificationPayload{eventId:string;type:string;title:string;body:string;route:string;createdAt:string;currency?:string;amount?:number;commission?:number|null}
+const recentKey='sphexpay_device_notification_events'
+const alreadyDelivered=(eventId:string)=>{
+ try{const now=Date.now(),saved=JSON.parse(localStorage.getItem(recentKey)||'{}') as Record<string,number>;Object.keys(saved).forEach(key=>{if(now-saved[key]>86400000)delete saved[key]});if(saved[eventId])return true;saved[eventId]=now;localStorage.setItem(recentKey,JSON.stringify(saved));return false}catch{return false}
 }
-
-const nativeSaleAggregator={sales:[] as Sale[],timer:undefined as number|undefined,enqueue(sale:Sale){this.sales.push(sale);if(this.timer)return true;this.timer=window.setTimeout(()=>{const batch=this.sales.splice(0),count=batch.length;this.timer=undefined;if(count===1){const item=batch[0];void notificationService.show('Nova venda aprovada',`Você recebeu uma nova venda de ${money(item.amount,item.currency)}.`,'/vendas')}else void notificationService.show(`${count} novas vendas recebidas`,`As vendas foram agrupadas para proteger sua experiência de notificações.`,'/vendas')},4000);return true},dispose(){if(this.timer)window.clearTimeout(this.timer);this.timer=undefined;this.sales=[]}}
-
-// Futuro Web Push: conectar backend, VAPID, identificação do usuário e armazenamento
-// seguro das inscrições push. Nenhuma inscrição ou chave é criada no cliente atual.
+export async function showDeviceNotification(payload:DeviceNotificationPayload){
+ if(browserPermissionService.status()!=='granted'||!('serviceWorker'in navigator)||alreadyDelivered(payload.eventId))return false
+ try{
+  const registration=await navigator.serviceWorker.ready
+  const worker=registration.active||registration.waiting||registration.installing
+  if(worker){worker.postMessage({type:'SHOW_DEVICE_NOTIFICATION',payload});return true}
+  await registration.showNotification(payload.title,{body:payload.body,icon:'/icons/sphexpay-app-192.png',badge:'/icons/sphexpay-app-192.png',tag:payload.eventId,silent:false,data:{eventId:payload.eventId,type:payload.type,route:payload.route}})
+  return true
+ }catch{return false}
+}
+export const notificationService={
+ async registerWorker(){if(!('serviceWorker'in navigator))return undefined;try{return await navigator.serviceWorker.register('/sw.js')}catch{return undefined}},
+ show(title:string,body:string,path='/app/notificacoes'){return showDeviceNotification({eventId:`manual-${crypto.randomUUID?.()||Date.now()}`,type:'manual',title,body,route:path,createdAt:new Date().toISOString()})},
+ showCommerce(payload:CommerceNotificationPayload){return showDeviceNotification({eventId:payload.id,type:payload.type,title:payload.title||notificationTitles[payload.type],body:payload.body||formatCommission(payload.commission,payload.currency),currency:payload.currency,commission:payload.commission,route:payload.route,createdAt:payload.createdAt})},
+ dispose(){}
+}

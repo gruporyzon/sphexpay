@@ -1,16 +1,16 @@
 import type { CommerceNotificationType,Sale } from '../types'
 import { notificationTitles } from './notificationCatalog'
 
-export type GeneratorDestination='inapp'|'system'|'both'
-export type GeneratorMode='single'|'batch'|'scheduled'|'recurring'|'demo'
+export type GeneratorDestination='device'
+export type GeneratorMode='single'|'batch'|'scheduled'|'recurring'
 export type GeneratorStatus='completed'|'running'|'paused'|'cancelled'|'scheduled'|'failed'
 export type ValueLabel='Sua comissão'|'Valor'|'Total'|'Recebido'|'Lucro'|'Faturamento'
-export type PreviewDevice='iphone'|'android'|'desktop'|'inapp'
+export type PreviewDevice='iphone'|'android'|'desktop'
 export interface GeneratorConfig{
  title:string;customBody:string;valueLabel:ValueLabel;value:number;currency:Sale['currency'];showTime:boolean;simulatedTime:string
  quantity:number;intervalValue:number;intervalUnit:'seconds'|'minutes'|'hours';mode:GeneratorMode;destination:GeneratorDestination
  startAt:string;endAt:string;continuous:boolean;variation:boolean;minValue:number;maxValue:number;rotateCurrencies:boolean
- avoidRepeatedValues:boolean;rotateTypes:boolean;types:CommerceNotificationType[];sound:boolean;volume:number;soundStyle:'signal'|'pulse'|'soft'
+ avoidRepeatedValues:boolean;rotateTypes:boolean;types:CommerceNotificationType[]
 }
 export interface GeneratorHistory{
  id:string;createdAt:string;title:string;value:number;currency:Sale['currency'];type:CommerceNotificationType;destination:GeneratorDestination
@@ -18,8 +18,8 @@ export interface GeneratorHistory{
 }
 export interface GeneratorPreset{id:string;name:string;createdAt:string;config:GeneratorConfig}
 
-export const generatorTypes:CommerceNotificationType[]=['sale_approved','sale_pending','pix_generated','pix_paid','credit_card_approved','boleto_generated','subscription_approved','subscription_renewed','refund_done','chargeback_received','withdrawal_sent','withdrawal_completed','payment_refused']
-export const defaultGeneratorConfig:GeneratorConfig={title:notificationTitles.sale_approved,customBody:'',valueLabel:'Sua comissão',value:3.83,currency:'BRL',showTime:true,simulatedTime:'agora',quantity:1,intervalValue:5,intervalUnit:'seconds',mode:'single',destination:'inapp',startAt:'',endAt:'',continuous:false,variation:false,minValue:3.5,maxValue:17.9,rotateCurrencies:false,avoidRepeatedValues:true,rotateTypes:false,types:['sale_approved'],sound:true,volume:.35,soundStyle:'signal'}
+export const generatorTypes:CommerceNotificationType[]=['sale_approved','sale_pending','pix_generated','pix_approved','pix_paid','credit_card_approved','credit_card_refused','boleto_generated','boleto_paid','subscription_approved','subscription_renewed','refund_done','chargeback_received','withdrawal_requested','withdrawal_completed']
+export const defaultGeneratorConfig:GeneratorConfig={title:notificationTitles.sale_approved,customBody:'',valueLabel:'Sua comissão',value:3.83,currency:'BRL',showTime:true,simulatedTime:'agora',quantity:1,intervalValue:5,intervalUnit:'seconds',mode:'single',destination:'device',startAt:'',endAt:'',continuous:false,variation:false,minValue:3.5,maxValue:17.9,rotateCurrencies:false,avoidRepeatedValues:true,rotateTypes:false,types:['sale_approved']}
 export const generatorTemplates:{id:string;name:string;description:string;config:Partial<GeneratorConfig>}[]=[
  {id:'sale',name:'Venda aprovada padrão',description:'Uma confirmação objetiva e discreta.',config:{types:['sale_approved'],title:notificationTitles.sale_approved,value:3.83,quantity:1,mode:'single'}},
  {id:'pix',name:'Pix gerado padrão',description:'Aviso imediato para uma cobrança Pix.',config:{types:['pix_generated'],title:notificationTitles.pix_generated,value:12.9,quantity:1}},
@@ -28,7 +28,7 @@ export const generatorTemplates:{id:string;name:string;description:string;config
  {id:'social',name:'Modo prova social',description:'Alterna eventos em ritmo moderado.',config:{types:['sale_approved','pix_paid','credit_card_approved'],rotateTypes:true,variation:true,quantity:10,intervalValue:10,mode:'batch'}},
  {id:'high',name:'Modo comissão alta',description:'Faixa variável para comissões maiores.',config:{variation:true,minValue:80,maxValue:450,value:180}},
  {id:'intense',name:'Modo volume intenso',description:'Sequência curta com limite seguro.',config:{quantity:20,intervalValue:3,mode:'batch',rotateTypes:true}},
- {id:'quiet',name:'Modo discreto',description:'Som desligado e entrega somente interna.',config:{sound:false,destination:'inapp',quantity:5,intervalValue:30,mode:'batch'}},
+ {id:'quiet',name:'Modo discreto',description:'Sequência espaçada no dispositivo.',config:{destination:'device',quantity:5,intervalValue:30,mode:'batch'}},
  {id:'recurring',name:'Modo recorrente',description:'Ciclo controlado a cada cinco minutos.',config:{mode:'recurring',quantity:20,intervalValue:5,intervalUnit:'minutes'}}
 ]
 export const intervalMilliseconds=(config:GeneratorConfig)=>Math.max(1000,config.intervalValue*(config.intervalUnit==='hours'?3600000:config.intervalUnit==='minutes'?60000:1000))
@@ -56,6 +56,6 @@ export function variedValue(config:GeneratorConfig,previous?:number){
 }
 const storageKey='sphexpay_notification_generator_v1'
 export function loadGeneratorData():{config:GeneratorConfig;history:GeneratorHistory[];presets:GeneratorPreset[]}{
- try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}');return{config:{...defaultGeneratorConfig,...saved.config},history:Array.isArray(saved.history)?saved.history.slice(0,100):[],presets:Array.isArray(saved.presets)?saved.presets:[]}}catch{return{config:defaultGeneratorConfig,history:[],presets:[]}}
+ try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}'),migrate=(config:GeneratorConfig)=>{const compatible={...config} as GeneratorConfig&{sound?:boolean;volume?:number;soundStyle?:string};delete compatible.sound;delete compatible.volume;delete compatible.soundStyle;return{...defaultGeneratorConfig,...compatible,destination:'device' as const}};return{config:migrate(saved.config||defaultGeneratorConfig),history:Array.isArray(saved.history)?saved.history.slice(0,100).map((item:GeneratorHistory)=>({...item,destination:'device',config:migrate(item.config)})):[],presets:Array.isArray(saved.presets)?saved.presets.map((preset:GeneratorPreset)=>({...preset,config:migrate(preset.config)})):[]}}catch{return{config:defaultGeneratorConfig,history:[],presets:[]}}
 }
 export function saveGeneratorData(config:GeneratorConfig,history:GeneratorHistory[],presets:GeneratorPreset[]){localStorage.setItem(storageKey,JSON.stringify({config,history:history.slice(0,100),presets}))}

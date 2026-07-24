@@ -1,7 +1,5 @@
 import { useCallback,useEffect,useRef,useState } from 'react'
-import { audioService } from '../services/audioService'
-import { notificationService } from '../services/notificationService'
-import { notificationToastService } from '../services/notificationToastService'
+import { supabase } from '../lib/supabase'
 import { notificationRoutes,notificationTitles } from '../lib/notificationCatalog'
 import { generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,variedValue,type GeneratorConfig,type GeneratorHistory,type GeneratorPreset,type GeneratorStatus } from '../lib/notificationGenerator'
 
@@ -17,20 +15,18 @@ export function useNotificationGenerator(){
  const deliver=useCallback(async(current:GeneratorConfig,index:number)=>{
   const type=current.rotateTypes?current.types[index%current.types.length]:current.types[0],value=variedValue(current,previousValue.current),currency=current.rotateCurrencies?(['BRL','USD','EUR'] as const)[index%3]:current.currency
   previousValue.current=value
-  const payload={id:`generator-${runId.current}-${index}`,type,commission:value,currency,createdAt:new Date().toISOString(),route:notificationRoutes[type],status:current.mode==='demo'?'Simulação':'Gerador inteligente',title:current.rotateTypes?notificationTitles[type]:current.title,body:generatorBody(current,value,currency)}
-  if(current.destination!=='system'||current.mode==='demo')notificationToastService.emit(payload)
-  let systemOk=true
-  if(current.mode!=='demo'&&current.destination!=='inapp')systemOk=await notificationService.showCommerce(payload)
-  if(current.sound)void audioService.playSale(current.volume,current.soundStyle,payload.id)
-  return systemOk
+  const payload={eventId:`generator-${runId.current}-${index}`,type,commission:value,currency,createdAt:new Date().toISOString(),route:notificationRoutes[type],title:current.rotateTypes?notificationTitles[type]:current.title,body:generatorBody(current,value,currency)}
+  if(!supabase)return false
+  const {error}=await supabase.functions.invoke('send-push',{body:payload})
+  return !error
  },[])
  const finish=useCallback((finalStatus:GeneratorStatus,text:string)=>{clearTimers();setStatus(finalStatus);setMessage(text);patchHistory(runId.current,{sent:count.current,status:finalStatus})},[clearTimers,patchHistory])
  const tick=useCallback(async()=>{
   const current=activeConfig.current,index=count.current
   if(current.endAt&&Date.now()>new Date(current.endAt).getTime()){finish('completed','Período de envio concluído.');return}
   const ok=await deliver(current,index);count.current+=1;setSent(count.current);patchHistory(runId.current,{sent:count.current,status:'running'})
-  if(!ok&&current.destination!=='inapp')setMessage('O envio interno continuou, mas a notificação do sistema não foi autorizada.')
-  if(!current.continuous&&count.current>=current.quantity){finish('completed',current.mode==='demo'?'Simulação concluída.':'Sequência concluída.');return}
+  if(!ok)setMessage('Não foi possível enviar a notificação ao dispositivo.')
+  if(!current.continuous&&count.current>=current.quantity){finish('completed','Sequência concluída.');return}
   timer.current=window.setTimeout(()=>void tick(),intervalMilliseconds(current))
  },[deliver,finish,patchHistory])
  const begin=useCallback((next=config)=>{
@@ -44,7 +40,7 @@ export function useNotificationGenerator(){
  const pause=()=>{if(status!=='running')return;clearTimers();setStatus('paused');patchHistory(runId.current,{status:'paused'});setMessage('Sequência pausada.')}
  const resume=()=>{if(status!=='paused')return;setStatus('running');patchHistory(runId.current,{status:'running'});setMessage('Sequência retomada.');void tick()}
  const stop=()=>{if(status!=='running'&&status!=='paused'&&status!=='scheduled')return;finish('cancelled','Sequência interrompida.')}
- const test=async()=>{const testConfig={...config,quantity:1,mode:'demo' as const,destination:'inapp' as const};activeConfig.current=testConfig;runId.current=`preview-${Date.now()}`;previousValue.current=undefined;await deliver(testConfig,0);setMessage('Preview exibido no gateway.')}
+ const test=async()=>{const testConfig={...config,quantity:1,mode:'single' as const,destination:'device' as const};activeConfig.current=testConfig;runId.current=`test-${Date.now()}`;previousValue.current=undefined;const ok=await deliver(testConfig,0);setMessage(ok?'Notificação enviada ao dispositivo.':'Não foi possível enviar a notificação ao dispositivo.')}
  const savePreset=(name:string)=>{const clean=name.trim();if(!clean){setMessage('Informe um nome para o preset.');return}const preset:GeneratorPreset={id:crypto.randomUUID?.()||String(Date.now()),name:clean,createdAt:new Date().toISOString(),config:{...config}};setPresets(items=>[preset,...items]);setMessage('Preset salvo.')}
  const deletePreset=(id:string)=>setPresets(items=>items.filter(item=>item.id!==id))
  const duplicatePreset=(preset:GeneratorPreset)=>{const copy={...preset,id:crypto.randomUUID?.()||String(Date.now()),name:`${preset.name} — cópia`,createdAt:new Date().toISOString()};setPresets(items=>[copy,...items]);setMessage('Preset duplicado.')}

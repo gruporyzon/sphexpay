@@ -18,8 +18,8 @@ export function useNotificationAudio(){
   const quiet=prefs.doNotDisturb||(prefs.quietHours&&inQuietHours(prefs.quietFrom,prefs.quietTo))
   if(quiet||!prefs.sound||document.visibilityState!=='visible')return
   incoming.slice(0,3).forEach(item=>{
-   if(item.kind==='sale'||item.kind==='payment')return
-   const sound:Exclude<SphexSound,'sale'>=item.kind==='achievement'||item.kind==='goal'?'achievement':item.kind==='security'||item.priority==='critical'?'alert':item.kind==='withdrawal'?'success':'alert'
+   if(['sale','payment','subscription','withdrawal'].includes(item.kind))return
+   const sound:Exclude<SphexSound,'sale'>=item.kind==='achievement'||item.kind==='goal'?'achievement':item.kind==='security'||item.priority==='critical'?'alert':'alert'
    void audioService.playNotification(sound,prefs.soundVolume,item.id)
    if(prefs.vibration&&item.priority!=='low')audioService.vibrate()
   })
