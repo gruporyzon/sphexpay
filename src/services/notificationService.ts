@@ -24,7 +24,7 @@ export const notificationService = {
     } catch { return false }
   },
   showCommerce(payload:CommerceNotificationPayload){
-    return this.show(notificationTitles[payload.type],formatCommission(payload.commission,payload.currency),payload.route)
+    return this.show(payload.title||notificationTitles[payload.type],payload.body||formatCommission(payload.commission,payload.currency),payload.route)
   },
   sale(sale:Sale) { return nativeSaleAggregator.enqueue(sale) },
   dispose(){nativeSaleAggregator.dispose()}

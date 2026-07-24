@@ -17,7 +17,7 @@ export interface Withdrawal { id:string; amount:number; date:string; status:'Pro
 export type NotificationCategory = 'Vendas'|'Financeiro'|'Saques'|'Assinaturas'|'Segurança'|'Sistema'
 export type NotificationKind = 'sale'|'payment'|'subscription'|'withdrawal'|'achievement'|'goal'|'security'|'system'
 export type NotificationPriority='critical'|'high'|'normal'|'low'
-export type CommerceNotificationType='sale_approved'|'pix_generated'|'credit_card_approved'|'boleto_generated'|'subscription_approved'|'subscription_renewed'|'refund_done'|'chargeback_received'|'withdrawal_sent'|'sale_pending'|'payment_refused'
+export type CommerceNotificationType='sale_approved'|'sale_pending'|'pix_generated'|'pix_paid'|'credit_card_approved'|'boleto_generated'|'subscription_approved'|'subscription_renewed'|'refund_done'|'chargeback_received'|'withdrawal_sent'|'withdrawal_completed'|'payment_refused'
 export interface NotificationMetadata { buyer?:string; product?:string; amount?:number; commission?:number|null; currency?:Sale['currency']; method?:PaymentMethod; status?:string; country?:string; eventType?:CommerceNotificationType; source?:'backend'|'local'|'manual'|'test' }
 export interface AppNotification { id:string; kind:NotificationKind; category:NotificationCategory; title:string; description:string; createdAt:string; read:boolean; archived?:boolean; priority?:NotificationPriority; detailPath?:string; metadata?:NotificationMetadata }
 export type NotificationFrequency='realtime'|'1ps'|'2ps'|'5ps'|'5s'|'15s'|'30s'|'60s'|'digest5m'

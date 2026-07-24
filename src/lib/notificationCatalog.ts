@@ -1,9 +1,11 @@
 import type { AppNotification,CommerceNotificationType,Sale } from '../types'
 
-export type CommerceNotificationPayload={id:string;type:CommerceNotificationType;commission:number|null;currency:Sale['currency'];createdAt:string;route:string;status?:string}
+export type CommerceNotificationPayload={id:string;type:CommerceNotificationType;commission:number|null;currency:Sale['currency'];createdAt:string;route:string;status?:string;title?:string;body?:string}
 export const notificationTitles:Record<CommerceNotificationType,string>={
  sale_approved:'Venda aprovada!',
+ sale_pending:'Venda pendente!',
  pix_generated:'Pix gerado!',
+ pix_paid:'Pix pago!',
  credit_card_approved:'Pagamento cartão de crédito aprovado!',
  boleto_generated:'Boleto gerado!',
  subscription_approved:'Assinatura aprovada!',
@@ -11,11 +13,11 @@ export const notificationTitles:Record<CommerceNotificationType,string>={
  refund_done:'Reembolso realizado!',
  chargeback_received:'Chargeback recebido!',
  withdrawal_sent:'Saque enviado!',
- sale_pending:'Nova venda pendente!',
+ withdrawal_completed:'Saque concluído!',
  payment_refused:'Pagamento recusado!'
 }
 export const notificationRoutes:Record<CommerceNotificationType,string>={
- sale_approved:'/app/vendas',pix_generated:'/app/transacoes',credit_card_approved:'/app/transacoes',boleto_generated:'/app/transacoes',subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',withdrawal_sent:'/app/saques',sale_pending:'/app/vendas',payment_refused:'/app/transacoes'
+ sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/transacoes',pix_paid:'/app/transacoes',credit_card_approved:'/app/transacoes',boleto_generated:'/app/transacoes',subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',withdrawal_sent:'/app/saques',withdrawal_completed:'/app/saques',payment_refused:'/app/transacoes'
 }
 export function formatCommission(value:number|null|undefined,currency:Sale['currency']='BRL'){
  if(value===null||value===undefined||!Number.isFinite(value))return'Sua comissão: —'
