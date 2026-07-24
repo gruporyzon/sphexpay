@@ -1,6 +1,14 @@
-let context:AudioContext|undefined,active:OscillatorNode|undefined
+import { audioManager } from './audioManager'
+import type { SphexSound } from './audioManager'
+
 export const audioService={
- playSale(volume=.35,style:'signal'|'pulse'|'soft'='signal'){try{context??=new AudioContext();try{active?.stop()}catch{/* O som anterior já encerrou. */}const oscillator=context.createOscillator();active=oscillator;const gain=context.createGain(),start=style==='soft'?440:style==='pulse'?540:620,end=style==='soft'?560:style==='pulse'?720:880;oscillator.frequency.setValueAtTime(start,context.currentTime);oscillator.frequency.exponentialRampToValueAtTime(end,context.currentTime+.12);gain.gain.setValueAtTime(Math.max(.001,volume*.1),context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.18);oscillator.connect(gain).connect(context.destination);oscillator.onended=()=>{if(active===oscillator)active=undefined};oscillator.start();oscillator.stop(context.currentTime+.18)}catch{/* Áudio é aprimoramento progressivo. */}},
- vibrate(){if('vibrate' in navigator)navigator.vibrate([35,25,35])},
- dispose(){try{active?.stop()}catch{/* O som já encerrou. */}active=undefined;if(context){void context.close();context=undefined}}
+ playSale(volume=.35,style:'signal'|'pulse'|'soft'='signal',key:string='sale'){
+  const adjusted=style==='soft'?volume*.7:style==='pulse'?volume*.88:volume
+  return audioManager.play('sale',adjusted,key,2)
+ },
+ playNotification(kind:Exclude<SphexSound,'sale'>='alert',volume=.35,key:string=kind){
+  return audioManager.play(kind,volume,key,kind==='achievement'?3:1)
+ },
+ vibrate(){return audioManager.vibrate()},
+ dispose(){audioManager.dispose()}
 }

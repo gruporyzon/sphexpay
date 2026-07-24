@@ -22,6 +22,7 @@ import AuthCallbackPage from './pages/auth/AuthCallbackPage'
 import OnboardingPage from './pages/onboarding/OnboardingPage'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { PublicOnlyRoute } from './routes/PublicOnlyRoute'
+import { SoundProvider } from './providers/SoundProvider'
 
 const modules=[['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['assinaturas',<EditableSubscriptions/>],['clientes',<EditableCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['premiacoes',<AwardsPage/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><Routes>
@@ -30,6 +31,6 @@ export default function App(){return <BrowserRouter><Routes>
  <Route path="/privacidade" element={<LegalPage type="privacy"/>}/>
  <Route element={<PublicOnlyRoute/>}><Route path="/entrar" element={<LoginPage/>}/><Route path="/criar-conta" element={<SignupPage/>}/><Route path="/recuperar-senha" element={<ForgotPasswordPage/>}/><Route path="/verificar-email" element={<VerifyEmailPage/>}/></Route>
  <Route path="/nova-senha" element={<ResetPasswordPage/>}/><Route path="/auth/callback" element={<AuthCallbackPage/>}/>
- <Route element={<ProtectedRoute/>}><Route path="/onboarding" element={<OnboardingPage/>}/><Route path="/app" element={<Layout/>}><Route index element={<Dashboard/>}/>{modules.map(([path,element])=><Route path={path} element={element} key={path}/>)}<Route path="*" element={<Navigate to="/app" replace/>}/></Route>{modules.map(([path])=><Route path={`/${path}`} element={<Navigate to={`/app/${path}`} replace/>} key={`legacy-${path}`}/>)}<Route path="/dashboard" element={<Navigate to="/app" replace/>}/><Route path="/visao-geral" element={<Navigate to="/app" replace/>}/></Route>
+ <Route element={<ProtectedRoute/>}><Route path="/onboarding" element={<OnboardingPage/>}/><Route path="/app" element={<SoundProvider><Layout/></SoundProvider>}><Route index element={<Dashboard/>}/>{modules.map(([path,element])=><Route path={path} element={element} key={path}/>)}<Route path="*" element={<Navigate to="/app" replace/>}/></Route>{modules.map(([path])=><Route path={`/${path}`} element={<Navigate to={`/app/${path}`} replace/>} key={`legacy-${path}`}/>)}<Route path="/dashboard" element={<Navigate to="/app" replace/>}/><Route path="/visao-geral" element={<Navigate to="/app" replace/>}/></Route>
  <Route path="*" element={<Navigate to="/" replace/>}/>
  </Routes></BrowserRouter>}
