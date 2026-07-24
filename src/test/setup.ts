@@ -12,3 +12,4 @@ Object.defineProperty(window, 'speechSynthesis', { writable:true, value:{cancel:
 vi.stubGlobal('SpeechSynthesisUtterance',class {lang='';rate=1;volume=1;voice=null;onstart?:()=>void;onend?:()=>void;onerror?:()=>void;constructor(public text:string){}})
 Object.defineProperty(URL, 'createObjectURL', { writable:true, value:vi.fn(()=> 'blob:demo') })
 Object.defineProperty(URL, 'revokeObjectURL', { writable:true, value:vi.fn() })
+Object.defineProperty(HTMLCanvasElement.prototype,'getContext',{writable:true,value:vi.fn(()=>null)})
