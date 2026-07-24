@@ -23,21 +23,32 @@ describe('motor do gerador inteligente',()=>{
   expect(formatGeneratorValue(1000,'BRL')).toBe('R$ 1.000,00')
   expect(formatGeneratorValue(1000,'USD')).toBe('US$1,000.00')
   expect(formatGeneratorValue(1000,'EUR')).toBe('€ 1.000,00')
-  expect(generatorBody({...defaultGeneratorConfig,valueLabel:'Lucro',value:12.5})).toBe('Lucro: R$ 12,50')
-  expect(generatorBody({...defaultGeneratorConfig,customBody:'Texto controlado'})).toBe('Texto controlado')
+ expect(generatorBody({...defaultGeneratorConfig,valueLabel:'Lucro',value:12.5})).toBe('Lucro: R$ 12,50')
+ expect(generatorBody({...defaultGeneratorConfig,customBody:'Texto controlado'})).toBe('Texto controlado')
+ expect(generatorBody({...defaultGeneratorConfig,customBody:'from SphexPay\nSua comissão: R$ 17,65'})).toBe('Sua comissão: R$ 17,65')
  })
 
  it('gera variações dentro da faixa e persiste presets e histórico',()=>{
   vi.spyOn(Math,'random').mockReturnValue(.5)
   expect(variedValue({...defaultGeneratorConfig,variation:true,minValue:10,maxValue:20})).toBe(15)
   const preset={id:'preset-1',name:'Campanha',createdAt:new Date().toISOString(),config:defaultGeneratorConfig}
-  saveGeneratorData(defaultGeneratorConfig,[],[preset])
-  expect(loadGeneratorData().presets[0].name).toBe('Campanha')
+ saveGeneratorData(defaultGeneratorConfig,[],[preset])
+ expect(loadGeneratorData().presets[0].name).toBe('Campanha')
+ })
+
+ it('sanitiza configurações e presets antigos ao carregar',()=>{
+  localStorage.setItem('sphexpay_notification_generator_v1',JSON.stringify({
+   config:{...defaultGeneratorConfig,customBody:'from SphexPay\nSua comissão: R$ 17,65'},
+   presets:[{id:'legacy',name:'Legado',createdAt:new Date().toISOString(),config:{...defaultGeneratorConfig,customBody:'enviado por SphexPay\nValor: € 15,71'}}],
+  }))
+  const saved=loadGeneratorData()
+  expect(saved.config.customBody).toBe('Sua comissão: R$ 17,65')
+  expect(saved.presets[0].config.customBody).toBe('Valor: € 15,71')
  })
 
  it('pausa, retoma e conclui uma sequência sem duplicar timers',async()=>{
   vi.useFakeTimers()
-  const {result,unmount}=renderHook(()=>useNotificationGenerator()),config={...defaultGeneratorConfig,mode:'batch' as const,quantity:3,intervalValue:1,sound:false}
+  const {result,unmount}=renderHook(()=>useNotificationGenerator()),config={...defaultGeneratorConfig,mode:'batch' as const,quantity:3,intervalValue:1}
   act(()=>{result.current.begin(config)})
   await act(async()=>{await Promise.resolve()})
   expect(result.current.sent).toBe(1)

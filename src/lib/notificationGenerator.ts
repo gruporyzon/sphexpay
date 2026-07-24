@@ -1,5 +1,6 @@
 import type { CommerceNotificationType,Sale } from '../types'
 import { notificationTitles } from './notificationCatalog'
+import { sanitizeNotificationBody } from './notificationSanitizer'
 
 export type GeneratorDestination='device'
 export type GeneratorMode='single'|'batch'|'scheduled'|'recurring'
@@ -36,7 +37,7 @@ export function formatGeneratorValue(value:number,currency:Sale['currency']){
  const locale=currency==='USD'?'en-US':'pt-BR',formatted=new Intl.NumberFormat(locale,{style:'currency',currency,minimumFractionDigits:2,maximumFractionDigits:2}).format(value)
  return currency==='USD'?formatted.replace('$','US$'):formatted
 }
-export const generatorBody=(config:GeneratorConfig,value=config.value,currency=config.currency)=>config.customBody.trim()||`${config.valueLabel}: ${formatGeneratorValue(value,currency)}`
+export const generatorBody=(config:GeneratorConfig,value=config.value,currency=config.currency)=>sanitizeNotificationBody(config.customBody)||`${config.valueLabel}: ${formatGeneratorValue(value,currency)}`
 export function validateGenerator(config:GeneratorConfig){
  if(!config.title.trim())return'O título é obrigatório.'
  if(!Number.isFinite(config.value)||config.value<0)return'Informe um valor válido.'
@@ -56,6 +57,6 @@ export function variedValue(config:GeneratorConfig,previous?:number){
 }
 const storageKey='sphexpay_notification_generator_v1'
 export function loadGeneratorData():{config:GeneratorConfig;history:GeneratorHistory[];presets:GeneratorPreset[]}{
- try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}'),migrate=(config:GeneratorConfig)=>{const compatible={...config} as GeneratorConfig&{sound?:boolean;volume?:number;soundStyle?:string};delete compatible.sound;delete compatible.volume;delete compatible.soundStyle;return{...defaultGeneratorConfig,...compatible,destination:'device' as const}};return{config:migrate(saved.config||defaultGeneratorConfig),history:Array.isArray(saved.history)?saved.history.slice(0,100).map((item:GeneratorHistory)=>({...item,destination:'device',config:migrate(item.config)})):[],presets:Array.isArray(saved.presets)?saved.presets.map((preset:GeneratorPreset)=>({...preset,config:migrate(preset.config)})):[]}}catch{return{config:defaultGeneratorConfig,history:[],presets:[]}}
+ try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}'),migrate=(config:GeneratorConfig)=>{const compatible={...config} as GeneratorConfig&{sound?:boolean;volume?:number;soundStyle?:string};delete compatible.sound;delete compatible.volume;delete compatible.soundStyle;compatible.customBody=sanitizeNotificationBody(compatible.customBody);return{...defaultGeneratorConfig,...compatible,destination:'device' as const}};return{config:migrate(saved.config||defaultGeneratorConfig),history:Array.isArray(saved.history)?saved.history.slice(0,100).map((item:GeneratorHistory)=>({...item,destination:'device',config:migrate(item.config)})):[],presets:Array.isArray(saved.presets)?saved.presets.map((preset:GeneratorPreset)=>({...preset,config:migrate(preset.config)})):[]}}catch{return{config:defaultGeneratorConfig,history:[],presets:[]}}
 }
 export function saveGeneratorData(config:GeneratorConfig,history:GeneratorHistory[],presets:GeneratorPreset[]){localStorage.setItem(storageKey,JSON.stringify({config,history:history.slice(0,100),presets}))}

@@ -2,7 +2,7 @@ import {createClient} from 'npm:@supabase/supabase-js@2'
 import webpush from 'npm:web-push@3.6.7'
 
 const titles:Record<string,string>={
- sale_approved:'Venda aprovada!',sale_pending:'Venda pendente',pix_generated:'Pix gerado!',pix_approved:'Pix aprovado!',pix_paid:'Pix pago!',
+ sale_approved:'Venda aprovada!',sale_pending:'Venda pendente!',pix_generated:'Pix gerado!',pix_approved:'Pix aprovado!',pix_paid:'Pix pago!',
  credit_card_approved:'Pagamento no cartão aprovado!',credit_card_refused:'Pagamento no cartão recusado',boleto_generated:'Boleto gerado!',boleto_paid:'Boleto pago!',
  subscription_approved:'Assinatura aprovada!',subscription_renewed:'Assinatura renovada!',refund_done:'Reembolso realizado!',chargeback_received:'Chargeback recebido!',
  withdrawal_requested:'Saque solicitado',withdrawal_sent:'Saque enviado!',withdrawal_completed:'Saque realizado com sucesso',payment_refused:'Pagamento recusado!',
@@ -13,6 +13,7 @@ const routes:Record<string,string>={
  subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',
  withdrawal_requested:'/app/saques',withdrawal_sent:'/app/saques',withdrawal_completed:'/app/saques',payment_refused:'/app/transacoes',
 }
+const sanitizeNotificationBody=(value:unknown)=>typeof value==='string'?value.replace(/^\s*(?:from\s+SphexPay\s*(?:\r?\n|[-–—:]\s*)?|enviado\s+por\s+SphexPay\s*(?:\r?\n)?)/i,'').trim():''
 
 Deno.serve(async request=>{
  if(request.method!=='POST')return new Response('Method not allowed',{status:405})
@@ -20,12 +21,12 @@ Deno.serve(async request=>{
  if(!url||!anon||!serviceRole||!publicKey||!privateKey||!subject)return Response.json({error:'Push server is not configured'},{status:503})
  const authorization=request.headers.get('Authorization')||'',authClient=createClient(url,anon,{global:{headers:{Authorization:authorization}}}),{data:{user}}=await authClient.auth.getUser()
  if(!user)return Response.json({error:'Unauthorized'},{status:401})
- const input=await request.json(),mappedTitle=titles[input.type],customTitle=typeof input.title==='string'?input.title.trim():'',title=customTitle||mappedTitle,eventId=typeof input.eventId==='string'?input.eventId.trim():''
- if(!mappedTitle||!title||title.length>70||!eventId||eventId.length>160||typeof input.body!=='string'||input.body.length<1||input.body.length>160)return Response.json({error:'Invalid notification payload'},{status:400})
+ const input=await request.json(),mappedTitle=titles[input.type],customTitle=typeof input.title==='string'?input.title.trim():'',title=customTitle||mappedTitle,eventId=typeof input.eventId==='string'?input.eventId.trim():'',body=sanitizeNotificationBody(input.body)
+ if(!mappedTitle||!title||title.length>70||!eventId||eventId.length>160||!body||body.length>160)return Response.json({error:'Invalid notification payload'},{status:400})
  const route=routes[input.type],admin=createClient(url,serviceRole),{data:subscriptions,error}=await admin.from('push_subscriptions').select('id,endpoint,p256dh,auth').eq('user_id',user.id).eq('enabled',true)
  if(error)return Response.json({error:'Unable to load subscriptions'},{status:500})
  webpush.setVapidDetails(subject,publicKey,privateKey)
- const payload=JSON.stringify({eventId,type:input.type,title,body:input.body,route,createdAt:input.createdAt||new Date().toISOString()})
+ const payload=JSON.stringify({eventId,type:input.type,title,body,route,createdAt:input.createdAt||new Date().toISOString()})
  const results=await Promise.allSettled((subscriptions||[]).map(async subscription=>{
   const {data:existing}=await admin.from('push_delivery_log').select('status').eq('subscription_id',subscription.id).eq('event_id',eventId).maybeSingle()
   if(existing?.status==='delivered'||existing?.status==='sending')return 'duplicate'

@@ -3,7 +3,7 @@ import type { AppNotification,CommerceNotificationType,Sale } from '../types'
 export type CommerceNotificationPayload={id:string;type:CommerceNotificationType;commission:number|null;currency:Sale['currency'];createdAt:string;route:string;status?:string;title?:string;body?:string}
 export const notificationTitles:Record<CommerceNotificationType,string>={
  sale_approved:'Venda aprovada!',
- sale_pending:'Venda pendente',
+ sale_pending:'Venda pendente!',
  pix_generated:'Pix gerado!',
  pix_approved:'Pix aprovado!',
  pix_paid:'Pix pago!',

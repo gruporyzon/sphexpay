@@ -1,5 +1,6 @@
 import { browserPermissionService } from './browserPermissionService'
 import { formatCommission,notificationTitles,type CommerceNotificationPayload } from '../lib/notificationCatalog'
+import { sanitizeNotificationBody } from '../lib/notificationSanitizer'
 
 export interface DeviceNotificationPayload{eventId:string;type:string;title:string;body:string;route:string;createdAt:string;currency?:string;amount?:number;commission?:number|null}
 const recentKey='sphexpay_device_notification_events'
@@ -9,10 +10,11 @@ const alreadyDelivered=(eventId:string)=>{
 export async function showDeviceNotification(payload:DeviceNotificationPayload){
  if(browserPermissionService.status()!=='granted'||!('serviceWorker'in navigator)||alreadyDelivered(payload.eventId))return false
  try{
+  const body=sanitizeNotificationBody(payload.body)
   const registration=await navigator.serviceWorker.ready
   const worker=registration.active||registration.waiting||registration.installing
-  if(worker){worker.postMessage({type:'SHOW_DEVICE_NOTIFICATION',payload});return true}
-  await registration.showNotification(payload.title,{body:payload.body,icon:'/icons/sphexpay-app-192.png',badge:'/icons/sphexpay-app-192.png',tag:payload.eventId,silent:false,data:{eventId:payload.eventId,type:payload.type,route:payload.route}})
+  if(worker){worker.postMessage({type:'SHOW_DEVICE_NOTIFICATION',payload:{...payload,body}});return true}
+  await registration.showNotification(payload.title,{body,icon:'/icons/sphexpay-app-192.png',badge:'/icons/sphexpay-app-192.png',tag:payload.eventId,silent:false,data:{eventId:payload.eventId,type:payload.type,route:payload.route}})
   return true
  }catch{return false}
 }
