@@ -1,66 +1,115 @@
-import { supabase } from '../lib/supabase'
 import type { Sale } from '../types'
 
-export type WithdrawalStatus='requested'|'processing'|'completed'|'rejected'|'cancelled'|'failed'
-export interface BankAccount{id:string;label:string;bankName:string;lastDigits:string;currency:Sale['currency'];accountType?:string;agency?:string;isTest?:boolean}
-export interface SecureWithdrawal{id:string;bankAccountId:string;grossAmountMinor:number;feeAmountMinor:number;netAmountMinor:number;currency:Sale['currency'];status:WithdrawalStatus;destinationLabel:string;destinationLastDigits:string;idempotencyKey:string;requestedAt:string;processedAt:string|null;completedAt:string|null;failureReason:string|null}
-export interface WalletBalance{currency:Sale['currency'];availableBalanceMinor:number;isTestBalance?:boolean}
-export interface WithdrawalRequestResult{withdrawal:SecureWithdrawal;availableBalanceMinor:number;duplicate:boolean}
+export const WITHDRAWAL_BALANCE_KEY='sphexpay_available_balance'
+export const WITHDRAWAL_ACCOUNT_KEY='sphexpay_withdrawal_account'
+export const WITHDRAWALS_KEY='sphexpay_withdrawals'
+export const INITIAL_BALANCE_IN_CENTS=16755569
 
- const mapWithdrawal=(row:Record<string,unknown>):SecureWithdrawal=>({
- id:String(row.id),bankAccountId:String(row.bank_account_id),grossAmountMinor:Number(row.gross_amount_minor),feeAmountMinor:Number(row.fee_amount_minor),netAmountMinor:Number(row.net_amount_minor),currency:row.currency as Sale['currency'],status:row.status as WithdrawalStatus,destinationLabel:String(row.destination_label),destinationLastDigits:String(row.destination_last_digits),idempotencyKey:String(row.idempotency_key),requestedAt:String(row.requested_at),processedAt:row.processed_at?String(row.processed_at):null,completedAt:row.completed_at?String(row.completed_at):null,failureReason:row.failure_reason?String(row.failure_reason):null
-})
-const errorMessage=(error:unknown)=>{
- const message=String((error as {message?:string})?.message||error)
- if(message.includes('INSUFFICIENT_BALANCE'))return'Saldo insuficiente para realizar este saque.'
- if(message.includes('INVALID_AMOUNT'))return'Informe um valor de saque válido.'
- if(message.includes('BANK_ACCOUNT_REQUIRED'))return'Selecione uma conta de destino.'
- if(message.includes('BANK_ACCOUNT_UNAVAILABLE'))return'A conta selecionada não está disponível.'
- if(message.includes('AUTH_REQUIRED'))return'Entre novamente para solicitar o saque.'
- if(message.includes('IDEMPOTENCY'))return'Esta solicitação já está sendo processada.'
- if(message.includes('WALLET_UNAVAILABLE'))return'Não foi possível localizar uma carteira ativa para esta moeda.'
- return'Não foi possível solicitar o saque. Tente novamente.'
+export interface LocalBankAccount{
+ id:string
+ name:string
+ bankName:string
+ agency:string
+ accountNumber:string
+ lastDigits:string
+ currency:Sale['currency']
 }
+
+export interface LocalWithdrawal{
+ id:string
+ amountInCents:number
+ currency:Sale['currency']
+ destinationLastDigits:string
+ status:'completed'
+ createdAt:string
+}
+
+export interface LocalWithdrawalData{
+ account:LocalBankAccount
+ availableBalanceInCents:number
+ withdrawals:LocalWithdrawal[]
+}
+
+const defaultAccount:LocalBankAccount={
+ id:'local-primary-account',
+ name:'Conta cadastrada',
+ bankName:'Conta principal',
+ agency:'0001',
+ accountNumber:'84821-0',
+ lastDigits:'4821',
+ currency:'BRL',
+}
+
+const storage=()=>typeof window==='undefined'?null:window.localStorage
+const validCents=(value:unknown)=>Number.isSafeInteger(value)&&Number(value)>=0
+
+const readBalance=()=>{
+ const saved=storage()?.getItem(WITHDRAWAL_BALANCE_KEY)
+ const value=saved===null||saved===undefined?NaN:Number(saved)
+ if(validCents(value))return value
+ storage()?.setItem(WITHDRAWAL_BALANCE_KEY,String(INITIAL_BALANCE_IN_CENTS))
+ return INITIAL_BALANCE_IN_CENTS
+}
+
+const readAccount=()=>{
+ try{
+  const saved=JSON.parse(storage()?.getItem(WITHDRAWAL_ACCOUNT_KEY)||'null') as Partial<LocalBankAccount>|null
+  if(saved?.id&&saved.lastDigits)return{...defaultAccount,...saved}
+ }catch{ /* Recria somente este dado local quando estiver inválido. */ }
+ storage()?.setItem(WITHDRAWAL_ACCOUNT_KEY,JSON.stringify(defaultAccount))
+ return defaultAccount
+}
+
+const readWithdrawals=()=>{
+ try{
+  const saved=JSON.parse(storage()?.getItem(WITHDRAWALS_KEY)||'[]') as LocalWithdrawal[]
+  if(Array.isArray(saved))return saved.filter(item=>item&&typeof item.id==='string'&&validCents(item.amountInCents)&&item.status==='completed')
+ }catch{ /* Um histórico inválido começa vazio sem interromper a página. */ }
+ storage()?.setItem(WITHDRAWALS_KEY,'[]')
+ return[] as LocalWithdrawal[]
+}
+
 export const withdrawalService={
- available(){return Boolean(supabase)},
- async load(){
-  if(!supabase)throw new Error('O serviço seguro de saques não está configurado.')
-  const {error:setupError}=await supabase.rpc('ensure_test_withdrawal_setup')
-  if(setupError)throw new Error('Não foi possível preparar o ambiente de teste de saques.')
-  const [{data:wallets,error:walletError},{data:accounts,error:accountError},{data:withdrawals,error:withdrawalError}]=await Promise.all([
-   supabase.from('wallets').select('currency,available_balance_minor,is_test_balance'),
-   supabase.from('bank_accounts').select('id,label,bank_name,account_last_digits,currency,account_type,agency,is_test').eq('active',true).order('created_at'),
-   supabase.from('withdrawals').select('*').order('requested_at',{ascending:false})
-  ])
-  if(walletError||accountError||withdrawalError)throw new Error('Não foi possível carregar os dados de saque.')
-  return{
-   wallets:(wallets||[]).map(row=>({currency:row.currency as Sale['currency'],availableBalanceMinor:Number(row.available_balance_minor),isTestBalance:Boolean(row.is_test_balance)} as WalletBalance)),
-   accounts:(accounts||[]).map(row=>({id:String(row.id),label:String(row.label),bankName:String(row.bank_name),lastDigits:String(row.account_last_digits),currency:row.currency as Sale['currency'],accountType:row.account_type?String(row.account_type):undefined,agency:row.agency?String(row.agency):undefined,isTest:Boolean(row.is_test)} as BankAccount)),
-   withdrawals:(withdrawals||[]).map(row=>mapWithdrawal(row as Record<string,unknown>))
+ load():LocalWithdrawalData{
+  const account=readAccount(),availableBalanceInCents=readBalance(),withdrawals=readWithdrawals().sort((a,b)=>b.createdAt.localeCompare(a.createdAt))
+  storage()?.setItem(WITHDRAWAL_ACCOUNT_KEY,JSON.stringify(account))
+  storage()?.setItem(WITHDRAWALS_KEY,JSON.stringify(withdrawals))
+  return{account,availableBalanceInCents,withdrawals}
+ },
+ request(amountInCents:number,accountId:string){
+  if(!Number.isSafeInteger(amountInCents)||amountInCents<=0)throw new Error('Informe um valor maior que zero.')
+  const account=readAccount()
+  if(!accountId||account.id!==accountId)throw new Error('Selecione uma conta de destino.')
+  const availableBalanceInCents=readBalance()
+  if(amountInCents>availableBalanceInCents)throw new Error('Saldo insuficiente para realizar este saque.')
+  const withdrawal:LocalWithdrawal={
+   id:crypto.randomUUID(),
+   amountInCents,
+   currency:'BRL',
+   destinationLastDigits:account.lastDigits,
+   status:'completed',
+   createdAt:new Date().toISOString(),
   }
+  const nextBalance=availableBalanceInCents-amountInCents
+  const withdrawals=[withdrawal,...readWithdrawals().filter(item=>item.id!==withdrawal.id)]
+  storage()?.setItem(WITHDRAWAL_BALANCE_KEY,String(nextBalance))
+  storage()?.setItem(WITHDRAWALS_KEY,JSON.stringify(withdrawals))
+  return{withdrawal,availableBalanceInCents:nextBalance,withdrawals}
  },
- async request(amountMinor:number,bankAccountId:string,idempotencyKey:string):Promise<WithdrawalRequestResult>{
-  if(!supabase)throw new Error('O serviço seguro de saques não está configurado.')
-  try{
-   const {data,error}=await supabase.rpc('request_withdrawal',{p_amount_minor:amountMinor,p_bank_account_id:bankAccountId,p_idempotency_key:idempotencyKey})
-   if(error)throw error
-   const result=data as unknown as {duplicate:boolean;withdrawal:Record<string,unknown>;available_balance_minor?:number}
-   if(!result?.withdrawal)throw new Error('INVALID_RESPONSE')
-   const withdrawal=mapWithdrawal(result.withdrawal)
-   return{withdrawal,availableBalanceMinor:Number(result.available_balance_minor??0),duplicate:Boolean(result.duplicate)}
-  }catch(error){throw new Error(errorMessage(error))}
- },
- subscribe(userId:string,onChange:(withdrawal:SecureWithdrawal)=>void){
-  if(!supabase)return()=>undefined
-  const client=supabase,channel=client.channel(`withdrawals:${userId}`).on('postgres_changes',{event:'UPDATE',schema:'public',table:'withdrawals',filter:`user_id=eq.${userId}`},payload=>onChange(mapWithdrawal(payload.new as Record<string,unknown>))).subscribe()
-  return()=>{void client.removeChannel(channel)}
- }
 }
+
 export const withdrawalAmountToMinor=(value:string)=>{
- const normalized=value.trim().replace(/\s/g,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(',','.'),amount=Number(normalized)
- return Number.isFinite(amount)?Math.round(amount*100):NaN
+ const trimmed=value.trim()
+ if(!trimmed)return NaN
+ const normalized=trimmed.replace(/\s/g,'').replace(/[R$]/g,'').replace(/\.(?=\d{3}(?:\D|$))/g,'').replace(',','.')
+ if(!/^\d+(?:\.\d{0,2})?$/.test(normalized))return NaN
+ const [whole,fraction='']=normalized.split('.')
+ const cents=Number(whole)*100+Number(fraction.padEnd(2,'0'))
+ return Number.isSafeInteger(cents)?cents:NaN
 }
-export const withdrawalMoney=(minor:number,currency:Sale['currency'])=>{
- const locale=currency==='USD'?'en-US':'pt-BR',formatted=new Intl.NumberFormat(locale,{style:'currency',currency,minimumFractionDigits:2,maximumFractionDigits:2}).format(minor/100)
+
+export const withdrawalMoney=(minor:number,currency:Sale['currency']='BRL')=>{
+ const locale=currency==='USD'?'en-US':'pt-BR'
+ const formatted=new Intl.NumberFormat(locale,{style:'currency',currency,minimumFractionDigits:2,maximumFractionDigits:2}).format(minor/100)
  return currency==='USD'?formatted.replace('$','US$'):formatted
 }
