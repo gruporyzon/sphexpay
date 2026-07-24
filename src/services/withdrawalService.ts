@@ -2,12 +2,12 @@ import { supabase } from '../lib/supabase'
 import type { Sale } from '../types'
 
 export type WithdrawalStatus='requested'|'processing'|'completed'|'rejected'|'cancelled'|'failed'
-export interface BankAccount{id:string;label:string;bankName:string;lastDigits:string;currency:Sale['currency']}
+export interface BankAccount{id:string;label:string;bankName:string;lastDigits:string;currency:Sale['currency'];accountType?:string;agency?:string;isTest?:boolean}
 export interface SecureWithdrawal{id:string;bankAccountId:string;grossAmountMinor:number;feeAmountMinor:number;netAmountMinor:number;currency:Sale['currency'];status:WithdrawalStatus;destinationLabel:string;destinationLastDigits:string;idempotencyKey:string;requestedAt:string;processedAt:string|null;completedAt:string|null;failureReason:string|null}
-export interface WalletBalance{currency:Sale['currency'];availableBalanceMinor:number}
+export interface WalletBalance{currency:Sale['currency'];availableBalanceMinor:number;isTestBalance?:boolean}
 export interface WithdrawalRequestResult{withdrawal:SecureWithdrawal;availableBalanceMinor:number;duplicate:boolean}
 
-const mapWithdrawal=(row:Record<string,unknown>):SecureWithdrawal=>({
+ const mapWithdrawal=(row:Record<string,unknown>):SecureWithdrawal=>({
  id:String(row.id),bankAccountId:String(row.bank_account_id),grossAmountMinor:Number(row.gross_amount_minor),feeAmountMinor:Number(row.fee_amount_minor),netAmountMinor:Number(row.net_amount_minor),currency:row.currency as Sale['currency'],status:row.status as WithdrawalStatus,destinationLabel:String(row.destination_label),destinationLastDigits:String(row.destination_last_digits),idempotencyKey:String(row.idempotency_key),requestedAt:String(row.requested_at),processedAt:row.processed_at?String(row.processed_at):null,completedAt:row.completed_at?String(row.completed_at):null,failureReason:row.failure_reason?String(row.failure_reason):null
 })
 const errorMessage=(error:unknown)=>{
@@ -25,15 +25,17 @@ export const withdrawalService={
  available(){return Boolean(supabase)},
  async load(){
   if(!supabase)throw new Error('O serviço seguro de saques não está configurado.')
+  const {error:setupError}=await supabase.rpc('ensure_test_withdrawal_setup')
+  if(setupError)throw new Error('Não foi possível preparar o ambiente de teste de saques.')
   const [{data:wallets,error:walletError},{data:accounts,error:accountError},{data:withdrawals,error:withdrawalError}]=await Promise.all([
-   supabase.from('wallets').select('currency,available_balance_minor'),
-   supabase.from('bank_accounts').select('id,label,bank_name,account_last_digits,currency').eq('active',true).order('created_at'),
+   supabase.from('wallets').select('currency,available_balance_minor,is_test_balance'),
+   supabase.from('bank_accounts').select('id,label,bank_name,account_last_digits,currency,account_type,agency,is_test').eq('active',true).order('created_at'),
    supabase.from('withdrawals').select('*').order('requested_at',{ascending:false})
   ])
   if(walletError||accountError||withdrawalError)throw new Error('Não foi possível carregar os dados de saque.')
   return{
-   wallets:(wallets||[]).map(row=>({currency:row.currency as Sale['currency'],availableBalanceMinor:Number(row.available_balance_minor)})),
-   accounts:(accounts||[]).map(row=>({id:String(row.id),label:String(row.label),bankName:String(row.bank_name),lastDigits:String(row.account_last_digits),currency:row.currency as Sale['currency']})),
+   wallets:(wallets||[]).map(row=>({currency:row.currency as Sale['currency'],availableBalanceMinor:Number(row.available_balance_minor),isTestBalance:Boolean(row.is_test_balance)} as WalletBalance)),
+   accounts:(accounts||[]).map(row=>({id:String(row.id),label:String(row.label),bankName:String(row.bank_name),lastDigits:String(row.account_last_digits),currency:row.currency as Sale['currency'],accountType:row.account_type?String(row.account_type):undefined,agency:row.agency?String(row.agency):undefined,isTest:Boolean(row.is_test)} as BankAccount)),
    withdrawals:(withdrawals||[]).map(row=>mapWithdrawal(row as Record<string,unknown>))
   }
  },

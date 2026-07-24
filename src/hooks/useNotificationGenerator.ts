@@ -24,8 +24,9 @@ export function useNotificationGenerator(){
  const tick=useCallback(async()=>{
   const current=activeConfig.current,index=count.current
   if(current.endAt&&Date.now()>new Date(current.endAt).getTime()){finish('completed','Período de envio concluído.');return}
-  const ok=await deliver(current,index);count.current+=1;setSent(count.current);patchHistory(runId.current,{sent:count.current,status:'running'})
-  if(!ok)setMessage('Não foi possível enviar a notificação ao dispositivo.')
+  const ok=await deliver(current,index)
+  if(!ok){finish('failed','Não foi possível enviar a notificação ao dispositivo.');return}
+  count.current+=1;setSent(count.current);patchHistory(runId.current,{sent:count.current,status:'running'})
   if(!current.continuous&&count.current>=current.quantity){finish('completed','Sequência concluída.');return}
   timer.current=window.setTimeout(()=>void tick(),intervalMilliseconds(current))
  },[deliver,finish,patchHistory])

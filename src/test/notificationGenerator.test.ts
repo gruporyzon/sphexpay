@@ -2,6 +2,7 @@ import { beforeEach,describe,expect,it,vi } from 'vitest'
 import { act,renderHook } from '@testing-library/react'
 import { defaultGeneratorConfig,formatGeneratorValue,generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,variedValue } from '../lib/notificationGenerator'
 import { useNotificationGenerator } from '../hooks/useNotificationGenerator'
+vi.mock('../lib/supabase',()=>({supabase:{functions:{invoke:vi.fn(async()=>({error:null}))}}}))
 
 describe('motor do gerador inteligente',()=>{
  beforeEach(()=>localStorage.clear())

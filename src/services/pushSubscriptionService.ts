@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase'
 
 export type PushRegistrationResult={ok:boolean;status:'active'|'unsupported'|'not-installed'|'missing-key'|'permission-denied'|'backend-unavailable'|'error';message:string}
+export type PushSendResult={ok:boolean;code?:string;message:string;sent?:number;failed?:number}
 const isIOS=()=>/iPhone|iPad|iPod/i.test(navigator.userAgent)
 const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||Boolean((navigator as Navigator&{standalone?:boolean}).standalone)
 const decodeKey=(value:string)=>{const padding='='.repeat((4-value.length%4)%4),base64=(value+padding).replace(/-/g,'+').replace(/_/g,'/'),raw=atob(base64);return Uint8Array.from([...raw].map(character=>character.charCodeAt(0)))}
@@ -10,6 +11,12 @@ const browser=()=>/Edg/i.test(navigator.userAgent)?'Edge':/CriOS|Chrome/i.test(n
 export const pushSubscriptionService={
  supported(){return 'serviceWorker'in navigator&&'PushManager'in window&&'Notification'in window},
  deviceLabel(){return `${platform()} · ${browser()}`},
+ async diagnose(userId?:string){
+  const subscription=await this.current();let saved=false,endpointHost='—',lastSeen='—'
+  if(subscription){try{endpointHost=new URL(subscription.endpoint).host}catch{endpointHost='endpoint disponível'}}
+  if(supabase&&userId){const {data}=await supabase.from('push_subscriptions').select('endpoint,last_seen_at,enabled').eq('user_id',userId).eq('enabled',true).order('last_seen_at',{ascending:false}).limit(1).maybeSingle();saved=Boolean(data);lastSeen=data?.last_seen_at?String(data.last_seen_at):'—'}
+  return{subscription:Boolean(subscription),saved,endpointHost,lastSeen,platform:platform(),browser:browser()}
+ },
  async current(){if(!this.supported())return null;const registration=await navigator.serviceWorker.ready;return registration.pushManager.getSubscription()},
  async subscribe(userId:string):Promise<PushRegistrationResult>{
   if(!('Notification'in window))return{ok:false,status:'unsupported',message:'Este navegador não oferece suporte às notificações necessárias.'}
@@ -35,5 +42,14 @@ export const pushSubscriptionService={
   if(!subscription)return true
   if(supabase)await supabase.from('push_subscriptions').delete().eq('endpoint',subscription.endpoint)
   return subscription.unsubscribe()
+ },
+ async sendTest():Promise<PushSendResult>{
+  if(!supabase)return{ok:false,code:'BACKEND_UNAVAILABLE',message:'Servidor de notificações indisponível.'}
+  const eventId=`device-test-${crypto.randomUUID?.()||Date.now()}`
+  const {data,error}=await supabase.functions.invoke('send-push',{body:{eventId,type:'device_test',title:'Notificações ativadas',body:'Seu dispositivo está conectado à SphexPay.',route:'/app/configuracoes',createdAt:new Date().toISOString()}})
+  if(error){let code='SEND_FAILED',message='Não foi possível enviar a notificação ao dispositivo.';const context=(error as {context?:Response}).context;if(context){try{const detail=await context.clone().json() as {code?:string;message?:string};code=detail.code||code;message=detail.message||message}catch{/* resposta sem JSON seguro */}}return{ok:false,code,message}}
+  const result=data as {success?:boolean;code?:string;message?:string;sent?:number;failed?:number}
+  if(result.success===false||result.sent===0)return{ok:false,code:result.code||'NO_ACTIVE_SUBSCRIPTIONS',message:result.message||'Nenhum dispositivo ativo foi encontrado.',sent:result.sent,failed:result.failed}
+  return{ok:true,message:'Notificação enviada ao dispositivo.',sent:result.sent,failed:result.failed}
  }
 }

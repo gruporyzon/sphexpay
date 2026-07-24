@@ -3,6 +3,7 @@ create table if not exists public.wallets (
   user_id uuid not null references auth.users(id) on delete cascade,
   currency text not null check (currency in ('BRL','USD','EUR')),
   available_balance_minor bigint not null default 0 check (available_balance_minor >= 0),
+  is_test_balance boolean not null default false,
   updated_at timestamptz not null default now(),
   primary key (user_id,currency)
 );
@@ -14,7 +15,10 @@ create table if not exists public.bank_accounts (
   bank_name text not null,
   account_last_digits text not null check (account_last_digits ~ '^[0-9]{4}$'),
   currency text not null check (currency in ('BRL','USD','EUR')),
+  account_type text not null default 'checking',
+  agency text,
   active boolean not null default true,
+  is_test boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

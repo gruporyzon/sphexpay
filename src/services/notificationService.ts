@@ -19,7 +19,7 @@ export async function showDeviceNotification(payload:DeviceNotificationPayload){
  }catch{return false}
 }
 export const notificationService={
- async registerWorker(){if(!('serviceWorker'in navigator))return undefined;try{return await navigator.serviceWorker.register('/sw.js')}catch{return undefined}},
+ async registerWorker(){if(!('serviceWorker'in navigator))return undefined;try{const registration=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});if(import.meta.env.DEV)console.info('[SphexPay SW] registered',registration.scope);if(registration.waiting&&import.meta.env.DEV)console.info('[SphexPay SW] waiting');void registration.update();return registration}catch(error){if(import.meta.env.DEV)console.warn('[SphexPay SW] registration failed',error instanceof Error?error.message:'unknown');return undefined}},
  show(title:string,body:string,path='/app/notificacoes'){return showDeviceNotification({eventId:`manual-${crypto.randomUUID?.()||Date.now()}`,type:'manual',title,body,route:path,createdAt:new Date().toISOString()})},
  showCommerce(payload:CommerceNotificationPayload){return showDeviceNotification({eventId:payload.id,type:payload.type,title:payload.title||notificationTitles[payload.type],body:payload.body||formatCommission(payload.commission,payload.currency),currency:payload.currency,commission:payload.commission,route:payload.route,createdAt:payload.createdAt})},
  dispose(){}
