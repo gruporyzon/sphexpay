@@ -19,7 +19,7 @@ export const initialData:DemoState={
   {id:'NTF-06',kind:'payment',category:'Financeiro',title:'Pagamento recusado',description:'Um pagamento por cartão não foi autorizado.',createdAt:d(4,4),read:true,detailPath:'/transacoes'},
  ],
  preferences:{
-  notifications:{internal:true,device:false,sales:true,withdrawals:true,subscriptions:true,security:true,achievements:true,sound:false,vibration:false,frequency:'realtime',groupSimilar:true,muteRepeated:true,priorityApproved:true,priorityPix:true,priorityCard:true,soundVolume:.35,soundStyle:'signal',quietHours:false,quietFrom:'22:00',quietTo:'07:00',doNotDisturb:false,importantOnly:false},
+  notifications:{internal:true,device:false,sales:true,withdrawals:true,subscriptions:true,security:true,achievements:true,sound:false,vibration:false,frequency:'realtime',groupSimilar:true,muteRepeated:true,priorityApproved:true,priorityPix:true,priorityCard:true,saleApproved:true,pixGenerated:true,cardApproved:true,subscriptionEvents:true,withdrawalEvents:true,soundVolume:.35,soundStyle:'signal',quietHours:false,quietFrom:'22:00',quietTo:'07:00',doNotDisturb:false,importantOnly:false},
   assistant:{microphone:true,readAloud:true,voice:'',voiceGender:'female',language:'pt-BR',speechRate:.96,pitch:1.04,volume:1,interruptOnSend:true,autoSendVoice:false},
   sales:{automaticUpdates:true,updateFrequency:18,saleSound:false,showNotifications:true,recentCount:7}
  },

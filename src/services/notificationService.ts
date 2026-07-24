@@ -1,6 +1,7 @@
 import type { Sale } from '../types'
 import { money } from '../lib/utils'
 import { browserPermissionService } from './browserPermissionService'
+import { formatCommission,notificationTitles,type CommerceNotificationPayload } from '../lib/notificationCatalog'
 
 export const notificationService = {
   async registerWorker() {
@@ -21,6 +22,9 @@ export const notificationService = {
       notification.onclick = () => { window.focus(); window.location.assign(path); notification.close() }
       return true
     } catch { return false }
+  },
+  showCommerce(payload:CommerceNotificationPayload){
+    return this.show(notificationTitles[payload.type],formatCommission(payload.commission,payload.currency),payload.route)
   },
   sale(sale:Sale) { return nativeSaleAggregator.enqueue(sale) },
   dispose(){nativeSaleAggregator.dispose()}
