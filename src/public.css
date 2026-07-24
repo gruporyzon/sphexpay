@@ -19,3 +19,174 @@
 .landing section[id]{scroll-margin-top:90px}.public-menu{width:44px;height:44px;border-radius:10px}.social-buttons button svg{flex:0 0 auto;width:17px;height:17px}.auth-options label{line-height:1.35}.field-control button{width:36px;height:36px;border-radius:8px}.field-control button:hover{background:#11111108}.legal-page{min-height:100dvh;padding:0 max(6vw,calc((100vw - 1050px)/2)) 90px;background:#f6f6f4;color:#111}.legal-page>header{height:82px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ddd}.legal-page>header>a:last-child{display:flex;align-items:center;gap:7px;color:#666;font-size:10px}.legal-page>header svg{width:14px}.legal-page>article{max-width:760px;margin:75px auto 0}.legal-page>article>span{color:#f15a24;font-size:8px;font-weight:800;letter-spacing:.17em}.legal-page h1{margin-top:12px;font-size:48px;letter-spacing:-.05em}.legal-warning{margin-top:20px;padding:15px;border:1px solid #f15a2430;border-radius:12px;background:#fff0e9;color:#9a3a17;font-size:10px;line-height:1.6}.legal-page section{margin-top:35px}.legal-page h2{font-size:18px}.legal-page section p{margin-top:9px;color:#666;font-size:11px;line-height:1.8}
 @media(max-width:900px){.public-header nav.open{max-height:calc(100dvh - 100px);overflow:auto}.auth-form-side{min-height:100dvh}.landing-dashboard{will-change:auto}}
 @media(max-width:680px){.auth-options{align-items:flex-start;gap:14px}.auth-options label{max-width:52%}.legal-page{padding-inline:20px}.legal-page h1{font-size:38px}.public-footer{gap:32px}.public-footer>small{line-height:1.6}}
+
+/* Landing hero: correções estruturais exclusivas para celulares */
+@media(max-width:767px){
+  .landing{width:100%;max-width:100%;min-height:100vh;min-height:100dvh}
+  .public-header,.public-header.scrolled{
+    left:0;
+    width:100%;
+    max-width:100%;
+    transform:none;
+    padding-left:max(20px,env(safe-area-inset-left));
+    padding-right:max(20px,env(safe-area-inset-right))
+  }
+  .public-header{height:76px}
+  .public-header.scrolled{top:0;border-inline:0;border-radius:0 0 18px 18px}
+  .public-logo{min-width:0;max-width:calc(100% - 56px);flex:0 1 auto}
+  .public-logo .sphexpay-brand{max-width:100%}
+  .public-logo .sphexpay-brand img{max-width:100%;height:auto}
+  .public-menu{flex:0 0 44px;margin-left:auto}
+  .public-header nav{left:max(20px,env(safe-area-inset-left));right:max(20px,env(safe-area-inset-right));width:auto;max-width:none}
+
+  .landing-hero{
+    min-height:100vh;
+    min-height:100dvh;
+    grid-template-columns:minmax(0,1fr);
+    align-content:start;
+    gap:0;
+    overflow:hidden;
+    padding-top:122px;
+    padding-bottom:max(54px,env(safe-area-inset-bottom));
+    padding-left:max(20px,env(safe-area-inset-left));
+    padding-right:max(20px,env(safe-area-inset-right));
+    text-align:center
+  }
+  .landing-hero-copy,.landing-hero-visual{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    margin-inline:auto
+  }
+  .landing-hero-copy>*{max-width:100%;min-width:0}
+  .landing-kicker{
+    width:100%;
+    max-width:100%;
+    justify-content:center;
+    white-space:normal;
+    text-wrap:balance;
+    line-height:1.5
+  }
+  .landing-kicker i{flex:0 0 7px}
+  .landing-hero h1{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    margin:20px auto 17px;
+    font-size:clamp(2.25rem,11vw,3.5rem);
+    line-height:.98;
+    letter-spacing:-.06em;
+    text-align:center;
+    text-wrap:balance;
+    white-space:normal;
+    overflow-wrap:normal
+  }
+  .landing-hero-copy>p{
+    width:100%;
+    max-width:390px;
+    margin-inline:auto;
+    font-size:clamp(12px,3.6vw,15px);
+    line-height:1.65;
+    text-align:center;
+    white-space:normal
+  }
+  .landing-hero-actions{
+    width:100%;
+    max-width:390px;
+    min-width:0;
+    align-items:stretch;
+    flex-direction:column;
+    gap:11px;
+    margin:27px auto 0
+  }
+  .landing-hero-actions>a{
+    width:100%;
+    max-width:100%;
+    min-height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0;
+    padding:12px 18px;
+    text-align:center
+  }
+  .landing-hero-copy>small{
+    width:100%;
+    max-width:390px;
+    margin:17px auto 0;
+    text-align:center
+  }
+  .landing-hero-visual{
+    position:relative;
+    height:auto;
+    margin-top:38px
+  }
+  .landing-dashboard{
+    left:auto;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    height:clamp(265px,82vw,345px);
+    margin:0 auto;
+    transform:none;
+    transform-origin:center;
+    animation:none;
+    border-radius:18px
+  }
+  .landing-dashboard>*{max-width:100%}
+  .landing-dashboard-bar{height:34px;padding-inline:11px}
+  .landing-dashboard-bar>i{width:min(32%,100px);height:14px}
+  .landing-dashboard>aside{display:none}
+  .landing-dashboard>main{min-width:0;padding:14px}
+  .landing-dashboard main>header{min-width:0}
+  .landing-dashboard main>header strong{font-size:clamp(12px,4vw,16px)}
+  .landing-metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+  .landing-metrics article{min-width:0;height:clamp(70px,22vw,94px);padding:9px 7px}
+  .landing-metrics svg{width:12px}
+  .landing-metrics span{margin-top:5px;font-size:6px}
+  .landing-metrics strong{overflow:hidden;margin-top:4px;font-size:clamp(8px,2.8vw,12px);text-overflow:ellipsis;white-space:nowrap}
+  .landing-metrics small{top:8px;right:6px;font-size:5px}
+  .landing-chart{height:clamp(120px,36vw,160px);margin-top:7px;padding:10px}
+  .landing-chart>div strong{font-size:clamp(13px,4vw,18px)}
+  .landing-chart svg{height:calc(100% - 35px);margin-top:4px}
+  .floating-sale{
+    right:8px;
+    bottom:9px;
+    width:min(190px,68%);
+    gap:7px;
+    padding:8px;
+    border-radius:10px;
+    animation:none
+  }
+  .floating-sale>i{width:25px;height:25px;border-radius:8px}
+  .floating-sale b{font-size:7px}
+  .floating-sale small{font-size:5px}
+  .floating-sale strong{font-size:8px}
+  .floating-balance{
+    left:8px;
+    top:45px;
+    width:min(112px,40%);
+    padding:9px;
+    border-radius:10px;
+    animation:none
+  }
+  .floating-balance svg{width:13px}
+  .floating-balance span{margin-top:7px;font-size:5px}
+  .floating-balance strong{font-size:9px}
+  .orb-one{right:0;width:min(100%,420px)}
+  .orb-two{left:0;width:min(80%,300px)}
+  .payment-orbit,.intelligence-orb,.security-visual>div{
+    max-width:100%
+  }
+  .payment-orbit,.intelligence-orb{
+    width:min(100%,330px);
+    aspect-ratio:1;
+    height:auto
+  }
+  .payment-orbit article{
+    left:calc(50% + min(125px,30vw)*cos(calc(var(--index)*72deg)));
+    top:calc(50% + min(125px,30vw)*sin(calc(var(--index)*72deg)))
+  }
+  .security-visual{width:100%;max-width:100%}
+  .security-visual>div{width:min(100%,300px)}
+}
