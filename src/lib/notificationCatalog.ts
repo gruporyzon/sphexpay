@@ -12,12 +12,13 @@ export const notificationTitles:Record<CommerceNotificationType,string>={
  subscription_renewed:'Assinatura renovada!',
  refund_done:'Reembolso realizado!',
  chargeback_received:'Chargeback recebido!',
+ withdrawal_requested:'Saque solicitado com sucesso',
  withdrawal_sent:'Saque enviado!',
  withdrawal_completed:'Saque concluído!',
  payment_refused:'Pagamento recusado!'
 }
 export const notificationRoutes:Record<CommerceNotificationType,string>={
- sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/transacoes',pix_paid:'/app/transacoes',credit_card_approved:'/app/transacoes',boleto_generated:'/app/transacoes',subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',withdrawal_sent:'/app/saques',withdrawal_completed:'/app/saques',payment_refused:'/app/transacoes'
+ sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/transacoes',pix_paid:'/app/transacoes',credit_card_approved:'/app/transacoes',boleto_generated:'/app/transacoes',subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',withdrawal_requested:'/app/saques',withdrawal_sent:'/app/saques',withdrawal_completed:'/app/saques',payment_refused:'/app/transacoes'
 }
 export function formatCommission(value:number|null|undefined,currency:Sale['currency']='BRL'){
  if(value===null||value===undefined||!Number.isFinite(value))return'Sua comissão: —'

@@ -1,7 +1,7 @@
 import {createClient} from 'npm:@supabase/supabase-js@2'
 import webpush from 'npm:web-push@3.6.7'
 
-const titles:Record<string,string>={sale_approved:'Venda aprovada!',sale_pending:'Venda pendente!',pix_generated:'Pix gerado!',pix_paid:'Pix pago!',credit_card_approved:'Pagamento cartão de crédito aprovado!',boleto_generated:'Boleto gerado!',subscription_approved:'Assinatura aprovada!',subscription_renewed:'Assinatura renovada!',refund_done:'Reembolso realizado!',chargeback_received:'Chargeback recebido!',withdrawal_sent:'Saque enviado!',withdrawal_completed:'Saque concluído!',payment_refused:'Pagamento recusado!'}
+const titles:Record<string,string>={sale_approved:'Venda aprovada!',sale_pending:'Venda pendente!',pix_generated:'Pix gerado!',pix_paid:'Pix pago!',credit_card_approved:'Pagamento cartão de crédito aprovado!',boleto_generated:'Boleto gerado!',subscription_approved:'Assinatura aprovada!',subscription_renewed:'Assinatura renovada!',refund_done:'Reembolso realizado!',chargeback_received:'Chargeback recebido!',withdrawal_requested:'Saque solicitado com sucesso',withdrawal_sent:'Saque enviado!',withdrawal_completed:'Saque realizado com sucesso',payment_refused:'Pagamento recusado!'}
 Deno.serve(async request=>{
  if(request.method!=='POST')return new Response('Method not allowed',{status:405})
  const url=Deno.env.get('SUPABASE_URL'),anon=Deno.env.get('SUPABASE_ANON_KEY'),serviceRole=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),publicKey=Deno.env.get('VAPID_PUBLIC_KEY'),privateKey=Deno.env.get('VAPID_PRIVATE_KEY'),subject=Deno.env.get('VAPID_SUBJECT')

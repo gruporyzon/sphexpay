@@ -13,11 +13,11 @@ export interface ChartPoint { label:string; revenue:number; profit:number; sales
 export type AwardRequestStatus='Disponível para solicitar'|'Endereço pendente'|'Solicitação recebida'|'Em preparação'|'Enviada'|'Entregue'
 export interface AwardRequest { id:string; requestedAt:string; status:AwardRequestStatus; address:ShippingAddress; updatedAt:string }
 export interface Achievement { id:string; title:string; target:number; redeemed:boolean; address?:ShippingAddress; request?:AwardRequest; requestHistory?:AwardRequest[] }
-export interface Withdrawal { id:string; amount:number; date:string; status:'Processando'|'Concluído'; account:string }
+export interface Withdrawal { id:string; amount:number; fee?:number; netAmount?:number; currency?:Sale['currency']; date:string; status:'Solicitado'|'Processando'|'Concluído'|'Recusado'|'Cancelado'|'Falhou'; account:string; lastDigits?:string }
 export type NotificationCategory = 'Vendas'|'Financeiro'|'Saques'|'Assinaturas'|'Segurança'|'Sistema'
 export type NotificationKind = 'sale'|'payment'|'subscription'|'withdrawal'|'achievement'|'goal'|'security'|'system'
 export type NotificationPriority='critical'|'high'|'normal'|'low'
-export type CommerceNotificationType='sale_approved'|'sale_pending'|'pix_generated'|'pix_paid'|'credit_card_approved'|'boleto_generated'|'subscription_approved'|'subscription_renewed'|'refund_done'|'chargeback_received'|'withdrawal_sent'|'withdrawal_completed'|'payment_refused'
+export type CommerceNotificationType='sale_approved'|'sale_pending'|'pix_generated'|'pix_paid'|'credit_card_approved'|'boleto_generated'|'subscription_approved'|'subscription_renewed'|'refund_done'|'chargeback_received'|'withdrawal_requested'|'withdrawal_sent'|'withdrawal_completed'|'payment_refused'
 export interface NotificationMetadata { buyer?:string; product?:string; amount?:number; commission?:number|null; currency?:Sale['currency']; method?:PaymentMethod; status?:string; country?:string; eventType?:CommerceNotificationType; source?:'backend'|'local'|'manual'|'test' }
 export interface AppNotification { id:string; kind:NotificationKind; category:NotificationCategory; title:string; description:string; createdAt:string; read:boolean; archived?:boolean; priority?:NotificationPriority; detailPath?:string; metadata?:NotificationMetadata }
 export type NotificationFrequency='realtime'|'1ps'|'2ps'|'5ps'|'5s'|'15s'|'30s'|'60s'|'digest5m'
