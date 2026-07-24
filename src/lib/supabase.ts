@@ -29,5 +29,9 @@ export const supabase = isSupabaseConfigured
       },
     })
   : null;
-export const oauthAvailability={google:isSupabaseConfigured&&import.meta.env.VITE_ENABLE_GOOGLE_OAUTH==='true',apple:isSupabaseConfigured&&import.meta.env.VITE_ENABLE_APPLE_OAUTH==='true'}
-export const authConfiguration={configured:isSupabaseConfigured,google:oauthAvailability.google,apple:oauthAvailability.apple,isDevelopment:import.meta.env.DEV}
+
+export const isSupabaseClientAvailable = Boolean(supabase);
+export const supabaseUnavailableMessage =
+  "A autenticação ainda não foi configurada para este ambiente.";
+export const oauthAvailability={google:isSupabaseClientAvailable&&import.meta.env.VITE_ENABLE_GOOGLE_OAUTH==='true',apple:isSupabaseClientAvailable&&import.meta.env.VITE_ENABLE_APPLE_OAUTH==='true'}
+export const authConfiguration={configured:isSupabaseClientAvailable,google:oauthAvailability.google,apple:oauthAvailability.apple,isDevelopment:import.meta.env.DEV}
