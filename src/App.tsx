@@ -20,11 +20,13 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 import VerifyEmailPage from './pages/auth/VerifyEmailPage'
 import AuthCallbackPage from './pages/auth/AuthCallbackPage'
 import OnboardingPage from './pages/onboarding/OnboardingPage'
+import Showcase from './pages/Showcase'
+import Integrations from './pages/Integrations'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { PublicOnlyRoute } from './routes/PublicOnlyRoute'
 import { SoundProvider } from './providers/SoundProvider'
 
-const modules=[['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['assinaturas',<EditableSubscriptions/>],['clientes',<EditableCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['premiacoes',<AwardsPage/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<EditableCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<AwardsPage/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><Routes>
  <Route path="/" element={<LandingPage/>}/>
  <Route path="/termos" element={<LegalPage type="terms"/>}/>
