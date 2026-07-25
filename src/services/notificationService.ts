@@ -1,15 +1,12 @@
 import { formatCommission,notificationTitles,type CommerceNotificationPayload } from '../lib/notificationCatalog'
-import { pushSubscriptionService,type PushSendResult } from './pushSubscriptionService'
+import { ensureServiceWorker,pushSubscriptionService,type PushSendResult } from './pushSubscriptionService'
 
 export const notificationService={
  async registerWorker(){
   if(!('serviceWorker'in navigator))return undefined
   try{
-   const registration=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'})
+   const registration=await ensureServiceWorker()
    if(import.meta.env.DEV)console.info('[PUSH] Service Worker registered')
-   await registration.update()
-   if(registration.waiting&&navigator.serviceWorker.controller){registration.waiting.postMessage({type:'SKIP_WAITING'})}
-   navigator.serviceWorker.addEventListener('controllerchange',()=>{if(import.meta.env.DEV)console.info('[PUSH] Service Worker controller changed')},{once:true})
    return registration
   }catch(error){if(import.meta.env.DEV)console.warn('[PUSH] Service Worker registration failed',error instanceof Error?error.message:'unknown');return undefined}
  },

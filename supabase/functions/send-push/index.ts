@@ -31,19 +31,23 @@ Deno.serve(async request=>{
  try{webpush.setVapidDetails(subject,publicKey,privateKey)}catch{return Response.json({success:false,code:'VAPID_NOT_CONFIGURED',message:'O servidor de notificações ainda não foi configurado.'},{status:503})}
  const payload=JSON.stringify({eventId,type:input.type,title,body,route,createdAt:input.createdAt||new Date().toISOString()})
  const results=await Promise.allSettled((subscriptions||[]).map(async subscription=>{
-  const {data:existing}=await admin.from('push_delivery_log').select('status').eq('subscription_id',subscription.id).eq('event_id',eventId).maybeSingle()
-  if(existing?.status==='delivered'||existing?.status==='sending')return 'duplicate'
-  await admin.from('push_delivery_log').upsert({user_id:user.id,subscription_id:subscription.id,event_id:eventId,status:'sending',attempted_at:new Date().toISOString(),delivered_at:null},{onConflict:'subscription_id,event_id'})
+  const attemptedAt=new Date().toISOString()
+  const {error:insertError}=await admin.from('push_delivery_log').insert({user_id:user.id,subscription_id:subscription.id,event_id:eventId,status:'sending',attempted_at:attemptedAt})
+  if(insertError){
+   if(insertError.code!=='23505')throw insertError
+   const {data:claimed,error:claimError}=await admin.from('push_delivery_log').update({status:'sending',attempted_at:attemptedAt,delivered_at:null}).eq('subscription_id',subscription.id).eq('event_id',eventId).eq('status','failed').select('id').maybeSingle()
+   if(claimError)throw claimError
+   if(!claimed)return 'duplicate'
+  }
   try{
    await webpush.sendNotification({endpoint:subscription.endpoint,keys:{p256dh:subscription.p256dh,auth:subscription.auth}},payload)
    await admin.from('push_delivery_log').update({status:'delivered',delivered_at:new Date().toISOString()}).eq('subscription_id',subscription.id).eq('event_id',eventId)
    await admin.from('push_subscriptions').update({last_seen_at:new Date().toISOString(),last_success_at:new Date().toISOString(),last_error:null}).eq('id',subscription.id)
    return 'delivered'
   }catch(pushError){
+   const code=(pushError as {statusCode?:number}).statusCode
    await admin.from('push_delivery_log').update({status:'failed'}).eq('subscription_id',subscription.id).eq('event_id',eventId)
    await admin.from('push_subscriptions').update({enabled:code===404||code===410?false:true,last_error:code===404||code===410?'SUBSCRIPTION_EXPIRED':String((pushError as {message?:string}).message||'PUSH_DELIVERY_FAILED').slice(0,180)}).eq('id',subscription.id)
-   const code=(pushError as {statusCode?:number}).statusCode
-   if(code===404||code===410)await admin.from('push_subscriptions').update({enabled:false}).eq('id',subscription.id)
    throw pushError
   }
  }))

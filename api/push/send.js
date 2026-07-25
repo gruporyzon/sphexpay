@@ -23,10 +23,14 @@ export default async function handler(request,response){
  if(!subscriptions?.length)return response.status(404).json({success:false,code:'NO_ACTIVE_SUBSCRIPTIONS',message:'Nenhum dispositivo ativo foi encontrado.',sent:0,failed:0})
  const payload=JSON.stringify({eventId,type,title,body,route:routes[type],createdAt:input.createdAt||new Date().toISOString()})
  const results=await Promise.all(subscriptions.map(async subscription=>{
-  let existing=null
-  try{const result=await supabase.from('push_delivery_log').select('status').eq('subscription_id',subscription.id).eq('event_id',eventId).maybeSingle();existing=result.data}catch{/* Instalações antigas sem o log ainda podem entregar. */}
-  if(existing?.status==='delivered')return'duplicate'
-  try{await supabase.from('push_delivery_log').upsert({user_id:user.id,subscription_id:subscription.id,event_id:eventId,status:'sending',attempted_at:new Date().toISOString()},{onConflict:'subscription_id,event_id'})}catch{/* A entrega continua mesmo se o log opcional estiver indisponível. */}
+  const attemptedAt=new Date().toISOString()
+  const {error:insertError}=await supabase.from('push_delivery_log').insert({user_id:user.id,subscription_id:subscription.id,event_id:eventId,status:'sending',attempted_at:attemptedAt})
+  if(insertError){
+   if(insertError.code!=='23505')return'failed'
+   const {data:claimed,error:claimError}=await supabase.from('push_delivery_log').update({status:'sending',attempted_at:attemptedAt,delivered_at:null}).eq('subscription_id',subscription.id).eq('event_id',eventId).eq('status','failed').select('id').maybeSingle()
+   if(claimError)return'failed'
+   if(!claimed)return'duplicate'
+  }
   try{
    await webpush.sendNotification({endpoint:subscription.endpoint,keys:{p256dh:subscription.p256dh,auth:subscription.auth}},payload)
    await supabase.from('push_subscriptions').update({last_seen_at:new Date().toISOString(),last_success_at:new Date().toISOString(),last_error:null}).eq('id',subscription.id)

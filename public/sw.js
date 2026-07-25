@@ -1,4 +1,4 @@
-const CACHE='sphexpay-shell-v10'
+const CACHE='sphexpay-shell-v11'
 const SHELL=['/','/index.html','/offline.html','/manifest.webmanifest','/branding/sphexpay-logo-96.png','/icons/sphexpay-app-192.png','/icons/sphexpay-app-512.png','/favicon/favicon-32.png']
 const delivered=new Map()
 const icon='/icons/sphexpay-app-192.png'
@@ -14,7 +14,7 @@ const normalizePayload=value=>{
  if(!value||typeof value!=='object')return null
  const source=value
  const eventId=typeof source.eventId==='string'&&source.eventId.trim()?source.eventId.trim():typeof source.id==='string'&&source.id.trim()?source.id.trim():typeof source.tag==='string'&&source.tag.trim()?source.tag.trim():`push-${Date.now()}`
- const title=typeof source.title==='string'&&source.title.trim()?source.title.trim():'Nova notificação'
+ const title=typeof source.title==='string'&&source.title.trim()?source.title.trim():'SphexPay'
  const body=removeGatewayPrefix(typeof source.body==='string'?source.body:'')
  if(!body)return null
  return{eventId,title,body,route:normalizeRoute(source.route),type:typeof source.type==='string'?source.type:'system',tag:typeof source.tag==='string'&&source.tag.trim()?source.tag.trim():eventId}
@@ -28,9 +28,9 @@ const showDevice=async raw=>{
  return true
 }
 const handlePush=async event=>{
- let payload=null
- try{if(event.data){try{payload=event.data.json()}catch{payload={body:event.data.text()}}}}catch{/* Push sem dados será ignorado com segurança. */}
- if(payload)await showDevice(payload)
+ let payload={}
+ try{if(event.data){try{payload=event.data.json()}catch{payload={title:'SphexPay',body:event.data.text()}}}}catch{/* Push sem dados usa o fallback seguro. */}
+ await showDevice(payload)
 }
 self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING'){self.skipWaiting();return}if(event.data?.type==='SHOW_DEVICE_NOTIFICATION')event.waitUntil(showDevice(event.data.payload))})
 self.addEventListener('push',event=>{event.waitUntil(handlePush(event))})

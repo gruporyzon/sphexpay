@@ -2,6 +2,7 @@ import { Check,Landmark,LoaderCircle,ShieldCheck,WalletCards,X } from 'lucide-re
 import { useEffect,useMemo,useRef,useState } from 'react'
 import { Card,PageTitle } from '../components/ui'
 import { withdrawalAmountToMinor,withdrawalMoney,withdrawalService,type LocalBankAccount,type LocalWithdrawal } from '../services/withdrawalService'
+import { pushSubscriptionService } from '../services/pushSubscriptionService'
 import { useAppStore } from '../store/useAppStore'
 import type { Withdrawal } from '../types'
 
@@ -9,14 +10,9 @@ type Confirmation={amountInCents:number;lastDigits:string}
 const toCache=(items:LocalWithdrawal[]):Withdrawal[]=>items.map(item=>({id:item.id,amount:item.amountInCents/100,fee:0,netAmount:item.amountInCents/100,currency:item.currency,date:item.createdAt,status:'Concluído',account:'Conta cadastrada',lastDigits:item.destinationLastDigits}))
 
 const sendWithdrawalNotification=async(withdrawal:LocalWithdrawal)=>{
- if(!('Notification'in window)||Notification.permission!=='granted'||!('serviceWorker'in navigator))return false
- try{
-  const registration=await navigator.serviceWorker.ready
-  const payload={id:crypto.randomUUID(),title:'Saque realizado com sucesso',body:`Valor enviado: ${withdrawalMoney(withdrawal.amountInCents)}`,route:'/app/saques',tag:`withdrawal-${withdrawal.id}`}
-  if(registration.active){registration.active.postMessage({type:'SHOW_DEVICE_NOTIFICATION',payload});return true}
-  await registration.showNotification(payload.title,{body:payload.body,icon:'/icons/sphexpay-app-192.png',badge:'/branding/sphexpay-logo-96.png',tag:payload.tag,silent:false,data:{route:payload.route}})
-  return true
- }catch{return false}
+ if(!('Notification'in window)||Notification.permission!=='granted')return false
+ const result=await pushSubscriptionService.send({eventId:`withdrawal-${withdrawal.id}`,type:'withdrawal_completed',title:'Saque realizado com sucesso',body:`Valor enviado: ${withdrawalMoney(withdrawal.amountInCents)}`,route:'/app/saques',createdAt:withdrawal.createdAt,currency:withdrawal.currency})
+ return result.ok
 }
 
 export default function WithdrawalsPage(){
