@@ -18,8 +18,15 @@ create table if not exists public.push_delivery_log (
 
 create index if not exists push_delivery_log_user_id_idx on public.push_delivery_log(user_id);
 alter table public.push_delivery_log enable row level security;
+alter table public.push_delivery_log force row level security;
+
+revoke all on table public.push_delivery_log from anon;
+revoke insert, update, delete on table public.push_delivery_log from authenticated;
+grant select on table public.push_delivery_log to authenticated;
+grant select, insert, update, delete on table public.push_delivery_log to service_role;
 
 drop policy if exists "push_delivery_log_select_own" on public.push_delivery_log;
 create policy "push_delivery_log_select_own"
 on public.push_delivery_log for select
+to authenticated
 using (auth.uid() = user_id);
