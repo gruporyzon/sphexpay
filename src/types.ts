@@ -10,6 +10,8 @@ export interface Product { id:string; name:string; description:string; price:num
 export interface Customer { id:string; name:string; email:string; phone:string; country:string; spent:number; purchases:number; lastPurchase:string; products:string[]; status:'Ativo'|'Inativo' }
 export interface Subscription { id:string; customer:string; plan:string; status:'Ativa'|'Cancelada'|'Inadimplente'|'Período gratuito'; amount:number; nextCharge:string }
 export interface ChartPoint { label:string; revenue:number; profit:number; sales:number }
+export interface DashboardKpis { revenue:number; sales:number; ticket:number; goal:number; progress:number; approval:number; pending:number; profit:number; growth:number }
+export interface DashboardScenario extends DashboardKpis { preset:PeriodPreset; updatedAt:string }
 export type AwardRequestStatus='Disponível para solicitar'|'Endereço pendente'|'Solicitação recebida'|'Em preparação'|'Enviada'|'Entregue'
 export interface AwardRequest { id:string; requestedAt:string; status:AwardRequestStatus; address:ShippingAddress; updatedAt:string }
 export interface Achievement { id:string; title:string; target:number; redeemed:boolean; address?:ShippingAddress; request?:AwardRequest; requestHistory?:AwardRequest[] }
@@ -25,4 +27,4 @@ export interface NotificationPreferences { internal:boolean; device:boolean; sal
 export interface AssistantPreferences { microphone:boolean; readAloud:boolean; voice:string; voiceGender:'female'|'male'|'auto'; language:string; speechRate:number; pitch:number; volume:number; interruptOnSend:boolean; autoSendVoice:boolean }
 export interface SalesPreferences { automaticUpdates:boolean; updateFrequency:number; saleSound:boolean; showNotifications:boolean; recentCount:number }
 export interface AppPreferences { notifications:NotificationPreferences; assistant:AssistantPreferences; sales:SalesPreferences }
-export interface DemoState { storageVersion:number; revenue:number; available:number; pending:number; goal:number; period:PeriodFilter; sales:Sale[]; products:Product[]; customers:Customer[]; subscriptions:Subscription[]; chart:ChartPoint[]; achievements:Achievement[]; withdrawals:Withdrawal[]; notifications:AppNotification[]; preferences:AppPreferences; liveSales:boolean; theme:Theme }
+export interface DemoState { storageVersion:number; revenue:number; available:number; pending:number; goal:number; period:PeriodFilter; dashboardScenario?:DashboardScenario; sales:Sale[]; products:Product[]; customers:Customer[]; subscriptions:Subscription[]; chart:ChartPoint[]; achievements:Achievement[]; withdrawals:Withdrawal[]; notifications:AppNotification[]; preferences:AppPreferences; liveSales:boolean; theme:Theme }

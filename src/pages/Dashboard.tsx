@@ -1,18 +1,98 @@
-import { useMemo,useState } from 'react'
+import { useEffect,useMemo,useRef,useState } from 'react'
 import { ArrowDownRight,ArrowUpRight,BadgeDollarSign,CircleDollarSign,CreditCard,Filter,Percent,ReceiptText,RefreshCcw,RotateCcw,ShieldAlert,Wallet } from 'lucide-react'
-import { Avatar,Card,PageTitle,StatusBadge } from '../components/ui'
-import { money,shortDate } from '../lib/utils'
+import { Avatar,Card,PageTitle } from '../components/ui'
+import { money } from '../lib/utils'
 import { useDemoStore } from '../store/useDemoStore'
-import type { ChartPoint } from '../types'
-import { EditableValue } from '../components/common/EditableValue'
+import type { DashboardKpis } from '../types'
 import { chartForPeriod,filterSales,periodRatio,smartMetrics } from '../services/analyticsService'
-import { DateRangeFilter } from '../components/dashboard/DateRangeFilter'
 import { NextAwardCard } from '../components/dashboard/NextAwardCard'
 import { OverviewHeroCarousel } from '../components/dashboard/OverviewHeroCarousel'
-import { PerformanceChart } from '../components/dashboard/PerformanceChart'
+import { DashboardScenarioEditor } from '../components/dashboard/DashboardScenarioEditor'
+import { periodRevenueLabel } from '../lib/dashboardIntelligence'
+import { PremiumStatCard,type PremiumStat } from '../components/dashboard/PremiumStatCard'
+import { RevenueSection,type PerformanceMetric } from '../components/dashboard/RevenueSection'
+import { LiveSalesSkeleton,LiveSalesTicker } from '../components/dashboard/LiveSalesTicker'
+import { DemoModeBadge } from '../components/dashboard/DemoModeBadge'
+import { getDashboardDataMode,selectDashboardSales } from '../services/dashboardDataSource'
 
-export default function Dashboard(){const s=useDemoStore(),[metric,setMetric]=useState<keyof Pick<ChartPoint,'revenue'|'profit'|'sales'>>('revenue'),[typeFilter,setTypeFilter]=useState('Todos'),[productFilter,setProductFilter]=useState('Todos'),[updated,setUpdated]=useState('Agora'),periodSales=useMemo(()=>filterSales(s.sales,s.period).filter(sale=>(typeFilter==='Todos'||sale.method===typeFilter)&&(productFilter==='Todos'||sale.product===productFilter)),[s.sales,s.period,typeFilter,productFilter]),calculated=useMemo(()=>smartMetrics(periodSales,s.subscriptions.filter(item=>item.status==='Ativa').length),[periodSales,s.subscriptions]),visibleChart=useMemo(()=>chartForPeriod(s.chart,s.period),[s.chart,s.period]),ratio=useMemo(()=>periodRatio(s.chart,s.period),[s.chart,s.period]),periodRevenue=calculated.revenue||s.revenue*ratio,periodPending=calculated.pending||s.pending*ratio,chartTotal=useMemo(()=>visibleChart.reduce((sum,point)=>sum+point[metric],0),[visibleChart,metric]),previousTotal=useMemo(()=>s.chart.slice(Math.max(0,s.chart.length-visibleChart.length*2),Math.max(0,s.chart.length-visibleChart.length)).reduce((sum,point)=>sum+point[metric],0),[s.chart,visibleChart.length,metric]),growth=previousTotal?(chartTotal-previousTotal)/previousTotal*100:12.8,recurringRevenue=s.subscriptions.filter(item=>item.status==='Ativa').reduce((sum,item)=>sum+item.amount,0)
- const metrics=[['Faturamento total',money(periodRevenue),`${Math.abs(growth).toFixed(1)}%`,CircleDollarSign,growth>=0],['Saldo disponível',money(s.available),'8,4%',Wallet,true],['Saldo pendente',money(periodPending),'3,2%',BadgeDollarSign,true],['Total de vendas',String(calculated.total),'6,7%',ReceiptText,true],['Ticket médio',money(calculated.ticket),'2,1%',CreditCard,true],['Taxa de aprovação',`${calculated.approval.toFixed(1)}%`,'1,4%',Percent,true],['Assinaturas ativas',String(calculated.recurring),'9,2%',RotateCcw,true],['Receita recorrente',money(recurringRevenue),'5,4%',RotateCcw,true],['Reembolsos',String(calculated.refunds),'0,8%',ArrowDownRight,false],['Chargebacks','0','0,0%',ShieldAlert,true]] as const
- const paymentMethods=['Pix','Cartão de crédito','Boleto','Assinatura','Link de pagamento'],paymentStats=paymentMethods.map(method=>{const rows=periodSales.filter(sale=>sale.method===method),total=rows.reduce((sum,sale)=>sum+(sale.status==='Aprovado'?sale.amount:0),0),approved=rows.filter(sale=>sale.status==='Aprovado').length;return{method,total,approved,count:rows.length,share:periodSales.length?rows.length/periodSales.length*100:0}}),topProducts=[...s.products].sort((a,b)=>b.revenue-a.revenue).slice(0,4)
- return <div className="page-enter dashboard-page"><OverviewHeroCarousel/><PageTitle title="Visão geral" subtitle="Acompanhe a performance da sua operação financeira." action={<EditableValue label="Meta de faturamento" value={s.goal} currency onSave={goal=>s.updateMetrics({goal})}/>}/><Card className="dashboard-filter-bar"><div className="dashboard-filter-title"><Filter size={16}/><div><b>Filtros do painel</b><span>Personalize a leitura dos seus dados</span></div></div><label><span>Tipo</span><select value={typeFilter} onChange={event=>setTypeFilter(event.target.value)}><option>Todos</option>{['Pix','Cartão de crédito','Boleto','Assinatura'].map(value=><option key={value}>{value}</option>)}</select></label><label><span>Produtos</span><select value={productFilter} onChange={event=>setProductFilter(event.target.value)}><option>Todos</option>{s.products.map(product=><option key={product.id}>{product.name}</option>)}</select></label><label><span>Período</span><select value={s.period.preset} onChange={event=>s.setPeriod({...s.period,preset:event.target.value as typeof s.period.preset})}><option value="today">Hoje</option><option value="7d">Últimos 7 dias</option><option value="30d">Últimos 30 dias</option><option value="month">Este mês</option><option value="lastMonth">Mês passado</option><option value="custom">Personalizado</option></select></label><button className="btn dashboard-refresh" onClick={()=>setUpdated('Atualizado agora')}><RefreshCcw size={15}/> Atualizar <small>{updated}</small></button></Card><NextAwardCard/><section className="dashboard-metrics" aria-label="Indicadores financeiros">{metrics.map(([label,value,delta,Icon,up],index)=><Card key={label} className={`metric-card ${index<3?'metric-card-featured':''}`}><div className="metric-card-top"><div className="metric-icon"><Icon size={index<3?19:17} strokeWidth={1.8}/></div><span className={`metric-delta ${up?'metric-up':'metric-down'}`}>{up?<ArrowUpRight size={13}/>:<ArrowDownRight size={13}/>} {delta}</span></div><div className="metric-copy"><p className="metric-value">{value}{index<3&&<EditableValue label={label} value={index===0?s.revenue:index===1?s.available:s.pending} currency onSave={next=>s.updateMetrics(index===0?{revenue:next}:index===1?{available:next}:{pending:next})}/>}</p><p className="metric-label">{label}</p></div>{index===0&&<div className="metric-glow"/>}</Card>)}</section><section className="dashboard-content"><Card className="revenue-card"><div className="revenue-header"><div className="min-w-0"><div className="section-eyebrow"><span/> Desempenho financeiro</div><div className="revenue-total-row"><p className="revenue-total">{metric==='sales'?chartTotal.toLocaleString('pt-BR'):money(chartTotal)}</p><span className={`revenue-change ${growth<0?'negative':''}`}>{growth>=0?<ArrowUpRight size={14}/>:<ArrowDownRight size={14}/>} {Math.abs(growth).toFixed(1)}%</span></div><p className="revenue-caption">Acumulado no período selecionado</p></div><div className="chart-header-actions"><div className="metric-switch" role="group" aria-label="Métrica do gráfico">{([['revenue','Receita'],['profit','Lucro'],['sales','Vendas']] as const).map(([key,label])=><button type="button" key={key} className={metric===key?'active':''} onClick={()=>setMetric(key)}>{label}</button>)}<EditableValue label="Último ponto do gráfico" value={s.chart.at(-1)?.revenue||0} currency onSave={value=>s.updateChart(s.chart.length-1,value)}/></div><DateRangeFilter/></div></div><PerformanceChart data={visibleChart} metric={metric}/></Card><Card className="sales-card"><div className="sales-header"><div><h2>Últimas vendas</h2><p>Atualização {s.liveSales?'ao vivo':'pausada'}</p></div><span className={`live-indicator ${!s.liveSales?'paused':''}`}><i/> {s.liveSales?'Live':'Pausado'}</span></div><div className="sales-list scrollbar">{periodSales.slice(0,s.preferences.sales.recentCount).map((sale,index)=><article key={sale.id} className={`sale-row ${index===0?'sale-enter':''}`}><Avatar name={sale.customer}/><div className="sale-content"><div className="sale-primary"><p>{sale.customer}</p><strong>{money(sale.amount,sale.currency)}</strong></div><div className="sale-secondary"><span>{sale.product}</span><span>{sale.method}</span></div><div className="sale-meta"><StatusBadge status={sale.status}/><span>{shortDate(sale.date)} · {sale.country}</span></div></div></article>)}</div></Card></section><section className="dashboard-insight-grid"><Card><div className="insight-heading"><div><span className="section-eyebrow"><Wallet size={13}/> MEIOS DE PAGAMENTO</span><h2>Desempenho por canal</h2></div><span className="insight-caption">Participação no período</span></div><div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count} transações · {item.approved} aprovadas</span></div><div className="payment-bar"><i style={{width:`${Math.max(3,item.share)}%`}}/></div><strong>{item.total?money(item.total):'—'}</strong></div>)}</div></Card><Card><div className="insight-heading"><div><span className="section-eyebrow"><ArrowUpRight size={13}/> PERFORMANCE</span><h2>Produtos em destaque</h2></div></div><div className="dashboard-product-list">{topProducts.map((product,index)=><div key={product.id}><span>{String(index+1).padStart(2,'0')}</span><div><b>{product.name}</b><small>{product.sales} vendas · {money(product.price)}</small></div><strong>{money(product.revenue)}</strong></div>)}</div></Card></section><section className="dashboard-bottom-grid"><Card><div className="insight-heading"><div><span className="section-eyebrow"><UsersIcon/> RELACIONAMENTO</span><h2>Top compradores</h2></div></div><div className="dashboard-buyers">{s.customers.slice(0,4).map(customer=><div key={customer.id}><Avatar name={customer.name}/><span><b>{customer.name}</b><small>{customer.purchases} compras</small></span><strong>{money(customer.spent)}</strong></div>)}</div></Card><Card className="dashboard-alert-card"><div className="insight-heading"><div><span className="section-eyebrow"><ShieldAlert size={13}/> INTELIGÊNCIA</span><h2>Insights rápidos</h2></div></div><p><b>O Pix lidera sua operação.</b> Concentre campanhas nos produtos com maior aprovação para acelerar o próximo ciclo.</p><p><b>Receita recorrente em alta.</b> Suas assinaturas ativas representam {money(recurringRevenue)} por ciclo.</p></Card></section></div>}
-function UsersIcon(){return <span className="insight-users-icon">●</span>}
+type MetricKey=PerformanceMetric
+
+const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
+const metricFormat=(format:PremiumStat['format'])=>(value:number)=>format==='money'?money(value):format==='percent'?`${value.toFixed(1)}%`:number(value)
+
+export default function Dashboard(){
+ const state=useDemoStore()
+ const [metric,setMetric]=useState<MetricKey>('revenue')
+ const [typeFilter,setTypeFilter]=useState('Todos')
+ const [productFilter,setProductFilter]=useState('Todos')
+ const [updated,setUpdated]=useState('Agora')
+ const [refreshing,setRefreshing]=useState(false)
+ const refreshTimer=useRef<number|undefined>(undefined)
+ const mode=getDashboardDataMode()
+ const sourceSales=selectDashboardSales(state.sales,mode)
+ useEffect(()=>()=>{if(refreshTimer.current)window.clearTimeout(refreshTimer.current)},[])
+ const periodSales=useMemo(()=>filterSales(sourceSales,state.period).filter(sale=>(typeFilter==='Todos'||sale.method===typeFilter)&&(productFilter==='Todos'||sale.product===productFilter)),[sourceSales,state.period,typeFilter,productFilter])
+ const activeSubscriptions=mode==='demo'?state.subscriptions.filter(item=>item.status==='Ativa'):[]
+ const calculated=useMemo(()=>smartMetrics(periodSales,activeSubscriptions.length),[periodSales,activeSubscriptions.length])
+ const visibleChart=useMemo(()=>chartForPeriod(state.chart,state.period).map(point=>mode==='demo'?point:{...point,revenue:0,profit:0,sales:0}),[state.chart,state.period,mode])
+ const ratio=useMemo(()=>periodRatio(state.chart,state.period),[state.chart,state.period])
+ const chartTotal=useMemo(()=>visibleChart.reduce((sum,point)=>sum+point[metric],0),[visibleChart,metric])
+ const previousTotal=useMemo(()=>mode==='production'?0:state.chart.slice(Math.max(0,state.chart.length-visibleChart.length*2),Math.max(0,state.chart.length-visibleChart.length)).reduce((sum,point)=>sum+point[metric],0),[state.chart,visibleChart.length,metric,mode])
+ const chartGrowth=previousTotal?(chartTotal-previousTotal)/previousTotal*100:12.8
+ const manual=mode==='demo'&&state.dashboardScenario?.preset===state.period.preset?state.dashboardScenario:undefined
+ const baseline:DashboardKpis=useMemo(()=>{
+  const revenue=calculated.revenue||(mode==='demo'?state.revenue*ratio:0)
+  const sales=calculated.total||Math.max(1,Math.round(revenue/Math.max(1,calculated.ticket||380)))
+  const ticket=sales?revenue/sales:0
+  const goal=state.goal
+  return{revenue,sales:revenue?sales:0,ticket,goal,progress:Math.min(100,revenue/Math.max(1,goal)*100),approval:calculated.approval||(mode==='demo'?96.8:0),pending:calculated.pending||(mode==='demo'?state.pending*ratio:0),profit:revenue*.72,growth:revenue?chartGrowth:0}
+ },[calculated,state.revenue,state.pending,state.goal,ratio,chartGrowth,mode])
+ const kpis=manual??baseline
+ const recurringRevenue=activeSubscriptions.reduce((sum,item)=>sum+item.amount,0)
+ const revenueLabel=periodRevenueLabel(state.period)
+ const metrics:PremiumStat[]=[
+  {label:revenueLabel,value:kpis.revenue,format:'money',delta:kpis.growth,icon:CircleDollarSign,featured:true},
+  {label:'Saldo disponível',value:mode==='demo'?state.available:0,format:'money',delta:8.4,icon:Wallet,featured:true},
+  {label:'Saldo pendente',value:kpis.pending,format:'money',delta:3.2,icon:BadgeDollarSign,featured:true},
+  {label:'Total de vendas',value:kpis.sales,format:'number',delta:6.7,icon:ReceiptText},
+  {label:'Ticket médio',value:kpis.ticket,format:'money',delta:2.1,icon:CreditCard},
+  {label:'Taxa de aprovação',value:kpis.approval,format:'percent',delta:1.4,icon:Percent},
+  {label:'Assinaturas ativas',value:calculated.recurring,format:'number',delta:9.2,icon:RotateCcw},
+  {label:'Receita recorrente',value:recurringRevenue,format:'money',delta:5.4,icon:RotateCcw},
+  {label:'Reembolsos',value:calculated.refunds,format:'number',delta:-.8,icon:ArrowDownRight},
+  {label:'Chargebacks',value:0,format:'number',delta:0,icon:ShieldAlert}
+ ]
+ const paymentMethods=['Pix','Cartão de crédito','Boleto','Assinatura','Link de pagamento']
+ const paymentStats=paymentMethods.map(method=>{const rows=periodSales.filter(sale=>sale.method===method),total=rows.reduce((sum,sale)=>sum+(sale.status==='Aprovado'?sale.amount:0),0),approved=rows.filter(sale=>sale.status==='Aprovado').length;return{method,total,approved,count:rows.length,share:periodSales.length?rows.length/periodSales.length*100:0}})
+ const topProducts=mode==='demo'?[...state.products].sort((a,b)=>b.revenue-a.revenue).slice(0,4):[]
+ const displayedTotal=metric==='revenue'?kpis.revenue:metric==='profit'?kpis.profit:kpis.sales
+ const refresh=()=>{setRefreshing(true);setUpdated('Sincronizando');if(refreshTimer.current)window.clearTimeout(refreshTimer.current);refreshTimer.current=window.setTimeout(()=>{setRefreshing(false);setUpdated('Atualizado agora')},520)}
+
+ return <div className="page-enter dashboard-page">
+  <OverviewHeroCarousel/>
+  <PageTitle title="Visão geral" subtitle="Performance, ritmo de vendas e decisões em uma visão executiva." action={<div className="dashboard-header-actions"><DemoModeBadge mode={mode}/>{mode==='demo'&&<DashboardScenarioEditor kpis={kpis} onSave={changes=>state.applyDashboardScenario(kpis,changes,state.period)}/>}</div>}/>
+  <Card className="dashboard-filter-bar">
+   <div className="dashboard-filter-title"><Filter size={16}/><div><b>Leitura do painel</b><span>Refine os indicadores da operação</span></div></div>
+   <label><span>Tipo</span><select value={typeFilter} onChange={event=>setTypeFilter(event.target.value)}><option>Todos</option>{['Pix','Cartão de crédito','Boleto','Assinatura'].map(value=><option key={value}>{value}</option>)}</select></label>
+   <label><span>Produtos</span><select value={productFilter} onChange={event=>setProductFilter(event.target.value)}><option>Todos</option>{(mode==='demo'?state.products:[]).map(product=><option key={product.id}>{product.name}</option>)}</select></label>
+   <label><span>Período</span><select value={state.period.preset} onChange={event=>state.setPeriod({...state.period,preset:event.target.value as typeof state.period.preset})}><option value="today">Hoje</option><option value="7d">Últimos 7 dias</option><option value="30d">Últimos 30 dias</option><option value="month">Este mês</option><option value="lastMonth">Mês passado</option><option value="custom">Personalizado</option></select></label>
+   <button className="btn dashboard-refresh" onClick={refresh} disabled={refreshing}><RefreshCcw className={refreshing?'spin':''}/> Atualizar <small>{updated}</small></button>
+  </Card>
+  <NextAwardCard currentRevenue={mode==='demo'?state.revenue:0}/>
+  <section className={`dashboard-metrics ${refreshing?'is-loading':''}`} aria-label="Indicadores financeiros">
+   {metrics.map((stat,index)=><PremiumStatCard key={stat.label} stat={stat} index={index} refreshing={refreshing} format={metricFormat(stat.format)} onRevenueEdit={mode==='demo'?revenue=>state.applyDashboardScenario(kpis,{revenue},state.period):undefined}/>)}
+  </section>
+  <section className="dashboard-content">
+   <RevenueSection label={revenueLabel} total={displayedTotal} growth={kpis.growth} manual={Boolean(manual)} data={visibleChart} metric={metric} refreshing={refreshing} onMetric={value=>setMetric(value)} onChartPoint={value=>state.updateChart(state.chart.length-1,value)}/>
+   {refreshing?<LiveSalesSkeleton/>:<LiveSalesTicker sales={periodSales} live={mode==='demo'&&state.liveSales} limit={state.preferences.sales.recentCount} mode={mode} onToggle={mode==='demo'?()=>state.setLiveSales(!state.liveSales):undefined}/>}
+  </section>
+  <section className="dashboard-insight-grid">
+   <Card><div className="insight-heading"><div><span className="section-eyebrow"><Wallet/> MEIOS DE PAGAMENTO</span><h2>Desempenho por canal</h2></div><span className="insight-caption">Participação no período</span></div><div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count} transações · {item.approved} aprovadas</span></div><div className="payment-bar"><i style={{width:`${Math.max(3,item.share)}%`}}/></div><strong>{item.total?money(item.total):'—'}</strong></div>)}</div></Card>
+   <Card><div className="insight-heading"><div><span className="section-eyebrow"><ArrowUpRight/> PERFORMANCE</span><h2>Produtos em destaque</h2></div></div><div className="dashboard-product-list">{topProducts.map((product,index)=><div key={product.id}><span>{String(index+1).padStart(2,'0')}</span><div><b>{product.name}</b><small>{product.sales} vendas · {money(product.price)}</small></div><strong>{money(product.revenue)}</strong></div>)}</div></Card>
+  </section>
+  <section className="dashboard-bottom-grid">
+   <Card><div className="insight-heading"><div><span className="section-eyebrow"><i/> RELACIONAMENTO</span><h2>Top compradores</h2></div></div><div className="dashboard-buyers">{(mode==='demo'?state.customers:[]).slice(0,4).map(customer=><div key={customer.id}><Avatar name={customer.name}/><span><b>{customer.name}</b><small>{customer.purchases} compras</small></span><strong>{money(customer.spent)}</strong></div>)}</div></Card>
+   <Card className="dashboard-alert-card"><div className="insight-heading"><div><span className="section-eyebrow"><ShieldAlert/> INTELIGÊNCIA</span><h2>Insights rápidos</h2></div></div><p><b>{kpis.progress>=100?'Meta do período alcançada.':`${kpis.progress.toFixed(1)}% da meta concluída.`}</b> {kpis.progress>=100?'O cenário atual superou o objetivo configurado.':`${money(Math.max(0,kpis.goal-kpis.revenue))} separam a operação da meta.`}</p><p><b>Receita recorrente em destaque.</b> As assinaturas ativas representam {money(recurringRevenue)} por ciclo.</p></Card>
+ </section>
+ </div>
+}

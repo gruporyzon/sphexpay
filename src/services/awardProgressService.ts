@@ -1,2 +1,4 @@
 import type { Achievement } from '../types'
+import { awardProgress } from '../lib/dashboardIntelligence'
+export function nextAwardProgress(revenue:number,achievements:Achievement[]){const next=achievements.find(item=>revenue<item.target),complete=!next,current=revenue;if(!next)return{next:undefined,complete:true,progress:100,current,remaining:0};return{next,complete,current,...awardProgress(revenue,next.target)}}
 export function awardJourneyProgress(revenue:number,achievements:Achievement[]){if(!achievements.length)return 0;const reached=achievements.filter(item=>revenue>=item.target).length;if(reached>=achievements.length)return 100;const next=achievements[reached],previous=reached?achievements[reached-1].target:0,segment=Math.max(1,next.target-previous),within=Math.max(0,Math.min(1,(revenue-previous)/segment));return((reached+within)/achievements.length)*100}

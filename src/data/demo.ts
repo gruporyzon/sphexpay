@@ -47,8 +47,10 @@ export const initialData:DemoState={
  withdrawals:[]
 }
 
-export const newLiveSale=():DemoState['sales'][number]=>{
+const seeded=(seed:number)=>{let value=seed|0;return()=>{value=Math.imul(value^value>>>15,1|value);value^=value+Math.imul(value^value>>>7,61|value);return((value^value>>>14)>>>0)/4294967296}}
+export const newLiveSale=(seed=Date.now()):DemoState['sales'][number]=>{
+ const random=seeded(seed)
  const names=['Camila Rocha','Diego Santos','Emily Johnson','Alejandro Ruiz','Claire Dubois','Marta Rossi']; const countries=['Brasil','Brasil','Estados Unidos','Espanha','França','Itália'];
- const i=Math.floor(Math.random()*names.length),amounts=[497,697,89,249,189,229],currencies=(['BRL','BRL','USD','EUR','EUR','EUR'] as const),statuses=(['Aprovado','Aprovado','Pendente','Em análise','Recusado'] as const),status=statuses[Math.floor(Math.random()*statuses.length)]
- return {id:`SPX-${Date.now().toString(36)}-${crypto.randomUUID?.().slice(0,6)||Math.random().toString(36).slice(2,8)}`,customer:names[i],email:'cliente@example.local',product:['Growth Club','Creator Lab','Growth Club','Global Masterclass','Global Masterclass','Creator Lab'][i],amount:amounts[i],currency:currencies[i],method:(['Pix','Cartão de crédito','Assinatura','Cartão de crédito','Cartão de crédito','Boleto'] as const)[i],status,date:new Date().toISOString(),country:countries[i],fee:status==='Aprovado'?amounts[i]*.03:0}
+ const i=Math.floor(random()*names.length),amounts=[497,697,89,249,189,229],currencies=(['BRL','BRL','USD','EUR','EUR','EUR'] as const),statuses=(['Aprovado','Aprovado','Aprovado','Pendente','Em análise','Recusado'] as const),status=statuses[Math.floor(random()*statuses.length)]
+ return {id:`SPX-${seed.toString(36)}-${Math.floor(random()*1679616).toString(36).padStart(4,'0')}`,customer:names[i],email:'cliente@example.local',product:['Growth Club','Creator Lab','Growth Club','Global Masterclass','Global Masterclass','Creator Lab'][i],amount:amounts[i],currency:currencies[i],method:(['Pix','Cartão de crédito','Assinatura','Cartão de crédito','Cartão de crédito','Boleto'] as const)[i],status,date:new Date(seed).toISOString(),country:countries[i],fee:status==='Aprovado'?amounts[i]*.03:0}
 }
