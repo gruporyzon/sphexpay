@@ -1,6 +1,10 @@
 import { afterEach,describe,expect,it,vi } from 'vitest'
+const {createClientMock}=vi.hoisted(()=>({createClientMock:vi.fn()}))
+vi.mock('@supabase/supabase-js',()=>({createClient:createClientMock}))
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
 import healthHandler from '../../api/push/health.js'
+// @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
+import { pushConfiguration } from '../../api/push/config.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
 import sendHandler from '../../api/push/send.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
@@ -18,15 +22,43 @@ function response(){
 }
 
 describe('backend de Push',()=>{
- afterEach(()=>vi.unstubAllEnvs())
+ afterEach(()=>{vi.unstubAllEnvs();vi.clearAllMocks()})
 
- it('informa separadamente a configuração VAPID e do armazenamento',()=>{
-  vi.stubEnv('VAPID_PUBLIC_KEY','public')
-  vi.stubEnv('VAPID_PRIVATE_KEY','private')
-  vi.stubEnv('VAPID_SUBJECT','mailto:push@sphexpay.com')
+ const configureVapid=()=>{
+  vi.stubEnv('VAPID_PUBLIC_KEY',Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:index)).toString('base64url'))
+  vi.stubEnv('VAPID_PRIVATE_KEY',Buffer.from(Uint8Array.from({length:32},(_,index)=>index+1)).toString('base64url'))
+  vi.stubEnv('VAPID_SUBJECT','mailto:suporte@sphexpay.com')
+ }
+
+ it('valida publicKey P-256 de 65 bytes e privateKey de 32 bytes',()=>{
+  configureVapid()
+  expect(pushConfiguration().vapidConfigured).toBe(true)
+  vi.stubEnv('VAPID_PRIVATE_KEY','invalid')
+  expect(pushConfiguration().vapidConfigured).toBe(false)
+ })
+
+ it('recusa padding, espaços e quebras de linha nas variáveis VAPID',()=>{
+  configureVapid()
+  vi.stubEnv('VAPID_PUBLIC_KEY',`${process.env.VAPID_PUBLIC_KEY}=`)
+  expect(pushConfiguration().vapidConfigured).toBe(false)
+  configureVapid()
+  vi.stubEnv('VAPID_PRIVATE_KEY',` ${process.env.VAPID_PRIVATE_KEY}`)
+  expect(pushConfiguration().vapidConfigured).toBe(false)
+  configureVapid()
+  vi.stubEnv('VAPID_SUBJECT','mailto:suporte@sphexpay.com\n')
+  expect(pushConfiguration().vapidConfigured).toBe(false)
+ })
+
+ it('informa separadamente VAPID, armazenamento e envio sem depender de subscription',()=>{
+  configureVapid()
   const output=response()
   healthHandler({method:'GET'},output)
-  expect(output.result).toEqual({statusCode:200,body:{success:true,configured:false,vapidConfigured:true,storageConfigured:false}})
+  expect(output.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,storageCode:'SUPABASE_SERVER_CREDENTIALS_MISSING'}})
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const configuredOutput=response()
+  healthHandler({method:'GET'},configuredOutput)
+  expect(configuredOutput.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true}})
  })
 
  it('bloqueia métodos não permitidos nas rotas de cadastro e envio',async()=>{
@@ -40,6 +72,30 @@ describe('backend de Push',()=>{
  it('não inicia envio real sem configuração VAPID e armazenamento',async()=>{
   const output=response()
   await sendHandler({method:'POST'},output)
-  expect(output.result).toEqual({statusCode:503,body:{success:false,code:'VAPID_NOT_CONFIGURED',message:'O servidor de notificações ainda não foi configurado.'}})
+  expect(output.result).toEqual({statusCode:503,body:{success:false,code:'VAPID_NOT_CONFIGURED',message:'As chaves do servidor de notificações não foram configuradas corretamente.'}})
+ })
+
+ it('informa credenciais server-side ausentes sem usar chave publicável',async()=>{
+  configureVapid()
+  vi.stubEnv('VITE_SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY','public-client-key')
+  const output=response()
+  await sendHandler({method:'POST'},output)
+  expect(output.result.body).toEqual({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'As credenciais server-side do armazenamento ainda não foram configuradas.'})
+ })
+
+ it('registra no Supabase com upsert por endpoint para prevenir duplicidade',async()=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const single=vi.fn(async()=>({data:{id:'device-1'},error:null}))
+  const select=vi.fn(()=>({single}))
+  const upsert=vi.fn(()=>({select}))
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}}}))},from:vi.fn(()=>({upsert}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{subscription:{endpoint:'https://push.example/device',keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value'}},deviceName:'MacBook'}},output)
+  expect(output.result.statusCode).toBe(200)
+  expect(client.from).toHaveBeenCalledWith('push_subscriptions')
+  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',endpoint:'https://push.example/device',enabled:true}),{onConflict:'endpoint'})
  })
 })

@@ -1,16 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
+import { serviceRoleKey, supabaseUrl } from './config.js'
 
-const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}})
-const supabaseUrl=()=>process.env.SUPABASE_URL||process.env.VITE_SUPABASE_URL
-const storageConfigured=()=>Boolean(supabaseUrl()&&process.env.SUPABASE_SERVICE_ROLE_KEY)
+const storageConfigured=()=>Boolean(supabaseUrl()&&serviceRoleKey())
 const clean=value=>typeof value==='string'?value.trim():''
-const getClient=()=>createClient(supabaseUrl(),process.env.SUPABASE_SERVICE_ROLE_KEY)
+const getClient=()=>createClient(supabaseUrl(),serviceRoleKey())
 async function authenticate(request,supabase){const token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''));if(!token)return null;const {data:{user}}=await supabase.auth.getUser(token);return user||null}
 function validSubscription(subscription){return Boolean(subscription&&typeof subscription==='object'&&/^https:\/\//.test(clean(subscription.endpoint))&&clean(subscription.endpoint).length<=2048&&clean(subscription.keys?.p256dh).length>=20&&clean(subscription.keys?.auth).length>=8)}
 
 export default async function handler(request,response){
  if(!['GET','POST','DELETE'].includes(request.method))return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})
- if(!storageConfigured())return response.status(503).json({success:false,code:'PUSH_STORAGE_NOT_CONFIGURED',message:'O armazenamento seguro de dispositivos ainda não foi configurado.'})
+ if(!storageConfigured())return response.status(503).json({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'As credenciais server-side do armazenamento ainda não foram configuradas.'})
  const supabase=getClient(),user=await authenticate(request,supabase);if(!user)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
  let input={};try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados do dispositivo são inválidos.'})}
  if(request.method==='GET'){
