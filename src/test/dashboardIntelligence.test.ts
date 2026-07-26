@@ -2,7 +2,7 @@ import { describe,expect,it } from 'vitest'
 import { awardProgress,deriveDashboardKpis,periodRevenueLabel,rebalanceChart } from '../lib/dashboardIntelligence'
 import type { DashboardKpis } from '../types'
 import { nextAwardProgress } from '../services/awardProgressService'
-import { dedupeSalesById,getDashboardDataMode,selectDashboardSales } from '../services/dashboardDataSource'
+import { dedupeSalesById,selectDashboardSales } from '../services/dashboardDataSource'
 import { initialData,newLiveSale } from '../data/demo'
 
 const current:DashboardKpis={revenue:100000,sales:250,ticket:400,goal:200000,progress:50,approval:96,pending:10000,profit:72000,growth:12}
@@ -62,9 +62,6 @@ describe('inteligência do dashboard',()=>{
  })
 
  it('separa produção e demonstração sem expor transações simuladas em produção',()=>{
-  expect(getDashboardDataMode('demo')).toBe('demo')
-  expect(getDashboardDataMode('production')).toBe('production')
-  expect(selectDashboardSales(initialData.sales,'production')).toEqual([])
-  expect(selectDashboardSales(initialData.sales,'demo')).toHaveLength(initialData.sales.length)
+  expect(selectDashboardSales(initialData.sales)).toEqual([])
  })
 })

@@ -1,13 +1,8 @@
 import type { Sale } from '../types'
 
-export type DashboardDataMode='production'|'demo'
-
-export function getDashboardDataMode(value=import.meta.env.VITE_DASHBOARD_DATA_MODE):DashboardDataMode{
- return value==='production'?'production':'demo'
-}
-
-export function selectDashboardSales(sales:Sale[],mode=getDashboardDataMode()){
- return mode==='demo'?dedupeSalesById(sales):[]
+export function selectDashboardSales(_locallyPersistedSales:Sale[]){
+ void _locallyPersistedSales
+ return [] as Sale[]
 }
 
 export function dedupeSalesById(sales:Sale[]){

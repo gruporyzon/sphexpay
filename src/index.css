@@ -179,3 +179,10 @@
 @media(max-width:900px){.next-award-card{grid-template-columns:98px minmax(0,1fr) auto}.next-award-plaque{width:90px}.dashboard-scenario-trigger{opacity:1}}
 @media(max-width:640px){.dashboard-header-actions{width:100%;justify-content:space-between}.dashboard-scenario-trigger{width:42px;padding:0;font-size:0}.dashboard-scenario-trigger svg{width:16px}.dashboard-scenario-fields{grid-template-columns:1fr}.next-award-card{grid-template-columns:82px minmax(0,1fr);min-height:120px;padding:14px}.next-award-complete{grid-template-columns:minmax(0,1fr)}.next-award-plaque{width:76px;height:80px}.next-award-plaque .award-object{transform:translate(-50%,-50%) scale(.31)}.next-award-copy h2{font-size:14px}.next-award-copy p{font-size:8px}.chart-skeleton{height:310px;padding-inline:12px}}
 @media(prefers-reduced-motion:reduce){.next-award-card:after,.metric-skeleton i,.chart-skeleton i,.sales-skeleton i{animation:none}.metric-card,.next-award-plaque,.sale-row{transition:none}}
+
+/* Dashboard production: eight indicators without incomplete grid rows */
+.dashboard-metrics-compact .metric-card{grid-column:span 1}
+.dashboard-metrics-compact .metric-card:nth-child(-n+2){grid-column:span 3}
+.dashboard-inline-empty{justify-content:center!important;min-height:92px;padding:22px!important;border:1px dashed var(--line)!important;border-radius:12px;color:var(--muted);font-size:9px;text-align:center}
+@media(max-width:1280px){.dashboard-metrics-compact .metric-card,.dashboard-metrics-compact .metric-card:nth-child(-n+2){grid-column:span 1}}
+@media(max-width:640px){.dashboard-metrics-compact .metric-card:first-child{grid-column:1/-1}.dashboard-metrics-compact .metric-card:nth-child(2){grid-column:span 1}}
