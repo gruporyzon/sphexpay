@@ -3,8 +3,14 @@ import webpush from 'web-push'
 const clean = value => typeof value === 'string' ? value.trim() : ''
 const base64Url = /^[A-Za-z0-9_-]+$/
 const exampleValue = value => /example|your[_-]?|changeme/i.test(value)
+const validHttpUrl=value=>{
+ try{
+  const parsed=new URL(value)
+  return (parsed.protocol==='https:'||parsed.protocol==='http:')&&Boolean(parsed.hostname)
+ }catch{return false}
+}
 
-export const supabaseUrl = () => clean(process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)
+export const supabaseUrl = () => [process.env.SUPABASE_URL,process.env.VITE_SUPABASE_URL].map(clean).find(validHttpUrl)||''
 export const serviceRoleKey = () => clean(process.env.SUPABASE_SERVICE_ROLE_KEY)
 
 export function vapidConfiguration() {
@@ -38,10 +44,8 @@ export function vapidConfiguration() {
 
 export function pushConfiguration() {
  const vapid = vapidConfiguration()
- const rawUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || ''
  const rawServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
  const storageConfigured = Boolean(supabaseUrl() && serviceRoleKey())
-  && rawUrl === supabaseUrl()
   && rawServiceRole === serviceRoleKey()
  return {
   vapid,

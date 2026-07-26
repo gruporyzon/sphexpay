@@ -10,6 +10,8 @@ function validSubscription(subscription){return Boolean(subscription&&typeof sub
 export default async function handler(request,response){
  if(request.method!=='POST')return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})
  if(!storageConfigured())return response.status(503).json({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'As credenciais server-side do armazenamento ainda não foram configuradas.'})
+ const token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''))
+ if(!token)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
  const supabase=getClient(),user=await authenticate(request,supabase);if(!user)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
  let input={};try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados do dispositivo são inválidos.'})}
  const endpoint=clean(input.endpoint||input.subscription?.endpoint)

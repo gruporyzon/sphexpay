@@ -84,6 +84,14 @@ describe('backend de Push',()=>{
   expect(output.result.body).toEqual({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'O armazenamento server-side não está configurado.'})
  })
 
+ it('ignora SUPABASE_URL inválida e usa a URL pública válida como fallback seguro',()=>{
+  configureVapid()
+  vi.stubEnv('SUPABASE_URL','valor-invalido')
+  vi.stubEnv('VITE_SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  expect(pushConfiguration()).toMatchObject({storageConfigured:true,sendConfigured:true})
+ })
+
  it('registra e confirma no Supabase com upsert por usuário e endpoint',async()=>{
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')

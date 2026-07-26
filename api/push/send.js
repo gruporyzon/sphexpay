@@ -9,8 +9,9 @@ export default async function handler(request,response){
  const configuration=pushConfiguration()
  if(!configuration.vapidConfigured)return response.status(503).json({success:false,code:'VAPID_NOT_CONFIGURED',message:'O envio Push não está configurado.'})
  if(!configuration.storageConfigured)return response.status(503).json({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'O armazenamento server-side não está configurado.'})
- const client=createClient(supabaseUrl(),serviceRoleKey()),token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''))
+ const token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''))
  if(!token)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
+ const client=createClient(supabaseUrl(),serviceRoleKey())
  const {data:{user}}=await client.auth.getUser(token)
  if(!user)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
  let input

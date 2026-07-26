@@ -6,8 +6,9 @@ const clean=value=>typeof value==='string'?value.trim():''
 export default async function handler(request,response){
  if(request.method!=='POST')return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})
  if(!supabaseUrl()||!serviceRoleKey())return response.status(503).json({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'O armazenamento server-side não está configurado.'})
- const client=createClient(supabaseUrl(),serviceRoleKey()),token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''))
+ const token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''))
  if(!token)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
+ const client=createClient(supabaseUrl(),serviceRoleKey())
  const {data:{user}}=await client.auth.getUser(token)
  if(!user)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
  const input=typeof request.body==='string'?JSON.parse(request.body):request.body||{},endpoint=clean(input.endpoint)
