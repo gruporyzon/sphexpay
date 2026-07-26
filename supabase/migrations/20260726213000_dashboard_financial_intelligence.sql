@@ -63,20 +63,11 @@ alter table public.dashboard_scenarios enable row level security;
 alter table public.dashboard_exchange_rates enable row level security;
 alter table public.payment_transactions replica identity full;
 
--- O papel administrativo real deste projeto fica em public.profiles.role.
--- Impede que o próprio usuário eleve sua coluna role usando a policy de perfil existente.
-revoke update on public.profiles from authenticated;
-grant update(full_name,phone,avatar_url,business_name,operation_type,person_type,category,estimated_volume,currency,language,theme,onboarding_complete,preferences,updated_at)
-  on public.profiles to authenticated;
-
 create or replace function public.is_dashboard_admin()
-returns boolean language sql stable security definer
+returns boolean language sql stable
 set search_path=public,pg_temp
 as $$
-  select exists(
-    select 1 from public.profiles p
-    where p.id=auth.uid() and lower(p.role)='admin'
-  );
+  select coalesce(auth.jwt()->'app_metadata'->>'role','')='admin';
 $$;
 revoke all on function public.is_dashboard_admin() from public,anon;
 grant execute on function public.is_dashboard_admin() to authenticated,service_role;

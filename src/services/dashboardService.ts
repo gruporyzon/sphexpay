@@ -17,13 +17,9 @@ const scenarioFromRow=(row:Record<string,unknown>):ScenarioInput=>({
 
 export async function isCurrentUserAdmin(){
  if(!supabase)return false
- const {data,error}=await supabase.rpc('is_dashboard_admin')
- if(!error)return data===true
- // Compatibilidade segura enquanto a migration da RPC ainda não foi aplicada:
- // profiles só permite leitura da própria linha por RLS.
- const profile=await supabase.from('profiles').select('role').maybeSingle()
- if(profile.error)throw new Error('ADMIN_ROLE_UNAVAILABLE')
- return typeof profile.data?.role==='string'&&profile.data.role.toLowerCase()==='admin'
+ const {data,error}=await supabase.auth.getUser()
+ if(error)throw new Error('ADMIN_ROLE_UNAVAILABLE')
+ return data.user?.app_metadata?.role==='admin'
 }
 
 export const dashboardService={

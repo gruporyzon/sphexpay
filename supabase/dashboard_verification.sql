@@ -3,8 +3,10 @@
 -- Substitua <USER_UUID> pelo UUID de Authentication → Users antes de executar.
 
 -- 1. Papel administrativo da conta escolhida.
-select id,role,lower(role)='admin' as dashboard_admin
-from public.profiles where id='<USER_UUID>'::uuid;
+select id,
+  coalesce(raw_app_meta_data->>'role','') as administrative_role,
+  coalesce(raw_app_meta_data->>'role','')='admin' as dashboard_admin
+from auth.users where id='<USER_UUID>'::uuid;
 
 -- 2. Existência das tabelas e função.
 select table_name from information_schema.tables
