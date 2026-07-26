@@ -32,3 +32,9 @@ As subscriptions Web Push e o log de entregas ficam nas tabelas persistentes `pu
 O envio reutilizável está em `api/push/send-service.js`, e a tradução dos eventos financeiros confirmados está em `api/push/financial-events.js`. Essa camada aceita `sale_approved`, `sale_pending`, `pix_created`, `pix_paid`, `card_approved`, `card_declined`, `boleto_created`, `boleto_paid`, `subscription_approved`, `subscription_renewed` e `withdrawal_completed`.
 
 Esses eventos devem ser chamados somente depois que um backend ou webhook oficial confirmar a operação. O ambiente atual não possui um provedor oficial de pagamentos conectado; por isso, vendas, Pix, cartão, boleto, assinaturas e saques demonstrativos do frontend não disparam Push financeiro. Quando um provedor for integrado, seu webhook deve validar assinatura e idempotência, persistir a mudança financeira e então chamar `notifyConfirmedFinancialEvent`. Falhas de Push devem ser registradas, mas nunca reverter a operação financeira confirmada.
+
+### Competição iPhone 17 Pro Max
+
+A campanha usa a configuração central de `src/config/competition.ts` e a imagem original em `public/competitions/iphone-17-pro-max.jpeg`. O ranking não usa dados do store demonstrativo: ele consulta exclusivamente a RPC autenticada `get_competition_leaderboard`.
+
+A migration `20260726150000_competition_iphone_17.sql` deve ser aplicada manualmente, depois das migrations existentes, antes de habilitar o ranking em produção. Ela cria as tabelas, RLS, índices, RPC de leitura sanitizada e a função server-side idempotente `record_competition_event`. Não aplique a migration sem revisar o regulamento definitivo e integrar um provedor real que chame essa função somente após confirmar pagamentos elegíveis. Enquanto isso, a página mostra o ranking vazio e não fabrica participantes.

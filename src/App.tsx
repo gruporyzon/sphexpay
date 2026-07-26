@@ -25,8 +25,9 @@ import Integrations from './pages/Integrations'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { PublicOnlyRoute } from './routes/PublicOnlyRoute'
 import { SoundProvider } from './providers/SoundProvider'
+import CompetitionPage from './pages/Competition'
 
-const modules=[['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<EditableCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<AwardsPage/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['competicao',<CompetitionPage/>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<EditableCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<AwardsPage/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><Routes>
  <Route path="/" element={<LandingPage/>}/>
  <Route path="/termos" element={<LegalPage type="terms"/>}/>
