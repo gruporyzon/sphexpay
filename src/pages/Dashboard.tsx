@@ -3,7 +3,7 @@ import { ArrowDownRight,ArrowUpRight,BadgeDollarSign,CircleDollarSign,CreditCard
 import { Card,PageTitle } from '../components/ui'
 import { money } from '../lib/utils'
 import { useDemoStore } from '../store/useDemoStore'
-import type { DashboardKpis } from '../types'
+import type { DashboardKpis,Sale } from '../types'
 import { chartForPeriod,filterSales,smartMetrics } from '../services/analyticsService'
 import { NextAwardCard } from '../components/dashboard/NextAwardCard'
 import { OverviewHeroCarousel } from '../components/dashboard/OverviewHeroCarousel'
@@ -12,15 +12,20 @@ import { PremiumStatCard,type PremiumStat } from '../components/dashboard/Premiu
 import { RevenueSection,type PerformanceMetric } from '../components/dashboard/RevenueSection'
 import { LiveSalesSkeleton,LiveSalesTicker } from '../components/dashboard/LiveSalesTicker'
 import { selectDashboardSales } from '../services/dashboardDataSource'
+import { DashboardScenarioEditor } from '../components/dashboard/DashboardScenarioEditor'
+import { useAuth } from '../hooks/useAuth'
 
 type MetricKey=PerformanceMetric
 
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
-const metricFormat=(format:PremiumStat['format'])=>(value:number)=>format==='money'?money(value):format==='percent'?`${value.toFixed(1)}%`:number(value)
+const metricFormat=(format:PremiumStat['format'],currency:Sale['currency'])=>(value:number)=>format==='money'?money(value,currency):format==='percent'?`${value.toFixed(1)}%`:number(value)
 
 export default function Dashboard(){
  const state=useDemoStore()
+ const {user}=useAuth()
+ const admin=user?.app_metadata?.role==='admin'
  const [metric,setMetric]=useState<MetricKey>('revenue')
+ const [currency,setCurrency]=useState<Sale['currency']>('BRL')
  const [typeFilter,setTypeFilter]=useState('Todos')
  const [productFilter,setProductFilter]=useState('Todos')
  const [updated,setUpdated]=useState('Agora')
@@ -28,7 +33,7 @@ export default function Dashboard(){
  const refreshTimer=useRef<number|undefined>(undefined)
  const sourceSales=selectDashboardSales(state.sales)
  useEffect(()=>()=>{if(refreshTimer.current)window.clearTimeout(refreshTimer.current)},[])
- const periodSales=useMemo(()=>filterSales(sourceSales,state.period).filter(sale=>(typeFilter==='Todos'||sale.method===typeFilter)&&(productFilter==='Todos'||sale.product===productFilter)),[sourceSales,state.period,typeFilter,productFilter])
+ const periodSales=useMemo(()=>filterSales(sourceSales,state.period).filter(sale=>sale.currency===currency&&(typeFilter==='Todos'||sale.method===typeFilter)&&(productFilter==='Todos'||sale.product===productFilter)),[sourceSales,state.period,currency,typeFilter,productFilter])
  const calculated=useMemo(()=>smartMetrics(periodSales,0),[periodSales])
  const visibleChart=useMemo(()=>chartForPeriod(state.chart,state.period).map(point=>({...point,revenue:0,profit:0,sales:0})),[state.chart,state.period])
  const chartTotal=useMemo(()=>visibleChart.reduce((sum,point)=>sum+point[metric],0),[visibleChart,metric])
@@ -41,7 +46,8 @@ export default function Dashboard(){
   const goal=0
   return{revenue,sales,ticket,goal,progress:0,approval:calculated.approval,pending:calculated.pending,profit:calculated.profit,growth:revenue?chartGrowth:0}
  },[calculated,chartGrowth])
- const kpis=baseline
+ const manual=admin&&state.dashboardScenario?.preset===state.period.preset?state.dashboardScenario:undefined
+ const kpis=manual??baseline
  const revenueLabel=periodRevenueLabel(state.period)
  const metrics:PremiumStat[]=[
   {label:revenueLabel,value:kpis.revenue,format:'money',delta:kpis.growth,icon:CircleDollarSign,featured:true},
@@ -61,24 +67,26 @@ export default function Dashboard(){
 
  return <div className="page-enter dashboard-page">
   <OverviewHeroCarousel/>
-  <PageTitle title="Dashboard" subtitle="Performance, ritmo de vendas e decisões em uma visão executiva."/>
+  <PageTitle title="Dashboard" subtitle="Performance, ritmo de vendas e decisões em uma visão executiva." action={admin?<DashboardScenarioEditor kpis={kpis} currency={currency} onSave={changes=>state.applyDashboardScenario(kpis,changes,state.period)}/>:undefined}/>
   <Card className="dashboard-filter-bar">
    <div className="dashboard-filter-title"><Filter size={16}/><div><b>Leitura do painel</b><span>Refine os indicadores da operação</span></div></div>
    <label><span>Tipo</span><select value={typeFilter} onChange={event=>setTypeFilter(event.target.value)}><option>Todos</option>{['Pix','Cartão de crédito','Boleto','Assinatura'].map(value=><option key={value}>{value}</option>)}</select></label>
    <label><span>Produtos</span><select value={productFilter} onChange={event=>setProductFilter(event.target.value)}><option>Todos</option></select></label>
+   <label><span>Moeda</span><select value={currency} onChange={event=>setCurrency(event.target.value as Sale['currency'])}><option value="BRL">BRL</option><option value="USD">USD</option><option value="EUR">EUR</option></select></label>
    <label><span>Período</span><select value={state.period.preset} onChange={event=>state.setPeriod({...state.period,preset:event.target.value as typeof state.period.preset})}><option value="today">Hoje</option><option value="7d">Últimos 7 dias</option><option value="30d">Últimos 30 dias</option><option value="month">Este mês</option><option value="lastMonth">Mês passado</option><option value="custom">Personalizado</option></select></label>
+   {state.period.preset==='custom'&&<><label><span>De</span><input type="date" value={state.period.from??''} onChange={event=>state.setPeriod({...state.period,from:event.target.value})}/></label><label><span>Até</span><input type="date" min={state.period.from} value={state.period.to??''} onChange={event=>state.setPeriod({...state.period,to:event.target.value})}/></label></>}
    <button className="btn dashboard-refresh" onClick={refresh} disabled={refreshing}><RefreshCcw className={refreshing?'spin':''}/> Atualizar <small>{updated}</small></button>
   </Card>
   <NextAwardCard currentRevenue={kpis.revenue}/>
   <section className={`dashboard-metrics dashboard-metrics-compact ${refreshing?'is-loading':''}`} aria-label="Indicadores financeiros">
-   {metrics.map((stat,index)=><PremiumStatCard key={stat.label} stat={stat} index={index} refreshing={refreshing} format={metricFormat(stat.format)}/>)}
+   {metrics.map((stat,index)=><PremiumStatCard key={stat.label} stat={stat} index={index} refreshing={refreshing} format={metricFormat(stat.format,currency)}/>)}
   </section>
   <section className="dashboard-content">
-   <RevenueSection label={revenueLabel} total={displayedTotal} growth={kpis.growth} manual={false} data={visibleChart} metric={metric} refreshing={refreshing} onMetric={value=>setMetric(value)}/>
+   <RevenueSection label={revenueLabel} total={displayedTotal} growth={kpis.growth} manual={Boolean(manual)} data={visibleChart} metric={metric} refreshing={refreshing} currency={currency} onMetric={value=>setMetric(value)}/>
    {refreshing?<LiveSalesSkeleton/>:<LiveSalesTicker sales={periodSales} limit={state.preferences.sales.recentCount}/>}
   </section>
   <section className="dashboard-insight-grid">
-   <Card><div className="insight-heading"><div><span className="section-eyebrow"><Wallet/> MEIOS DE PAGAMENTO</span><h2>Desempenho por canal</h2></div><span className="insight-caption">Participação no período</span></div><div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count} transações · {item.approved} aprovadas</span></div><div className="payment-bar"><i style={{width:`${Math.max(3,item.share)}%`}}/></div><strong>{item.total?money(item.total):'—'}</strong></div>)}</div></Card>
+   <Card><div className="insight-heading"><div><span className="section-eyebrow"><Wallet/> MEIOS DE PAGAMENTO</span><h2>Desempenho por canal</h2></div><span className="insight-caption">Participação no período</span></div><div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count} transações · {item.approved} aprovadas</span></div><div className="payment-bar"><i style={{width:`${Math.max(3,item.share)}%`}}/></div><strong>{item.total?money(item.total,currency):'—'}</strong></div>)}</div></Card>
    <Card><div className="insight-heading"><div><span className="section-eyebrow"><ArrowUpRight/> PERFORMANCE</span><h2>Produtos em destaque</h2></div></div><div className="dashboard-product-list">{topProducts.map((product,index)=><div key={product.id}><span>{String(index+1).padStart(2,'0')}</span><div><b>{product.name}</b><small>{product.sales} vendas · {money(product.price)}</small></div><strong>{money(product.revenue)}</strong></div>)}{!topProducts.length&&<div className="dashboard-inline-empty">Nenhum produto com vendas neste período.</div>}</div></Card>
   </section>
   <section className="dashboard-bottom-grid">
