@@ -5,20 +5,27 @@ create table if not exists public.payment_transactions (
   id uuid primary key default gen_random_uuid(),
   transaction_id text not null unique,
   user_id uuid not null references auth.users(id) on delete cascade,
-  buyer_name text,
+  customer_name text,
   product_name text not null,
   payment_method text not null,
   status text not null check (status in ('approved','pending','declined','refunded','chargeback')),
   amount_cents bigint not null check (amount_cents >= 0),
   fee_cents bigint not null default 0 check (fee_cents >= 0 and fee_cents <= amount_cents),
   currency text not null check (currency in ('BRL','USD','EUR')),
-  occurred_at timestamptz not null,
+  occurred_at timestamptz not null default now(),
+  approved_at timestamptz,
+  refunded_at timestamptz,
+  chargeback_at timestamptz,
+  financial_at timestamptz generated always as (coalesce(chargeback_at,refunded_at,approved_at,occurred_at)) stored,
   persisted_at timestamptz not null default now(),
-  metadata jsonb not null default '{}'::jsonb
+  metadata jsonb not null default '{}'::jsonb,
+  check(status<>'approved' or approved_at is not null),
+  check(status<>'refunded' or refunded_at is not null),
+  check(status<>'chargeback' or chargeback_at is not null)
 );
 
 create index if not exists payment_transactions_user_time_idx
-  on public.payment_transactions(user_id,occurred_at desc);
+  on public.payment_transactions(user_id,financial_at desc);
 
 create table if not exists public.dashboard_scenarios (
   id uuid primary key default gen_random_uuid(),
@@ -54,6 +61,7 @@ create table if not exists public.dashboard_exchange_rates (
 alter table public.payment_transactions enable row level security;
 alter table public.dashboard_scenarios enable row level security;
 alter table public.dashboard_exchange_rates enable row level security;
+alter table public.payment_transactions replica identity full;
 
 -- O papel administrativo real deste projeto fica em public.profiles.role.
 -- Impede que o próprio usuário eleve sua coluna role usando a policy de perfil existente.

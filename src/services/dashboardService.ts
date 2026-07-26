@@ -3,9 +3,9 @@ import { supabase } from '../lib/supabase'
 import type { Currency,ExchangeRate,FinancialTransaction,ScenarioInput } from '../lib/dashboardFinance'
 
 const transactionFromRow=(row:Record<string,unknown>):FinancialTransaction=>({
- transactionId:String(row.transaction_id),ownerId:String(row.user_id||''),buyerName:typeof row.buyer_name==='string'?row.buyer_name:null,productName:String(row.product_name||'Produto'),
+ transactionId:String(row.transaction_id),ownerId:String(row.user_id||''),buyerName:typeof row.customer_name==='string'?row.customer_name:null,productName:String(row.product_name||'Produto'),
  paymentMethod:String(row.payment_method||'Pagamento'),status:row.status as FinancialTransaction['status'],amountCents:Number(row.amount_cents||0),
- feeCents:Number(row.fee_cents||0),currency:row.currency as Currency,occurredAt:String(row.occurred_at)
+ feeCents:Number(row.fee_cents||0),currency:row.currency as Currency,occurredAt:String(row.financial_at||row.approved_at||row.occurred_at)
 })
 
 const scenarioFromRow=(row:Record<string,unknown>):ScenarioInput=>({
@@ -15,16 +15,22 @@ const scenarioFromRow=(row:Record<string,unknown>):ScenarioInput=>({
  seed:Number(row.seed),currency:row.currency as Currency
 })
 
+export async function isCurrentUserAdmin(){
+ if(!supabase)return false
+ const {data,error}=await supabase.rpc('is_dashboard_admin')
+ if(!error)return data===true
+ // Compatibilidade segura enquanto a migration da RPC ainda não foi aplicada:
+ // profiles só permite leitura da própria linha por RLS.
+ const profile=await supabase.from('profiles').select('role').maybeSingle()
+ if(profile.error)throw new Error('ADMIN_ROLE_UNAVAILABLE')
+ return typeof profile.data?.role==='string'&&profile.data.role.toLowerCase()==='admin'
+}
+
 export const dashboardService={
- async loadAdminAccess(){
-  if(!supabase)return false
-  const {data,error}=await supabase.rpc('is_dashboard_admin')
-  if(error)throw new Error('ADMIN_ROLE_UNAVAILABLE')
-  return data===true
- },
+ loadAdminAccess:isCurrentUserAdmin,
  async loadTransactions(userId:string,start:Date,end:Date){
   if(!supabase)return[] as FinancialTransaction[]
-  const {data,error}=await supabase.from('payment_transactions').select('transaction_id,user_id,buyer_name,product_name,payment_method,status,amount_cents,fee_cents,currency,occurred_at').eq('user_id',userId).gte('occurred_at',start.toISOString()).lte('occurred_at',end.toISOString()).order('occurred_at',{ascending:false}).limit(2000)
+  const {data,error}=await supabase.from('payment_transactions').select('transaction_id,user_id,customer_name,product_name,payment_method,status,amount_cents,fee_cents,currency,occurred_at,approved_at,refunded_at,chargeback_at,financial_at').eq('user_id',userId).gte('financial_at',start.toISOString()).lte('financial_at',end.toISOString()).order('financial_at',{ascending:false}).limit(2000)
   if(error)throw new Error('DASHBOARD_TRANSACTIONS_UNAVAILABLE')
   return(data||[]).map(row=>transactionFromRow(row as Record<string,unknown>))
  },
