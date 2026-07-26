@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import type { Currency,ExchangeRate,FinancialTransaction,ScenarioInput } from '../lib/dashboardFinance'
 
 const transactionFromRow=(row:Record<string,unknown>):FinancialTransaction=>({
- transactionId:String(row.transaction_id),buyerName:typeof row.buyer_name==='string'?row.buyer_name:null,productName:String(row.product_name||'Produto'),
+ transactionId:String(row.transaction_id),ownerId:String(row.user_id||''),buyerName:typeof row.buyer_name==='string'?row.buyer_name:null,productName:String(row.product_name||'Produto'),
  paymentMethod:String(row.payment_method||'Pagamento'),status:row.status as FinancialTransaction['status'],amountCents:Number(row.amount_cents||0),
  feeCents:Number(row.fee_cents||0),currency:row.currency as Currency,occurredAt:String(row.occurred_at)
 })
@@ -16,9 +16,15 @@ const scenarioFromRow=(row:Record<string,unknown>):ScenarioInput=>({
 })
 
 export const dashboardService={
+ async loadAdminAccess(){
+  if(!supabase)return false
+  const {data,error}=await supabase.rpc('is_dashboard_admin')
+  if(error)throw new Error('ADMIN_ROLE_UNAVAILABLE')
+  return data===true
+ },
  async loadTransactions(userId:string,start:Date,end:Date){
   if(!supabase)return[] as FinancialTransaction[]
-  const {data,error}=await supabase.from('payment_transactions').select('transaction_id,buyer_name,product_name,payment_method,status,amount_cents,fee_cents,currency,occurred_at').eq('user_id',userId).gte('occurred_at',start.toISOString()).lte('occurred_at',end.toISOString()).order('occurred_at',{ascending:false}).limit(2000)
+  const {data,error}=await supabase.from('payment_transactions').select('transaction_id,user_id,buyer_name,product_name,payment_method,status,amount_cents,fee_cents,currency,occurred_at').eq('user_id',userId).gte('occurred_at',start.toISOString()).lte('occurred_at',end.toISOString()).order('occurred_at',{ascending:false}).limit(2000)
   if(error)throw new Error('DASHBOARD_TRANSACTIONS_UNAVAILABLE')
   return(data||[]).map(row=>transactionFromRow(row as Record<string,unknown>))
  },
@@ -31,9 +37,15 @@ export const dashboardService={
  },
  async loadRates(){
   if(!supabase)return[] as ExchangeRate[]
-  const {data,error}=await supabase.from('exchange_rates').select('base_currency,quote_currency,rate,source,observed_at')
+  const {data,error}=await supabase.from('dashboard_exchange_rates').select('base_currency,quote_currency,rate,source,fetched_at').eq('enabled',true)
   if(error)throw new Error('EXCHANGE_RATES_UNAVAILABLE')
-  return(data||[]).map(row=>({baseCurrency:row.base_currency as Currency,quoteCurrency:row.quote_currency as Currency,rate:Number(row.rate),source:String(row.source),observedAt:String(row.observed_at)}))
+  return(data||[]).map(row=>({baseCurrency:row.base_currency as Currency,quoteCurrency:row.quote_currency as Currency,rate:Number(row.rate),source:String(row.source),observedAt:String(row.fetched_at)}))
+ },
+ async saveRates(userId:string,rates:ExchangeRate[]){
+  if(!supabase)throw new Error('EXCHANGE_RATE_SAVE_FORBIDDEN')
+  const rows=rates.map(rate=>({base_currency:rate.baseCurrency,quote_currency:rate.quoteCurrency,rate:rate.rate,source:rate.source,fetched_at:rate.observedAt,enabled:true,updated_by:userId}))
+  const {error}=await supabase.from('dashboard_exchange_rates').upsert(rows,{onConflict:'base_currency,quote_currency'})
+  if(error)throw new Error('EXCHANGE_RATE_SAVE_FORBIDDEN')
  },
  async loadScenario(userId:string){
   if(!supabase)return null

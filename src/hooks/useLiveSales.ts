@@ -20,9 +20,9 @@ export function useLiveSales(userId:string|undefined,period:PeriodFilter){
  useEffect(()=>{mounted.current=true;setLoading(Boolean(supabase&&userId));void refresh();return()=>{mounted.current=false}},[refresh,userId])
  useEffect(()=>{
   if(!userId)return
-  const channel=dashboardService.subscribe(userId,transaction=>{setSales(current=>normalizeTransactions([transaction,...current]));setUpdatedAt(new Date().toISOString())},setRealtime)
-  const fallback=window.setInterval(()=>{if(document.visibilityState==='visible')void refresh()},60000)
-  return()=>{window.clearInterval(fallback);void channel?.unsubscribe()}
- },[userId,refresh])
+  let wasDisconnected=false
+  const channel=dashboardService.subscribe(userId,transaction=>{const bounds=periodBounds(period),occurredAt=new Date(transaction.occurredAt);if(transaction.ownerId!==userId||occurredAt<bounds.start||occurredAt>bounds.end)return;setSales(current=>normalizeTransactions([transaction,...current]));setUpdatedAt(new Date().toISOString())},status=>{setRealtime(status);if(status==='live'&&wasDisconnected)void refresh();wasDisconnected=status!=='live'})
+  return()=>{void channel?.unsubscribe()}
+ },[userId,period,refresh])
  return useMemo(()=>({sales,previous,loading,error,realtime,updatedAt,refresh}),[sales,previous,loading,error,realtime,updatedAt,refresh])
 }

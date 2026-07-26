@@ -39,12 +39,13 @@ create table if not exists public.dashboard_scenarios (
   unique(owner_id,name)
 );
 
-create table if not exists public.exchange_rates (
+create table if not exists public.dashboard_exchange_rates (
   base_currency text not null check (base_currency in ('BRL','USD','EUR')),
   quote_currency text not null check (quote_currency in ('BRL','USD','EUR')),
   rate numeric(20,10) not null check (rate > 0),
   source text not null check (length(trim(source)) > 0),
-  observed_at timestamptz not null,
+  fetched_at timestamptz not null,
+  enabled boolean not null default true,
   updated_by uuid references auth.users(id),
   primary key(base_currency,quote_currency),
   check(base_currency <> quote_currency)
@@ -52,45 +53,63 @@ create table if not exists public.exchange_rates (
 
 alter table public.payment_transactions enable row level security;
 alter table public.dashboard_scenarios enable row level security;
-alter table public.exchange_rates enable row level security;
+alter table public.dashboard_exchange_rates enable row level security;
 
-revoke all on public.payment_transactions,public.dashboard_scenarios,public.exchange_rates from anon;
+-- O papel administrativo real deste projeto fica em public.profiles.role.
+-- Impede que o próprio usuário eleve sua coluna role usando a policy de perfil existente.
+revoke update on public.profiles from authenticated;
+grant update(full_name,phone,avatar_url,business_name,operation_type,person_type,category,estimated_volume,currency,language,theme,onboarding_complete,preferences,updated_at)
+  on public.profiles to authenticated;
+
+create or replace function public.is_dashboard_admin()
+returns boolean language sql stable security definer
+set search_path=public,pg_temp
+as $$
+  select exists(
+    select 1 from public.profiles p
+    where p.id=auth.uid() and lower(p.role)='admin'
+  );
+$$;
+revoke all on function public.is_dashboard_admin() from public,anon;
+grant execute on function public.is_dashboard_admin() to authenticated,service_role;
+
+revoke all on public.payment_transactions,public.dashboard_scenarios,public.dashboard_exchange_rates from anon;
 revoke insert,update,delete on public.payment_transactions from authenticated;
-grant select on public.payment_transactions,public.exchange_rates to authenticated;
+grant select on public.payment_transactions,public.dashboard_exchange_rates to authenticated;
 grant select,insert,update,delete on public.dashboard_scenarios to authenticated;
-grant insert,update,delete on public.exchange_rates to authenticated;
-grant all on public.payment_transactions,public.dashboard_scenarios,public.exchange_rates to service_role;
+grant insert,update,delete on public.dashboard_exchange_rates to authenticated;
+grant all on public.payment_transactions,public.dashboard_scenarios,public.dashboard_exchange_rates to service_role;
 
 drop policy if exists payment_transactions_own_read on public.payment_transactions;
 create policy payment_transactions_own_read on public.payment_transactions
   for select to authenticated using (user_id=auth.uid());
 
-drop policy if exists exchange_rates_authenticated_read on public.exchange_rates;
-create policy exchange_rates_authenticated_read on public.exchange_rates
-  for select to authenticated using (true);
-drop policy if exists exchange_rates_admin_write on public.exchange_rates;
-create policy exchange_rates_admin_write on public.exchange_rates
+drop policy if exists dashboard_exchange_rates_authenticated_read on public.dashboard_exchange_rates;
+create policy dashboard_exchange_rates_authenticated_read on public.dashboard_exchange_rates
+  for select to authenticated using (enabled);
+drop policy if exists dashboard_exchange_rates_admin_write on public.dashboard_exchange_rates;
+create policy dashboard_exchange_rates_admin_write on public.dashboard_exchange_rates
   for all to authenticated
-  using ((auth.jwt()->'app_metadata'->>'role')='admin')
-  with check ((auth.jwt()->'app_metadata'->>'role')='admin' and updated_by=auth.uid());
+  using (public.is_dashboard_admin())
+  with check (public.is_dashboard_admin() and updated_by=auth.uid());
 
 drop policy if exists dashboard_scenarios_admin_read on public.dashboard_scenarios;
 create policy dashboard_scenarios_admin_read on public.dashboard_scenarios
   for select to authenticated
-  using (owner_id=auth.uid() and (auth.jwt()->'app_metadata'->>'role')='admin');
+  using (owner_id=auth.uid() and public.is_dashboard_admin());
 drop policy if exists dashboard_scenarios_admin_insert on public.dashboard_scenarios;
 create policy dashboard_scenarios_admin_insert on public.dashboard_scenarios
   for insert to authenticated
-  with check (owner_id=auth.uid() and (auth.jwt()->'app_metadata'->>'role')='admin');
+  with check (owner_id=auth.uid() and public.is_dashboard_admin());
 drop policy if exists dashboard_scenarios_admin_update on public.dashboard_scenarios;
 create policy dashboard_scenarios_admin_update on public.dashboard_scenarios
   for update to authenticated
-  using (owner_id=auth.uid() and (auth.jwt()->'app_metadata'->>'role')='admin')
-  with check (owner_id=auth.uid() and (auth.jwt()->'app_metadata'->>'role')='admin');
+  using (owner_id=auth.uid() and public.is_dashboard_admin())
+  with check (owner_id=auth.uid() and public.is_dashboard_admin());
 drop policy if exists dashboard_scenarios_admin_delete on public.dashboard_scenarios;
 create policy dashboard_scenarios_admin_delete on public.dashboard_scenarios
   for delete to authenticated
-  using (owner_id=auth.uid() and (auth.jwt()->'app_metadata'->>'role')='admin');
+  using (owner_id=auth.uid() and public.is_dashboard_admin());
 
 do $$
 begin

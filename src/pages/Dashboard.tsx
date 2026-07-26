@@ -7,6 +7,7 @@ import { useDashboardCurrency } from '../hooks/useDashboardCurrency'
 import { useLiveSales } from '../hooks/useLiveSales'
 import { useFinancialMetrics } from '../hooks/useFinancialMetrics'
 import { useScenarioPlanner } from '../hooks/useScenarioPlanner'
+import { useDashboardAdmin } from '../hooks/useDashboardAdmin'
 import { convertCents,deriveScenarioMetrics,generatePeriodSeries,generateSalesTimeline,maskBuyerName,periodTitle,seriesFromTransactions,type ExchangeRate,type FinancialTransaction } from '../lib/dashboardFinance'
 import { dashboardService } from '../services/dashboardService'
 import { OverviewHeroCarousel } from '../components/dashboard/OverviewHeroCarousel'
@@ -22,7 +23,7 @@ import { RealtimeStatus } from '../components/dashboard/RealtimeStatus'
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
 
 export default function Dashboard(){
- const {user}=useAuth(),admin=user?.app_metadata?.role==='admin'
+ const {user}=useAuth(),adminAccess=useDashboardAdmin(user?.id),admin=adminAccess.allowed
  const {period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
  const [mode,setMode]=useState<'production'|'planning'>('production'),[rates,setRates]=useState<ExchangeRate[]>([]),[rateError,setRateError]=useState(false)
  const live=useLiveSales(user?.id,period),planner=useScenarioPlanner(user?.id,Boolean(admin))
@@ -59,10 +60,12 @@ export default function Dashboard(){
  const paymentStats=useMemo(()=>{const rows=planning?[]:currentConverted;return[...new Set(rows.map(row=>row.paymentMethod))].map(method=>{const items=rows.filter(row=>row.paymentMethod===method),approved=items.filter(row=>row.status==='approved');return{method,count:items.length,approved:approved.length,total:approved.reduce((sum,row)=>sum+row.amountCents,0)}})},[planning,currentConverted])
  const buyers=useMemo(()=>{if(planning)return[];const grouped=new Map<string,{name:string;count:number;total:number}>();for(const row of currentConverted.filter(item=>item.status==='approved')){const name=maskBuyerName(row.buyerName),current=grouped.get(name)??{name,count:0,total:0};current.count++;current.total+=row.amountCents;grouped.set(name,current)}return[...grouped.values()].sort((a,b)=>b.total-a.total).slice(0,4)},[planning,currentConverted])
  const loading=planning?planner.loading:live.loading,error=planning?planner.error:live.error
+ const saveRates=async(next:ExchangeRate[])=>{if(!user?.id)throw new Error('EXCHANGE_RATE_SAVE_FORBIDDEN');await dashboardService.saveRates(user.id,next);setRates(await dashboardService.loadRates());setRateError(false)}
 
  return <div className="page-enter dashboard-page">
   <OverviewHeroCarousel/>
-  <PageTitle title="Dashboard" subtitle="Resultados financeiros persistidos e planejamento administrativo isolado." action={<div className="dashboard-header-actions"><DashboardModeIndicator mode={planning?'planning':'production'}/>{admin&&<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Abrir planejamento'}</button>}{planning&&<DashboardScenarioEditor scenario={planner.scenario} onSave={planner.save}/>}</div>}/>
+  <PageTitle title="Dashboard" subtitle="Resultados financeiros persistidos e planejamento administrativo isolado." action={<div className="dashboard-header-actions"><DashboardModeIndicator mode={planning?'planning':'production'}/>{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>}</div>}/>
+  {adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}
   <Card className="dashboard-filter-bar"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/>{!planning&&<RealtimeStatus status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</Card>
   {(rateError||unavailableConversions>0)&&!planning&&<p className="dashboard-conversion-notice">{unavailableConversions?`${unavailableConversions} transação(ões) permanecem na moeda original e não entram no total convertido porque não há taxa disponível.`:'As taxas de conversão estão temporariamente indisponíveis. Valores originais foram preservados.'}</p>}
   {!planning&&<NextAwardCard currentRevenue={metrics.approvedRevenueCents/100}/>}

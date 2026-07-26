@@ -20,6 +20,7 @@ describe('inteligência financeira do Dashboard',()=>{
  it('converte BRL para USD com taxa registrada',()=>expect(convertCents(10000,'BRL','USD',rates)).toMatchObject({amountCents:2000,rate:.2}))
  it('converte BRL para EUR com taxa registrada',()=>expect(convertCents(10000,'BRL','EUR',rates)).toMatchObject({amountCents:1600,rate:.16}))
  it('não converte na ausência de taxa',()=>expect(convertCents(10000,'USD','EUR',rates)).toBeNull())
+ it('converte entre USD e EUR somente pela cadeia persistida via BRL',()=>{const chained=[...rates,{baseCurrency:'USD' as const,quoteCurrency:'BRL' as const,rate:5,source:'Configuração administrativa',observedAt:'2026-07-26T12:00:00Z'}];expect(convertCents(1000,'USD','EUR',chained)?.amountCents).toBe(800)})
  it('preserva a moeda original da transação',()=>{const row=sale();convertCents(row.amountCents,row.currency,'USD',rates);expect(row.currency).toBe('BRL')})
  it('deduplica eventos Realtime por transaction_id',()=>expect(normalizeTransactions([sale(),sale()])).toHaveLength(1))
  it('incorpora uma nova venda real aos resultados',()=>expect(metricsFromTransactions([sale(),sale({transactionId:'tx-2'})])).toMatchObject({approvedSales:2,approvedRevenueCents:20000}))

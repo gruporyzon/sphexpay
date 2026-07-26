@@ -2,7 +2,7 @@ import type { PeriodFilter } from '../types'
 
 export type Currency='BRL'|'USD'|'EUR'
 export type TransactionStatus='approved'|'pending'|'declined'|'refunded'|'chargeback'
-export interface FinancialTransaction{transactionId:string;buyerName:string|null;productName:string;paymentMethod:string;status:TransactionStatus;amountCents:number;feeCents:number;currency:Currency;occurredAt:string}
+export interface FinancialTransaction{transactionId:string;ownerId?:string;buyerName:string|null;productName:string;paymentMethod:string;status:TransactionStatus;amountCents:number;feeCents:number;currency:Currency;occurredAt:string}
 export interface ExchangeRate{baseCurrency:Currency;quoteCurrency:Currency;rate:number;source:string;observedAt:string}
 export interface ScenarioInput{todayRevenueCents:number;todayApprovedSales:number;averageTicketCents:number;approvalRate:number;refundRate:number;chargebackRate:number;dailyGrowthRate:number;weekdayFactors:number[];hourlyDistribution:number[];seed:number;currency:Currency}
 export interface FinancialMetrics{approvedRevenueCents:number;approvedSales:number;attemptedSales:number;averageTicketCents:number;approvalRate:number;refunds:number;chargebacks:number;feesCents:number;growthRate:number}
@@ -83,7 +83,7 @@ export function seriesFromTransactions(rows:FinancialTransaction[],period:Period
   const key=hourly?String(zonedHour(date)):dateKey(date),point=buckets.get(key)
   if(point){point.revenueCents+=row.amountCents;point.sales++}
  }
- return[...buckets.values()]
+ return aggregateLongPeriod([...buckets.values()],durationDays)
 }
 
 export function generatePeriodSeries(input:ScenarioInput,period:PeriodFilter,now=new Date()):FinancialPoint[]{
@@ -96,7 +96,15 @@ export function generatePeriodSeries(input:ScenarioInput,period:PeriodFilter,now
  const weights=Array.from({length:durationDays},(_,index)=>{const date=new Date(start);date.setDate(date.getDate()+index);const distance=durationDays-1-index;return scenario.weekdayFactors[date.getDay()]*Math.pow(1+scenario.dailyGrowthRate,-distance)})
  const baseTotal=deriveScenarioMetrics(scenario).approvedRevenueCents*weights.reduce((sum,value)=>sum+value,0)/Math.max(.0001,scenario.weekdayFactors[new Date(end).getDay()])
  let assigned=0
- return weights.map((weight,index)=>{const date=new Date(start);date.setDate(date.getDate()+index);const revenueCents=index===weights.length-1?Math.round(baseTotal)-assigned:Math.round(baseTotal*weight/weights.reduce((sum,value)=>sum+value,0));assigned+=revenueCents;return{label:dayLabel(date),revenueCents,sales:Math.round(revenueCents/Math.max(1,scenario.averageTicketCents)),occurredAt:date.toISOString()}})
+ const daily=weights.map((weight,index)=>{const date=new Date(start);date.setDate(date.getDate()+index);const revenueCents=index===weights.length-1?Math.round(baseTotal)-assigned:Math.round(baseTotal*weight/weights.reduce((sum,value)=>sum+value,0));assigned+=revenueCents;return{label:dayLabel(date),revenueCents,sales:Math.round(revenueCents/Math.max(1,scenario.averageTicketCents)),occurredAt:date.toISOString()}})
+ return aggregateLongPeriod(daily,durationDays)
+}
+
+function aggregateLongPeriod(points:FinancialPoint[],durationDays:number){
+ if(durationDays<=31)return points
+ const monthly=durationDays>120,groups=new Map<string,FinancialPoint>()
+ for(const point of points){const date=new Date(point.occurredAt),key=monthly?`${date.getFullYear()}-${date.getMonth()}`:`week-${Math.floor((date.getTime()-new Date(points[0].occurredAt).getTime())/(7*86400000))}`,label=monthly?new Intl.DateTimeFormat('pt-BR',{month:'short',year:'2-digit',timeZone:zone}).format(date):`Semana ${Number(key.split('-')[1])+1}`,current=groups.get(key)??{label,revenueCents:0,sales:0,occurredAt:point.occurredAt};current.revenueCents+=point.revenueCents;current.sales+=point.sales;groups.set(key,current)}
+ return[...groups.values()]
 }
 
 export function generateSalesTimeline(input:ScenarioInput,period:PeriodFilter,now=new Date()){
@@ -106,8 +114,11 @@ export function generateSalesTimeline(input:ScenarioInput,period:PeriodFilter,no
 export function convertCents(amountCents:number,source:Currency,target:Currency,rates:ExchangeRate[]){
  if(source===target)return{amountCents,converted:false as const,rate:1,observedAt:null,source:'original'}
  const rate=rates.find(item=>item.baseCurrency===source&&item.quoteCurrency===target)
- if(!rate)return null
- return{amountCents:Math.round(amountCents*rate.rate),converted:true as const,rate:rate.rate,observedAt:rate.observedAt,source:rate.source}
+ if(rate)return{amountCents:Math.round(amountCents*rate.rate),converted:true as const,rate:rate.rate,observedAt:rate.observedAt,source:rate.source}
+ const first=rates.find(item=>item.baseCurrency===source&&item.quoteCurrency==='BRL'),second=rates.find(item=>item.baseCurrency==='BRL'&&item.quoteCurrency===target)
+ if(!first||!second)return null
+ const combined=first.rate*second.rate,observedAt=new Date(Math.min(new Date(first.observedAt).getTime(),new Date(second.observedAt).getTime())).toISOString()
+ return{amountCents:Math.round(amountCents*combined),converted:true as const,rate:combined,observedAt,source:`${first.source} + ${second.source}`}
 }
 
 export function maskBuyerName(name:string|null){
