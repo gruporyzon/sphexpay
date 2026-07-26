@@ -1,15 +1,17 @@
-import { ShoppingBag } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Card,StatusBadge } from '../ui'
-import { money,shortDate } from '../../lib/utils'
-import type { Sale } from '../../types'
-import { AnimatedMetric } from './AnimatedMetric'
+import { Card } from '../ui'
+import { maskBuyerName,type Currency,type ExchangeRate,type FinancialTransaction } from '../../lib/dashboardFinance'
+import { ConvertedMoney } from './ConvertedMoney'
+import { formatCents } from '../../lib/currencyFormat'
+import { EmptyFinancialState } from './EmptyFinancialState'
 
-export function LiveSalesTicker({sales,limit}:{sales:Sale[];limit:number}){
- return <Card className="sales-card">
-  <div className="sales-header"><div><span className="section-eyebrow"><i/> FLUXO DE VENDAS</span><h2>Vendas recentes</h2><p>Dados confirmados por uma fonte autorizada</p></div></div>
-  <div className="sales-list scrollbar">{sales.length?sales.slice(0,limit).map((sale,index)=><Link to={`/app/transacoes?evento=${encodeURIComponent(sale.id)}`} key={sale.id} className={`sale-row ${index===0?'sale-enter':''}`} aria-label={`Abrir transação ${sale.id}`}><div className="sale-method-mark" aria-hidden="true">{sale.method.slice(0,1)}</div><div className="sale-content"><div className="sale-primary"><p>{sale.product}</p><strong><AnimatedMetric value={sale.amount} format={value=>money(value,sale.currency)}/></strong></div><div className="sale-secondary"><span>{sale.method}</span><span>Comissão {money(sale.fee,sale.currency)}</span></div><div className="sale-meta"><StatusBadge status={sale.status}/><span>{shortDate(sale.date)} · {new Date(sale.date).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span></div></div></Link>):<div className="sales-empty"><ShoppingBag/><h3>Nenhuma venda registrada neste período.</h3><p>Os dados aparecerão quando uma fonte autorizada registrar transações reais.</p></div>}</div>
- </Card>
+const statusLabel:Record<FinancialTransaction['status'],string>={approved:'Aprovada',pending:'Pendente',declined:'Recusada',refunded:'Reembolsada',chargeback:'Chargeback'}
+export function LiveSalesFeed({sales,displayCurrency,rates,limit=7}:{sales:FinancialTransaction[];displayCurrency:Currency;rates:ExchangeRate[];limit?:number}){
+ return <LiveSalesFeedContent sales={sales} displayCurrency={displayCurrency} rates={rates} limit={limit}/>
 }
-
-export function LiveSalesSkeleton(){return <Card className="sales-card"><div className="sales-header"><div><span className="section-eyebrow"><i/> FLUXO DE VENDAS</span><h2>Vendas em tempo real</h2><p>Sincronizando eventos</p></div></div><div className="sales-skeleton" aria-label="Atualizando vendas">{Array.from({length:5},(_,index)=><i key={index}/>)}</div></Card>}
+export function LiveSalesFeedContent({sales,displayCurrency,rates,limit=7,planning=false}:{sales:FinancialTransaction[];displayCurrency:Currency;rates:ExchangeRate[];limit?:number;planning?:boolean}){
+ const rows=sales.slice(0,limit).map((sale,index)=>{const content=<><div className="sale-method-mark">{sale.paymentMethod.slice(0,1)}</div><div className="sale-content"><div className="sale-primary"><p>{maskBuyerName(sale.buyerName)} · {sale.productName}</p><strong><ConvertedMoney amountCents={sale.amountCents} sourceCurrency={sale.currency} displayCurrency={displayCurrency} rates={rates} showOriginal/></strong></div><div className="sale-secondary"><span>{sale.paymentMethod}</span><span>Original {formatCents(sale.amountCents,sale.currency)}</span></div><div className="sale-meta"><span className="badge">{planning?'Cenário':statusLabel[sale.status]}</span><span>{new Date(sale.occurredAt).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})} · {sale.transactionId.slice(-8)}</span></div></div></>;return planning?<div key={sale.transactionId} className={`sale-row ${index===0?'sale-enter':''}`}>{content}</div>:<Link to={`/app/transacoes?evento=${encodeURIComponent(sale.transactionId)}`} key={sale.transactionId} className={`sale-row ${index===0?'sale-enter':''}`}>{content}</Link>})
+ return <Card className="sales-card"><div className="sales-header"><div><span className="section-eyebrow"><i/> {planning?'TIMELINE DE CENÁRIO':'FLUXO DE VENDAS'}</span><h2>{planning?'Resultados projetados':'Vendas recentes'}</h2><p>{planning?'Registros sintéticos restritos ao planejamento':'Transações persistidas no backend'}</p></div></div><div className="sales-list scrollbar">{rows.length?rows:<EmptyFinancialState/>}</div></Card>
+}
+export const LiveSalesTicker=LiveSalesFeed
+export function LiveSalesSkeleton(){return <Card className="sales-card"><div className="sales-skeleton" aria-label="Atualizando vendas">{Array.from({length:5},(_,index)=><i key={index}/>)}</div></Card>}

@@ -1,0 +1,28 @@
+import { useCallback,useEffect,useMemo,useRef,useState } from 'react'
+import { dashboardService } from '../services/dashboardService'
+import { normalizeTransactions,previousPeriodBounds,periodBounds,type FinancialTransaction } from '../lib/dashboardFinance'
+import type { PeriodFilter } from '../types'
+import { supabase } from '../lib/supabase'
+
+export function useLiveSales(userId:string|undefined,period:PeriodFilter){
+ const [sales,setSales]=useState<FinancialTransaction[]>([]),[previous,setPrevious]=useState<FinancialTransaction[]>([]),[loading,setLoading]=useState(Boolean(supabase&&userId)),[error,setError]=useState(''),[realtime,setRealtime]=useState<'live'|'reconnecting'|'unavailable'>(supabase?'reconnecting':'unavailable'),[updatedAt,setUpdatedAt]=useState('')
+ const mounted=useRef(true)
+ const refresh=useCallback(async()=>{
+  if(!userId){setSales([]);setPrevious([]);setLoading(false);return}
+  setError('')
+  try{
+   const current=periodBounds(period),before=previousPeriodBounds(period)
+   const [currentRows,previousRows]=await Promise.all([dashboardService.loadTransactions(userId,current.start,current.end),dashboardService.loadTransactions(userId,before.start,before.end)])
+   if(mounted.current){setSales(normalizeTransactions(currentRows));setPrevious(normalizeTransactions(previousRows));setUpdatedAt(new Date().toISOString())}
+  }catch{if(mounted.current)setError('Não foi possível carregar as transações reais.')}
+  finally{if(mounted.current)setLoading(false)}
+ },[userId,period])
+ useEffect(()=>{mounted.current=true;setLoading(Boolean(supabase&&userId));void refresh();return()=>{mounted.current=false}},[refresh,userId])
+ useEffect(()=>{
+  if(!userId)return
+  const channel=dashboardService.subscribe(userId,transaction=>{setSales(current=>normalizeTransactions([transaction,...current]));setUpdatedAt(new Date().toISOString())},setRealtime)
+  const fallback=window.setInterval(()=>{if(document.visibilityState==='visible')void refresh()},60000)
+  return()=>{window.clearInterval(fallback);void channel?.unsubscribe()}
+ },[userId,refresh])
+ return useMemo(()=>({sales,previous,loading,error,realtime,updatedAt,refresh}),[sales,previous,loading,error,realtime,updatedAt,refresh])
+}
