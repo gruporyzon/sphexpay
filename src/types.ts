@@ -14,7 +14,7 @@ export interface DashboardKpis { revenue:number; sales:number; ticket:number; go
 export interface DashboardScenario extends DashboardKpis { preset:PeriodPreset; updatedAt:string }
 export type AwardRequestStatus='Disponível para solicitar'|'Endereço pendente'|'Solicitação recebida'|'Em preparação'|'Enviada'|'Entregue'
 export interface AwardRequest { id:string; requestedAt:string; status:AwardRequestStatus; address:ShippingAddress; updatedAt:string }
-export interface Achievement { id:string; title:string; target:number; redeemed:boolean; address?:ShippingAddress; request?:AwardRequest; requestHistory?:AwardRequest[] }
+export interface Achievement { id:string; title:string; target:number; image:string; order:number; description:string; glow:string; redeemed:boolean; address?:ShippingAddress; request?:AwardRequest; requestHistory?:AwardRequest[] }
 export interface Withdrawal { id:string; amount:number; fee?:number; netAmount?:number; currency?:Sale['currency']; date:string; status:'Solicitado'|'Processando'|'Concluído'|'Recusado'|'Cancelado'|'Falhou'; account:string; lastDigits?:string }
 export type NotificationCategory = 'Vendas'|'Financeiro'|'Saques'|'Assinaturas'|'Segurança'|'Sistema'
 export type NotificationKind = 'sale'|'payment'|'subscription'|'withdrawal'|'achievement'|'goal'|'security'|'system'

@@ -1,3 +1,10 @@
+import { useState,type CSSProperties } from 'react'
+import { ImageOff } from 'lucide-react'
+import type { RevenueAwardState } from '../../config/revenueAwards'
 import type { Achievement } from '../../types'
 
-export function AwardDisplay({achievement,unlocked}:{achievement:Achievement;unlocked:boolean}){return <div className={`award-object plaque-premium plaque-${achievement.id} ${unlocked?'unlocked':''}`} aria-label={`Placa ${achievement.title}`}><div className="plaque-cast-shadow"/><div className="plaque-frame"><span className="frame-highlight"/><span className="frame-depth"/><div className="plaque-surface"><span className="plaque-pattern"/><span className="plaque-reflection"/><div className="plaque-brand">SPHEXPAY</div><div className="plaque-emblem"><i>S</i></div><strong>{achievement.title.replace('Sphex ','')}</strong><small>RECONHECIMENTO DE FATURAMENTO</small><div className="plaque-serial">SPX · {achievement.id.toUpperCase()}</div></div></div></div>}
+export function AwardDisplay({achievement,unlocked,state=unlocked?'unlocked':'locked'}:{achievement:Achievement;unlocked:boolean;state?:RevenueAwardState}){
+ const [failed,setFailed]=useState(false)
+ const style={'--award-glow':achievement.glow} as CSSProperties
+ return <div className={`official-award-plaque ${state}`} style={style} aria-label={`Plaquinha ${achievement.title}`} data-award-id={achievement.id}>{failed?<div className="official-award-fallback" role="img" aria-label={`Imagem indisponível de ${achievement.title}`}><ImageOff/><b>{achievement.title}</b></div>:<img src={achievement.image} alt={`Plaquinha oficial ${achievement.title}`} loading="lazy" onError={()=>setFailed(true)}/>}</div>
+}

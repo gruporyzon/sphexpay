@@ -52,7 +52,7 @@ describe('inteligência do dashboard',()=>{
  })
 
  it('escolhe automaticamente a próxima placa e não inventa uma após a última',()=>{
-  expect(nextAwardProgress(120000,initialData.achievements).next?.id).toBe('250k')
+  expect(nextAwardProgress(120000,initialData.achievements).next?.id).toBe('500k')
   expect(nextAwardProgress(6000000,initialData.achievements)).toMatchObject({next:undefined,complete:true,progress:100})
  })
 

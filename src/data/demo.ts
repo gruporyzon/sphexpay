@@ -1,4 +1,5 @@
 import type { DemoState } from '../types'
+import { revenueAwards } from '../config/revenueAwards'
 
 const d=(days:number,h=12)=>new Date(Date.now()-days*86400000+h*3600000).toISOString()
 export const initialData:DemoState={
@@ -43,7 +44,7 @@ export const initialData:DemoState={
   {id:'SUB-04',customer:'John Carter',plan:'Growth Club Global',status:'Inadimplente',amount:89,nextCharge:d(2)}
  ],
  chart:Array.from({length:30},(_,i)=>{const revenue=Math.round(6500+Math.sin(i/2)*2600+i*180+((i*791)%2400));return{label:`${String(i+1).padStart(2,'0')}/07`,revenue,profit:Math.round(revenue*.72),sales:Math.round(revenue/380)}}),
- achievements:[['10k','Sphex 10k',10000],['100k','Sphex 100k',100000],['250k','Sphex 250k',250000],['500k','Sphex 500k',500000],['1m','Sphex 1M',1000000],['5m','Sphex 5M+',5000000]].map(([id,title,target])=>({id:String(id),title:String(title),target:Number(target),redeemed:false})),
+ achievements:revenueAwards.map(award=>({id:award.id,title:award.name,target:award.target,image:award.image,order:award.order,description:award.description,glow:award.glow,redeemed:false})),
  withdrawals:[]
 }
 
