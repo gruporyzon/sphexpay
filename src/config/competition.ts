@@ -12,7 +12,7 @@ export const competitionConfig={
  endsAt:'2026-10-01T23:59:59-03:00',
  timezone:'America/Sao_Paulo',
  targetCents:3_000_000,
- image:'/competitions/iphone-17-pro-max.jpeg',
+ image:'/competitions/iphone-17-pro-max.png',
  rules:{
   version:'provisional-1',
   publishedAt:null,

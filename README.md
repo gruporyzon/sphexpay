@@ -35,6 +35,6 @@ Esses eventos devem ser chamados somente depois que um backend ou webhook oficia
 
 ### Competição iPhone 17 Pro Max
 
-A campanha usa a configuração central de `src/config/competition.ts` e a imagem original em `public/competitions/iphone-17-pro-max.jpeg`. O ranking não usa dados do store demonstrativo: ele consulta exclusivamente a RPC autenticada `get_competition_leaderboard`.
+A campanha usa a configuração central de `src/config/competition.ts` e a imagem transparente original em `public/competitions/iphone-17-pro-max.png`. O ranking não usa dados do store demonstrativo: ele consulta exclusivamente a RPC autenticada `get_competition_leaderboard`.
 
 A migration `20260726150000_competition_iphone_17.sql` deve ser aplicada manualmente, depois das migrations existentes, antes de habilitar o ranking em produção. Ela cria as tabelas, RLS, índices, RPC de leitura sanitizada e a função server-side idempotente `record_competition_event`. Não aplique a migration sem revisar o regulamento definitivo e integrar um provedor real que chame essa função somente após confirmar pagamentos elegíveis. Enquanto isso, a página mostra o ranking vazio e não fabrica participantes.
