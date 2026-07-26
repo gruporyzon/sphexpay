@@ -43,7 +43,7 @@ describe('pushSubscriptionService',()=>{
   const subscribe=vi.fn(async()=>subscription)
   const registration={update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>null),subscribe}}
   Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),register:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
-  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({success:true,deviceId:'device-1'}),{status:200,headers:{'Content-Type':'application/json'}}))
+  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({success:true,registered:true,deviceId:'device-1'}),{status:200,headers:{'Content-Type':'application/json'}}))
   vi.stubGlobal('fetch',fetchMock)
   const result=await pushSubscriptionService.subscribe('user-1')
   expect(result.ok).toBe(true)

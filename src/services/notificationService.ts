@@ -1,5 +1,5 @@
-import { formatCommission,notificationTitles,type CommerceNotificationPayload } from '../lib/notificationCatalog'
-import { ensureServiceWorker,pushSubscriptionService,type PushSendResult } from './pushSubscriptionService'
+import type { CommerceNotificationPayload } from '../lib/notificationCatalog'
+import { ensureServiceWorker,type PushSendResult } from './pushSubscriptionService'
 
 export const notificationService={
  async registerWorker(){
@@ -10,8 +10,9 @@ export const notificationService={
    return registration
   }catch(error){if(import.meta.env.DEV)console.warn('[PUSH] Service Worker registration failed',error instanceof Error?error.message:'unknown');return undefined}
  },
- sendCommerce(payload:CommerceNotificationPayload):Promise<PushSendResult>{
-  return pushSubscriptionService.send({eventId:payload.id,type:payload.type,title:payload.title||notificationTitles[payload.type],body:payload.body||formatCommission(payload.commission,payload.currency),currency:payload.currency,commission:payload.commission,route:payload.route,createdAt:payload.createdAt})
+ async sendCommerce(payload:CommerceNotificationPayload):Promise<PushSendResult>{
+  void payload
+  return{ok:false,code:'SERVER_SIDE_ONLY',message:'Eventos financeiros são enviados somente após confirmação no servidor.'}
  },
  dispose(){}
 }

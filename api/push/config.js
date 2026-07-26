@@ -48,6 +48,8 @@ export function pushConfiguration() {
   vapidConfigured: vapid.configured,
   storageConfigured,
   sendConfigured: vapid.configured && storageConfigured,
-  storageCode: storageConfigured ? undefined : 'SUPABASE_SERVER_CREDENTIALS_MISSING'
+  vapidCode: vapid.configured ? undefined : 'VAPID_NOT_CONFIGURED',
+  storageCode: storageConfigured ? undefined : 'SUPABASE_SERVER_CREDENTIALS_MISSING',
+  sendCode: vapid.configured && storageConfigured ? undefined : 'PUSH_SEND_NOT_CONFIGURED'
  }
 }

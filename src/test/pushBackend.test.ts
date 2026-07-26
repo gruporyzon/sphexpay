@@ -53,12 +53,12 @@ describe('backend de Push',()=>{
   configureVapid()
   const output=response()
   healthHandler({method:'GET'},output)
-  expect(output.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,storageCode:'SUPABASE_SERVER_CREDENTIALS_MISSING'}})
+  expect(output.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,codes:['SUPABASE_SERVER_CREDENTIALS_MISSING','PUSH_SEND_NOT_CONFIGURED']}})
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
   const configuredOutput=response()
   healthHandler({method:'GET'},configuredOutput)
-  expect(configuredOutput.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true}})
+  expect(configuredOutput.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true,codes:[]}})
  })
 
  it('bloqueia métodos não permitidos nas rotas de cadastro e envio',async()=>{
@@ -72,7 +72,7 @@ describe('backend de Push',()=>{
  it('não inicia envio real sem configuração VAPID e armazenamento',async()=>{
   const output=response()
   await sendHandler({method:'POST'},output)
-  expect(output.result).toEqual({statusCode:503,body:{success:false,code:'VAPID_NOT_CONFIGURED',message:'As chaves do servidor de notificações não foram configuradas corretamente.'}})
+  expect(output.result).toEqual({statusCode:503,body:{success:false,code:'VAPID_NOT_CONFIGURED',message:'O envio Push não está configurado.'}})
  })
 
  it('informa credenciais server-side ausentes sem usar chave publicável',async()=>{
@@ -81,21 +81,25 @@ describe('backend de Push',()=>{
   vi.stubEnv('VITE_SUPABASE_PUBLISHABLE_KEY','public-client-key')
   const output=response()
   await sendHandler({method:'POST'},output)
-  expect(output.result.body).toEqual({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'As credenciais server-side do armazenamento ainda não foram configuradas.'})
+  expect(output.result.body).toEqual({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'O armazenamento server-side não está configurado.'})
  })
 
- it('registra no Supabase com upsert por endpoint para prevenir duplicidade',async()=>{
+ it('registra e confirma no Supabase com upsert por usuário e endpoint',async()=>{
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
-  const single=vi.fn(async()=>({data:{id:'device-1'},error:null}))
-  const select=vi.fn(()=>({single}))
-  const upsert=vi.fn(()=>({select}))
-  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}}}))},from:vi.fn(()=>({upsert}))}
+  const maybeSingle=vi.fn(async()=>({data:{id:'device-1'},error:null}))
+  const eqEnabled=vi.fn(()=>({maybeSingle}))
+  const eqEndpoint=vi.fn(()=>({eq:eqEnabled}))
+  const eqUser=vi.fn(()=>({eq:eqEndpoint}))
+  const select=vi.fn(()=>({eq:eqUser}))
+  const upsert=vi.fn(async()=>({error:null}))
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}}}))},from:vi.fn(()=>({upsert,select}))}
   createClientMock.mockReturnValue(client)
   const output=response()
   await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{subscription:{endpoint:'https://push.example/device',keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value'}},deviceName:'MacBook'}},output)
   expect(output.result.statusCode).toBe(200)
   expect(client.from).toHaveBeenCalledWith('push_subscriptions')
-  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',endpoint:'https://push.example/device',enabled:true}),{onConflict:'endpoint'})
+  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',endpoint:'https://push.example/device',enabled:true}),{onConflict:'user_id,endpoint'})
+  expect(output.result.body).toEqual({success:true,registered:true,deviceId:'device-1'})
  })
 })

@@ -7,7 +7,7 @@ export interface PushDiagnostic{
  https:boolean;notificationsApi:boolean;permission:'default'|'granted'|'denied'|'unsupported';serviceWorkerSupported:boolean;serviceWorkerRegistered:boolean;serviceWorkerActive:boolean;serviceWorkerControlling:boolean;pushManagerSupported:boolean;installed:boolean;subscription:boolean;saved:boolean;vapidConfigured:boolean;vapidStatus:'loaded'|'missing'|'invalid';backendConfigured:boolean;storageConfigured:boolean;platform:string;browser:string;lastTest:string;lastDelivery:string;lastError:string
 }
 type PushPayload={eventId:string;type:string;title:string;body:string;route:string;createdAt?:string;currency?:string;commission?:number|null}
-type HealthResponse={vapidConfigured?:boolean;storageConfigured?:boolean;sendConfigured?:boolean;storageCode?:string}
+type HealthResponse={vapidConfigured?:boolean;storageConfigured?:boolean;sendConfigured?:boolean;codes?:string[]}
 const lastStateKey='sphexpay_push_diagnostics_v2'
 const isIOS=()=>/iPhone|iPad|iPod/i.test(navigator.userAgent)
 const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||Boolean((navigator as Navigator&{standalone?:boolean}).standalone)
@@ -65,7 +65,7 @@ export const pushSubscriptionService={
   let registration='serviceWorker'in navigator?await navigator.serviceWorker.getRegistration('/'):undefined,ready=registration?await navigator.serviceWorker.ready:null
   let subscription=false;try{subscription=Boolean(await this.current());registration=await navigator.serviceWorker.getRegistration('/');ready=registration?await navigator.serviceWorker.ready:null}catch{/* O diagnóstico continua mostrando o erro real. */}
   let saved=false,storageConfigured=false,lastDelivery=readState().lastDelivery||'—'
-  if(subscription&&userId&&supabase){try{const current=await this.current(),endpoint=current?.endpoint||'',response=await fetch(`/api/push/subscribe?endpoint=${encodeURIComponent(endpoint)}`,{method:'GET',headers:await authHeaders()});const data=await response.json() as {saved?:boolean;storageConfigured?:boolean;lastDelivery?:string};saved=data.saved===true;storageConfigured=data.storageConfigured===true;lastDelivery=data.lastDelivery||lastDelivery}catch{/* A indisponibilidade aparece no backendConfigured. */}}
+  if(subscription&&userId&&supabase){try{const current=await this.current(),endpoint=current?.endpoint||'',response=await fetch(`/api/push/status?endpoint=${encodeURIComponent(endpoint)}`,{method:'GET',headers:await authHeaders()});const data=await response.json() as {saved?:boolean;storageConfigured?:boolean;lastDelivery?:string;lastError?:string};saved=data.saved===true;storageConfigured=data.storageConfigured===true;lastDelivery=data.lastDelivery||lastDelivery;if(data.lastError&&data.lastError!=='—')writeState({lastError:data.lastError})}catch{/* A indisponibilidade aparece no backendConfigured. */}}
   let backendConfigured=false
   try{const response=await fetch('/api/push/health',{headers:{Accept:'application/json'}});if(response.ok){const data=await response.json() as HealthResponse;backendConfigured=data.sendConfigured===true;storageConfigured=storageConfigured||data.storageConfigured===true}}catch{/* Diagnóstico sem backend não é sucesso. */}
   const status=vapidStatus(),state=readState()
@@ -85,15 +85,16 @@ export const pushSubscriptionService={
    const subscription=existing||await ready.pushManager.subscribe({userVisibleOnly:true,applicationServerKey}),json=subscription.toJSON(),keys=json.keys||{}
    if(!keys.p256dh||!keys.auth)throw new Error('SUBSCRIPTION_KEYS_MISSING')
    const response=await fetch('/api/push/subscribe',{method:'POST',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify({subscription:{endpoint:subscription.endpoint,keys:{p256dh:keys.p256dh,auth:keys.auth}},userAgent:navigator.userAgent,platform:platform(),browser:browser(),deviceName:this.deviceLabel(),userId})})
-   if(!response.ok){const data=await response.json().catch(()=>({})) as {code?:string;message?:string};const code=data.code||'BACKEND_UNAVAILABLE';return{ok:false,status:code==='PUSH_STORAGE_NOT_CONFIGURED'||code==='SUPABASE_SERVER_CREDENTIALS_MISSING'?'storage-unconfigured':'backend-unavailable',message:errorMessage(code,data.message)}}
+   const data=await response.json().catch(()=>({})) as {success?:boolean;registered?:boolean;deviceId?:string;code?:string;message?:string}
+   if(!response.ok||data.success!==true||data.registered!==true||!data.deviceId){const code=data.code||'BACKEND_UNAVAILABLE';return{ok:false,status:code==='PUSH_STORAGE_NOT_CONFIGURED'||code==='SUPABASE_SERVER_CREDENTIALS_MISSING'?'storage-unconfigured':'backend-unavailable',message:errorMessage(code,data.message)}}
    log(existing?'Existing subscription found':'New subscription created');log('Subscription saved');return{ok:true,status:'active',message:'Dispositivo conectado.'}
   }catch{const message='Não foi possível registrar este dispositivo.';writeState({lastError:message});return{ok:false,status:'error',message}}
  },
- async unsubscribe(){const subscription=await this.current();if(!subscription)return true;try{const response=await fetch('/api/push/subscribe',{method:'DELETE',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify({endpoint:subscription.endpoint})});if(!response.ok)return false;const ok=await subscription.unsubscribe();if(ok)log('Device subscription removed');return ok}catch{return false}},
+ async unsubscribe(){const subscription=await this.current();if(!subscription)return true;try{const response=await fetch('/api/push/unsubscribe',{method:'POST',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify({endpoint:subscription.endpoint})});if(!response.ok)return false;const ok=await subscription.unsubscribe();if(ok)log('Device subscription removed');return ok}catch{return false}},
  async send(payload:PushPayload):Promise<PushSendResult>{
   if(!this.supported()||Notification.permission!=='granted')return{ok:false,code:'PERMISSION_DENIED',message:errorMessage('PERMISSION_DENIED')}
   const subscription=await this.current().catch(()=>null);if(!subscription)return{ok:false,code:'NO_ACTIVE_SUBSCRIPTIONS',message:errorMessage('NO_ACTIVE_SUBSCRIPTIONS')}
   try{const response=await fetch('/api/push/send',{method:'POST',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify(payload)});const parsed=await parseResponse(response);if(parsed.ok){log(payload.type==='device_test'?'Test request sent':'Delivery accepted');writeState({lastTest:payload.type==='device_test'?new Date().toISOString():readState().lastTest,lastDelivery:new Date().toISOString(),lastError:'—'})}else writeState({lastError:parsed.message});return parsed}catch{const parsed={ok:false,code:'BACKEND_UNAVAILABLE',message:errorMessage('BACKEND_UNAVAILABLE')};writeState({lastError:parsed.message});return parsed}
  },
- async sendTest(){return this.send({eventId:`device-test-${crypto.randomUUID?.()||Date.now()}`,type:'device_test',title:'Notificações ativadas',body:'Seu dispositivo está conectado.',route:'/app/configuracoes',createdAt:new Date().toISOString()})}
+ async sendTest(){return this.send({eventId:`push-test-${crypto.randomUUID?.()||Date.now()}`,type:'push_test',title:'Notificações ativadas',body:'Seu dispositivo está conectado.',route:'/app/dashboard',createdAt:new Date().toISOString()})}
 }

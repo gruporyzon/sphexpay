@@ -2,18 +2,11 @@ import { Check,Landmark,LoaderCircle,ShieldCheck,WalletCards,X } from 'lucide-re
 import { useEffect,useMemo,useRef,useState } from 'react'
 import { Card,PageTitle } from '../components/ui'
 import { withdrawalAmountToMinor,withdrawalMoney,withdrawalService,type LocalBankAccount,type LocalWithdrawal } from '../services/withdrawalService'
-import { pushSubscriptionService } from '../services/pushSubscriptionService'
 import { useAppStore } from '../store/useAppStore'
 import type { Withdrawal } from '../types'
 
 type Confirmation={amountInCents:number;lastDigits:string}
 const toCache=(items:LocalWithdrawal[]):Withdrawal[]=>items.map(item=>({id:item.id,amount:item.amountInCents/100,fee:0,netAmount:item.amountInCents/100,currency:item.currency,date:item.createdAt,status:'Concluído',account:'Conta cadastrada',lastDigits:item.destinationLastDigits}))
-
-const sendWithdrawalNotification=async(withdrawal:LocalWithdrawal)=>{
- if(!('Notification'in window)||Notification.permission!=='granted')return false
- const result=await pushSubscriptionService.send({eventId:`withdrawal-${withdrawal.id}`,type:'withdrawal_completed',title:'Saque realizado com sucesso',body:`Valor enviado: ${withdrawalMoney(withdrawal.amountInCents)}`,route:'/app/saques',createdAt:withdrawal.createdAt,currency:withdrawal.currency})
- return result.ok
-}
 
 export default function WithdrawalsPage(){
  const syncWithdrawalCache=useAppStore(state=>state.syncWithdrawalCache)
@@ -47,8 +40,7 @@ export default function WithdrawalsPage(){
    setAvailableInCents(result.availableBalanceInCents);setWithdrawals(result.withdrawals);syncWithdrawalCache(result.availableBalanceInCents/100,toCache(result.withdrawals))
    setAmount('');setModal(false);setConfirmation({amountInCents:result.withdrawal.amountInCents,lastDigits:result.withdrawal.destinationLastDigits})
    window.clearTimeout(confirmationTimer.current);confirmationTimer.current=window.setTimeout(()=>setConfirmation(null),5000)
-   if(!('Notification'in window)||Notification.permission!=='granted')setNotificationNotice('Ative as notificações do dispositivo para receber confirmações.')
-   else if(!await sendWithdrawalNotification(result.withdrawal))setNotificationNotice('Ative as notificações do dispositivo para receber confirmações.')
+   setNotificationNotice('Este saque é demonstrativo e não gera notificação financeira real.')
   }catch(requestError){setError((requestError as Error).message);setModal(false)}
   finally{processingRef.current=false;setProcessing(false)}
  }

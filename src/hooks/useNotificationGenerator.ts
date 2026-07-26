@@ -1,6 +1,5 @@
 import { useCallback,useEffect,useRef,useState } from 'react'
-import { notificationRoutes,notificationTitles } from '../lib/notificationCatalog'
-import { generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,variedValue,type GeneratorConfig,type GeneratorHistory,type GeneratorPreset,type GeneratorStatus } from '../lib/notificationGenerator'
+import { intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,type GeneratorConfig,type GeneratorHistory,type GeneratorPreset,type GeneratorStatus } from '../lib/notificationGenerator'
 import { pushSubscriptionService } from '../services/pushSubscriptionService'
 
 export function useNotificationGenerator(){
@@ -12,13 +11,10 @@ export function useNotificationGenerator(){
  const clearTimers=useCallback(()=>{if(timer.current)window.clearTimeout(timer.current);if(scheduled.current)window.clearTimeout(scheduled.current);timer.current=undefined;scheduled.current=undefined},[])
  useEffect(()=>clearTimers,[clearTimers])
  const patchHistory=useCallback((id:string,values:Partial<GeneratorHistory>)=>setHistory(items=>items.map(item=>item.id===id?{...item,...values}:item)),[])
- const deliver=useCallback(async(current:GeneratorConfig,index:number)=>{
-  const type=current.rotateTypes?current.types[index%current.types.length]:current.types[0],value=variedValue(current,previousValue.current),currency=current.rotateCurrencies?(['BRL','USD','EUR'] as const)[index%3]:current.currency
-  previousValue.current=value
-  const payload={eventId:`generator-${runId.current}-${index}`,type,commission:value,currency,createdAt:new Date().toISOString(),route:notificationRoutes[type],title:current.rotateTypes?notificationTitles[type]:current.title,body:generatorBody(current,value,currency)}
-  const result=await pushSubscriptionService.send(payload)
-  if(!result.ok)setMessage(result.message)
-  return result.ok
+ const deliver=useCallback(async(...args:[GeneratorConfig,number])=>{
+  void args
+  setMessage('Simulações financeiras não são enviadas ao dispositivo. Use o teste real de conexão.')
+  return false
  },[])
  const finish=useCallback((finalStatus:GeneratorStatus,text:string)=>{clearTimers();setStatus(finalStatus);setMessage(text);patchHistory(runId.current,{sent:count.current,status:finalStatus})},[clearTimers,patchHistory])
  const tick=useCallback(async()=>{
