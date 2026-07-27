@@ -12,8 +12,6 @@ import sendHandler from '../../api/push/send.js'
 import subscribeHandler from '../../api/push/subscribe.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
 import devicesHandler from '../../api/push/devices.js'
-// @ts-expect-error Rota dinâmica serverless em JavaScript.
-import deviceHandler from '../../api/push/devices/[id].js'
 
 type ApiResult={statusCode:number;body:unknown}
 
@@ -166,7 +164,7 @@ describe('backend de Push',()=>{
   const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>ownerQuery),update:vi.fn(()=>updateQuery)}))}
   createClientMock.mockReturnValue(client)
   const output=response()
-  await deviceHandler({method:'PATCH',headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'},body:{deviceName:'MacBook do Ronaldy'}},output)
+  await devicesHandler({method:'PATCH',headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'},body:{deviceName:'MacBook do Ronaldy'}},output)
   expect(output.result).toMatchObject({statusCode:200,body:{success:true}})
  })
 
@@ -177,7 +175,7 @@ describe('backend de Push',()=>{
   const update=vi.fn(()=>updateQuery),client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>ownerQuery),update}))}
   createClientMock.mockReturnValue(client)
   const output=response()
-  await deviceHandler({method,headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'},body},output)
+  await devicesHandler({method,headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'},body},output)
   expect(output.result).toMatchObject({statusCode:200,body:{success:true}})
   expect(update).toHaveBeenCalledWith(expect.objectContaining({enabled:false}))
  })
@@ -188,7 +186,7 @@ describe('backend de Push',()=>{
   const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>ownerQuery)}))}
   createClientMock.mockReturnValue(client)
   const output=response()
-  await deviceHandler({method:'DELETE',headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'}},output)
+  await devicesHandler({method:'DELETE',headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'}},output)
   expect(output.result).toMatchObject({statusCode:404,body:{code:'DEVICE_NOT_FOUND'}})
  })
 })
