@@ -2,7 +2,7 @@ import type { PeriodFilter } from '../types'
 
 export type Currency='BRL'|'USD'|'EUR'
 export type TransactionStatus='approved'|'pending'|'declined'|'refunded'|'chargeback'
-export interface FinancialTransaction{transactionId:string;ownerId?:string;productId?:string|null;buyerName:string|null;productName:string;paymentMethod:string;status:TransactionStatus;amountCents:number;grossAmountCents?:number;discountCents?:number;feeCents:number;netAmountCents?:number;commissionCents?:number;currency:Currency;occurredAt:string;updatedAt?:string}
+export interface FinancialTransaction{transactionId:string;ownerId?:string;productId?:string|null;buyerName:string|null;productName:string;paymentMethod:string;status:TransactionStatus;amountCents:number;grossAmountCents?:number;discountCents?:number;feeCents:number;netAmountCents?:number;commissionCents?:number;currency:Currency;occurredAt:string;updatedAt?:string;demo?:true}
 export interface ExchangeRate{baseCurrency:Currency;quoteCurrency:Currency;rate:number;source:string;observedAt:string}
 export interface ScenarioInput{todayRevenueCents:number;todayApprovedSales:number;averageTicketCents:number;approvalRate:number;refundRate:number;chargebackRate:number;dailyGrowthRate:number;weekdayFactors:number[];hourlyDistribution:number[];seed:number;currency:Currency}
 export interface FinancialMetrics{approvedRevenueCents:number;approvedSales:number;attemptedSales:number;averageTicketCents:number;approvalRate:number;refunds:number;chargebacks:number;feesCents:number;growthRate:number}

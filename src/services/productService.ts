@@ -3,7 +3,7 @@ import type { Product } from '../types'
 
 const fromRow=(row:Record<string,unknown>):Product=>({
  id:String(row.id),name:String(row.name),description:String(row.description||''),
- price:Number(row.price_cents||0)/100,billing:'Única',active:Boolean(row.active),
+ price:Number(row.price_cents||0)/100,currency:(row.currency==='USD'||row.currency==='EUR'?row.currency:'BRL'),billing:'Única',active:Boolean(row.active),
  sales:0,revenue:0,color:'#f15a24'
 })
 

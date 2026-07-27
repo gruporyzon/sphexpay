@@ -10,6 +10,6 @@ export function DashboardCurrencySelector({currency,onChange}:{currency:Currency
  return <label className="dashboard-currency-selector"><Coins/><span>Moeda de exibição</span><select aria-label="Moeda de exibição" value={currency} onChange={event=>onChange(event.target.value as Currency)}><option value="BRL">BRL — Real brasileiro</option><option value="USD">USD — Dólar americano</option><option value="EUR">EUR — Euro</option></select></label>
 }
 
-export function DashboardModeIndicator({mode}:{mode:'production'|'planning'}){
- return <span className={`dashboard-mode-indicator ${mode}`}>{mode==='planning'?'Planejamento':'Produção'}</span>
+export function DashboardModeIndicator({mode}:{mode:'production'|'planning'|'demo'}){
+ return <span className={`dashboard-mode-indicator ${mode}`}>{mode==='demo'?'Demonstração':mode==='planning'?'Planejamento':'Produção'}</span>
 }
