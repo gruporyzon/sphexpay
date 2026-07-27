@@ -1,7 +1,7 @@
 import { sendPushToUser } from './send-service.js'
 
 const formats={
- sale_approved:{title:'Venda aprovada!',route:'/app/vendas',kind:'commission'},
+ sale_approved:{title:'Venda aprovada!',route:'/app/transacoes',kind:'sale'},
  sale_pending:{title:'Venda pendente!',route:'/app/vendas',kind:'commission'},
  pix_created:{title:'Pix gerado!',route:'/app/transacoes',kind:'commission'},
  pix_paid:{title:'Pix pago!',route:'/app/transacoes',kind:'commission'},
@@ -11,7 +11,9 @@ const formats={
  boleto_paid:{title:'Boleto pago!',route:'/app/transacoes',kind:'commission'},
  subscription_approved:{title:'Assinatura aprovada!',route:'/app/assinaturas',kind:'commission'},
  subscription_renewed:{title:'Assinatura renovada!',route:'/app/assinaturas',kind:'commission'},
- withdrawal_completed:{title:'Saque realizado com sucesso',route:'/app/saques',kind:'withdrawal'}
+ withdrawal_completed:{title:'Saque realizado com sucesso',route:'/app/saques',kind:'withdrawal'},
+ refund_done:{title:'Reembolso realizado!',route:'/app/transacoes',kind:'commission'},
+ chargeback_received:{title:'Chargeback recebido!',route:'/app/transacoes',kind:'commission'}
 }
 
 export const formatMoney=(minor,currency='BRL')=>new Intl.NumberFormat(currency==='USD'?'en-US':currency==='EUR'?'de-DE':'pt-BR',{style:'currency',currency}).format(minor/100)
@@ -19,6 +21,7 @@ export const formatMoney=(minor,currency='BRL')=>new Intl.NumberFormat(currency=
 export async function notifyConfirmedFinancialEvent({client,userId,eventId,type,currency='BRL',commissionMinor,amountMinor,metadata,pushClient}){
  const format=formats[type]
  if(!format)throw Object.assign(new Error('UNSUPPORTED_FINANCIAL_EVENT'),{code:'UNSUPPORTED_FINANCIAL_EVENT'})
- const body=format.kind==='declined'?'Confira os detalhes da transação.':format.kind==='withdrawal'?`Valor enviado: ${formatMoney(amountMinor,currency)}`:`Sua comissão: ${formatMoney(commissionMinor,currency)}`
- return sendPushToUser({client,userId,eventId,type,title:format.title,body,route:format.route,metadata,pushClient})
+ const product=typeof metadata?.productName==='string'?metadata.productName.trim():''
+ const body=format.kind==='declined'?'Confira os detalhes da transação.':format.kind==='withdrawal'?`Valor enviado: ${formatMoney(amountMinor,currency)}`:format.kind==='sale'?`Produto: ${product||'Produto'} • Sua comissão: ${formatMoney(commissionMinor,currency)}`:`Sua comissão: ${formatMoney(commissionMinor,currency)}`
+ return sendPushToUser({client,userId,eventId,type,title:format.title,body,route:metadata?.route||format.route,metadata,pushClient})
 }

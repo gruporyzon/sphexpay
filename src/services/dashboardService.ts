@@ -3,9 +3,9 @@ import { supabase } from '../lib/supabase'
 import type { Currency,ExchangeRate,FinancialTransaction,ScenarioInput } from '../lib/dashboardFinance'
 
 const transactionFromRow=(row:Record<string,unknown>):FinancialTransaction=>({
- transactionId:String(row.transaction_id),ownerId:String(row.user_id||''),buyerName:typeof row.customer_name==='string'?row.customer_name:null,productName:String(row.product_name||'Produto'),
+ transactionId:String(row.transaction_id),ownerId:String(row.user_id||''),productId:typeof row.product_id==='string'?row.product_id:null,buyerName:typeof row.customer_display_name==='string'?row.customer_display_name:typeof row.customer_name==='string'?row.customer_name:null,productName:String(row.product_name_snapshot||row.product_name||'Produto'),
  paymentMethod:String(row.payment_method||'Pagamento'),status:row.status as FinancialTransaction['status'],amountCents:Number(row.amount_cents||0),
- feeCents:Number(row.fee_cents||0),currency:row.currency as Currency,occurredAt:String(row.financial_at||row.approved_at||row.occurred_at)
+ grossAmountCents:Number(row.gross_amount_cents??row.amount_cents??0),discountCents:Number(row.discount_cents||0),feeCents:Number(row.fee_cents||0),netAmountCents:Number(row.net_amount_cents??Math.max(0,Number(row.amount_cents||0)-Number(row.fee_cents||0))),commissionCents:Number(row.commission_cents||0),currency:row.currency as Currency,occurredAt:String(row.financial_at||row.approved_at||row.occurred_at),updatedAt:String(row.updated_at||row.persisted_at||row.occurred_at)
 })
 
 const scenarioFromRow=(row:Record<string,unknown>):ScenarioInput=>({
@@ -26,9 +26,15 @@ export const dashboardService={
  loadAdminAccess:isCurrentUserAdmin,
  async loadTransactions(userId:string,start:Date,end:Date){
   if(!supabase)return[] as FinancialTransaction[]
-  const {data,error}=await supabase.from('payment_transactions').select('transaction_id,user_id,customer_name,product_name,payment_method,status,amount_cents,fee_cents,currency,occurred_at,approved_at,refunded_at,chargeback_at,financial_at').eq('user_id',userId).gte('financial_at',start.toISOString()).lte('financial_at',end.toISOString()).order('financial_at',{ascending:false}).limit(2000)
+  const {data,error}=await supabase.from('payment_transactions').select('transaction_id,user_id,product_id,customer_name,customer_display_name,product_name,product_name_snapshot,payment_method,status,amount_cents,gross_amount_cents,discount_cents,fee_cents,net_amount_cents,commission_cents,currency,occurred_at,approved_at,refunded_at,chargeback_at,financial_at,updated_at').eq('user_id',userId).gte('financial_at',start.toISOString()).lte('financial_at',end.toISOString()).order('financial_at',{ascending:false}).limit(2000)
   if(error)throw new Error('DASHBOARD_TRANSACTIONS_UNAVAILABLE')
   return(data||[]).map(row=>transactionFromRow(row as Record<string,unknown>))
+ },
+ async loadEligibleRevenue(){
+  if(!supabase)return 0
+  const {data,error}=await supabase.rpc('dashboard_eligible_revenue')
+  if(error)throw new Error('ELIGIBLE_REVENUE_UNAVAILABLE')
+  return Number(data||0)
  },
  subscribe(userId:string,onTransaction:(transaction:FinancialTransaction)=>void,onStatus:(status:'live'|'reconnecting'|'unavailable')=>void):RealtimeChannel|null{
   if(!supabase){onStatus('unavailable');return null}

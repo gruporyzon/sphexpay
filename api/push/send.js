@@ -17,12 +17,13 @@ export default async function handler(request,response){
  let input
  try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}
  catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})}
- if(input.type!=='push_test')return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Este endpoint aceita somente testes do dispositivo.'})
+ if(input.type!=='push_test'&&input.type!=='infrastructure_test')return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Este endpoint aceita somente testes técnicos.'})
  const eventId=clean(input.eventId)
- if(!eventId.startsWith('push-test-')||eventId.length>160)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
+ const prefix=input.type==='infrastructure_test'?'infrastructure-test-':'push-test-'
+ if(!eventId.startsWith(prefix)||eventId.length>160)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const result=await sendPushToUser({
-  client,userId:user.id,eventId,type:'push_test',title:'Notificações ativadas',
-  body:'Seu dispositivo está conectado.',route:'/app/dashboard'
+  client,userId:user.id,eventId,type:input.type,title:input.type==='infrastructure_test'?'Teste técnico da infraestrutura':'Notificações ativadas',
+  body:input.type==='infrastructure_test'?'Realtime e Push estão sendo verificados. Nenhuma venda foi criada.':'Seu dispositivo está conectado.',route:'/app'
  }).catch(error=>({success:false,code:error?.code||'PUSH_DELIVERY_FAILED',sent:0,failed:0,duplicates:0}))
  if(result.success)return response.status(200).json(result)
  if(result.code==='NO_ACTIVE_SUBSCRIPTIONS')return response.status(404).json(result)

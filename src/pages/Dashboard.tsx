@@ -19,6 +19,7 @@ import { formatCents } from '../lib/currencyFormat'
 import { RevenueSection } from '../components/dashboard/RevenueSection'
 import { LiveSalesFeedContent,LiveSalesSkeleton } from '../components/dashboard/LiveSalesTicker'
 import { RealtimeStatus } from '../components/dashboard/RealtimeStatus'
+import { LiveOperationsPanel } from '../components/dashboard/LiveOperationsPanel'
 
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
 
@@ -68,7 +69,7 @@ export default function Dashboard(){
   {adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}
   <Card className="dashboard-filter-bar"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/>{!planning&&<RealtimeStatus status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</Card>
   {(rateError||unavailableConversions>0)&&!planning&&<p className="dashboard-conversion-notice">{unavailableConversions?`${unavailableConversions} transação(ões) permanecem na moeda original e não entram no total convertido porque não há taxa disponível.`:'As taxas de conversão estão temporariamente indisponíveis. Valores originais foram preservados.'}</p>}
-  {!planning&&<NextAwardCard currentRevenue={metrics.approvedRevenueCents/100}/>}
+  {!planning&&<NextAwardCard currentRevenue={live.eligibleRevenueCents/100}/>}
   <section className={`dashboard-metrics dashboard-metrics-compact ${loading?'is-loading':''}`} aria-label="Indicadores financeiros">{cards.map((stat,index)=><PremiumStatCard key={stat.label} stat={stat} index={index} refreshing={loading} format={formatMetric(stat.format)}/>)}</section>
   <section className="dashboard-content"><RevenueSection label={periodTitle(period)} totalCents={chartTotal} growth={metrics.growthRate} data={series} currency={planning?planner.scenario.currency:currency} loading={loading} error={error} planning={Boolean(planning)}/>{loading?<LiveSalesSkeleton/>:<LiveSalesFeedContent sales={feed} displayCurrency={planning?planner.scenario.currency:currency} rates={planning?[]:rates} planning={Boolean(planning)}/>}</section>
   <section className="dashboard-insight-grid">
@@ -76,5 +77,6 @@ export default function Dashboard(){
    <Card><div className="insight-heading"><div><span className="section-eyebrow"><ShieldAlert/> INTEGRIDADE</span><h2>{planning?'Cenário isolado':'Fonte financeira'}</h2></div></div><p>{planning?'A timeline e os indicadores são projeções determinísticas. Nada é persistido como venda ou enviado a notificações e relatórios.':'Somente transações persistidas para esta conta, protegidas por RLS, entram nos indicadores.'}</p></Card>
   </section>
   <section className="dashboard-bottom-grid"><Card><div className="insight-heading"><div><span className="section-eyebrow"><i/> RELACIONAMENTO</span><h2>Top compradores</h2></div></div>{planning?<div className="dashboard-inline-empty">Compradores reais não aparecem no planejamento.</div>:<div className="dashboard-buyers">{buyers.map(buyer=><div key={buyer.name}><span><b>{buyer.name}</b><small>{buyer.count} compras</small></span><strong>{formatCents(buyer.total,currency)}</strong></div>)}{!buyers.length&&<div className="dashboard-inline-empty">Nenhum comprador registrado neste período.</div>}</div>}</Card><Card className="dashboard-alert-card"><div className="insight-heading"><div><span className="section-eyebrow"><ShieldAlert/> COERÊNCIA</span><h2>Resumo</h2></div></div><p><b>{metrics.approvedSales} vendas aprovadas.</b> Ticket médio de {formatCents(metrics.averageTicketCents,planning?planner.scenario.currency:currency)} e faturamento de {formatCents(metrics.approvedRevenueCents,planning?planner.scenario.currency:currency)}.</p></Card></section>
+  {admin&&planning&&<LiveOperationsPanel/>}
  </div>
 }
