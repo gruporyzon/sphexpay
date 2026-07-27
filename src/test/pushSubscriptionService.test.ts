@@ -1,6 +1,7 @@
 import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest'
 const {getSessionMock}=vi.hoisted(()=>({getSessionMock:vi.fn()}))
 vi.mock('../lib/supabase',()=>({supabase:{auth:{getSession:getSessionMock}}}))
+vi.mock('../services/deviceIdentityService',()=>({getOrCreateDeviceIdentity:vi.fn(async()=>({deviceId:'22222222-2222-4222-8222-222222222222',automaticName:'Chrome no macOS',browser:'Chrome',operatingSystem:'macOS',platform:'desktop',displayMode:'browser',locale:'pt-BR',timezone:'America/Sao_Paulo'}))}))
 import { getVapidPublicKey,pushSubscriptionService,requiresStandaloneForPush,urlBase64ToUint8Array } from '../services/pushSubscriptionService'
 
 describe('pushSubscriptionService',()=>{
@@ -47,7 +48,7 @@ describe('pushSubscriptionService',()=>{
   const subscribe=vi.fn(async()=>subscription)
   const registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>null),subscribe}}
   Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),register:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
-  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({registered:true,active:true,deviceId:'device-1'}),{status:200,headers:{'Content-Type':'application/json'}}))
+  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({registered:true,device:{id:'11111111-1111-4111-8111-111111111111',deviceId:'22222222-2222-4222-8222-222222222222',name:'Chrome no macOS',browser:'Chrome',operatingSystem:'macOS',enabled:true,lastSeenAt:'agora'}}),{status:200,headers:{'Content-Type':'application/json'}}))
   vi.stubGlobal('fetch',fetchMock)
   const result=await pushSubscriptionService.subscribe()
   expect(result.ok).toBe(true)
@@ -69,7 +70,7 @@ describe('pushSubscriptionService',()=>{
   const subscribe=vi.fn(async()=>newSubscription)
   const registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>oldSubscription),subscribe}}
   Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),register:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
-  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({registered:true,active:true,deviceId:'device-new'}),{status:200,headers:{'Content-Type':'application/json'}})))
+  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({registered:true,device:{id:'11111111-1111-4111-8111-111111111111',deviceId:'22222222-2222-4222-8222-222222222222',name:'Chrome no macOS',browser:'Chrome',operatingSystem:'macOS',enabled:true,lastSeenAt:'agora'}}),{status:200,headers:{'Content-Type':'application/json'}})))
   const result=await pushSubscriptionService.subscribe()
   expect(result.ok).toBe(true)
   expect(unsubscribe).toHaveBeenCalled()
@@ -84,7 +85,7 @@ describe('pushSubscriptionService',()=>{
   const existing={endpoint:'https://push.example/current',expirationTime:null,options:{applicationServerKey:bytes.buffer},toJSON:()=>({keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value-long'}})}
   const subscribe=vi.fn(),registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>existing),subscribe}}
   Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
-  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({registered:true,active:true,deviceId:'device-current'}),{status:200})))
+  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({registered:true,device:{id:'11111111-1111-4111-8111-111111111111',deviceId:'22222222-2222-4222-8222-222222222222',name:'Chrome no macOS',browser:'Chrome',operatingSystem:'macOS',enabled:true,lastSeenAt:'agora'}}),{status:200})))
   expect((await pushSubscriptionService.subscribe()).ok).toBe(true)
   expect(subscribe).not.toHaveBeenCalled()
  })

@@ -26,13 +26,15 @@ export default async function handler(request,response){
  if(!eventId.startsWith(prefix)||eventId.length>160)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const generatorType=safeText(input.notificationType,60)
  const title=generator?safeText(input.title,70):'SphexPay conectada'
- const body=generator?safeText(input.body,180):'As notificações deste dispositivo estão funcionando.'
- const subscriptionId=safeText(input.subscriptionId,64)
- if(subscriptionId&&!/^[0-9a-f-]{36}$/i.test(subscriptionId))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'O dispositivo selecionado é inválido.'})
- if(generator&&(!allowedGeneratorTypes.has(generatorType)||!title||!body||!subscriptionId))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
+ const body=generator?safeText(input.body,180):'Este dispositivo está pronto para receber notificações.'
+ const targetDeviceId=safeText(input.targetDeviceId,64),targetDeviceIds=Array.isArray(input.targetDeviceIds)?[...new Set(input.targetDeviceIds.map(value=>safeText(value,64)))]:[]
+ const uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+ if((targetDeviceId&&!uuid(targetDeviceId))||targetDeviceIds.some(value=>!uuid(value))||targetDeviceIds.length>50)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'O dispositivo selecionado é inválido.'})
+ if(input.type==='infrastructure_test'&&!targetDeviceId)return response.status(400).json({success:false,code:'DEVICE_ID_REQUIRED',message:'O dispositivo atual não foi informado.'})
+ if(generator&&(!allowedGeneratorTypes.has(generatorType)||!title||!body||(!targetDeviceId&&!targetDeviceIds.length&&input.target!=='all')))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const result=await sendPushToUser({
   client,userId:user.id,eventId,type:generator?generatorType:input.type,title,body,
-  route:'/app/configuracoes',tag:generator?eventId:'sphexpay-infrastructure-test',subscriptionId:subscriptionId||undefined,
+  route:'/app/configuracoes',tag:generator?eventId:'sphexpay-infrastructure-test',deviceId:targetDeviceId||undefined,deviceIds:targetDeviceIds.length?targetDeviceIds:undefined,
   metadata:generator?{source:'manual'}:{}
  }).catch(error=>({success:false,code:error?.code||'PUSH_DELIVERY_FAILED',sent:0,failed:0,duplicates:0}))
  if(result.success)return response.status(200).json(result)

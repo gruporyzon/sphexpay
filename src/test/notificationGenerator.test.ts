@@ -4,10 +4,11 @@ import { defaultGeneratorConfig,formatGeneratorValue,generatorBody,intervalMilli
 import { useNotificationGenerator } from '../hooks/useNotificationGenerator'
 import { pushSubscriptionService } from '../services/pushSubscriptionService'
 vi.mock('../lib/supabase',()=>({supabase:{functions:{invoke:vi.fn(async()=>({error:null}))}}}))
-vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),devices:vi.fn(async()=>[{id:'device-1',name:'Mac',platform:'macOS',browser:'Safari',lastSeen:'agora'}]),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendGenerated:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
+const mockDevice={id:'11111111-1111-4111-8111-111111111111',deviceId:'22222222-2222-4222-8222-222222222222',name:'Mac',platform:'desktop',browser:'Safari',operatingSystem:'macOS',type:'Navegador',status:'Conectado' as const,enabled:true,lastSeenAt:new Date().toISOString(),isCurrentDevice:true}
+vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),devices:vi.fn(async()=>[mockDevice]),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendGenerated:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
 
 describe('motor do gerador inteligente',()=>{
- beforeEach(()=>{localStorage.clear();vi.mocked(pushSubscriptionService.devices).mockResolvedValue([{id:'device-1',name:'Mac',platform:'macOS',browser:'Safari',lastSeen:'agora'}])})
+ beforeEach(()=>{localStorage.clear();vi.mocked(pushSubscriptionService.devices).mockResolvedValue([mockDevice])})
 
  it('converte intervalos sem permitir ciclos abaixo de um segundo',()=>{
   expect(intervalMilliseconds({...defaultGeneratorConfig,intervalValue:.1})).toBe(1000)

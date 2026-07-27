@@ -22,6 +22,6 @@ export async function notifyConfirmedFinancialEvent({client,userId,eventId,type,
  const format=formats[type]
  if(!format)throw Object.assign(new Error('UNSUPPORTED_FINANCIAL_EVENT'),{code:'UNSUPPORTED_FINANCIAL_EVENT'})
  const product=typeof metadata?.productName==='string'?metadata.productName.trim():''
- const body=format.kind==='declined'?'Confira os detalhes da transação.':format.kind==='withdrawal'?`Valor enviado: ${formatMoney(amountMinor,currency)}`:format.kind==='sale'?`Produto: ${product||'Produto'} • Sua comissão: ${formatMoney(commissionMinor,currency)}`:`Sua comissão: ${formatMoney(commissionMinor,currency)}`
+ const body=format.kind==='declined'?'Confira os detalhes da transação.':format.kind==='withdrawal'?`Valor enviado: ${formatMoney(amountMinor,currency)}`:format.kind==='sale'?`${product||'Produto'} • Sua comissão: ${formatMoney(commissionMinor,currency)}`:`Sua comissão: ${formatMoney(commissionMinor,currency)}`
  return sendPushToUser({client,userId,eventId,type,title:format.title,body,route:metadata?.route||format.route,metadata,pushClient})
 }

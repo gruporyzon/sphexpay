@@ -10,7 +10,7 @@ export function useNotificationGenerator(){
  const selectedDevice=useRef('')
  useEffect(()=>{saveGeneratorData(config,history,presets)},[config,history,presets])
  const selectDevice=useCallback((id:string)=>{selectedDevice.current=id;setSelectedDeviceId(id)},[])
- const refreshDevices=useCallback(async()=>{const active=await pushSubscriptionService.devices();setDevices(active);const next=active.some(device=>device.id===selectedDevice.current)?selectedDevice.current:active[0]?.id||'';selectDevice(next);return active},[selectDevice])
+ const refreshDevices=useCallback(async()=>{const active=(await pushSubscriptionService.devices()).filter(device=>device.enabled);setDevices(active);const next=selectedDevice.current==='all'||active.some(device=>device.deviceId===selectedDevice.current)?selectedDevice.current:active.find(device=>device.isCurrentDevice)?.deviceId||active[0]?.deviceId||'';selectDevice(next);return active},[selectDevice])
  useEffect(()=>{void refreshDevices()},[refreshDevices])
  const clearTimers=useCallback(()=>{if(timer.current)window.clearTimeout(timer.current);if(scheduled.current)window.clearTimeout(scheduled.current);timer.current=undefined;scheduled.current=undefined},[])
  useEffect(()=>clearTimers,[clearTimers])

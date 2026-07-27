@@ -10,6 +10,10 @@ import { pushConfiguration } from '../../api/push/config.js'
 import sendHandler from '../../api/push/send.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
 import subscribeHandler from '../../api/push/subscribe.js'
+// @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
+import devicesHandler from '../../api/push/devices.js'
+// @ts-expect-error Rota dinâmica serverless em JavaScript.
+import deviceHandler from '../../api/push/devices/[id].js'
 
 type ApiResult={statusCode:number;body:unknown}
 
@@ -83,7 +87,7 @@ describe('backend de Push',()=>{
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
   const output=response()
   await subscribeHandler({method:'POST',headers:{},body:{}},output)
-  expect(output.result).toMatchObject({statusCode:401,body:{registered:false,code:'SESSION_MISSING'}})
+  expect(output.result).toMatchObject({statusCode:401,body:{registered:false,code:'AUTH_REQUIRED'}})
  })
 
  it('retorna 400 para subscription com chaves inválidas',async()=>{
@@ -122,21 +126,69 @@ describe('backend de Push',()=>{
  it('registra e confirma no Supabase com upsert por usuário e endpoint',async()=>{
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
-  const maybeSingle=vi.fn(async()=>({data:{id:'device-1',enabled:true,user_id:'user-1'},error:null}))
-  const eqEnabled=vi.fn(()=>({maybeSingle}))
-  const eqEndpoint=vi.fn(()=>({eq:eqEnabled}))
-  const eqUser=vi.fn(()=>({eq:eqEndpoint}))
-  const select=vi.fn(()=>({eq:eqUser}))
+  const deviceId='22222222-2222-4222-8222-222222222222'
+  const maybeSingle=vi.fn()
+   .mockResolvedValueOnce({data:null,error:null})
+   .mockResolvedValueOnce({data:{id:'11111111-1111-4111-8111-111111111111',device_id:deviceId,device_name:'Chrome no macOS',automatic_name:'Chrome no macOS',browser:'Chrome',operating_system:'macOS',enabled:true,user_id:'user-1',last_seen_at:'2026-07-27T12:00:00Z'},error:null})
+  const query={eq:vi.fn(()=>query),maybeSingle}
+  const select=vi.fn(()=>query)
   const upsert=vi.fn(async()=>({error:null}))
   const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}}}))},from:vi.fn(()=>({upsert,select}))}
   createClientMock.mockReturnValue(client)
   const output=response()
   const p256dh=Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:index)).toString('base64url')
   const auth=Buffer.from(Uint8Array.from({length:16},(_,index)=>index+1)).toString('base64url')
-  await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{endpoint:'https://push.example/device',expirationTime:null,keys:{p256dh,auth},deviceName:'MacBook'}},output)
+  await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{deviceId,subscription:{endpoint:'https://push.example/device',expirationTime:null,keys:{p256dh,auth}},automaticName:'Chrome no macOS',browser:'Chrome',operatingSystem:'macOS',platform:'desktop',displayMode:'browser',locale:'pt-BR',timezone:'America/Sao_Paulo'}},output)
   expect(output.result.statusCode).toBe(200)
   expect(client.from).toHaveBeenCalledWith('push_subscriptions')
-  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',endpoint:'https://push.example/device',enabled:true}),{onConflict:'user_id,endpoint'})
-  expect(output.result.body).toEqual({registered:true,active:true,deviceId:'device-1'})
+  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',device_id:deviceId,endpoint_hash:expect.any(String),enabled:true}),{onConflict:'user_id,device_id'})
+  expect(output.result.body).toMatchObject({registered:true,device:{deviceId,name:'Chrome no macOS',enabled:true}})
+ })
+
+ it('lista somente dispositivos do usuário e identifica o atual',async()=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const deviceId='22222222-2222-4222-8222-222222222222'
+  const order=vi.fn(async()=>({data:[{id:'11111111-1111-4111-8111-111111111111',device_id:deviceId,device_name:'MacBook do Ronaldy',browser:'Chrome',operating_system:'macOS',platform:'desktop',display_mode:'browser',enabled:true,last_seen_at:new Date().toISOString(),last_success_at:null,last_error:null,failure_count:0}],error:null}))
+  const query={eq:vi.fn(()=>({order})),order}
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>query)}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await devicesHandler({method:'GET',headers:{authorization:'Bearer token'},query:{currentDeviceId:deviceId}},output)
+  expect(output.result).toMatchObject({statusCode:200,body:{success:true,devices:[{deviceId,name:'MacBook do Ronaldy',isCurrentDevice:true,status:'Conectado'}]}})
+  expect(query.eq).toHaveBeenCalledWith('user_id','user-1')
+ })
+
+ it('permite renomear somente dispositivo pertencente ao usuário',async()=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const maybeSingle=vi.fn(async()=>({data:{id:'11111111-1111-4111-8111-111111111111',device_id:'22222222-2222-4222-8222-222222222222'},error:null}))
+  const ownerQuery={eq:vi.fn(()=>ownerQuery),maybeSingle}
+  const updateQuery={eq:vi.fn(()=>updateQuery),then:(resolve:(value:unknown)=>void)=>resolve({error:null})}
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>ownerQuery),update:vi.fn(()=>updateQuery)}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await deviceHandler({method:'PATCH',headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'},body:{deviceName:'MacBook do Ronaldy'}},output)
+  expect(output.result).toMatchObject({statusCode:200,body:{success:true}})
+ })
+
+ it.each([['PATCH',{enabled:false}],['DELETE',undefined]])('%s desativa dispositivo pertencente ao usuário',async(method,body)=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const maybeSingle=vi.fn(async()=>({data:{id:'11111111-1111-4111-8111-111111111111',device_id:'22222222-2222-4222-8222-222222222222'},error:null}))
+  const ownerQuery={eq:vi.fn(()=>ownerQuery),maybeSingle},updateQuery={eq:vi.fn(()=>updateQuery),then:(resolve:(value:unknown)=>void)=>resolve({error:null})}
+  const update=vi.fn(()=>updateQuery),client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>ownerQuery),update}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await deviceHandler({method,headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'},body},output)
+  expect(output.result).toMatchObject({statusCode:200,body:{success:true}})
+  expect(update).toHaveBeenCalledWith(expect.objectContaining({enabled:false}))
+ })
+
+ it('não permite acessar dispositivo de outra conta',async()=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const ownerQuery={eq:vi.fn(()=>ownerQuery),maybeSingle:vi.fn(async()=>({data:null,error:null}))}
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))},from:vi.fn(()=>({select:vi.fn(()=>ownerQuery)}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await deviceHandler({method:'DELETE',headers:{authorization:'Bearer token'},query:{id:'11111111-1111-4111-8111-111111111111'}},output)
+  expect(output.result).toMatchObject({statusCode:404,body:{code:'DEVICE_NOT_FOUND'}})
  })
 })
