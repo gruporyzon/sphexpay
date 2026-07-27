@@ -113,6 +113,20 @@ describe('backend de Push',()=>{
   expect(output.result.body).toEqual({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'O armazenamento server-side não está configurado.'})
  })
 
+ it('aceita payload manual seguro e limita a busca aos dispositivos do usuário',async()=>{
+  configureVapid()
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const query={eq:vi.fn(()=>query),in:vi.fn(()=>query),then:(resolve:(value:unknown)=>void)=>resolve({data:[],error:null})}
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}}}))},from:vi.fn(()=>({select:vi.fn(()=>query)}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await sendHandler({method:'POST',headers:{authorization:'Bearer token'},body:{eventId:'manual-11111111-1111-4111-8111-111111111111',type:'manual_notification',notificationType:'sale_approved',title:'Venda aprovada!',body:'Plano • R$ 10,00',route:'/app/transacoes',icon:'/icons/sphexpay-app-192.png',targetDeviceIds:['22222222-2222-4222-8222-222222222222'],metadata:{currency:'BRL'}}},output)
+  expect(output.result).toMatchObject({statusCode:404,body:{success:false,code:'NO_ACTIVE_SUBSCRIPTIONS'}})
+  expect(query.eq).toHaveBeenCalledWith('user_id','user-1')
+  expect(query.in).toHaveBeenCalledWith('device_id',['22222222-2222-4222-8222-222222222222'])
+ })
+
  it('ignora SUPABASE_URL inválida e usa a URL pública válida como fallback seguro',()=>{
   configureVapid()
   vi.stubEnv('SUPABASE_URL','valor-invalido')
