@@ -198,3 +198,71 @@
   .security-visual{width:100%;max-width:100%}
   .security-visual>div{width:min(100%,300px)}
 }
+
+/* iOS safe areas and compact public navigation */
+@media(max-width:900px){
+ .public-header{
+  top:0;
+  left:0;
+  width:100%;
+  height:calc(64px + var(--safe-top));
+  min-height:calc(64px + var(--safe-top));
+  transform:none;
+  padding-top:max(10px,var(--safe-top));
+  padding-right:max(16px,var(--safe-right));
+  padding-bottom:8px;
+  padding-left:max(16px,var(--safe-left));
+  background:linear-gradient(180deg,#09090af2,#09090ad9);
+  backdrop-filter:blur(14px)
+ }
+ .public-header.scrolled{top:0;width:100%;height:calc(64px + var(--safe-top));padding-top:max(10px,var(--safe-top));border-width:0 0 1px;border-radius:0}
+ .public-logo{display:flex;align-items:center;min-width:0}
+ .public-logo .sphexpay-brand{min-width:0}
+ .public-logo .sphexpay-brand img{width:36px;height:36px}
+ .public-logo .sphexpay-wordmark{overflow:visible;font-size:18px}
+ .public-menu{flex:0 0 44px;width:44px;height:44px;border-radius:12px}
+ .public-menu:focus-visible{background:#ffffff12}
+ .public-header nav{
+  position:fixed;
+  top:calc(64px + var(--safe-top));
+  right:max(12px,var(--safe-right));
+  left:max(12px,var(--safe-left));
+  max-height:calc(100dvh - 76px - var(--safe-top) - var(--safe-bottom));
+  padding:18px 18px max(18px,var(--safe-bottom))
+ }
+ .public-header nav>a{display:flex;align-items:center;min-height:44px}
+ .public-mobile-actions>a{min-height:44px}
+ .landing-hero{padding-top:calc(96px + var(--safe-top))}
+}
+@media(max-width:680px){
+ .landing{overflow-x:clip}
+ .landing-hero{
+  min-height:0;
+  grid-template-columns:minmax(0,1fr);
+  padding-right:max(16px,var(--safe-right));
+  padding-bottom:72px;
+  padding-left:max(16px,var(--safe-left))
+ }
+ .landing-hero-copy{width:100%;max-width:560px}
+ .landing-kicker{justify-content:center;font-size:clamp(7px,2.4vw,9px);line-height:1.5}
+ .landing-hero h1{max-width:12ch;margin:18px auto 16px;font-size:clamp(38px,12vw,54px);line-height:1;overflow-wrap:normal}
+ .landing-hero-copy>p{max-width:38rem;font-size:clamp(12px,3.7vw,15px)}
+ .landing-hero-actions{width:100%;gap:10px;margin-top:24px}
+ .landing-hero-actions>a{min-height:48px}
+ .landing-hero-visual{width:100%;min-width:0;margin-top:34px}
+ .landing-dashboard{width:100%;height:clamp(265px,82vw,345px);left:auto;margin:0;transform:none}
+ .landing-results,.feature-zone,.faq-section,.rewards-section,.payment-section,.intelligence-section,.security-section{
+  padding-right:max(18px,var(--safe-right));
+  padding-left:max(18px,var(--safe-left))
+ }
+ .landing-cta{padding-right:max(20px,var(--safe-right));padding-bottom:max(90px,var(--safe-bottom));padding-left:max(20px,var(--safe-left))}
+ .public-footer{padding-right:max(25px,var(--safe-right));padding-bottom:max(25px,var(--safe-bottom));padding-left:max(25px,var(--safe-left))}
+}
+@media(max-width:359px){
+ .public-header{padding-right:max(12px,var(--safe-right));padding-left:max(12px,var(--safe-left))}
+ .public-logo .sphexpay-wordmark{margin-left:8px;font-size:16px}
+ .landing-hero h1{font-size:clamp(35px,11.5vw,42px)}
+}
+@media(prefers-reduced-motion:reduce){
+ .landing *,.landing *::before,.landing *::after{animation:none!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
