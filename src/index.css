@@ -389,6 +389,67 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  }
 }
 
+/* Mobile podium: first place on top, second and third below. */
+@media(max-width:700px){
+ .competition-podium-section{
+  min-width:0;
+  max-width:100%;
+  overflow:visible;
+ }
+ .competition-podium-section>header{min-width:0}
+ .competition-podium-section>header h2{max-width:100%;font-size:clamp(1.35rem,6vw,1.8rem);line-height:1.12;overflow-wrap:anywhere;text-wrap:balance}
+ .competition-podium{
+  width:100%;
+  min-width:0;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  align-items:stretch;
+  gap:12px;
+  margin-top:38px;
+ }
+ .competition-podium .podium-place{
+  width:100%;
+  min-width:0;
+  min-height:224px;
+  padding:22px 10px 24px;
+  overflow:visible;
+ }
+ .competition-podium .podium-1{
+  grid-column:1/-1;
+  min-height:268px;
+ }
+ .competition-podium .podium-2,.competition-podium .podium-3{min-height:224px}
+ .competition-podium .podium-place b{
+  min-width:0;
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.25;
+ }
+ .competition-podium .podium-place small{
+  max-width:100%;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+ }
+ .competition-podium .podium-place>span:not(.competition-avatar){
+  max-width:100%;
+  text-align:center;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+ }
+ .competition-podium .podium-place>i{right:8px;bottom:7px;z-index:0;font-size:50px;line-height:1}
+ .competition-podium .podium-place>.competition-avatar,
+ .competition-podium .podium-place>b,
+ .competition-podium .podium-place>strong,
+ .competition-podium .podium-place>small,
+ .competition-podium .podium-place>span,
+ .competition-podium .podium-place>time{position:relative;z-index:1}
+ .competition-podium .podium-crown{z-index:2;top:-30px}
+}
+@media(max-width:359px){
+ .competition-podium{grid-template-columns:minmax(0,1fr);gap:12px}
+ .competition-podium .podium-1,.competition-podium .podium-2,.competition-podium .podium-3{grid-column:1;min-height:218px}
+}
+
 /* Push notification studio */
 .push-settings-shell{overflow:hidden}.push-studio{min-width:0}.push-studio-header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:30px 32px;border-bottom:1px solid var(--line);background:radial-gradient(circle at 88% 0,color-mix(in srgb,var(--orange) 13%,transparent),transparent 34%)}.push-studio-header>div:first-child>span{color:var(--orange);font-size:8px;font-weight:850;letter-spacing:.17em}.push-studio-header h2{margin-top:7px;font-size:clamp(24px,3vw,36px);line-height:1;letter-spacing:-.05em}.push-studio-header p{margin-top:9px;color:var(--muted);font-size:11px}.push-connection{display:flex;align-items:center;gap:7px;flex:0 0 auto;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--muted);font-size:9px;font-weight:750}.push-connection i{width:7px;height:7px;border-radius:50%}.push-connection.connected i{background:#22c55e;box-shadow:0 0 0 4px #22c55e18}.push-connection.pending i{background:#eab308;box-shadow:0 0 0 4px #eab30818}.push-connection.disconnected i{background:#ef4444;box-shadow:0 0 0 4px #ef444418}
 .push-activation{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;margin:22px 30px 0;padding:16px 18px;border:1px solid color-mix(in srgb,var(--orange) 28%,var(--line));border-radius:16px;background:linear-gradient(105deg,var(--orange-soft),var(--panel))}.push-activation-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--orange);color:#fff;box-shadow:0 10px 24px color-mix(in srgb,var(--orange) 28%,transparent)}.push-activation-icon svg{width:18px}.push-activation h3{font-size:12px}.push-activation p{margin-top:4px;color:var(--muted);font-size:9px}.push-activation .btn{min-height:44px}.push-feedback{margin:15px 30px 0;padding:10px 13px;border-radius:11px;background:var(--orange-soft);color:var(--orange);font-size:10px}.push-feedback.sent{background:#22c55e14;color:#168153}.push-feedback.failed{background:#ef444414;color:#dc3c3c}
