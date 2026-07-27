@@ -5,7 +5,9 @@ import { sendPushToUser } from './send-service.js'
 const clean=value=>typeof value==='string'?value.trim():''
 const safeText=(value,max)=>clean(value).slice(0,max)
 const allowedGeneratorTypes=new Set(['sale_approved','sale_pending','pix_generated','pix_approved','pix_paid','credit_card_approved','credit_card_refused','boleto_generated','boleto_paid','subscription_approved','subscription_renewed','refund_done','chargeback_received','withdrawal_requested','withdrawal_sent','withdrawal_completed','payment_refused'])
-const allowedManualTypes=new Set(['sale_approved','pix_generated','pix_paid','credit_card_approved','credit_card_refused','boleto_generated','boleto_paid','subscription_renewed','withdrawal_completed','refund_done','chargeback_received','custom'])
+const allowedManualTypes=new Set(['sale_approved','sale_pending','pix_generated','pix_paid','credit_card_approved','credit_card_refused','boleto_generated','boleto_paid','subscription_renewed','withdrawal_completed','refund_done','chargeback_received','custom'])
+const requestWindows=new Map()
+const rateLimit=(userId)=>{const now=Date.now(),windowStart=now-60_000,requests=(requestWindows.get(userId)||[]).filter(value=>value>windowStart);if(requests.length>=60)return false;requests.push(now);requestWindows.set(userId,requests);return true}
 
 export default async function handler(request,response){
  if(request.method!=='POST')return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})
@@ -17,6 +19,7 @@ export default async function handler(request,response){
  const client=createClient(supabaseUrl(),serviceRoleKey())
  const {data:{user}}=await client.auth.getUser(token)
  if(!user)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
+ if(!rateLimit(user.id))return response.status(429).json({success:false,code:'RATE_LIMITED',message:'Limite de envios atingido. Aguarde um minuto.'})
  let input
  try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}
  catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})}

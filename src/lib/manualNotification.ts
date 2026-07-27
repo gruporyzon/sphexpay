@@ -1,9 +1,10 @@
-export type ManualNotificationType='sale_approved'|'pix_generated'|'pix_paid'|'credit_card_approved'|'credit_card_refused'|'boleto_generated'|'boleto_paid'|'subscription_renewed'|'withdrawal_completed'|'refund_done'|'chargeback_received'|'custom'
+export type ManualNotificationType='sale_approved'|'sale_pending'|'pix_generated'|'pix_paid'|'credit_card_approved'|'credit_card_refused'|'boleto_generated'|'boleto_paid'|'subscription_renewed'|'withdrawal_completed'|'refund_done'|'chargeback_received'|'custom'
 export type ManualCurrency='BRL'|'USD'|'EUR'
 export interface ManualNotificationDraft{notificationType:ManualNotificationType;title:string;body:string;value:string;currency:ManualCurrency;product:string;customer:string;method:string;route:string;icon:string;showTime:boolean}
 type Template={label:string;title:string;body:string}
 export const manualNotificationTemplates:Record<ManualNotificationType,Template>={
  sale_approved:{label:'Venda aprovada',title:'Venda aprovada!',body:'{produto} • Sua comissão: {valor}'},
+ sale_pending:{label:'Venda pendente',title:'Venda pendente',body:'Existe um pagamento de {valor} aguardando confirmação.'},
  pix_generated:{label:'Pix criado',title:'Pix criado',body:'O Pix de {valor} foi criado para {cliente}.'},
  pix_paid:{label:'Pix pago',title:'Pix pago!',body:'Pagamento de {valor} confirmado para {produto}.'},
  credit_card_approved:{label:'Cartão aprovado',title:'Cartão aprovado!',body:'Pagamento de {valor} aprovado no cartão.'},
@@ -18,7 +19,7 @@ export const manualNotificationTemplates:Record<ManualNotificationType,Template>
 }
 export const notificationVariables=['{produto}','{valor}','{cliente}','{metodo}','{horario}','{moeda}'] as const
 const required:Record<string,keyof ManualNotificationDraft>={produto:'product',valor:'value',cliente:'customer',metodo:'method'}
-const money=(raw:string,currency:ManualCurrency)=>{if(!raw.trim())return'';const value=Number(raw.replace(/\./g,'').replace(',','.'));if(!Number.isFinite(value))return'';return new Intl.NumberFormat(currency==='USD'?'en-US':'pt-BR',{style:'currency',currency}).format(value)}
+const money=(raw:string,currency:ManualCurrency)=>{if(!raw.trim())return'';const clean=raw.trim().replace(/\s/g,'');const normalized=clean.includes(',')?clean.replace(/\./g,'').replace(',','.'):clean.replace(/,/g,'');const value=Number(normalized);if(!Number.isFinite(value)||value<0)return'';return new Intl.NumberFormat(currency==='USD'?'en-US':currency==='EUR'?'de-DE':'pt-BR',{style:'currency',currency}).format(value)}
 export function formatManualNotification(draft:ManualNotificationDraft){
  const values:Record<string,string>={produto:draft.product.trim(),valor:money(draft.value,draft.currency),cliente:draft.customer.trim(),metodo:draft.method.trim(),horario:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),moeda:draft.currency}
  const used=[...draft.title.matchAll(/\{(\w+)\}/g),...draft.body.matchAll(/\{(\w+)\}/g)].map(match=>match[1])
