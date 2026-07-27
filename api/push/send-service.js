@@ -29,11 +29,14 @@ const updateDelivery=async(client,subscriptionId,eventId,values)=>{
 }
 
 export async function sendPushToUser({
- client,userId,eventId,type,title,body,route,metadata={},pushClient
+ client,userId,eventId,type,title,body,route,metadata={},pushClient,subscriptionId,endpoint
 }){
  if(!client||!userId||!eventId||!type||!title||!body||!route)throw Object.assign(new Error('INVALID_PAYLOAD'),{code:'INVALID_PAYLOAD'})
  const sender=pushClient||configureWebPush()
- const {data:subscriptions,error}=await client.from('push_subscriptions').select('id,endpoint,p256dh,auth').eq('user_id',userId).eq('enabled',true)
+ let query=client.from('push_subscriptions').select('id,endpoint,p256dh,auth').eq('user_id',userId).eq('enabled',true)
+ if(subscriptionId)query=query.eq('id',subscriptionId)
+ if(endpoint)query=query.eq('endpoint',endpoint)
+ const {data:subscriptions,error}=await query
  if(error)throw Object.assign(new Error('SUBSCRIPTIONS_QUERY_FAILED'),{code:'SUBSCRIPTIONS_QUERY_FAILED'})
  if(!subscriptions?.length)return{success:false,code:'NO_ACTIVE_SUBSCRIPTIONS',sent:0,failed:0,duplicates:0}
  const payload=JSON.stringify({eventId,type,title,body,route,metadata,createdAt:new Date().toISOString()})
@@ -42,7 +45,7 @@ export async function sendPushToUser({
   const {error:insertError}=await client.from('push_delivery_log').insert({user_id:userId,subscription_id:subscription.id,event_id:eventId,status:'sending',attempted_at:attemptedAt})
   if(insertError){
    if(insertError.code==='23505')return'duplicate'
-   return'failed'
+   throw Object.assign(new Error('DELIVERY_LOG_SAVE_FAILED'),{code:'DELIVERY_LOG_SAVE_FAILED'})
   }
   try{
    const result=await sender.sendNotification({endpoint:subscription.endpoint,keys:{p256dh:subscription.p256dh,auth:subscription.auth}},payload)
@@ -54,18 +57,21 @@ export async function sendPushToUser({
    return'sent'
   }catch(error){
    const statusCode=Number(error?.statusCode||0)||null,expired=isExpired(statusCode)
+   const errorCode=expired?'SUBSCRIPTION_EXPIRED':statusCode?`PUSH_SERVICE_${statusCode}`:'PUSH_DELIVERY_FAILED'
    await Promise.all([
     client.from('push_subscriptions').update({enabled:expired?false:true,last_error:expired?'SUBSCRIPTION_EXPIRED':safeError(error),updated_at:new Date().toISOString()}).eq('id',subscription.id),
-    updateDelivery(client,subscription.id,eventId,{status:'failed',http_status:statusCode,error_code:expired?'SUBSCRIPTION_EXPIRED':'PUSH_DELIVERY_FAILED'})
+    updateDelivery(client,subscription.id,eventId,{status:'failed',http_status:statusCode,error_code:errorCode})
    ])
-   return expired?'expired':'failed'
+   return{status:expired?'expired':'failed',code:errorCode}
   }
  }))
- const results=settled.map(item=>item.status==='fulfilled'?item.value:'failed')
+ const results=settled.map(item=>item.status==='fulfilled'?item.value:{status:'failed',code:item.reason?.code||'PUSH_DELIVERY_FAILED'})
  const sent=results.filter(item=>item==='sent').length
  const duplicates=results.filter(item=>item==='duplicate').length
- const failed=results.filter(item=>item==='failed'||item==='expired').length
- if(!sent&&!duplicates&&results.some(item=>item==='expired'))return{success:false,code:'SUBSCRIPTION_EXPIRED',sent,failed,duplicates}
- if(!sent&&!duplicates)return{success:false,code:'PUSH_DELIVERY_FAILED',sent,failed,duplicates}
+ const failures=results.filter(item=>typeof item==='object'&&item.status==='failed'||typeof item==='object'&&item.status==='expired')
+ const failed=failures.length
+ const failureCode=failures[0]?.code
+ if(!sent&&!duplicates&&failureCode==='SUBSCRIPTION_EXPIRED')return{success:false,code:'SUBSCRIPTION_EXPIRED',sent,failed,duplicates}
+ if(!sent&&!duplicates)return{success:false,code:failureCode||'PUSH_DELIVERY_FAILED',sent,failed,duplicates}
  return{success:true,sent,failed,duplicates}
 }

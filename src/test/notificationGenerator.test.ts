@@ -1,9 +1,9 @@
 import { beforeEach,describe,expect,it,vi } from 'vitest'
-import { act,renderHook } from '@testing-library/react'
+import { act,renderHook,waitFor } from '@testing-library/react'
 import { defaultGeneratorConfig,formatGeneratorValue,generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,variedValue } from '../lib/notificationGenerator'
 import { useNotificationGenerator } from '../hooks/useNotificationGenerator'
 vi.mock('../lib/supabase',()=>({supabase:{functions:{invoke:vi.fn(async()=>({error:null}))}}}))
-vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
+vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendGenerated:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
 
 describe('motor do gerador inteligente',()=>{
  beforeEach(()=>localStorage.clear())
@@ -48,13 +48,12 @@ describe('motor do gerador inteligente',()=>{
   expect(saved.presets[0].config.customBody).toBe('Valor: € 15,71')
  })
 
- it('não gera eventos financeiros falsos no frontend',async()=>{
+ it('envia o conteúdo do gerador pelo backend real conectado',async()=>{
   const {result,unmount}=renderHook(()=>useNotificationGenerator())
-  await act(async()=>{await result.current.begin({...defaultGeneratorConfig,mode:'batch',quantity:3,intervalValue:1})})
-  await act(async()=>{await Promise.resolve()})
-  expect(result.current.sent).toBe(0)
-  expect(result.current.status).toBe('failed')
-  expect(result.current.message).toMatch(/Não foi possível enviar|Simulações financeiras/)
+  await act(async()=>{await result.current.begin({...defaultGeneratorConfig,mode:'single',quantity:1})})
+  await waitFor(()=>expect(result.current.status).toBe('completed'))
+  expect(result.current.sent).toBe(1)
+  expect(result.current.message).toBe('Sequência concluída.')
   unmount()
  })
 })

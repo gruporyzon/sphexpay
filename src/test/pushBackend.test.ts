@@ -25,7 +25,9 @@ describe('backend de Push',()=>{
  afterEach(()=>{vi.unstubAllEnvs();vi.clearAllMocks()})
 
  const configureVapid=()=>{
-  vi.stubEnv('VAPID_PUBLIC_KEY',Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:index)).toString('base64url'))
+  const publicKey=Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:index)).toString('base64url')
+  vi.stubEnv('VITE_VAPID_PUBLIC_KEY',publicKey)
+  vi.stubEnv('VAPID_PUBLIC_KEY',publicKey)
   vi.stubEnv('VAPID_PRIVATE_KEY',Buffer.from(Uint8Array.from({length:32},(_,index)=>index+1)).toString('base64url'))
   vi.stubEnv('VAPID_SUBJECT','mailto:suporte@sphexpay.com')
  }
@@ -37,28 +39,30 @@ describe('backend de Push',()=>{
   expect(pushConfiguration().vapidConfigured).toBe(false)
  })
 
- it('recusa padding, espaços e quebras de linha nas variáveis VAPID',()=>{
+ it('exige que as chaves públicas do frontend e do servidor sejam iguais',()=>{
   configureVapid()
-  vi.stubEnv('VAPID_PUBLIC_KEY',`${process.env.VAPID_PUBLIC_KEY}=`)
+  vi.stubEnv('VITE_VAPID_PUBLIC_KEY',Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:255-index)).toString('base64url'))
   expect(pushConfiguration().vapidConfigured).toBe(false)
+  expect(pushConfiguration().vapid.checks.publicKeysMatch).toBe(false)
+ })
+
+ it('normaliza padding e espaços das chaves VAPID sem alterar o par',()=>{
   configureVapid()
+  vi.stubEnv('VAPID_PUBLIC_KEY',`${process.env.VAPID_PUBLIC_KEY}=\n`)
   vi.stubEnv('VAPID_PRIVATE_KEY',` ${process.env.VAPID_PRIVATE_KEY}`)
-  expect(pushConfiguration().vapidConfigured).toBe(false)
-  configureVapid()
-  vi.stubEnv('VAPID_SUBJECT','mailto:suporte@sphexpay.com\n')
-  expect(pushConfiguration().vapidConfigured).toBe(false)
+  expect(pushConfiguration().vapidConfigured).toBe(true)
  })
 
  it('informa separadamente VAPID, armazenamento e envio sem depender de subscription',()=>{
   configureVapid()
   const output=response()
   healthHandler({method:'GET'},output)
-  expect(output.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,codes:['SUPABASE_SERVER_CREDENTIALS_MISSING','PUSH_SEND_NOT_CONFIGURED']}})
+  expect(output.result).toMatchObject({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,checks:{viteVapidPublicKeyPresent:true,vapidPublicKeyPresent:true,publicKeysMatch:true,publicKeyLength65:true,publicKeyFirstByte04:true,privateKeyPresent:true,subjectValid:true},codes:['SUPABASE_SERVER_CREDENTIALS_MISSING','PUSH_SEND_NOT_CONFIGURED']}})
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
   const configuredOutput=response()
   healthHandler({method:'GET'},configuredOutput)
-  expect(configuredOutput.result).toEqual({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true,codes:[]}})
+  expect(configuredOutput.result).toMatchObject({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true,checks:{supabaseServerConfigured:true},codes:[]}})
  })
 
  it('bloqueia métodos não permitidos nas rotas de cadastro e envio',async()=>{
@@ -67,6 +71,14 @@ describe('backend de Push',()=>{
   await sendHandler({method:'GET'},sendOutput)
   expect(subscriptionOutput.result.statusCode).toBe(405)
   expect(sendOutput.result.statusCode).toBe(405)
+ })
+
+ it('exige autenticação para cadastrar dispositivo',async()=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const output=response()
+  await subscribeHandler({method:'POST',headers:{},body:{}},output)
+  expect(output.result).toMatchObject({statusCode:401,body:{success:false,code:'UNAUTHORIZED'}})
  })
 
  it('não inicia envio real sem configuração VAPID e armazenamento',async()=>{

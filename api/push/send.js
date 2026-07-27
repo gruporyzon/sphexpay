@@ -3,6 +3,8 @@ import { pushConfiguration, serviceRoleKey, supabaseUrl } from './config.js'
 import { sendPushToUser } from './send-service.js'
 
 const clean=value=>typeof value==='string'?value.trim():''
+const safeText=(value,max)=>clean(value).slice(0,max)
+const allowedGeneratorTypes=new Set(['sale_approved','sale_pending','pix_generated','pix_approved','pix_paid','credit_card_approved','credit_card_refused','boleto_generated','boleto_paid','subscription_approved','subscription_renewed','refund_done','chargeback_received','withdrawal_requested','withdrawal_sent','withdrawal_completed','payment_refused'])
 
 export default async function handler(request,response){
  if(request.method!=='POST')return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})
@@ -17,13 +19,20 @@ export default async function handler(request,response){
  let input
  try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}
  catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})}
- if(input.type!=='push_test'&&input.type!=='infrastructure_test')return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Este endpoint aceita somente testes técnicos.'})
+ const generator=input.type==='generator_notification'
+ if(input.type!=='push_test'&&input.type!=='infrastructure_test'&&!generator)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Tipo de notificação inválido.'})
  const eventId=clean(input.eventId)
- const prefix=input.type==='infrastructure_test'?'infrastructure-test-':'push-test-'
+ const prefix=input.type==='infrastructure_test'?'infrastructure-test-':generator?'generator-':'push-test-'
  if(!eventId.startsWith(prefix)||eventId.length>160)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
+ const generatorType=safeText(input.notificationType,60)
+ const title=generator?safeText(input.title,70):input.type==='infrastructure_test'?'Teste técnico da infraestrutura':'Notificações ativadas'
+ const body=generator?safeText(input.body,180):input.type==='infrastructure_test'?'Realtime e Push estão sendo verificados. Nenhuma venda foi criada.':'Seu dispositivo está conectado.'
+ const endpoint=safeText(input.endpoint,2048)
+ if(generator&&(!allowedGeneratorTypes.has(generatorType)||!title||!body||!/^https:\/\//.test(endpoint)))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const result=await sendPushToUser({
-  client,userId:user.id,eventId,type:input.type,title:input.type==='infrastructure_test'?'Teste técnico da infraestrutura':'Notificações ativadas',
-  body:input.type==='infrastructure_test'?'Realtime e Push estão sendo verificados. Nenhuma venda foi criada.':'Seu dispositivo está conectado.',route:'/app'
+  client,userId:user.id,eventId,type:generator?generatorType:input.type,title,body,
+  route:generator?'/app/configuracoes':'/app',endpoint:endpoint||undefined,
+  metadata:generator?{source:'manual'}:{}
  }).catch(error=>({success:false,code:error?.code||'PUSH_DELIVERY_FAILED',sent:0,failed:0,duplicates:0}))
  if(result.success)return response.status(200).json(result)
  if(result.code==='NO_ACTIVE_SUBSCRIPTIONS')return response.status(404).json(result)
