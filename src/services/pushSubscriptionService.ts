@@ -1,12 +1,13 @@
 import { supabase } from '../lib/supabase'
 
 export type PushRegistrationStatus='active'|'unsupported'|'not-installed'|'missing-key'|'invalid-key'|'permission-denied'|'backend-unavailable'|'storage-unconfigured'|'error'
-export type PushRegistrationResult={ok:boolean;status:PushRegistrationStatus;message:string}
-export type PushSendResult={ok:boolean;code?:string;message:string;sent?:number;failed?:number;duplicates?:number}
+export type PushRegistrationResult={ok:boolean;status:PushRegistrationStatus;code?:string;message:string;deviceId?:string;httpStatus?:number}
+export type PushSendResult={ok:boolean;code?:string;reason?:string;message:string;sent?:number;failed?:number;duplicates?:number;httpStatus?:number}
+export type PushDevice={id:string;name:string;platform:string;browser:string;lastSeen:string;lastDelivery?:string|null;lastError?:string|null}
 export interface PushDiagnostic{
- https:boolean;notificationsApi:boolean;permission:'default'|'granted'|'denied'|'unsupported';serviceWorkerSupported:boolean;serviceWorkerRegistered:boolean;serviceWorkerActive:boolean;serviceWorkerControlling:boolean;pushManagerSupported:boolean;installed:boolean;subscription:boolean;saved:boolean;vapidConfigured:boolean;vapidStatus:'loaded'|'missing'|'invalid';backendConfigured:boolean;storageConfigured:boolean;platform:string;browser:string;lastTest:string;lastDelivery:string;lastError:string
+ https:boolean;notificationsApi:boolean;permission:'default'|'granted'|'denied'|'unsupported';serviceWorkerSupported:boolean;serviceWorkerRegistered:boolean;serviceWorkerActive:boolean;serviceWorkerControlling:boolean;serviceWorkerReady:boolean;pushManagerSupported:boolean;installed:boolean;subscription:boolean;saved:boolean;sessionAuthenticated:boolean;registrationApiResponded:boolean;databaseConfirmed:boolean;activeDevices:number;vapidConfigured:boolean;vapidPresent:boolean;vapidValid:boolean;vapidCompatible:boolean;vapidStatus:'loaded'|'missing'|'invalid'|'incompatible';backendConfigured:boolean;storageConfigured:boolean;platform:string;browser:string;lastTest:string;lastDelivery:string;lastError:string;lastErrorCode:string;lastHttpStatus:number|null
 }
-type PushPayload={eventId:string;type:string;title:string;body:string;route:string;createdAt?:string;currency?:string;commission?:number|null;notificationType?:string;endpoint?:string}
+type PushPayload={eventId:string;type:string;title:string;body:string;route:string;tag?:string;createdAt?:string;currency?:string;commission?:number|null;notificationType?:string;endpoint?:string;subscriptionId?:string}
 type HealthResponse={vapidConfigured?:boolean;storageConfigured?:boolean;sendConfigured?:boolean;codes?:string[]}
 const lastStateKey='sphexpay_push_diagnostics_v2'
 const isIOS=()=>/iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -14,13 +15,21 @@ const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||Boolean
 export const requiresStandaloneForPush=(userAgent=navigator.userAgent,standalone=isStandalone())=>/iPad|iPhone|iPod/.test(userAgent)&&!standalone
 const platform=()=>isIOS()?'iOS':/Android/i.test(navigator.userAgent)?'Android':/Mac/i.test(navigator.userAgent)?'macOS':/Windows/i.test(navigator.userAgent)?'Windows':'Outro'
 const browser=()=>/Edg/i.test(navigator.userAgent)?'Edge':/CriOS|Chrome/i.test(navigator.userAgent)?'Chrome':/Firefox/i.test(navigator.userAgent)?'Firefox':/Safari/i.test(navigator.userAgent)?'Safari':'Navegador'
-const readState=()=>{try{return JSON.parse(localStorage.getItem(lastStateKey)||'{}') as Partial<Pick<PushDiagnostic,'lastTest'|'lastDelivery'|'lastError'>>}catch{return{}}}
-const writeState=(values:Partial<Pick<PushDiagnostic,'lastTest'|'lastDelivery'|'lastError'>>)=>{try{localStorage.setItem(lastStateKey,JSON.stringify({...readState(),...values}))}catch{/* Diagnóstico não impede a entrega. */}}
+type DiagnosticState=Pick<PushDiagnostic,'lastTest'|'lastDelivery'|'lastError'|'lastErrorCode'|'lastHttpStatus'|'registrationApiResponded'|'databaseConfirmed'>
+const readState=()=>{try{return JSON.parse(localStorage.getItem(lastStateKey)||'{}') as Partial<DiagnosticState>}catch{return{}}}
+const writeState=(values:Partial<DiagnosticState>)=>{try{localStorage.setItem(lastStateKey,JSON.stringify({...readState(),...values}))}catch{/* Diagnóstico não impede a entrega. */}}
 const log=(message:string)=>{if(import.meta.env.DEV)console.info(`[PUSH] ${message}`)}
-const errorMessage=(code?:string,message?:string)=>message||({NO_ACTIVE_SUBSCRIPTIONS:'Nenhum dispositivo ativo foi encontrado.',VAPID_NOT_CONFIGURED:'As chaves do servidor de notificações não foram configuradas.',PUSH_STORAGE_NOT_CONFIGURED:'O armazenamento seguro de dispositivos ainda não foi configurado.',SUPABASE_SERVER_CREDENTIALS_MISSING:'As credenciais server-side do armazenamento ainda não foram configuradas.',SUBSCRIPTION_EXPIRED:'A inscrição deste dispositivo expirou. Ative novamente.',DELIVERY_LOG_SAVE_FAILED:'A tentativa não pôde ser registrada no histórico de entregas.',PERMISSION_DENIED:'A permissão de notificações está bloqueada neste dispositivo.',BACKEND_UNAVAILABLE:'O servidor de notificações está indisponível.',INVALID_PAYLOAD:'Os dados da notificação são inválidos.'}[code||'']||`Falha técnica no envio${code?` (${code})`:''}.`)
+const errorMessage=(code?:string,message?:string)=>message||({NO_ACTIVE_SUBSCRIPTIONS:'Nenhum dispositivo ativo foi encontrado.',VAPID_NOT_CONFIGURED:'As chaves do servidor de notificações não foram configuradas.',SUPABASE_SERVER_CREDENTIALS_MISSING:'As credenciais server-side do armazenamento ainda não foram configuradas.',SUBSCRIPTION_EXPIRED:'A inscrição deste dispositivo expirou. Ative novamente.',DELIVERY_LOG_SAVE_FAILED:'A tentativa não pôde ser registrada no histórico de entregas.',PERMISSION_DENIED:'A permissão de notificações está bloqueada neste dispositivo.',SESSION_MISSING:'Sessão autenticada não encontrada. Entre novamente.',INVALID_ACCESS_TOKEN:'A sessão expirou. Entre novamente.',BACKEND_UNAVAILABLE:'O servidor de notificações está indisponível.',INVALID_PAYLOAD:'Os dados da notificação são inválidos.'}[code||'']||`Falha técnica no envio${code?` (${code})`:''}.`)
+const technicalError=(error:unknown)=>{
+ const name=error instanceof DOMException?error.name:error instanceof Error?error.name:'Error'
+ const explicit=error instanceof Error&&/^(?:VAPID_|SERVICE_WORKER_|SUBSCRIPTION_|OLD_SUBSCRIPTION_)/.test(error.message)?error.message:''
+ const code=name==='NotAllowedError'?'PUSH_PERMISSION_NOT_ALLOWED':name==='InvalidAccessError'?'PUSH_VAPID_INCOMPATIBLE':name==='AbortError'?'PUSH_SUBSCRIBE_ABORTED':name==='TypeError'?'PUSH_SUBSCRIBE_TYPE_ERROR':name==='InvalidStateError'?'SERVICE_WORKER_NOT_ACTIVE':explicit||'PUSH_SUBSCRIBE_FAILED'
+ const message={PUSH_PERMISSION_NOT_ALLOWED:'O navegador recusou a criação da inscrição.',PUSH_VAPID_INCOMPATIBLE:'A chave pública não é compatível com este navegador ou com a inscrição anterior.',PUSH_SUBSCRIBE_ABORTED:'O navegador interrompeu a criação da inscrição.',PUSH_SUBSCRIBE_TYPE_ERROR:'O navegador rejeitou os parâmetros da inscrição.',SERVICE_WORKER_NOT_ACTIVE:'O Service Worker ainda não está ativo.',SERVICE_WORKER_UNSUPPORTED:'Service Worker não suportado.',SERVICE_WORKER_READY_FAILED:'O Service Worker não ficou pronto para criar a inscrição.',VAPID_PUBLIC_KEY_INVALID:'A chave pública VAPID é estruturalmente inválida.',VAPID_PUBLIC_KEY_MISSING:'A chave pública VAPID está ausente.',SUBSCRIPTION_KEYS_MISSING:'A inscrição criada não contém as chaves exigidas.',OLD_SUBSCRIPTION_UNSUBSCRIBE_FAILED:'A inscrição vinculada ao par anterior não pôde ser removida.',PUSH_SUBSCRIBE_FAILED:'Falha técnica ao criar a PushSubscription.'}[code]||'Falha técnica ao criar a PushSubscription.'
+ return{code,message:`${code}: ${message}`}
+}
 
 export function getVapidPublicKey(){
- const value=String(import.meta.env.VITE_VAPID_PUBLIC_KEY||'').replace(/\s+/g,'')
+ const value=String(import.meta.env.VITE_VAPID_PUBLIC_KEY||'').trim().replace(/\s+/g,'')
  if(!value)throw new Error('VAPID_PUBLIC_KEY_MISSING')
  if(!/^[A-Za-z0-9_-]+={0,2}$/.test(value)||value.toLowerCase().includes('example'))throw new Error('VAPID_PUBLIC_KEY_INVALID')
  let decoded:Uint8Array
@@ -50,8 +59,11 @@ export async function ensureServiceWorker(){
 }
 
 const vapidStatus=()=>{try{getVapidPublicKey();return'loaded' as const}catch(error){return error instanceof Error&&error.message==='VAPID_PUBLIC_KEY_INVALID'?'invalid' as const:'missing' as const}}
-const authHeaders=async()=>{const session=supabase?(await supabase.auth.getSession()).data.session:null;const headers:Record<string,string>={Accept:'application/json'};if(session?.access_token)headers.Authorization=`Bearer ${session.access_token}`;return headers}
-const parseResponse=async(response:Response):Promise<PushSendResult>=>{let data:{success?:boolean;code?:string;message?:string;sent?:number;failed?:number;duplicates?:number}={};try{data=await response.json()}catch{/* Diagnóstico estruturado será usado abaixo. */}const ok=response.ok&&data.success===true&&(data.sent??0)>0;return{ok,code:data.code,message:ok?'Notificação enviada ao dispositivo.':errorMessage(data.code,data.message),sent:data.sent,failed:data.failed,duplicates:data.duplicates}}
+const currentSession=async()=>supabase?(await supabase.auth.getSession()).data.session:null
+const authHeaders=async()=>{const session=await currentSession();const headers:Record<string,string>={Accept:'application/json'};if(session?.access_token)headers.Authorization=`Bearer ${session.access_token}`;return headers}
+const parseResponse=async(response:Response):Promise<PushSendResult>=>{let data:{success?:boolean;code?:string;reason?:string;message?:string;sent?:number;failed?:number;duplicates?:number}={};try{data=await response.json()}catch{/* Código HTTP ainda é preservado. */}const ok=response.ok&&data.success===true&&(data.sent??0)>0;return{ok,code:data.code,reason:data.reason,message:ok?'Notificação enviada ao dispositivo.':errorMessage(data.code,data.message),sent:data.sent,failed:data.failed,duplicates:data.duplicates,httpStatus:response.status}}
+
+let subscriptionPromise:Promise<PushRegistrationResult>|null=null
 
 export const pushSubscriptionService={
  supported(){return typeof window!=='undefined'&&'Notification'in window&&'serviceWorker'in navigator&&'PushManager'in window},
@@ -60,40 +72,66 @@ export const pushSubscriptionService={
  async diagnose(userId?:string):Promise<PushDiagnostic>{
   const permission=!('Notification'in window)?'unsupported':Notification.permission
   let registration='serviceWorker'in navigator?await navigator.serviceWorker.getRegistration('/'):undefined,ready=registration?await navigator.serviceWorker.ready:null
-  let subscription=false;try{subscription=Boolean(await this.current());registration=await navigator.serviceWorker.getRegistration('/');ready=registration?await navigator.serviceWorker.ready:null}catch{/* O diagnóstico continua mostrando o erro real. */}
-  let saved=false,storageConfigured=false,lastDelivery=readState().lastDelivery||'—'
+  let currentSubscription:PushSubscription|null=null
+  try{currentSubscription=await this.current();registration=await navigator.serviceWorker.getRegistration('/');ready=registration?await navigator.serviceWorker.ready:null}catch(error){const technical=technicalError(error);writeState({lastError:technical.message,lastErrorCode:technical.code})}
+  const subscription=Boolean(currentSubscription),sessionAuthenticated=Boolean(await currentSession()),publicKeyStatus=vapidStatus()
+  let vapidCompatible=publicKeyStatus==='loaded'
+  if(currentSubscription&&publicKeyStatus==='loaded'){
+   const key=getVapidPublicKey(),existingKey=currentSubscription.options.applicationServerKey?new Uint8Array(currentSubscription.options.applicationServerKey):null
+   vapidCompatible=Boolean(existingKey?.length===key.length&&existingKey.every((byte,index)=>byte===key[index]))
+  }
+  let saved=false,storageConfigured=false,lastDelivery=readState().lastDelivery||'—',activeDevices=0
   if(subscription&&userId&&supabase){try{const current=await this.current(),endpoint=current?.endpoint||'',response=await fetch(`/api/push/status?endpoint=${encodeURIComponent(endpoint)}`,{method:'GET',headers:await authHeaders()});const data=await response.json() as {saved?:boolean;storageConfigured?:boolean;lastDelivery?:string;lastError?:string};saved=data.saved===true;storageConfigured=data.storageConfigured===true;lastDelivery=data.lastDelivery||lastDelivery;if(data.lastError&&data.lastError!=='—')writeState({lastError:data.lastError})}catch{/* A indisponibilidade aparece no backendConfigured. */}}
+  if(sessionAuthenticated){const devices=await this.devices();activeDevices=devices.length}
   let backendConfigured=false
   try{const response=await fetch('/api/push/health',{headers:{Accept:'application/json'}});if(response.ok){const data=await response.json() as HealthResponse;backendConfigured=data.sendConfigured===true;storageConfigured=storageConfigured||data.storageConfigured===true}}catch{/* Diagnóstico sem backend não é sucesso. */}
-  const status=vapidStatus(),state=readState()
-  return{https:window.isSecureContext||location.hostname==='localhost'||location.hostname==='127.0.0.1',notificationsApi:'Notification'in window,permission,serviceWorkerSupported:'serviceWorker'in navigator,serviceWorkerRegistered:Boolean(registration),serviceWorkerActive:Boolean(ready?.active),serviceWorkerControlling:Boolean(navigator.serviceWorker?.controller),pushManagerSupported:'PushManager'in window,installed:isStandalone(),subscription,saved,vapidConfigured:status==='loaded',vapidStatus:status,backendConfigured,storageConfigured,platform:platform(),browser:browser(),lastTest:state.lastTest||'—',lastDelivery,lastError:state.lastError||'—'}
+  const state=readState(),status=!vapidCompatible&&publicKeyStatus==='loaded'?'incompatible':publicKeyStatus
+  return{https:window.isSecureContext||location.hostname==='localhost'||location.hostname==='127.0.0.1',notificationsApi:'Notification'in window,permission,serviceWorkerSupported:'serviceWorker'in navigator,serviceWorkerRegistered:Boolean(registration),serviceWorkerActive:Boolean(ready?.active),serviceWorkerControlling:Boolean(navigator.serviceWorker?.controller),serviceWorkerReady:Boolean(ready?.active),pushManagerSupported:'PushManager'in window,installed:isStandalone(),subscription,saved,sessionAuthenticated,registrationApiResponded:state.registrationApiResponded===true,databaseConfirmed:saved||state.databaseConfirmed===true,activeDevices,vapidConfigured:publicKeyStatus==='loaded',vapidPresent:publicKeyStatus!=='missing',vapidValid:publicKeyStatus==='loaded',vapidCompatible,vapidStatus:status,backendConfigured,storageConfigured,platform:platform(),browser:browser(),lastTest:state.lastTest||'—',lastDelivery,lastError:state.lastError||'—',lastErrorCode:state.lastErrorCode||'—',lastHttpStatus:state.lastHttpStatus??null}
  },
- async subscribe(userId:string):Promise<PushRegistrationResult>{
-  if(!window.isSecureContext&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')return{ok:false,status:'unsupported',message:'Uma conexão segura é necessária para ativar notificações.'}
-  if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window))return{ok:false,status:'unsupported',message:'Este navegador não oferece suporte às notificações necessárias.'}
-  if(requiresStandaloneForPush())return{ok:false,status:'not-installed',message:'Adicione a SphexPay à Tela de Início, abra pelo ícone e ative as notificações.'}
-  if(Notification.permission!=='granted'){const permission=await Notification.requestPermission();if(permission!=='granted')return{ok:false,status:'permission-denied',message:permission==='denied'?'A permissão de notificações está bloqueada neste dispositivo.':'A permissão de notificações não foi concedida.'}}
-  let decodedPublicKey:Uint8Array;try{decodedPublicKey=getVapidPublicKey()}catch(error){const status=error instanceof Error&&error.message==='VAPID_PUBLIC_KEY_INVALID'?'invalid-key':'missing-key';return{ok:false,status,message:status==='invalid-key'?'A chave pública de notificações é inválida.':'A chave pública de notificações ainda não foi configurada.'}}
-  try{
-   const ready=await ensureServiceWorker(),applicationServerKey=decodedPublicKey
-   let existing=await ready.pushManager.getSubscription()
-   const existingKey=existing?.options.applicationServerKey?new Uint8Array(existing.options.applicationServerKey):null
-   const keyMatches=existingKey?.length===applicationServerKey.length&&existingKey.every((byte,index)=>byte===applicationServerKey[index])
-   if(existing&&!keyMatches){await existing.unsubscribe();existing=null}
-   const subscription=existing||await ready.pushManager.subscribe({userVisibleOnly:true,applicationServerKey}),json=subscription.toJSON(),keys=json.keys||{}
-   if(!keys.p256dh||!keys.auth)throw new Error('SUBSCRIPTION_KEYS_MISSING')
-   const response=await fetch('/api/push/subscribe',{method:'POST',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify({subscription:{endpoint:subscription.endpoint,keys:{p256dh:keys.p256dh,auth:keys.auth}},userAgent:navigator.userAgent,platform:platform(),browser:browser(),deviceName:this.deviceLabel(),userId})})
-   const data=await response.json().catch(()=>({})) as {success?:boolean;registered?:boolean;deviceId?:string;code?:string;message?:string}
-   if(!response.ok||data.success!==true||data.registered!==true||!data.deviceId){const code=data.code||'BACKEND_UNAVAILABLE';return{ok:false,status:code==='PUSH_STORAGE_NOT_CONFIGURED'||code==='SUPABASE_SERVER_CREDENTIALS_MISSING'?'storage-unconfigured':'backend-unavailable',message:errorMessage(code,data.message)}}
-   log(existing?'Existing subscription found':'New subscription created');log('Subscription saved');return{ok:true,status:'active',message:'Dispositivo conectado.'}
-  }catch{const message='Não foi possível registrar este dispositivo.';writeState({lastError:message});return{ok:false,status:'error',message}}
+ async subscribe():Promise<PushRegistrationResult>{
+  if(subscriptionPromise)return subscriptionPromise
+  const operation=(async():Promise<PushRegistrationResult>=>{
+   if(!window.isSecureContext&&location.hostname!=='localhost'&&location.hostname!=='127.0.0.1')return{ok:false,status:'unsupported',code:'INSECURE_CONTEXT',message:'INSECURE_CONTEXT: uma conexão segura é necessária.'}
+   if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window))return{ok:false,status:'unsupported',code:'PUSH_UNSUPPORTED',message:'PUSH_UNSUPPORTED: este navegador não oferece suporte ao Push.'}
+   if(requiresStandaloneForPush())return{ok:false,status:'not-installed',code:'PWA_INSTALL_REQUIRED',message:'PWA_INSTALL_REQUIRED: adicione a SphexPay à Tela de Início.'}
+   if(Notification.permission!=='granted'){let permission:NotificationPermission;try{permission=await Notification.requestPermission()}catch(error){const technical=technicalError(error);return{ok:false,status:'permission-denied',...technical}}if(permission!=='granted')return{ok:false,status:'permission-denied',code:'PUSH_PERMISSION_NOT_ALLOWED',message:`PUSH_PERMISSION_NOT_ALLOWED: permissão ${permission}.`}}
+   let applicationServerKey:Uint8Array
+   try{applicationServerKey=getVapidPublicKey()}catch(error){const technical=technicalError(error);return{ok:false,status:technical.code==='VAPID_PUBLIC_KEY_INVALID'?'invalid-key':'missing-key',...technical}}
+   let session
+   try{session=await currentSession()}catch{return{ok:false,status:'error',code:'SESSION_LOOKUP_FAILED',message:'SESSION_LOOKUP_FAILED: não foi possível consultar a sessão atual.'}}
+   if(!session?.access_token)return{ok:false,status:'error',code:'SESSION_MISSING',message:errorMessage('SESSION_MISSING')}
+   try{
+    let registration:ServiceWorkerRegistration
+    try{registration=await ensureServiceWorker()}catch{throw new Error('SERVICE_WORKER_READY_FAILED')}
+    if(!registration.active)throw new DOMException('Service Worker inactive','InvalidStateError')
+    let existing=await registration.pushManager.getSubscription()
+    const existingKey=existing?.options.applicationServerKey?new Uint8Array(existing.options.applicationServerKey):null
+    const keyMatches=existingKey?.length===applicationServerKey.length&&existingKey.every((byte,index)=>byte===applicationServerKey[index])
+    if(existing&&!keyMatches){const removed=await existing.unsubscribe();if(!removed)throw new Error('OLD_SUBSCRIPTION_UNSUBSCRIBE_FAILED');existing=null}
+    const subscription=existing||await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey})
+    const json=subscription.toJSON(),keys=json.keys||{}
+    if(!subscription.endpoint||!keys.p256dh||!keys.auth)throw new Error('SUBSCRIPTION_KEYS_MISSING')
+    const response=await fetch('/api/push/subscribe',{method:'POST',headers:{Accept:'application/json',Authorization:`Bearer ${session.access_token}`,'Content-Type':'application/json'},body:JSON.stringify({endpoint:subscription.endpoint,expirationTime:subscription.expirationTime,keys:{p256dh:keys.p256dh,auth:keys.auth},userAgent:navigator.userAgent,platform:platform(),browser:browser(),deviceName:this.deviceLabel()})})
+    const data=await response.json().catch(()=>({})) as {registered?:boolean;active?:boolean;deviceId?:string;code?:string;message?:string}
+    writeState({registrationApiResponded:true,lastHttpStatus:response.status,lastErrorCode:data.code||'—'})
+    if(!response.ok){const code=data.code||`HTTP_${response.status}`,message=errorMessage(code,data.message);writeState({databaseConfirmed:false,lastError:message,lastErrorCode:code});return{ok:false,status:code==='SUPABASE_SERVER_CREDENTIALS_MISSING'?'storage-unconfigured':'backend-unavailable',code,message,httpStatus:response.status}}
+    if(data.registered!==true||data.active!==true||!data.deviceId){const code='REGISTERED_CONFIRMATION_MISSING',message='REGISTERED_CONFIRMATION_MISSING: a API não confirmou registered=true e active=true.';writeState({databaseConfirmed:false,lastError:message,lastErrorCode:code});return{ok:false,status:'backend-unavailable',code,message,httpStatus:response.status}}
+    writeState({registrationApiResponded:true,databaseConfirmed:true,lastHttpStatus:response.status,lastError:'—',lastErrorCode:'—'})
+    log(existing?'Existing subscription found':'New subscription created')
+    return{ok:true,status:'active',message:'Dispositivo conectado e confirmado no banco.',deviceId:data.deviceId,httpStatus:response.status}
+   }catch(error){const technical=technicalError(error);writeState({databaseConfirmed:false,lastError:technical.message,lastErrorCode:technical.code});return{ok:false,status:'error',...technical}}
+  })().finally(()=>{subscriptionPromise=null})
+  subscriptionPromise=operation
+  return operation
  },
+ async devices():Promise<PushDevice[]>{const session=await currentSession();if(!session?.access_token)return[];try{const response=await fetch('/api/push/devices',{headers:{Accept:'application/json',Authorization:`Bearer ${session.access_token}`}});const data=await response.json() as {devices?:PushDevice[]};writeState({lastHttpStatus:response.status});return response.ok&&Array.isArray(data.devices)?data.devices:[]}catch{return[]}},
  async unsubscribe(){const subscription=await this.current();if(!subscription)return true;try{const response=await fetch('/api/push/unsubscribe',{method:'POST',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify({endpoint:subscription.endpoint})});if(!response.ok)return false;const ok=await subscription.unsubscribe();if(ok)log('Device subscription removed');return ok}catch{return false}},
  async send(payload:PushPayload):Promise<PushSendResult>{
-  if(!this.supported()||Notification.permission!=='granted')return{ok:false,code:'PERMISSION_DENIED',message:errorMessage('PERMISSION_DENIED')}
-  const subscription=await this.current().catch(()=>null);if(!subscription)return{ok:false,code:'NO_ACTIVE_SUBSCRIPTIONS',message:errorMessage('NO_ACTIVE_SUBSCRIPTIONS')}
-  try{const response=await fetch('/api/push/send',{method:'POST',headers:{...(await authHeaders()),'Content-Type':'application/json'},body:JSON.stringify(payload)});const parsed=await parseResponse(response);if(parsed.ok){log(payload.type==='device_test'?'Test request sent':'Delivery accepted');writeState({lastTest:payload.type==='device_test'?new Date().toISOString():readState().lastTest,lastDelivery:new Date().toISOString(),lastError:'—'})}else writeState({lastError:parsed.message});return parsed}catch{const parsed={ok:false,code:'BACKEND_UNAVAILABLE',message:errorMessage('BACKEND_UNAVAILABLE')};writeState({lastError:parsed.message});return parsed}
+  if(!payload.subscriptionId&&(!this.supported()||Notification.permission!=='granted'))return{ok:false,code:'PERMISSION_DENIED',message:errorMessage('PERMISSION_DENIED')}
+  if(!payload.subscriptionId){const subscription=await this.current().catch(()=>null);if(!subscription)return{ok:false,code:'NO_ACTIVE_SUBSCRIPTIONS',message:errorMessage('NO_ACTIVE_SUBSCRIPTIONS')}}
+  const session=await currentSession();if(!session?.access_token)return{ok:false,code:'SESSION_MISSING',message:errorMessage('SESSION_MISSING')}
+  try{const response=await fetch('/api/push/send',{method:'POST',headers:{Accept:'application/json',Authorization:`Bearer ${session.access_token}`,'Content-Type':'application/json'},body:JSON.stringify(payload)});const parsed=await parseResponse(response);if(parsed.ok){log('Delivery accepted');writeState({lastTest:payload.type==='infrastructure_test'?new Date().toISOString():readState().lastTest,lastDelivery:new Date().toISOString(),lastError:'—',lastErrorCode:'—',lastHttpStatus:response.status})}else writeState({lastError:parsed.message,lastErrorCode:parsed.code||'—',lastHttpStatus:response.status});return parsed}catch{const parsed={ok:false,code:'BACKEND_UNAVAILABLE',message:errorMessage('BACKEND_UNAVAILABLE')};writeState({lastError:parsed.message,lastErrorCode:parsed.code});return parsed}
  },
- async sendTest(){const subscription=await this.current().catch(()=>null);return this.send({eventId:`push-test-${crypto.randomUUID?.()||Date.now()}`,type:'push_test',title:'Notificações ativadas',body:'Seu dispositivo está conectado.',route:'/app/dashboard',createdAt:new Date().toISOString(),endpoint:subscription?.endpoint})},
- async sendGenerated(input:{notificationType:string;title:string;body:string}){const subscription=await this.current().catch(()=>null);if(!subscription)return{ok:false,code:'NO_ACTIVE_SUBSCRIPTIONS',message:errorMessage('NO_ACTIVE_SUBSCRIPTIONS')};return this.send({eventId:`generator-${crypto.randomUUID?.()||Date.now()}`,type:'generator_notification',notificationType:input.notificationType,title:input.title,body:input.body,route:'/app/configuracoes',createdAt:new Date().toISOString(),endpoint:subscription.endpoint})}
+ async sendTest(deviceId?:string){return this.send({eventId:`infrastructure-test-${crypto.randomUUID?.()||Date.now()}`,type:'infrastructure_test',title:'SphexPay conectada',body:'As notificações deste dispositivo estão funcionando.',route:'/app/configuracoes',tag:'sphexpay-infrastructure-test',createdAt:new Date().toISOString(),subscriptionId:deviceId})},
+ async sendGenerated(input:{notificationType:string;title:string;body:string;deviceId:string}){return this.send({eventId:`generator-${crypto.randomUUID?.()||Date.now()}`,type:'generator_notification',notificationType:input.notificationType,title:input.title,body:input.body,route:'/app/configuracoes',createdAt:new Date().toISOString(),subscriptionId:input.deviceId})}
 }

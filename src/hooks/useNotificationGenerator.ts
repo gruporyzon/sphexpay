@@ -1,21 +1,24 @@
 import { useCallback,useEffect,useRef,useState } from 'react'
 import { generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,type GeneratorConfig,type GeneratorHistory,type GeneratorPreset,type GeneratorStatus } from '../lib/notificationGenerator'
-import { pushSubscriptionService } from '../services/pushSubscriptionService'
+import { pushSubscriptionService,type PushDevice } from '../services/pushSubscriptionService'
 
 export function useNotificationGenerator(){
  const initial=useRef(loadGeneratorData())
  const [config,setConfig]=useState<GeneratorConfig>(initial.current.config),[history,setHistory]=useState<GeneratorHistory[]>(initial.current.history),[presets,setPresets]=useState<GeneratorPreset[]>(initial.current.presets)
- const [status,setStatus]=useState<GeneratorStatus>('completed'),[sent,setSent]=useState(0),[message,setMessage]=useState('')
+ const [status,setStatus]=useState<GeneratorStatus>('completed'),[sent,setSent]=useState(0),[message,setMessage]=useState(''),[devices,setDevices]=useState<PushDevice[]>([]),[selectedDeviceId,setSelectedDeviceId]=useState('')
  const timer=useRef<number|undefined>(undefined),scheduled=useRef<number|undefined>(undefined),runId=useRef(''),count=useRef(0),previousValue=useRef<number|undefined>(undefined),activeConfig=useRef(config),starting=useRef(false),deliveryError=useRef('')
+ const selectedDevice=useRef('')
  useEffect(()=>{saveGeneratorData(config,history,presets)},[config,history,presets])
+ const selectDevice=useCallback((id:string)=>{selectedDevice.current=id;setSelectedDeviceId(id)},[])
+ const refreshDevices=useCallback(async()=>{const active=await pushSubscriptionService.devices();setDevices(active);const next=active.some(device=>device.id===selectedDevice.current)?selectedDevice.current:active[0]?.id||'';selectDevice(next);return active},[selectDevice])
+ useEffect(()=>{void refreshDevices()},[refreshDevices])
  const clearTimers=useCallback(()=>{if(timer.current)window.clearTimeout(timer.current);if(scheduled.current)window.clearTimeout(scheduled.current);timer.current=undefined;scheduled.current=undefined},[])
  useEffect(()=>clearTimers,[clearTimers])
  const patchHistory=useCallback((id:string,values:Partial<GeneratorHistory>)=>setHistory(items=>items.map(item=>item.id===id?{...item,...values}:item)),[])
  const deliver=useCallback(async(...args:[GeneratorConfig,number])=>{
   const [current]=args
-  const active=await pushSubscriptionService.current()
-  if(!active){deliveryError.current='NO_ACTIVE_SUBSCRIPTIONS: nenhum dispositivo ativo foi encontrado.';return false}
-  const result=await pushSubscriptionService.sendGenerated({notificationType:current.types[0],title:current.title,body:generatorBody(current)})
+  if(!selectedDevice.current){deliveryError.current='NO_ACTIVE_SUBSCRIPTIONS: nenhum dispositivo ativo foi encontrado.';return false}
+  const result=await pushSubscriptionService.sendGenerated({notificationType:current.types[0],title:current.title,body:generatorBody(current),deviceId:selectedDevice.current})
   deliveryError.current=result.ok?'':`${result.code||'PUSH_DELIVERY_FAILED'}: ${result.message}`
   return result.ok
  },[])
@@ -35,20 +38,20 @@ export function useNotificationGenerator(){
   try{
    const error=validateGenerator(next);if(error){setMessage(error);return false}
    if(typeof Notification!=='undefined'&&Notification.permission!=='granted'){setMessage('Ative as notificações neste dispositivo antes de iniciar.');return false}
-   if(!(await pushSubscriptionService.current())){setMessage('Conecte um dispositivo antes de iniciar a sequência.');return false}
+   const activeDevices=await refreshDevices();if(!activeDevices.length){setMessage('NO_ACTIVE_SUBSCRIPTIONS: conecte um dispositivo antes de iniciar.');return false}
    clearTimers();activeConfig.current={...next};count.current=0;setSent(0);previousValue.current=undefined;deliveryError.current='';runId.current=crypto.randomUUID?.()||String(Date.now())
    const item:GeneratorHistory={id:runId.current,createdAt:new Date().toISOString(),title:next.title,value:next.value,currency:next.currency,type:next.types[0],destination:next.destination,requested:next.continuous?0:next.quantity,sent:0,intervalMs:intervalMilliseconds(next),status:next.mode==='scheduled'?'scheduled':'running',config:{...next}}
    setHistory(items=>[item,...items].slice(0,100));setStatus(item.status);setMessage(item.status==='scheduled'?'Agendamento criado.':'Sequência iniciada.')
    if(next.mode==='scheduled'){const delay=new Date(next.startAt).getTime()-Date.now();scheduled.current=window.setTimeout(()=>{setStatus('running');void tick()},delay)}else void tick()
    return true
   }finally{starting.current=false}
- },[clearTimers,config,status,tick])
+ },[clearTimers,config,refreshDevices,status,tick])
  const pause=()=>{if(status!=='running')return;clearTimers();setStatus('paused');patchHistory(runId.current,{status:'paused'});setMessage('Sequência pausada.')}
  const resume=()=>{if(status!=='paused')return;setStatus('running');patchHistory(runId.current,{status:'running'});setMessage('Sequência retomada.');void tick()}
  const stop=()=>{if(status!=='running'&&status!=='paused'&&status!=='scheduled')return;finish('cancelled','Sequência interrompida.')}
- const test=async()=>{if(status==='running'||status==='scheduled'){setMessage('Aguarde a sequência atual terminar.');return}const result=await pushSubscriptionService.sendTest();setMessage(result.message)}
+ const test=async()=>{if(status==='running'||status==='scheduled'){setMessage('Aguarde a sequência atual terminar.');return}if(!selectedDevice.current){setMessage('NO_ACTIVE_SUBSCRIPTIONS: nenhum dispositivo ativo foi encontrado.');return}const result=await pushSubscriptionService.sendTest(selectedDevice.current);setMessage(result.ok?result.message:`${result.code||'PUSH_DELIVERY_FAILED'}: ${result.message}`)}
  const savePreset=(name:string)=>{const clean=name.trim();if(!clean){setMessage('Informe um nome para o preset.');return}const preset:GeneratorPreset={id:crypto.randomUUID?.()||String(Date.now()),name:clean,createdAt:new Date().toISOString(),config:{...config}};setPresets(items=>[preset,...items]);setMessage('Preset salvo.')}
  const deletePreset=(id:string)=>setPresets(items=>items.filter(item=>item.id!==id))
  const duplicatePreset=(preset:GeneratorPreset)=>{const copy={...preset,id:crypto.randomUUID?.()||String(Date.now()),name:`${preset.name} — cópia`,createdAt:new Date().toISOString()};setPresets(items=>[copy,...items]);setMessage('Preset duplicado.')}
- return{config,setConfig,history,setHistory,presets,setPresets,status,sent,message,setMessage,begin,pause,resume,stop,test,savePreset,deletePreset,duplicatePreset}
+ return{config,setConfig,history,setHistory,presets,setPresets,status,sent,message,setMessage,devices,selectedDeviceId,setSelectedDeviceId:selectDevice,refreshDevices,begin,pause,resume,stop,test,savePreset,deletePreset,duplicatePreset}
 }

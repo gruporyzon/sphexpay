@@ -1,4 +1,5 @@
 import webpush from 'web-push'
+import { createECDH } from 'node:crypto'
 
 const clean = value => typeof value === 'string' ? value.trim() : ''
 const compactBase64Url = value => clean(value).replace(/\s+/g, '').replace(/=+$/g, '')
@@ -15,23 +16,20 @@ export const supabaseUrl = () => [process.env.SUPABASE_URL,process.env.VITE_SUPA
 export const serviceRoleKey = () => clean(process.env.SUPABASE_SERVICE_ROLE_KEY)
 
 export function vapidConfiguration() {
- const rawClientPublicKey = typeof process.env.VITE_VAPID_PUBLIC_KEY === 'string' ? process.env.VITE_VAPID_PUBLIC_KEY : ''
  const rawPublicKey = typeof process.env.VAPID_PUBLIC_KEY === 'string' ? process.env.VAPID_PUBLIC_KEY : ''
  const rawPrivateKey = typeof process.env.VAPID_PRIVATE_KEY === 'string' ? process.env.VAPID_PRIVATE_KEY : ''
  const rawSubject = typeof process.env.VAPID_SUBJECT === 'string' ? process.env.VAPID_SUBJECT : ''
- const clientPublicKey = compactBase64Url(rawClientPublicKey)
  const publicKey = compactBase64Url(rawPublicKey)
  const privateKey = compactBase64Url(rawPrivateKey)
  const subject = clean(rawSubject)
  const checks = {
-  clientPublicKeyPresent: Boolean(clientPublicKey),
   serverPublicKeyPresent: Boolean(publicKey),
-  publicKeysMatch: Boolean(clientPublicKey && publicKey && clientPublicKey === publicKey),
   publicKeyBase64Url: false,
   publicKeyLength: false,
   publicKeyUncompressed: false,
   privateKeyPresent: Boolean(privateKey),
   privateKeyValid: false,
+  keyPairValid: false,
   subjectValid: false
  }
  let configured = false
@@ -42,6 +40,11 @@ export function vapidConfiguration() {
   checks.publicKeyLength = publicBytes.length === 65
   checks.publicKeyUncompressed = publicBytes[0] === 4
   checks.privateKeyValid = base64Url.test(privateKey) && !exampleValue(privateKey) && privateBytes.length === 32
+  if(checks.privateKeyValid){
+   const ecdh=createECDH('prime256v1')
+   ecdh.setPrivateKey(privateBytes)
+   checks.keyPairValid=ecdh.getPublicKey().equals(publicBytes)
+  }
   try {
    const parsedSubject = new URL(subject)
    checks.subjectValid = parsedSubject.protocol === 'mailto:' || parsedSubject.protocol === 'https:'

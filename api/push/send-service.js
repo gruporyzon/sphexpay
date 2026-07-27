@@ -29,7 +29,7 @@ const updateDelivery=async(client,subscriptionId,eventId,values)=>{
 }
 
 export async function sendPushToUser({
- client,userId,eventId,type,title,body,route,metadata={},pushClient,subscriptionId,endpoint
+ client,userId,eventId,type,title,body,route,tag,metadata={},pushClient,subscriptionId,endpoint
 }){
  if(!client||!userId||!eventId||!type||!title||!body||!route)throw Object.assign(new Error('INVALID_PAYLOAD'),{code:'INVALID_PAYLOAD'})
  const sender=pushClient||configureWebPush()
@@ -38,8 +38,8 @@ export async function sendPushToUser({
  if(endpoint)query=query.eq('endpoint',endpoint)
  const {data:subscriptions,error}=await query
  if(error)throw Object.assign(new Error('SUBSCRIPTIONS_QUERY_FAILED'),{code:'SUBSCRIPTIONS_QUERY_FAILED'})
- if(!subscriptions?.length)return{success:false,code:'NO_ACTIVE_SUBSCRIPTIONS',sent:0,failed:0,duplicates:0}
- const payload=JSON.stringify({eventId,type,title,body,route,metadata,createdAt:new Date().toISOString()})
+ if(!subscriptions?.length)return{success:false,code:'NO_ACTIVE_SUBSCRIPTIONS',reason:'Nenhuma inscrição ativa foi encontrada para o usuário.',sent:0,failed:0,duplicates:0}
+ const payload=JSON.stringify({eventId,type,title,body,route,tag:tag||eventId,metadata,createdAt:new Date().toISOString()})
  const settled=await Promise.allSettled(subscriptions.map(async subscription=>{
   const attemptedAt=new Date().toISOString()
   const {error:insertError}=await client.from('push_delivery_log').insert({user_id:userId,subscription_id:subscription.id,event_id:eventId,status:'sending',attempted_at:attemptedAt})
@@ -71,7 +71,7 @@ export async function sendPushToUser({
  const failures=results.filter(item=>typeof item==='object'&&item.status==='failed'||typeof item==='object'&&item.status==='expired')
  const failed=failures.length
  const failureCode=failures[0]?.code
- if(!sent&&!duplicates&&failureCode==='SUBSCRIPTION_EXPIRED')return{success:false,code:'SUBSCRIPTION_EXPIRED',sent,failed,duplicates}
- if(!sent&&!duplicates)return{success:false,code:failureCode||'PUSH_DELIVERY_FAILED',sent,failed,duplicates}
- return{success:true,sent,failed,duplicates}
+ if(!sent&&!duplicates&&failureCode==='SUBSCRIPTION_EXPIRED')return{success:false,code:'SUBSCRIPTION_EXPIRED',reason:'A inscrição expirou e foi desativada.',sent,failed,duplicates}
+ if(!sent&&!duplicates)return{success:false,code:failureCode||'PUSH_DELIVERY_FAILED',reason:'O serviço Push recusou a entrega.',sent,failed,duplicates}
+ return{success:true,reason:failed?'Entrega parcial.':'Entrega aceita pelo serviço Push.',sent,failed,duplicates}
 }

@@ -39,7 +39,7 @@ async function handlePush(event){
  }
  const title=typeof payload.title==='string'?payload.title:'SphexPay'
  const body=cleanBody(payload.body)
- const tag=typeof payload.eventId==='string'&&payload.eventId?payload.eventId:payload.tag
+ const tag=typeof payload.tag==='string'&&payload.tag?payload.tag:payload.eventId
  if(tag){
   const visible=await self.registration.getNotifications({tag})
   if(visible.length)return

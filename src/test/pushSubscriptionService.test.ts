@@ -1,7 +1,10 @@
-import { afterEach,describe,expect,it,vi } from 'vitest'
+import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest'
+const {getSessionMock}=vi.hoisted(()=>({getSessionMock:vi.fn()}))
+vi.mock('../lib/supabase',()=>({supabase:{auth:{getSession:getSessionMock}}}))
 import { getVapidPublicKey,pushSubscriptionService,requiresStandaloneForPush,urlBase64ToUint8Array } from '../services/pushSubscriptionService'
 
 describe('pushSubscriptionService',()=>{
+ beforeEach(()=>getSessionMock.mockResolvedValue({data:{session:{access_token:'access-token'}}}))
  afterEach(()=>{vi.unstubAllEnvs();vi.unstubAllGlobals();vi.restoreAllMocks()})
  it('converte chaves VAPID base64 URL-safe em bytes',()=>{
   expect([...urlBase64ToUint8Array('AQID-_w')]).toEqual([1,2,3,251,252])
@@ -42,14 +45,14 @@ describe('pushSubscriptionService',()=>{
   Object.defineProperty(navigator,'userAgent',{configurable:true,value:'Mozilla/5.0 (Macintosh)'})
   const subscription={endpoint:'https://push.example/subscription',options:{applicationServerKey:null},toJSON:()=>({keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value'}})}
   const subscribe=vi.fn(async()=>subscription)
-  const registration={update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>null),subscribe}}
+  const registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>null),subscribe}}
   Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),register:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
-  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({success:true,registered:true,deviceId:'device-1'}),{status:200,headers:{'Content-Type':'application/json'}}))
+  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({registered:true,active:true,deviceId:'device-1'}),{status:200,headers:{'Content-Type':'application/json'}}))
   vi.stubGlobal('fetch',fetchMock)
-  const result=await pushSubscriptionService.subscribe('user-1')
+  const result=await pushSubscriptionService.subscribe()
   expect(result.ok).toBe(true)
   expect(subscribe).toHaveBeenCalledWith({userVisibleOnly:true,applicationServerKey:bytes})
-  expect(fetchMock).toHaveBeenCalledWith('/api/push/subscribe',expect.objectContaining({method:'POST'}))
+  expect(fetchMock).toHaveBeenCalledWith('/api/push/subscribe',expect.objectContaining({method:'POST',headers:expect.objectContaining({Authorization:'Bearer access-token'})}))
  })
  it('substitui uma subscription criada com outro par VAPID',async()=>{
   const bytes=Uint8Array.from({length:65},(_,index)=>index===0?4:index)
@@ -64,12 +67,47 @@ describe('pushSubscriptionService',()=>{
   const oldSubscription={endpoint:'https://push.example/old',options:{applicationServerKey:Uint8Array.from({length:65},()=>9).buffer},unsubscribe}
   const newSubscription={endpoint:'https://push.example/new',options:{applicationServerKey:bytes.buffer},toJSON:()=>({keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value'}})}
   const subscribe=vi.fn(async()=>newSubscription)
-  const registration={update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>oldSubscription),subscribe}}
+  const registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>oldSubscription),subscribe}}
   Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),register:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
-  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({success:true,registered:true,deviceId:'device-new'}),{status:200,headers:{'Content-Type':'application/json'}})))
-  const result=await pushSubscriptionService.subscribe('user-1')
+  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({registered:true,active:true,deviceId:'device-new'}),{status:200,headers:{'Content-Type':'application/json'}})))
+  const result=await pushSubscriptionService.subscribe()
   expect(result.ok).toBe(true)
   expect(unsubscribe).toHaveBeenCalled()
   expect(subscribe).toHaveBeenCalledWith({userVisibleOnly:true,applicationServerKey:bytes})
+ })
+ it('reutiliza uma subscription existente compatível sem duplicar subscribe',async()=>{
+  const bytes=Uint8Array.from({length:65},(_,index)=>index===0?4:index)
+  vi.stubEnv('VITE_VAPID_PUBLIC_KEY',btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''))
+  class MockNotification{static permission='granted';static requestPermission=vi.fn()}
+  vi.stubGlobal('Notification',MockNotification);vi.stubGlobal('PushManager',class {})
+  Object.defineProperty(window,'isSecureContext',{configurable:true,value:true});Object.defineProperty(navigator,'userAgent',{configurable:true,value:'Mozilla/5.0 (Macintosh)'})
+  const existing={endpoint:'https://push.example/current',expirationTime:null,options:{applicationServerKey:bytes.buffer},toJSON:()=>({keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value-long'}})}
+  const subscribe=vi.fn(),registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>existing),subscribe}}
+  Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
+  vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({registered:true,active:true,deviceId:'device-current'}),{status:200})))
+  expect((await pushSubscriptionService.subscribe()).ok).toBe(true)
+  expect(subscribe).not.toHaveBeenCalled()
+ })
+ it('não cria subscription sem sessão autenticada',async()=>{
+  const bytes=Uint8Array.from({length:65},(_,index)=>index===0?4:index)
+  vi.stubEnv('VITE_VAPID_PUBLIC_KEY',btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''))
+  class MockNotification{static permission='granted';static requestPermission=vi.fn()}
+  vi.stubGlobal('Notification',MockNotification);vi.stubGlobal('PushManager',class {})
+  Object.defineProperty(window,'isSecureContext',{configurable:true,value:true})
+  getSessionMock.mockResolvedValueOnce({data:{session:null}})
+  const result=await pushSubscriptionService.subscribe()
+  expect(result).toMatchObject({ok:false,code:'SESSION_MISSING'})
+ })
+ it('preserva InvalidAccessError como código técnico seguro',async()=>{
+  const bytes=Uint8Array.from({length:65},(_,index)=>index===0?4:index)
+  vi.stubEnv('VITE_VAPID_PUBLIC_KEY',btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''))
+  class MockNotification{static permission='granted';static requestPermission=vi.fn()}
+  vi.stubGlobal('Notification',MockNotification);vi.stubGlobal('PushManager',class {})
+  Object.defineProperty(window,'isSecureContext',{configurable:true,value:true});Object.defineProperty(navigator,'userAgent',{configurable:true,value:'Mozilla/5.0 (Macintosh)'})
+  const registration={active:{},update:vi.fn(async()=>undefined),waiting:null,pushManager:{getSubscription:vi.fn(async()=>null),subscribe:vi.fn(async()=>{throw new DOMException('invalid key','InvalidAccessError')})}}
+  Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{getRegistration:vi.fn(async()=>registration),ready:Promise.resolve(registration),controller:{}}})
+  const result=await pushSubscriptionService.subscribe()
+  expect(result).toMatchObject({ok:false,code:'PUSH_VAPID_INCOMPATIBLE'})
+  expect(result.message).not.toContain('invalid key')
  })
 })

@@ -20,18 +20,19 @@ export default async function handler(request,response){
  try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}
  catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})}
  const generator=input.type==='generator_notification'
- if(input.type!=='push_test'&&input.type!=='infrastructure_test'&&!generator)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Tipo de notificação inválido.'})
+ if(input.type!=='infrastructure_test'&&!generator)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Tipo de notificação inválido.'})
  const eventId=clean(input.eventId)
- const prefix=input.type==='infrastructure_test'?'infrastructure-test-':generator?'generator-':'push-test-'
+ const prefix=input.type==='infrastructure_test'?'infrastructure-test-':'generator-'
  if(!eventId.startsWith(prefix)||eventId.length>160)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const generatorType=safeText(input.notificationType,60)
- const title=generator?safeText(input.title,70):input.type==='infrastructure_test'?'Teste técnico da infraestrutura':'Notificações ativadas'
- const body=generator?safeText(input.body,180):input.type==='infrastructure_test'?'Realtime e Push estão sendo verificados. Nenhuma venda foi criada.':'Seu dispositivo está conectado.'
- const endpoint=safeText(input.endpoint,2048)
- if(generator&&(!allowedGeneratorTypes.has(generatorType)||!title||!body||!/^https:\/\//.test(endpoint)))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
+ const title=generator?safeText(input.title,70):'SphexPay conectada'
+ const body=generator?safeText(input.body,180):'As notificações deste dispositivo estão funcionando.'
+ const subscriptionId=safeText(input.subscriptionId,64)
+ if(subscriptionId&&!/^[0-9a-f-]{36}$/i.test(subscriptionId))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'O dispositivo selecionado é inválido.'})
+ if(generator&&(!allowedGeneratorTypes.has(generatorType)||!title||!body||!subscriptionId))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const result=await sendPushToUser({
   client,userId:user.id,eventId,type:generator?generatorType:input.type,title,body,
-  route:generator?'/app/configuracoes':'/app',endpoint:endpoint||undefined,
+  route:'/app/configuracoes',tag:generator?eventId:'sphexpay-infrastructure-test',subscriptionId:subscriptionId||undefined,
   metadata:generator?{source:'manual'}:{}
  }).catch(error=>({success:false,code:error?.code||'PUSH_DELIVERY_FAILED',sent:0,failed:0,duplicates:0}))
  if(result.success)return response.status(200).json(result)

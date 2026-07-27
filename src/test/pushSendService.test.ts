@@ -50,7 +50,7 @@ describe('sendPushToUser',()=>{
   const {client,logs}=fakeClient([subscription('one'),subscription('two')])
   const sendNotification=vi.fn(async()=>({statusCode:201}))
   const result=await sendPushToUser({...input(client),pushClient:{sendNotification}})
-  expect(result).toEqual({success:true,sent:2,failed:0,duplicates:0})
+  expect(result).toMatchObject({success:true,sent:2,failed:0,duplicates:0})
   expect(sendNotification).toHaveBeenCalledTimes(2)
   expect(logs.every(log=>log.status==='delivered'&&log.httpStatus===201)).toBe(true)
  })
@@ -60,21 +60,31 @@ describe('sendPushToUser',()=>{
   const sendNotification=vi.fn()
    .mockResolvedValueOnce({statusCode:201})
    .mockRejectedValueOnce(Object.assign(new Error('temporary'),{statusCode:503}))
-  expect(await sendPushToUser({...input(client),pushClient:{sendNotification}})).toEqual({success:true,sent:1,failed:1,duplicates:0})
+  expect(await sendPushToUser({...input(client),pushClient:{sendNotification}})).toMatchObject({success:true,sent:1,failed:1,duplicates:0})
  })
 
- it('desativa subscription expirada e retorna código técnico',async()=>{
+ it.each([404,410])('desativa subscription expirada em resposta %s e retorna código técnico',async statusCode=>{
   const {client,enabled}=fakeClient([subscription('expired')])
-  const error=Object.assign(new Error('gone'),{statusCode:410})
+  const error=Object.assign(new Error('gone'),{statusCode})
   const result=await sendPushToUser({...input(client),pushClient:{sendNotification:vi.fn(async()=>{throw error})}})
   expect(result).toMatchObject({success:false,code:'SUBSCRIPTION_EXPIRED',failed:1})
   expect(enabled.get('expired')).toBe(false)
  })
 
+ it('envia o teste de infraestrutura com tag estável e eventId único',async()=>{
+  const {client}=fakeClient([subscription('one')])
+  const sendNotification=vi.fn(async(_subscription:unknown,payload:string)=>{
+   expect(JSON.parse(payload)).toMatchObject({type:'infrastructure_test',eventId:'infrastructure-test-unique',tag:'sphexpay-infrastructure-test',title:'SphexPay conectada',body:'As notificações deste dispositivo estão funcionando.',route:'/app/configuracoes'})
+   return{statusCode:201}
+  })
+  const result=await sendPushToUser({client,userId:'user-1',eventId:'infrastructure-test-unique',type:'infrastructure_test',tag:'sphexpay-infrastructure-test',title:'SphexPay conectada',body:'As notificações deste dispositivo estão funcionando.',route:'/app/configuracoes',pushClient:{sendNotification}})
+  expect(result).toMatchObject({success:true,sent:1,failed:0})
+ })
+
  it('deduplica por eventId e subscriptionId',async()=>{
   const {client}=fakeClient([subscription('one')],['one'])
   const sendNotification=vi.fn()
-  expect(await sendPushToUser({...input(client),pushClient:{sendNotification}})).toEqual({success:true,sent:0,failed:0,duplicates:1})
+  expect(await sendPushToUser({...input(client),pushClient:{sendNotification}})).toMatchObject({success:true,sent:0,failed:0,duplicates:1})
   expect(sendNotification).not.toHaveBeenCalled()
  })
 })

@@ -2,11 +2,12 @@ import { beforeEach,describe,expect,it,vi } from 'vitest'
 import { act,renderHook,waitFor } from '@testing-library/react'
 import { defaultGeneratorConfig,formatGeneratorValue,generatorBody,intervalMilliseconds,loadGeneratorData,saveGeneratorData,validateGenerator,variedValue } from '../lib/notificationGenerator'
 import { useNotificationGenerator } from '../hooks/useNotificationGenerator'
+import { pushSubscriptionService } from '../services/pushSubscriptionService'
 vi.mock('../lib/supabase',()=>({supabase:{functions:{invoke:vi.fn(async()=>({error:null}))}}}))
-vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendGenerated:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
+vi.mock('../services/pushSubscriptionService',()=>({pushSubscriptionService:{current:vi.fn(async()=>({})),devices:vi.fn(async()=>[{id:'device-1',name:'Mac',platform:'macOS',browser:'Safari',lastSeen:'agora'}]),send:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendGenerated:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1})),sendTest:vi.fn(async()=>({ok:true,message:'Notificação enviada ao dispositivo.',sent:1}))}}))
 
 describe('motor do gerador inteligente',()=>{
- beforeEach(()=>localStorage.clear())
+ beforeEach(()=>{localStorage.clear();vi.mocked(pushSubscriptionService.devices).mockResolvedValue([{id:'device-1',name:'Mac',platform:'macOS',browser:'Safari',lastSeen:'agora'}])})
 
  it('converte intervalos sem permitir ciclos abaixo de um segundo',()=>{
   expect(intervalMilliseconds({...defaultGeneratorConfig,intervalValue:.1})).toBe(1000)
@@ -54,6 +55,13 @@ describe('motor do gerador inteligente',()=>{
   await waitFor(()=>expect(result.current.status).toBe('completed'))
   expect(result.current.sent).toBe(1)
   expect(result.current.message).toBe('Sequência concluída.')
+  unmount()
+ })
+ it('bloqueia o gerador quando não há dispositivo ativo',async()=>{
+  vi.mocked(pushSubscriptionService.devices).mockResolvedValue([])
+  const {result,unmount}=renderHook(()=>useNotificationGenerator())
+  await act(async()=>{expect(await result.current.begin(defaultGeneratorConfig)).toBe(false)})
+  expect(result.current.message).toContain('NO_ACTIVE_SUBSCRIPTIONS')
   unmount()
  })
 })

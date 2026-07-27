@@ -1,4 +1,5 @@
 import { afterEach,describe,expect,it,vi } from 'vitest'
+import { createECDH } from 'node:crypto'
 const {createClientMock}=vi.hoisted(()=>({createClientMock:vi.fn()}))
 vi.mock('@supabase/supabase-js',()=>({createClient:createClientMock}))
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
@@ -25,10 +26,12 @@ describe('backend de Push',()=>{
  afterEach(()=>{vi.unstubAllEnvs();vi.clearAllMocks()})
 
  const configureVapid=()=>{
-  const publicKey=Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:index)).toString('base64url')
-  vi.stubEnv('VITE_VAPID_PUBLIC_KEY',publicKey)
+  const privateBytes=Buffer.from(Uint8Array.from({length:32},(_,index)=>index+1))
+  const ecdh=createECDH('prime256v1')
+  ecdh.setPrivateKey(privateBytes)
+  const publicKey=ecdh.getPublicKey().toString('base64url')
   vi.stubEnv('VAPID_PUBLIC_KEY',publicKey)
-  vi.stubEnv('VAPID_PRIVATE_KEY',Buffer.from(Uint8Array.from({length:32},(_,index)=>index+1)).toString('base64url'))
+  vi.stubEnv('VAPID_PRIVATE_KEY',privateBytes.toString('base64url'))
   vi.stubEnv('VAPID_SUBJECT','mailto:suporte@sphexpay.com')
  }
 
@@ -39,11 +42,11 @@ describe('backend de Push',()=>{
   expect(pushConfiguration().vapidConfigured).toBe(false)
  })
 
- it('exige que as chaves públicas do frontend e do servidor sejam iguais',()=>{
+ it('não depende da variável VITE pública no ambiente server-side',()=>{
   configureVapid()
   vi.stubEnv('VITE_VAPID_PUBLIC_KEY',Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:255-index)).toString('base64url'))
-  expect(pushConfiguration().vapidConfigured).toBe(false)
-  expect(pushConfiguration().vapid.checks.publicKeysMatch).toBe(false)
+  expect(pushConfiguration().vapidConfigured).toBe(true)
+  expect(pushConfiguration().vapid.checks.keyPairValid).toBe(true)
  })
 
  it('normaliza padding e espaços das chaves VAPID sem alterar o par',()=>{
@@ -53,16 +56,18 @@ describe('backend de Push',()=>{
   expect(pushConfiguration().vapidConfigured).toBe(true)
  })
 
- it('informa separadamente VAPID, armazenamento e envio sem depender de subscription',()=>{
+ it('informa separadamente VAPID, armazenamento e envio sem depender de subscription',async()=>{
   configureVapid()
   const output=response()
-  healthHandler({method:'GET'},output)
-  expect(output.result).toMatchObject({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,checks:{viteVapidPublicKeyPresent:true,vapidPublicKeyPresent:true,publicKeysMatch:true,publicKeyLength65:true,publicKeyFirstByte04:true,privateKeyPresent:true,subjectValid:true},codes:['SUPABASE_SERVER_CREDENTIALS_MISSING','PUSH_SEND_NOT_CONFIGURED']}})
+  await healthHandler({method:'GET'},output)
+  expect(output.result).toMatchObject({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:false,sendConfigured:false,checks:{vapidPublicKeyPresent:true,publicKeyLength65:true,publicKeyFirstByte04:true,privateKeyPresent:true,keyPairValid:true,subjectValid:true},codes:['SUPABASE_SERVER_CREDENTIALS_MISSING','PUSH_SEND_NOT_CONFIGURED']}})
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const tableQuery={select:vi.fn(()=>tableQuery),limit:vi.fn(async()=>({error:null}))}
+  createClientMock.mockReturnValue({from:vi.fn(()=>tableQuery)})
   const configuredOutput=response()
-  healthHandler({method:'GET'},configuredOutput)
-  expect(configuredOutput.result).toMatchObject({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true,checks:{supabaseServerConfigured:true},codes:[]}})
+  await healthHandler({method:'GET'},configuredOutput)
+  expect(configuredOutput.result).toMatchObject({statusCode:200,body:{success:true,vapidConfigured:true,storageConfigured:true,sendConfigured:true,checks:{supabaseUrlPresent:true,serviceRolePresent:true,subscriptionsTableAccessible:true,deliveryLogTableAccessible:true},codes:[]}})
  })
 
  it('bloqueia métodos não permitidos nas rotas de cadastro e envio',async()=>{
@@ -78,7 +83,17 @@ describe('backend de Push',()=>{
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
   const output=response()
   await subscribeHandler({method:'POST',headers:{},body:{}},output)
-  expect(output.result).toMatchObject({statusCode:401,body:{success:false,code:'UNAUTHORIZED'}})
+  expect(output.result).toMatchObject({statusCode:401,body:{registered:false,code:'SESSION_MISSING'}})
+ })
+
+ it('retorna 400 para subscription com chaves inválidas',async()=>{
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}},error:null}))}}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{endpoint:'https://push.example/device',keys:{p256dh:'invalid',auth:'invalid'}}},output)
+  expect(output.result).toMatchObject({statusCode:400,body:{registered:false,code:'INVALID_SUBSCRIPTION'}})
  })
 
  it('não inicia envio real sem configuração VAPID e armazenamento',async()=>{
@@ -107,7 +122,7 @@ describe('backend de Push',()=>{
  it('registra e confirma no Supabase com upsert por usuário e endpoint',async()=>{
   vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
   vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
-  const maybeSingle=vi.fn(async()=>({data:{id:'device-1'},error:null}))
+  const maybeSingle=vi.fn(async()=>({data:{id:'device-1',enabled:true,user_id:'user-1'},error:null}))
   const eqEnabled=vi.fn(()=>({maybeSingle}))
   const eqEndpoint=vi.fn(()=>({eq:eqEnabled}))
   const eqUser=vi.fn(()=>({eq:eqEndpoint}))
@@ -116,10 +131,12 @@ describe('backend de Push',()=>{
   const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-1'}}}))},from:vi.fn(()=>({upsert,select}))}
   createClientMock.mockReturnValue(client)
   const output=response()
-  await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{subscription:{endpoint:'https://push.example/device',keys:{p256dh:'p256dh-value-long-enough',auth:'auth-value'}},deviceName:'MacBook'}},output)
+  const p256dh=Buffer.from(Uint8Array.from({length:65},(_,index)=>index===0?4:index)).toString('base64url')
+  const auth=Buffer.from(Uint8Array.from({length:16},(_,index)=>index+1)).toString('base64url')
+  await subscribeHandler({method:'POST',headers:{authorization:'Bearer token'},body:{endpoint:'https://push.example/device',expirationTime:null,keys:{p256dh,auth},deviceName:'MacBook'}},output)
   expect(output.result.statusCode).toBe(200)
   expect(client.from).toHaveBeenCalledWith('push_subscriptions')
   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',endpoint:'https://push.example/device',enabled:true}),{onConflict:'user_id,endpoint'})
-  expect(output.result.body).toEqual({success:true,registered:true,deviceId:'device-1'})
+  expect(output.result.body).toEqual({registered:true,active:true,deviceId:'device-1'})
  })
 })
