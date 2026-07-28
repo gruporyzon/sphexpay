@@ -4,7 +4,7 @@ vi.mock('@supabase/supabase-js',()=>({createClient:createClientMock}))
 // @ts-expect-error API serverless JavaScript fora do bundle TypeScript.
 import generateHandler,{resetNotificationGenerationState} from '../../api/notifications/generate.js'
 // @ts-expect-error Serviço server-side JavaScript fora do bundle TypeScript.
-import {generateNotificationSuggestions,sanitizeGenerationInput,validateGenerationResult} from '../../api/notifications/generation-service.js'
+import {generateNotificationSuggestions,sanitizeGenerationInput,validateGenerationResult} from '../../server/notifications/generation-service.js'
 
 const valid={
  suggestions:[

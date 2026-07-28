@@ -1,8 +1,8 @@
 import { describe,expect,it,vi } from 'vitest'
 // @ts-expect-error API serverless JavaScript fora do bundle TypeScript.
-import { sendPushToUser } from '../../api/push/send-service.js'
+import { sendPushToUser } from '../../server/push/send-service.js'
 // @ts-expect-error API serverless JavaScript fora do bundle TypeScript.
-import { formatMoney,notifyConfirmedFinancialEvent } from '../../api/push/financial-events.js'
+import { formatMoney,notifyConfirmedFinancialEvent } from '../../server/push/financial-events.js'
 
 type Subscription={id:string;device_id:string;endpoint:string;p256dh:string;auth:string;failure_count:number}
 

@@ -1,6 +1,6 @@
-import { pushConfiguration } from './config.js'
+import { pushConfiguration } from '../../server/push/config.js'
 import { createClient } from '@supabase/supabase-js'
-import { serviceRoleKey, supabaseUrl } from './config.js'
+import { serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
 
 export default async function handler(request,response){
  if(request.method!=='GET')return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})

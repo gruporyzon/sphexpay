@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { serviceRoleKey,supabaseUrl } from '../push/config.js'
+import { serviceRoleKey,supabaseUrl } from '../../server/push/config.js'
 
 const tokenFrom=request=>String(request.headers.authorization||'').replace(/^Bearer\s+/i,'').trim()
 

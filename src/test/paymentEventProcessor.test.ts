@@ -1,6 +1,6 @@
 import { describe,expect,it,vi } from 'vitest'
 // @ts-expect-error API serverless JavaScript fora do bundle TypeScript.
-import { processPaymentEvent,validatePaymentEvent } from '../../api/payments/process-payment-event.js'
+import { processPaymentEvent,validatePaymentEvent } from '../../server/payments/process-payment-event.js'
 
 const event=(patch:Record<string,unknown>={})=>({
  provider:'official-provider',eventId:'evt-1',externalTransactionId:'pay-1',

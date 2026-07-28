@@ -5,7 +5,7 @@ vi.mock('@supabase/supabase-js',()=>({createClient:createClientMock}))
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
 import healthHandler from '../../api/push/health.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
-import { pushConfiguration } from '../../api/push/config.js'
+import { pushConfiguration } from '../../server/push/config.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.
 import sendHandler from '../../api/push/send.js'
 // @ts-expect-error As rotas serverless são JavaScript e não fazem parte do bundle do frontend.

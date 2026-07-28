@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { serviceRoleKey, supabaseUrl } from './config.js'
+import { serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
 
 const clean=value=>typeof value==='string'?value.trim():''
 const failure=(response,status,code,message)=>response.status(status).json({success:false,code,message})

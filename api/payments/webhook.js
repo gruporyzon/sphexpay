@@ -1,7 +1,7 @@
 import { createHmac,timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
-import { serviceRoleKey,supabaseUrl } from '../push/config.js'
-import { processPaymentEvent } from './process-payment-event.js'
+import { serviceRoleKey,supabaseUrl } from '../../server/push/config.js'
+import { processPaymentEvent } from '../../server/payments/process-payment-event.js'
 
 const clean=value=>typeof value==='string'?value.trim():''
 const signatureFor=(secret,body)=>createHmac('sha256',secret).update(body).digest('hex')

@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto'
 import {createClient} from '@supabase/supabase-js'
-import {generateNotificationSuggestions,MAX_REQUEST_LENGTH,sanitizeGenerationInput} from './generation-service.js'
-import {serviceRoleKey,supabaseUrl} from '../push/config.js'
+import {generateNotificationSuggestions,MAX_REQUEST_LENGTH,sanitizeGenerationInput} from '../../server/notifications/generation-service.js'
+import {serviceRoleKey,supabaseUrl} from '../../server/push/config.js'
 
 const windows=new Map(),cache=new Map()
 const clean=value=>typeof value==='string'?value.trim():''

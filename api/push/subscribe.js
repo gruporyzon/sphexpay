@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { createHash } from 'node:crypto'
-import { serviceRoleKey, supabaseUrl } from './config.js'
+import { serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
 
 const storageConfigured=()=>Boolean(supabaseUrl()&&serviceRoleKey())
 const clean=value=>typeof value==='string'?value.trim():''

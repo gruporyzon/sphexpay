@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
-import { pushConfiguration, serviceRoleKey, supabaseUrl } from './config.js'
-import { sendPushToUser } from './send-service.js'
+import { pushConfiguration, serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
+import { sendPushToUser } from '../../server/push/send-service.js'
 
 const clean=value=>typeof value==='string'?value.trim():''
 const safeText=(value,max)=>clean(value).slice(0,max)
