@@ -1,5 +1,5 @@
 import { describe,expect,it } from 'vitest'
-import { amountToMinor,applyAiSuggestion,formatManualNotification,manualNotificationTemplates,normalizeBrazilianAmount,type ManualNotificationDraft } from '../lib/manualNotification'
+import { amountToMinor,applyAiSuggestion,formatEstimatedDuration,formatManualNotification,intervalToMilliseconds,localNotificationVariations,manualNotificationTemplates,normalizeBrazilianAmount,notificationVariables,validateSequence,type ManualNotificationDraft } from '../lib/manualNotification'
 
 const draft=(values:Partial<ManualNotificationDraft>={}):ManualNotificationDraft=>({
  notificationType:'sale_approved',
@@ -8,7 +8,6 @@ const draft=(values:Partial<ManualNotificationDraft>={}):ManualNotificationDraft
  value:'128,50',
  valueKind:'commission',
  currency:'BRL',
- product:'Plano Premium',
  customer:'Ronald',
  method:'Pix',
  route:'/app/transacoes',
@@ -19,8 +18,8 @@ const draft=(values:Partial<ManualNotificationDraft>={}):ManualNotificationDraft
 
 describe('gerador manual de notificações',()=>{
  it('substitui variáveis disponíveis e formata BRL sem conversão',()=>{
-  const result=formatManualNotification(draft())
-  expect(result.body).toContain('Plano Premium')
+ const result=formatManualNotification(draft())
+  expect(result.body).not.toContain('produto')
   expect(result.body).toContain('R$')
   expect(result.body).toContain('128,50')
   expect(result.missing).toEqual([])
@@ -31,9 +30,11 @@ describe('gerador manual de notificações',()=>{
   expect(formatManualNotification(draft({currency:'EUR',value:'10'})).body).toContain('10,00')
  })
 
- it('informa campos ausentes e remove variáveis quebradas da prévia',()=>{
-  const result=formatManualNotification(draft({product:'',value:'',body:'{produto} • {valor}'}))
-  expect(result.missing).toEqual(expect.arrayContaining(['produto','valor']))
+ it('remove produto do contrato manual e informa variáveis ausentes',()=>{
+  const result=formatManualNotification(draft({value:'',body:'{valor}'}))
+  expect(notificationVariables).not.toContain('{produto}')
+  expect(Object.values(manualNotificationTemplates).every(template=>!template.title.includes('{produto}')&&!template.body.includes('{produto}'))).toBe(true)
+  expect(result.missing).toContain('valor')
   expect(result.body).not.toMatch(/[{}]/)
  })
 
@@ -56,9 +57,38 @@ describe('gerador manual de notificações',()=>{
  })
 
  it('aplica sugestão de IA apenas ao texto da notificação',()=>{
-  const original=draft({product:'Mentoria Escala',value:'297,00'})
-  const next=applyAiSuggestion(original,{title:'Pagamento confirmado',body:'Mentoria Escala vendida por R$ 297,00.'})
-  expect(next).toMatchObject({title:'Pagamento confirmado',body:'Mentoria Escala vendida por R$ 297,00.',product:'Mentoria Escala',value:'297,00'})
+  const original=draft({value:'297,00'})
+  const next=applyAiSuggestion(original,{title:'Pagamento confirmado',body:'Pagamento de R$ 297,00 confirmado.'})
+  expect(next).toMatchObject({title:'Pagamento confirmado',body:'Pagamento de R$ 297,00 confirmado.',value:'297,00'})
   expect(original.title).toBe('Venda aprovada!')
+ })
+
+ it('converte segundos, minutos e horas em um único helper',()=>{
+  expect(intervalToMilliseconds(5,'seconds')).toBe(5000)
+  expect(intervalToMilliseconds(2,'minutes')).toBe(120000)
+  expect(intervalToMilliseconds(1,'hours')).toBe(3600000)
+ })
+
+ it('valida quantidade e limites seguros de intervalo',()=>{
+  expect(validateSequence(0,5,'seconds')).toMatch(/quantidade/i)
+  expect(validateSequence(-1,5,'seconds')).toMatch(/quantidade/i)
+  expect(validateSequence(1.5,5,'seconds')).toMatch(/inteiro/i)
+  expect(validateSequence(101,5,'seconds')).toMatch(/100/)
+  expect(validateSequence(5,2,'seconds')).toMatch(/3/)
+  expect(validateSequence(5,1,'minutes')).toBe('')
+  expect(validateSequence(5,168,'hours')).toBe('')
+ })
+
+ it('calcula a duração estimada a partir dos intervalos',()=>{
+  expect(formatEstimatedDuration(0)).toBe('Envio imediato.')
+  expect(formatEstimatedDuration(intervalToMilliseconds(30,'seconds')*9)).toBe('Duração estimada: 4 minutos e 30 segundos.')
+  expect(formatEstimatedDuration(intervalToMilliseconds(2,'hours')*4)).toBe('Duração estimada: 8 horas.')
+ })
+
+ it('cria variações locais sem produto e sem repetição consecutiva',()=>{
+  const variations=localNotificationVariations('sale_approved','R$ 197,00')
+  expect(variations).toHaveLength(3)
+  expect(new Set(variations.map(item=>`${item.title}|${item.body}`)).size).toBe(3)
+  expect(variations.every(item=>!item.body.toLowerCase().includes('produto'))).toBe(true)
  })
 })
