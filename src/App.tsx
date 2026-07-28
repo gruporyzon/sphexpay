@@ -1,3 +1,4 @@
+import { lazy,Suspense } from 'react'
 import { BrowserRouter,Navigate,Route,Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import Dashboard from './pages/Dashboard'
@@ -28,8 +29,11 @@ import { PublicOnlyRoute } from './routes/PublicOnlyRoute'
 import { SoundProvider } from './providers/SoundProvider'
 import CompetitionPage from './pages/Competition'
 import { DashboardDataProvider } from './providers/DashboardDataProvider'
+import { Loading } from './components/ui'
 
-const modules=[['competicao',<CompetitionPage/>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const LiveSalesWorld=lazy(()=>import('./pages/LiveSalesWorld'))
+
+const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><Routes>
  <Route path="/" element={<LandingPage/>}/>
  <Route path="/termos" element={<LegalPage type="terms"/>}/>

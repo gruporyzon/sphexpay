@@ -64,4 +64,11 @@ describe('experiência mobile',()=>{
   expect(publicCss).toContain('@media(prefers-reduced-motion:reduce)')
   expect(globalCss).toContain('overflow-x:clip')
  })
+
+ it('mantém o mapa global responsivo e reduz animações no mobile',()=>{
+  expect(globalCss).toContain('.live-world-page{width:100%;max-width:100%;min-width:0;overflow-x:clip')
+  expect(globalCss).toContain('.live-world-layout{grid-template-columns:1fr}')
+  expect(globalCss).toContain('.live-world-kpis{grid-template-columns:repeat(2,minmax(0,1fr))')
+  expect(globalCss).toContain('.live-world-routes path,.live-world-origin .wave,.live-world-points .wave')
+ })
 })

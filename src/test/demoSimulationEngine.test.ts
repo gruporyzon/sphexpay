@@ -1,10 +1,10 @@
 import { describe,expect,it } from 'vitest'
-import { createHistory,createLiveTransaction,createSeededGenerator,fallbackDemoProducts,reconcileDemoLedger } from '../demo/demoSimulationEngine'
+import { calculateDynamicInterval,createHistory,createLiveTransaction,createSeededGenerator,defaultDemoConfig,demoPresets,fallbackDemoProducts,reconcileDemoLedger,selectWeighted,validateDemoConfig } from '../demo/demoSimulationEngine'
 import { metricsFromTransactions,periodBounds,seriesFromTransactions } from '../lib/dashboardFinance'
 import type { DemoSession } from '../demo/types'
 
 const now=new Date('2026-07-27T15:00:00-03:00')
-const session=(seed=123):DemoSession=>({version:1,active:true,sessionId:'test-session',seed,ownerId:'owner',startedAt:now.toISOString(),expiresAt:new Date(now.getTime()+86_400_000).toISOString(),lastEventAt:now.toISOString(),ledger:[],notifications:[],products:fallbackDemoProducts})
+const session=(seed=123):DemoSession=>({version:2,active:true,paused:false,sessionId:'test-session',seed,ownerId:'owner',startedAt:now.toISOString(),expiresAt:new Date(now.getTime()+86_400_000).toISOString(),lastEventAt:now.toISOString(),ledger:[],notifications:[],products:fallbackDemoProducts,config:defaultDemoConfig(),eventCount:0,approvedCount:0,sessionVolumeCents:0,intensity:1,exchangeRates:{BRL:1,USD:.19,EUR:.17}})
 
 describe('DemoSimulationEngine',()=>{
  it('reproduz o histórico com a mesma seed e cobre pelo menos 30 dias',()=>{
@@ -28,5 +28,29 @@ describe('DemoSimulationEngine',()=>{
  it('não usa Math.random e o gerador produz sequência determinística',()=>{
   const a=createSeededGenerator(42),b=createSeededGenerator(42)
   expect([a(),a(),a()]).toEqual([b(),b(),b()])
+ })
+ it('valida limites, pesos e taxas antes de aplicar',()=>{
+  expect(validateDemoConfig({...defaultDemoConfig(),minFrequency:20,maxFrequency:10})).toContain('A frequência mínima não pode superar a máxima.')
+  expect(validateDemoConfig({...defaultDemoConfig(),minAmountCents:50000,maxAmountCents:10000})).toContain('O valor mínimo não pode superar o máximo.')
+  expect(validateDemoConfig({...defaultDemoConfig(),approvalRate:90})).toContain('As taxas de status devem totalizar 100%.')
+  expect(validateDemoConfig(defaultDemoConfig())).toEqual([])
+ })
+ it('oferece presets editáveis e seleção ponderada reproduzível',()=>{
+  expect(Object.keys(demoPresets)).toEqual(expect.arrayContaining(['light','normal','high','launch','peak','subscriptions','international']))
+  const a=createSeededGenerator(99),b=createSeededGenerator(99),weights=defaultDemoConfig().methods
+  expect(Array.from({length:20},()=>selectWeighted(weights,a))).toEqual(Array.from({length:20},()=>selectWeighted(weights,b)))
+ })
+ it('gera país, cidade, cliente reservado e moedas no mesmo ledger',()=>{
+  const value={...session(),config:demoPresets.international},event=createLiveTransaction(value,now)
+  expect(event.countryCode).toMatch(/^[A-Z]{2}$/)
+  expect(event.countryName).toBeTruthy()
+  expect(event.cityName).toBeTruthy()
+  expect(event.customerEmail).toMatch(/^cliente\d{3}@example\.com$/)
+  expect(['BRL','USD','EUR']).toContain(event.currency)
+ })
+ it('calcula um único próximo intervalo com intensidade configurável',()=>{
+  const value=session(),normal=calculateDynamicInterval(value,now),faster=calculateDynamicInterval({...value,intensity:2},now)
+  expect(normal).toBeGreaterThan(0)
+  expect(faster).toBeLessThan(normal)
  })
 })

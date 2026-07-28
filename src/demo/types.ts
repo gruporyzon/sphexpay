@@ -11,6 +11,10 @@ export interface DemoTransaction extends FinancialTransaction{
  netAmountCents:number
  customerDisplayName:string
  customerEmail:string
+ customerId:string
+ countryCode:string
+ countryName:string
+ cityName:string
  createdAt:string
  approvedAt?:string
  updatedAt:string
@@ -28,16 +32,51 @@ export interface DemoProduct{
 export interface DemoNotification{
  id:string
  demo:true
- title:'Venda demonstrativa aprovada'|'Meta demonstrativa alcançada'
+ title:string
  description:string
  createdAt:string
  read:boolean
  transactionId?:string
 }
 
+export type DemoPreset='light'|'normal'|'high'|'launch'|'peak'|'subscriptions'|'international'|'custom'
+export type DemoFrequencyUnit='seconds'|'minutes'
+export type DemoPaymentMethod='Pix'|'Cartão de crédito'|'Boleto'|'Assinatura'
+export type DemoCountryCode='BR'|'US'|'CA'|'PT'|'GB'|'FR'|'DE'|'ES'|'IT'|'NL'|'IE'|'CH'
+export interface DemoWeightedOption<T extends string>{id:T;enabled:boolean;weight:number}
+export interface DemoConfig{
+ preset:DemoPreset
+ initialSales:number
+ minFrequency:number
+ maxFrequency:number
+ frequencyUnit:DemoFrequencyUnit
+ minAmountCents:number
+ maxAmountCents:number
+ targetTicketCents:number
+ memoryLimit:number
+ peakStartHour:number
+ peakEndHour:number
+ peakMultiplier:number
+ peakDurationMinutes:number
+ graphSpeed:number
+ awardMultiplier:number
+ approvalRate:number
+ declinedRate:number
+ pendingRate:number
+ refundRate:number
+ chargebackRate:number
+ methods:DemoWeightedOption<DemoPaymentMethod>[]
+ currencies:DemoWeightedOption<Currency>[]
+ countries:DemoWeightedOption<DemoCountryCode>[]
+ useProductPrices:boolean
+ adaptive:boolean
+ sessionGoalCents:number
+}
+
 export interface DemoSession{
- version:1
+ version:2
  active:boolean
+ paused:boolean
  sessionId:string
  seed:number
  ownerId:string
@@ -47,6 +86,12 @@ export interface DemoSession{
  ledger:DemoTransaction[]
  notifications:DemoNotification[]
  products:DemoProduct[]
+ config:DemoConfig
+ eventCount:number
+ approvedCount:number
+ sessionVolumeCents:number
+ intensity:number
+ exchangeRates:Record<Currency,number>
 }
 
 export interface DemoCustomer{
@@ -57,6 +102,8 @@ export interface DemoCustomer{
  totalCentsByCurrency:Partial<Record<Currency,number>>
  lastOrderAt:string
  lastProduct:string
+ countryName:string
+ cityName:string
 }
 
 export const productToDemo=(product:Product&{currency?:Currency}):DemoProduct=>({
