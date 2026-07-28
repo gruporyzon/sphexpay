@@ -40,7 +40,7 @@ export default function WithdrawalsPage(){
    setAvailableInCents(result.availableBalanceInCents);setWithdrawals(result.withdrawals);syncWithdrawalCache(result.availableBalanceInCents/100,toCache(result.withdrawals))
    setAmount('');setModal(false);setConfirmation({amountInCents:result.withdrawal.amountInCents,lastDigits:result.withdrawal.destinationLastDigits})
    window.clearTimeout(confirmationTimer.current);confirmationTimer.current=window.setTimeout(()=>setConfirmation(null),5000)
-   setNotificationNotice('Este saque é demonstrativo e não gera notificação financeira real.')
+   setNotificationNotice('Nenhuma notificação financeira será gerada para este saque.')
   }catch(requestError){setError((requestError as Error).message);setModal(false)}
   finally{processingRef.current=false;setProcessing(false)}
  }

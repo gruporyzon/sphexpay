@@ -89,5 +89,5 @@ export function useDashboardData(){
 export function useOptionalDashboardData(){return useContext(DashboardDataContext)}
 
 export function demoNotificationToApp(item:DemoNotification):AppNotification{
- return{id:item.id,kind:item.title==='Meta demonstrativa alcançada'?'achievement':'sale',category:item.title==='Meta demonstrativa alcançada'?'Sistema':'Vendas',title:item.title,description:item.description,createdAt:item.createdAt,read:item.read,priority:'normal',detailPath:item.transactionId?`/app/transacoes?evento=${encodeURIComponent(item.transactionId)}`:'/app/premiacoes',metadata:{source:'demo'}}
+ return{id:item.id,kind:item.title==='Meta demonstrativa alcançada'?'achievement':'sale',category:item.title==='Meta demonstrativa alcançada'?'Sistema':'Vendas',title:item.title.replace('Venda demonstrativa','Venda').replace('Meta demonstrativa','Meta'),description:item.description.replace('plaquinha demonstrativa','plaquinha'),createdAt:item.createdAt,read:item.read,priority:'normal',detailPath:item.transactionId?`/app/transacoes?evento=${encodeURIComponent(item.transactionId)}`:'/app/premiacoes',metadata:{source:'demo'}}
 }

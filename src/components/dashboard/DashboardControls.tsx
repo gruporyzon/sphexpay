@@ -11,5 +11,5 @@ export function DashboardCurrencySelector({currency,onChange}:{currency:Currency
 }
 
 export function DashboardModeIndicator({mode}:{mode:'production'|'planning'|'demo'}){
- return <span className={`dashboard-mode-indicator ${mode}`}>{mode==='demo'?'Demonstração':mode==='planning'?'Planejamento':'Produção'}</span>
+ return <span className={`dashboard-mode-indicator ${mode}`}>{mode==='demo'?'Modo':mode==='planning'?'Planejamento':'Produção'}</span>
 }
