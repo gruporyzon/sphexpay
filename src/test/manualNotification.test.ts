@@ -1,5 +1,5 @@
 import { describe,expect,it } from 'vitest'
-import { amountToMinor,applyAiSuggestion,formatEstimatedDuration,formatManualNotification,intervalToMilliseconds,localNotificationVariations,manualNotificationTemplates,normalizeBrazilianAmount,notificationVariables,validateSequence,type ManualNotificationDraft } from '../lib/manualNotification'
+import { amountToMinor,applyAiSuggestion,formatEstimatedDuration,formatManualNotification,intervalToMilliseconds,localNotificationVariations,manualNotificationTemplates,normalizeBrazilianAmount,notificationContent,notificationVariables,validateSequence,type ManualNotificationDraft } from '../lib/manualNotification'
 
 const draft=(values:Partial<ManualNotificationDraft>={}):ManualNotificationDraft=>({
  notificationType:'sale_approved',
@@ -45,8 +45,8 @@ describe('gerador manual de notificações',()=>{
 
  it('limita o resultado aos tamanhos seguros',()=>{
   const result=formatManualNotification(draft({title:'T'.repeat(100),body:'M'.repeat(220)}))
-  expect(result.title).toHaveLength(80)
-  expect(result.body).toHaveLength(180)
+  expect(result.title).toHaveLength(60)
+  expect(result.body).toHaveLength(160)
  })
 
  it('normaliza entrada brasileira e converte o valor somente para centavos',()=>{
@@ -74,7 +74,7 @@ describe('gerador manual de notificações',()=>{
   expect(validateSequence(-1,5,'seconds')).toMatch(/quantidade/i)
   expect(validateSequence(1.5,5,'seconds')).toMatch(/inteiro/i)
   expect(validateSequence(101,5,'seconds')).toMatch(/100/)
-  expect(validateSequence(5,2,'seconds')).toMatch(/3/)
+  expect(validateSequence(5,4,'seconds')).toMatch(/5/)
   expect(validateSequence(5,1,'minutes')).toBe('')
   expect(validateSequence(5,168,'hours')).toBe('')
  })
@@ -90,5 +90,12 @@ describe('gerador manual de notificações',()=>{
   expect(variations).toHaveLength(3)
   expect(new Set(variations.map(item=>`${item.title}|${item.body}`)).size).toBe(3)
   expect(variations.every(item=>!item.body.toLowerCase().includes('produto'))).toBe(true)
+ })
+
+ it('aplica comissão, valor da venda, valor recebido ou nenhum valor',()=>{
+  expect(notificationContent('sale_approved','commission').body).toBe('Sua comissão: {valor}')
+  expect(notificationContent('sale_approved','sale').body).toBe('Valor da venda: {valor}')
+  expect(notificationContent('sale_approved','received').body).toBe('Valor recebido: {valor}')
+  expect(notificationContent('sale_approved','none').body).not.toContain('{valor}')
  })
 })

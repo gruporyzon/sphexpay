@@ -1,10 +1,10 @@
-import {BellRing,ChevronDown,History as HistoryIcon,Pause,Play,RefreshCcw,Send,Sparkles,Square} from 'lucide-react'
+import {BellRing,ChevronDown,History as HistoryIcon,Pause,Play,RefreshCcw,Send,Square} from 'lucide-react'
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react'
 import {useAuth} from '../../hooks/useAuth'
 import {
  applyAiSuggestion,formatEstimatedDuration,formatManualNotification,intervalToMilliseconds,
- localNotificationVariations,manualNotificationTemplates,normalizeBrazilianAmount,validateSequence,
- type ManualCurrency,type ManualNotificationDraft,type ManualNotificationType,type NotificationIntervalUnit
+ localNotificationVariations,manualNotificationTemplates,normalizeBrazilianAmount,notificationContent,validateSequence,valueKindLabels,
+ type ManualCurrency,type ManualNotificationDraft,type ManualNotificationType,type ManualValueKind,type NotificationIntervalUnit
 } from '../../lib/manualNotification'
 import {supabase} from '../../lib/supabase'
 import {browserPermissionService,type BrowserNotificationStatus} from '../../services/browserPermissionService'
@@ -41,9 +41,11 @@ const initialProgress:SequenceProgress={id:'',status:'idle',planned:1,completed:
 const typeOptions:TypeOption[]=[
  {id:'sale-approved',type:'sale_approved',label:'Venda aprovada'},{id:'sale-pending',type:'sale_pending',label:'Venda pendente'},
  {id:'pix-generated',type:'pix_generated',label:'Pix gerado'},{id:'pix-paid',type:'pix_paid',label:'Pix pago'},
- {id:'card-approved',type:'credit_card_approved',label:'Cartão aprovado'},{id:'boleto-generated',type:'boleto_generated',label:'Boleto gerado'},
+ {id:'card-approved',type:'credit_card_approved',label:'Cartão aprovado'},{id:'card-refused',type:'credit_card_refused',label:'Cartão recusado'},
+ {id:'boleto-generated',type:'boleto_generated',label:'Boleto gerado'},
  {id:'boleto-paid',type:'boleto_paid',label:'Boleto pago'},{id:'refund',type:'refund_done',label:'Reembolso'},
- {id:'subscription',type:'subscription_renewed',label:'Assinatura renovada'},{id:'purchase-approved',type:'sale_approved',label:'Compra aprovada'}
+ {id:'subscription',type:'subscription_renewed',label:'Assinatura renovada'},{id:'withdrawal',type:'withdrawal_completed',label:'Saque concluído'},
+ {id:'custom',type:'custom',label:'Aviso personalizado'}
 ]
 const unitLabels:Record<NotificationIntervalUnit,{singular:string;plural:string}>={seconds:{singular:'segundo',plural:'segundos'},minutes:{singular:'minuto',plural:'minutos'},hours:{singular:'hora',plural:'horas'}}
 const readHistory=():DeliveryHistory[]=>{try{return JSON.parse(localStorage.getItem(historyKey)||localStorage.getItem(legacyHistoryKey)||'[]')}catch{return[]}}
@@ -63,10 +65,6 @@ export function NotificationDelivery(){
  const [connecting,setConnecting]=useState(false)
  const [draft,setDraft]=useState<ManualNotificationDraft>(initialDraft)
  const [selectedType,setSelectedType]=useState('sale-approved')
- const [commission,setCommission]=useState('')
- const [context,setContext]=useState('')
- const [aiEnabled,setAiEnabled]=useState(true)
- const [useData,setUseData]=useState(true)
  const [aiState,setAiState]=useState<AiState>('idle')
  const [aiPool,setAiPool]=useState<Array<{title:string;body:string}>>([])
  const [targetMode,setTargetMode]=useState<TargetMode>('all')
@@ -153,23 +151,33 @@ export function NotificationDelivery(){
 
  const chooseType=(option:TypeOption)=>{
   if(sequenceActive)return
-  setSelectedType(option.id);setDraft(current=>({...current,...manualNotificationTemplates[option.type],notificationType:option.type}));setAiPool([]);setFeedback('')
+  setSelectedType(option.id);setDraft(current=>({...current,...notificationContent(option.type,current.valueKind,current.method),notificationType:option.type}));setAiPool([]);setFeedback('')
+ }
+ const chooseValueKind=(valueKind:ManualValueKind)=>{
+  if(sequenceActive)return
+  setDraft(current=>({...current,...notificationContent(current.notificationType,valueKind,current.method),valueKind}))
+  setAiPool([]);setFeedback('')
+ }
+ const chooseMethod=(method:string)=>{
+  if(sequenceActive)return
+  setDraft(current=>({...current,...notificationContent(current.notificationType,current.valueKind,method),method}))
+  setAiPool([]);setFeedback('')
  }
  const buildRequest=()=>{
   const option=typeOptions.find(item=>item.id===selectedType)
-  const details=useData?[draft.value&&`valor ${draft.currency} ${draft.value}`,draft.method&&`método ${draft.method}`,draft.customer&&`cliente ${draft.customer}`,commission&&`comissão ${commission}`,context&&`contexto ${context}`].filter(Boolean).join(', '):context
+  const details=[draft.valueKind!=='none'&&draft.value&&`${valueKindLabels[draft.valueKind]} ${draft.currency} ${draft.value}`,draft.method&&`método ${draft.method}`].filter(Boolean).join(', ')
   return`Crie uma notificação Push curta e profissional para "${option?.label||'Aviso'}"${details?`. Use estes dados: ${details}`:''}. Não cite produto ou nome de produto.`
  }
  const requestSuggestions=async(action:AiAction='generate',apply=true)=>{
-  if(!aiEnabled||aiState==='loading')return[] as Array<{title:string;body:string}>
+  if(aiState==='loading')return[] as Array<{title:string;body:string}>
   aiAbort.current?.abort();const controller=new AbortController();aiAbort.current=controller;setAiState('loading');setFeedback('')
   try{
    const session=supabase?await supabase.auth.getSession():null,token=session?.data.session?.access_token
    if(!token){setAiState('error');setFeedback('Sua sessão expirou. Entre novamente.');return[]}
    const response=await fetch('/api/notifications/generate',{method:'POST',signal:controller.signal,headers:{Accept:'application/json','Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({
     request:buildRequest(),action,objective:'Informar',tone:'Profissional',size:'Curto',emoji:'Discreto',audience:'Produtor',
-    value:useData?draft.value:'',currency:draft.currency,customer:useData?draft.customer:'',method:useData?draft.method:'',
-    route:draft.route,currentTitle:draft.title,currentBody:draft.body,additional:[commission&&`Comissão: ${commission}`,context,'Nunca mencione produto ou nome de produto.'].filter(Boolean).join('. ')
+    value:draft.valueKind==='none'?'':draft.value,currency:draft.currency,customer:'',method:draft.method,
+    route:draft.route,currentTitle:draft.title,currentBody:draft.body,additional:'Nunca mencione produto ou nome de produto.'
    })})
    const data=await response.json().catch(()=>({})) as Partial<AiResult>&{success?:boolean;code?:string}
    if(!response.ok||data.success!==true||!Array.isArray(data.suggestions)||data.suggestions.length!==3){setAiState(data.code==='AI_NOT_CONFIGURED'?'unavailable':'error');setFeedback(aiError(data.code));return[]}
@@ -231,9 +239,9 @@ export function NotificationDelivery(){
   const validatingProgress={...initialProgress,id,status:'validating' as const,planned:effectiveQuantity}
   setProgress(validatingProgress);progressRef.current=validatingProgress;setFeedback('Validando programação…')
   let variations=aiPool
-  if(mode==='sequence'&&varyMessages&&aiEnabled&&!variations.length)variations=await requestSuggestions('similar',false)
+  if(mode==='sequence'&&varyMessages&&!variations.length)variations=await requestSuggestions('similar',false)
   if(cancelledIdsRef.current.has(id)){sequenceLockRef.current=false;return}
-  if(mode==='sequence'&&varyMessages&&!variations.length){variations=localNotificationVariations(draft.notificationType,formatted.formattedValue);setFeedback('Variações locais ativas.')}
+  if(mode==='sequence'&&varyMessages&&!variations.length){variations=localNotificationVariations(draft.notificationType,formatted.formattedValue,draft.valueKind);setFeedback('Variações automáticas ativas.')}
   const now=new Date().toISOString()
   sequenceConfigRef.current={mode:targetMode,ids:[...selectedIds],intervalMs,variations:mode==='sequence'&&varyMessages?variations:[],base:{title:formatted.title,body:formatted.body},variationIndex:-1}
   const nextProgress:SequenceProgress={id,status:'scheduled',planned:effectiveQuantity,completed:0,sent:0,failed:0,expired:0,nextAt:Date.now()}
@@ -279,35 +287,32 @@ export function NotificationDelivery(){
 
   {tab==='generator'&&<main className="simple-push-generator">
    <section className="simple-push-preview" aria-labelledby="notification-preview-title"><div className="simple-push-section-title"><span>VISUALIZAÇÃO</span><h3 id="notification-preview-title">Sua mensagem</h3></div><article><SphexPayLogo/><div><header><b>SphexPay</b><time>agora</time></header><strong>{formatted.title||'Título da notificação'}</strong><p>{formatted.body||'Sua mensagem aparecerá aqui.'}</p></div></article></section>
-   <div className="simple-push-columns">
-    <div className="simple-push-main">
-     <section className="simple-push-section"><SectionTitle number="1" title="Tipo da notificação" description="Escolha o assunto para começar."/><div className="simple-push-types">{typeOptions.map(option=><button type="button" disabled={sequenceActive} className={selectedType===option.id?'active':''} aria-pressed={selectedType===option.id} onClick={()=>chooseType(option)} key={option.id}>{option.label}</button>)}</div></section>
-     <section className="simple-push-section"><SectionTitle number="2" title="Dados da notificação" description="Preencha somente o que fizer sentido."/><div className="simple-push-fields">
-      <label><span>Cliente <small>opcional</small></span><input disabled={sequenceActive} value={draft.customer} onChange={event=>setDraft(current=>({...current,customer:event.target.value}))} placeholder="Nome do cliente"/></label>
-      <label><span>Valor</span><div className="simple-push-money"><select disabled={sequenceActive} aria-label="Moeda" value={draft.currency} onChange={event=>setDraft(current=>({...current,currency:event.target.value as ManualCurrency}))}><option>BRL</option><option>USD</option><option>EUR</option></select><input disabled={sequenceActive} aria-label="Valor" inputMode="decimal" value={draft.value} onChange={event=>setDraft(current=>({...current,value:normalizeBrazilianAmount(event.target.value)}))} placeholder="197,00"/></div></label>
-      <label><span>Método</span><select disabled={sequenceActive} value={draft.method} onChange={event=>setDraft(current=>({...current,method:event.target.value}))}><option value="">Não informar</option><option>Pix</option><option>Cartão</option><option>Boleto</option><option>Saldo</option></select></label>
-      <label><span>Comissão <small>opcional</small></span><input disabled={sequenceActive} inputMode="decimal" value={commission} onChange={event=>setCommission(normalizeBrazilianAmount(event.target.value))} placeholder="97,00"/></label>
-      <label className="wide"><span>Horário ou contexto <small>opcional</small></span><input disabled={sequenceActive} maxLength={160} value={context} onChange={event=>setContext(event.target.value)} placeholder="Ex.: pagamento confirmado agora"/></label>
-     </div>
-     <fieldset className="sequence-destinations" disabled={sequenceActive}><legend>Destino da notificação</legend>
+   <div className="simple-push-main">
+    <section className="simple-push-section"><SectionTitle title="Tipo da notificação" description="Escolha o alerta que deseja enviar."/><div className="simple-push-types">{typeOptions.map(option=><button type="button" disabled={sequenceActive} className={selectedType===option.id?'active':''} aria-pressed={selectedType===option.id} onClick={()=>chooseType(option)} key={option.id}>{option.label}</button>)}</div></section>
+    <section className="simple-push-section"><SectionTitle title="Tipo do valor" description="Escolha como o valor será apresentado."/><div className="simple-push-types" role="radiogroup" aria-label="Tipo do valor">{(Object.entries(valueKindLabels) as Array<[ManualValueKind,string]>).map(([value,label])=><button type="button" role="radio" aria-checked={draft.valueKind===value} disabled={sequenceActive} className={draft.valueKind===value?'active':''} onClick={()=>chooseValueKind(value)} key={value}>{label}</button>)}</div></section>
+    <section className="simple-push-section"><SectionTitle title="Valor" description="Informe o valor e, se quiser, o método."/><div className="simple-push-fields">
+     <label><span>Valor</span><div className="simple-push-money"><select disabled={sequenceActive||draft.valueKind==='none'} aria-label="Moeda" value={draft.currency} onChange={event=>setDraft(current=>({...current,currency:event.target.value as ManualCurrency}))}><option>BRL</option><option>USD</option><option>EUR</option></select><input disabled={sequenceActive||draft.valueKind==='none'} aria-label="Valor" inputMode="decimal" value={draft.value} onChange={event=>setDraft(current=>({...current,value:normalizeBrazilianAmount(event.target.value)}))} placeholder="197,00"/></div></label>
+     <label><span>Método</span><select aria-label="Método" disabled={sequenceActive} value={draft.method} onChange={event=>chooseMethod(event.target.value)}><option value="">Não informar</option><option>Pix</option><option>Cartão</option><option>Boleto</option><option>Saldo</option></select></label>
+    </div></section>
+    <section className="simple-push-section sequence-programming"><SectionTitle title="Programação" description="Envie agora ou mantenha uma sequência enquanto esta página estiver aberta."/>
+     <div className="sequence-mode" role="radiogroup" aria-label="Modo de envio"><button type="button" role="radio" aria-checked={mode==='now'} className={mode==='now'?'active':''} disabled={sequenceActive} onClick={()=>setMode('now')}>Enviar uma vez</button><button type="button" role="radio" aria-label="Programar sequência" aria-checked={mode==='sequence'} className={mode==='sequence'?'active':''} disabled={sequenceActive} onClick={()=>setMode('sequence')}>Enviar sequência</button></div>
+     {mode==='sequence'&&<><label className="sequence-field"><span>Quantidade de notificações</span><input aria-describedby="quantity-help" disabled={sequenceActive} type="number" inputMode="numeric" min="1" max="100" step="1" value={quantity} onChange={event=>setQuantity(Number(event.target.value))}/><small id="quantity-help">Escolha entre 1 e 100.</small></label><div className="sequence-quick" aria-label="Quantidades rápidas">{[1,5,10,20,50].map(value=><button type="button" disabled={sequenceActive} className={quantity===value?'active':''} onClick={()=>setQuantity(value)} key={value}>{value}</button>)}</div>
+      <div className="sequence-interval"><label><span>Enviar a cada</span><input aria-label="Intervalo" aria-describedby="interval-error" disabled={sequenceActive} type="number" inputMode="numeric" min={unit==='seconds'?5:1} max={unit==='seconds'?3600:unit==='minutes'?1440:168} step="1" value={interval} onChange={event=>setIntervalValue(Number(event.target.value))}/></label><label><span>Unidade</span><select aria-label="Unidade do intervalo" disabled={sequenceActive} value={unit} onChange={event=>setUnit(event.target.value as NotificationIntervalUnit)}><option value="seconds">Segundos</option><option value="minutes">Minutos</option><option value="hours">Horas</option></select></label></div>
+      {intervalError&&<p className="sequence-error" id="interval-error" role="alert">{intervalError}</p>}</>}
+     <div className="sequence-summary"><b>{effectiveQuantity===1?'Uma notificação será enviada imediatamente.':`Serão enviadas ${effectiveQuantity} notificações, uma a cada ${interval} ${unitLabel}.`}</b><span>{formatEstimatedDuration(estimatedDuration)}</span>{mode==='sequence'&&<small>Mantenha esta página aberta durante a sequência.</small>}</div>
+     {progress.status!=='idle'&&<div className="sequence-progress" aria-live="polite"><div><b>{progress.completed} de {progress.planned} enviadas</b><span>{Math.max(0,progress.planned-progress.completed)} restantes · {progress.sent} com sucesso · {progress.failed+progress.expired} com falha</span></div><div className="sequence-progressbar" role="progressbar" aria-label="Progresso da sequência" aria-valuemin={0} aria-valuemax={progress.planned} aria-valuenow={progress.completed}><i style={{width:`${progress.planned?progress.completed/progress.planned*100:0}%`}}/></div><p>{progress.status==='paused'?'Sequência pausada':progress.nextAt?`Próxima em ${nextSeconds} segundos`:progress.status==='running'?'Enviando agora…':progress.status==='completed'?'Sequência concluída':progress.status==='failed'?'Falha na sequência':'Preparando…'}</p><div className="sequence-controls">{progress.status==='paused'?<button className="btn" onClick={resume}><Play/>Continuar</button>:<button className="btn" disabled={!['scheduled','running'].includes(progress.status)} onClick={pause}><Pause/>Pausar</button>}<button className="btn sequence-cancel" aria-label="Cancelar sequência" disabled={!sequenceActive} onClick={cancel}><Square/>Cancelar</button></div></div>}
+    </section>
+    <section className="simple-push-section simple-push-intelligence"><SectionTitle title="Texto inteligente" description="Alterne mensagens curtas sem mudar o valor ou o tipo."/><Toggle label="Variar automaticamente" checked={varyMessages} onChange={setVaryMessages} disabled={sequenceActive||mode==='now'}/>{varyMessages&&mode==='sequence'&&<p className="simple-push-note">{aiState==='unavailable'?'Variações automáticas ativas.':'A IA prepara um conjunto limitado antes do primeiro envio. Se não estiver disponível, as variações locais serão usadas.'}</p>}<div className="simple-push-final">
+     <label><span>Título</span><input aria-label="Título da notificação" disabled={sequenceActive} maxLength={60} value={draft.title} onChange={event=>setDraft(current=>({...current,title:event.target.value}))}/><small>{draft.title.length}/60</small></label>
+     <label><span>Mensagem</span><textarea aria-label="Mensagem da notificação" disabled={sequenceActive} maxLength={160} value={draft.body} onChange={event=>setDraft(current=>({...current,body:event.target.value.replace(/\{produto\}/gi,'')}))}/><small>{draft.body.length}/160</small></label>
+    </div></section>
+    <section className="simple-push-section"><SectionTitle title="Destino" description="Escolha somente dispositivos conectados à sua conta."/><fieldset className="sequence-destinations" disabled={sequenceActive}><legend className="sr-only">Destino da notificação</legend>
       <Destination checked={targetMode==='current'} onChange={()=>setTargetMode('current')} disabled={!currentDevice} title="Este dispositivo" detail={currentDevice?`${currentDevice.name} · ${currentDevice.browser} no ${currentDevice.operatingSystem}`:'Este dispositivo ainda não está conectado'}/>
       <Destination checked={targetMode==='all'} onChange={()=>setTargetMode('all')} title="Todos os dispositivos" detail={`${activeDevices.length} dispositivo(s) ativo(s)`}/>
       <Destination checked={targetMode==='choose'} onChange={()=>setTargetMode('choose')} title="Escolher dispositivos" detail={`${chosenIds.length} selecionado(s)`}/>
       {targetMode==='choose'&&<div className="sequence-device-list">{activeDevices.map(device=><label key={device.id}><input type="checkbox" checked={chosenIds.includes(device.deviceId)} onChange={()=>setChosenIds(current=>current.includes(device.deviceId)?current.filter(id=>id!==device.deviceId):[...current,device.deviceId])}/><span><b>{device.name}</b><small>{device.browser} no {device.operatingSystem} · {device.status}</small></span></label>)}</div>}
      </fieldset></section>
-    </div>
-    <div className="simple-push-side">
-     <section className="simple-push-section simple-push-intelligence"><SectionTitle number="3" title="Texto inteligente" description="A IA usa os dados informados para criar um Push curto."/><Toggle label="Ativar IA" checked={aiEnabled} onChange={setAiEnabled} disabled={sequenceActive}/><Toggle label="Usar valor, cliente e método" checked={useData} onChange={setUseData} disabled={!aiEnabled||sequenceActive}/><button className="btn btn-primary simple-push-ai-button" disabled={!aiEnabled||aiState==='loading'||sequenceActive} onClick={()=>void requestSuggestions()}><Sparkles/>{aiState==='loading'?'Gerando mensagem…':'Gerar mensagem'}</button><button className="btn simple-push-ai-button" disabled={!aiEnabled||aiState==='loading'||sequenceActive} onClick={()=>void requestSuggestions('similar')}><RefreshCcw/>Gerar outra variação</button>{aiState==='unavailable'&&<p className="simple-push-note">A criação com IA ainda não está configurada. As variações locais continuam disponíveis.</p>}</section>
-     <section className="simple-push-section sequence-programming"><SectionTitle number="4" title="Programação" description="Defina quantas notificações serão enviadas e o intervalo entre elas."/>
-      <div className="sequence-mode" role="radiogroup" aria-label="Modo de envio"><button type="button" role="radio" aria-checked={mode==='now'} className={mode==='now'?'active':''} disabled={sequenceActive} onClick={()=>setMode('now')}>Enviar agora</button><button type="button" role="radio" aria-checked={mode==='sequence'} className={mode==='sequence'?'active':''} disabled={sequenceActive} onClick={()=>setMode('sequence')}>Programar sequência</button></div>
-      {mode==='sequence'&&<><label className="sequence-field"><span>Quantidade de notificações</span><input aria-describedby="quantity-help" disabled={sequenceActive} type="number" inputMode="numeric" min="1" max="100" step="1" value={quantity} onChange={event=>setQuantity(Number(event.target.value))}/><small id="quantity-help">De 1 a 100 notificações.</small></label><div className="sequence-quick" aria-label="Quantidades rápidas">{[1,5,10,20,50].map(value=><button type="button" disabled={sequenceActive} className={quantity===value?'active':''} onClick={()=>setQuantity(value)} key={value}>{value}</button>)}</div>
-       <div className="sequence-interval"><label><span>Intervalo</span><input aria-describedby="interval-error" disabled={sequenceActive} type="number" inputMode="numeric" min={unit==='seconds'?3:1} max={unit==='seconds'?3600:unit==='minutes'?1440:168} step="1" value={interval} onChange={event=>setIntervalValue(Number(event.target.value))}/></label><label><span>Unidade</span><select disabled={sequenceActive} value={unit} onChange={event=>setUnit(event.target.value as NotificationIntervalUnit)}><option value="seconds">Segundos</option><option value="minutes">Minutos</option><option value="hours">Horas</option></select></label></div>
-       {intervalError&&<p className="sequence-error" id="interval-error" role="alert">{intervalError}</p>}<Toggle label="Variar mensagens automaticamente" checked={varyMessages} onChange={setVaryMessages} disabled={sequenceActive}/></>}
-      <div className="sequence-summary"><b>{effectiveQuantity===1?'Uma notificação será enviada imediatamente.':`Serão enviadas ${effectiveQuantity} notificações, uma a cada ${interval} ${unitLabel}.`}</b><span>{formatEstimatedDuration(estimatedDuration)}</span>{mode==='sequence'&&<small>A sequência será interrompida se esta página for fechada.</small>}</div>
-      {progress.status!=='idle'&&<div className="sequence-progress" aria-live="polite"><div><b>{progress.completed} de {progress.planned} enviadas</b><span>Restam {Math.max(0,progress.planned-progress.completed)} notificações</span></div><div className="sequence-progressbar" role="progressbar" aria-label="Progresso da sequência" aria-valuemin={0} aria-valuemax={progress.planned} aria-valuenow={progress.completed}><i style={{width:`${progress.planned?progress.completed/progress.planned*100:0}%`}}/></div><p>{progress.status==='paused'?'Sequência pausada':progress.nextAt?`Próximo envio em ${nextSeconds} segundos`:progress.status==='running'?'Enviando agora…':progress.status==='completed'?'Sequência concluída':progress.status==='failed'?'Falha na sequência':'Validando…'}</p><div className="sequence-controls">{progress.status==='paused'?<button className="btn" onClick={resume}><Play/>Continuar</button>:<button className="btn" disabled={!['scheduled','running'].includes(progress.status)} onClick={pause}><Pause/>Pausar</button>}<button className="btn sequence-cancel" disabled={!sequenceActive} onClick={cancel}><Square/>Cancelar sequência</button></div></div>}
-     </section>
-     <section className="simple-push-section simple-push-final"><SectionTitle number="5" title="Mensagem final" description="Revise ou edite antes de enviar."/><label><span>Título da notificação</span><input disabled={sequenceActive} maxLength={60} value={draft.title} onChange={event=>setDraft(current=>({...current,title:event.target.value}))}/><small>{draft.title.length}/60</small></label><label><span>Mensagem</span><textarea disabled={sequenceActive} maxLength={160} value={draft.body} onChange={event=>setDraft(current=>({...current,body:event.target.value}))}/><small>{draft.body.length}/160</small></label><button className="btn btn-primary simple-push-send" disabled={sequenceActive||!selectedIds.length||Boolean(formatted.missing.length)||Boolean(intervalError)} onClick={()=>void start()}><Send/>{progress.status==='validating'?'Validando…':mode==='sequence'?'Iniciar sequência':'Enviar notificação'}</button><p className="simple-push-send-caption">O Push será enviado somente aos dispositivos selecionados.</p></section>
-    </div>
+    <section className="simple-push-section"><SectionTitle title="Enviar" description="Revise a visualização e confirme o destino."/><button className="btn btn-primary simple-push-send" disabled={sequenceActive||!selectedIds.length||Boolean(formatted.missing.length)||Boolean(intervalError)} onClick={()=>void start()}><Send/>{progress.status==='validating'?'Validando…':mode==='sequence'?'Iniciar sequência':'Enviar notificação'}</button><p className="simple-push-send-caption">A notificação será enviada ao(s) dispositivo(s) selecionado(s).</p></section>
    </div>
   </main>}
 
@@ -316,7 +321,7 @@ export function NotificationDelivery(){
  </div>
 }
 
-function SectionTitle({number,title,description}:{number:string;title:string;description:string}){return <div className="simple-push-section-title"><span>{number}</span><div><h3>{title}</h3><p>{description}</p></div></div>}
+function SectionTitle({title,description}:{title:string;description:string}){return <div className="simple-push-section-title"><div><h3>{title}</h3><p>{description}</p></div></div>}
 function Toggle({label,checked,onChange,disabled=false}:{label:string;checked:boolean;onChange:(value:boolean)=>void;disabled?:boolean}){return <label className={`simple-push-toggle${disabled?' disabled':''}`}><span>{label}</span><input type="checkbox" checked={checked} disabled={disabled} onChange={event=>onChange(event.target.checked)}/><i/></label>}
 function Destination({checked,onChange,title,detail,disabled=false}:{checked:boolean;onChange:()=>void;title:string;detail:string;disabled?:boolean}){return <label className={disabled?'disabled':''}><input type="radio" name="push-destination" checked={checked} onChange={onChange} disabled={disabled}/><span><b>{title}</b><small>{detail}</small></span><i/></label>}
 function Preference({label,checked,onChange}:{label:string;checked:boolean;onChange:(value:boolean)=>void}){return <label><span>{label}</span><input type="checkbox" checked={checked} onChange={event=>onChange(event.target.checked)}/><i/></label>}

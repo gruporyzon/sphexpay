@@ -1,19 +1,19 @@
 export type ManualNotificationType='sale_approved'|'sale_pending'|'pix_generated'|'pix_paid'|'credit_card_approved'|'credit_card_refused'|'boleto_generated'|'boleto_paid'|'subscription_renewed'|'withdrawal_completed'|'refund_done'|'chargeback_received'|'custom'
 export type ManualCurrency='BRL'|'USD'|'EUR'
-export type ManualValueKind='commission'|'sale'|'received'|'custom'
+export type ManualValueKind='commission'|'sale'|'received'|'none'
 export type NotificationIntervalUnit='seconds'|'minutes'|'hours'
 export interface ManualNotificationDraft{notificationType:ManualNotificationType;title:string;body:string;value:string;valueKind:ManualValueKind;currency:ManualCurrency;customer:string;method:string;route:string;icon:string;showTime:boolean}
 type Template={label:string;title:string;body:string}
 export const manualNotificationTemplates:Record<ManualNotificationType,Template>={
- sale_approved:{label:'Venda aprovada',title:'Venda aprovada!',body:'Sua comissão de {valor} foi confirmada.'},
- sale_pending:{label:'Venda pendente',title:'Venda pendente',body:'Existe um pagamento de {valor} aguardando confirmação.'},
- pix_generated:{label:'Pix criado',title:'Pix gerado!',body:'Uma cobrança Pix de {valor} foi criada.'},
- pix_paid:{label:'Pix pago',title:'Pix confirmado!',body:'Um pagamento de {valor} foi confirmado.'},
- credit_card_approved:{label:'Cartão aprovado',title:'Cartão aprovado!',body:'Pagamento de {valor} aprovado com sucesso.'},
+ sale_approved:{label:'Venda aprovada',title:'Venda aprovada!',body:'Sua comissão: {valor}'},
+ sale_pending:{label:'Venda pendente',title:'Venda pendente',body:'Pagamento de {valor} aguardando confirmação.'},
+ pix_generated:{label:'Pix gerado',title:'Pix gerado',body:'Pagamento de {valor} aguardando confirmação.'},
+ pix_paid:{label:'Pix pago',title:'Venda aprovada — Pix',body:'Sua comissão: {valor}'},
+ credit_card_approved:{label:'Cartão aprovado',title:'Venda aprovada — Cartão',body:'Sua comissão: {valor}'},
  credit_card_refused:{label:'Cartão recusado',title:'Cartão recusado',body:'O pagamento de {valor} não foi aprovado.'},
- boleto_generated:{label:'Boleto criado',title:'Boleto criado',body:'Boleto de {valor} disponível para {cliente}.'},
+ boleto_generated:{label:'Boleto gerado',title:'Boleto gerado',body:'Boleto de {valor} aguardando pagamento.'},
  boleto_paid:{label:'Boleto pago',title:'Boleto pago!',body:'Pagamento de {valor} confirmado.'},
- subscription_renewed:{label:'Assinatura renovada',title:'Assinatura renovada!',body:'A assinatura de {cliente} foi renovada por {valor}.'},
+ subscription_renewed:{label:'Assinatura renovada',title:'Assinatura renovada!',body:'Renovação de {valor} confirmada.'},
  withdrawal_completed:{label:'Saque concluído',title:'Saque concluído',body:'Seu saque de {valor} foi concluído.'},
  refund_done:{label:'Reembolso',title:'Reembolso realizado',body:'O reembolso de {valor} foi processado.'},
  chargeback_received:{label:'Chargeback',title:'Chargeback recebido',body:'Uma contestação de {valor} requer atenção.'},
@@ -21,7 +21,7 @@ export const manualNotificationTemplates:Record<ManualNotificationType,Template>
 }
 export const notificationVariables=['{valor}','{cliente}','{metodo}','{horario}','{moeda}'] as const
 const required:Record<string,keyof ManualNotificationDraft>={valor:'value',cliente:'customer',metodo:'method'}
-export const valueKindLabels:Record<ManualValueKind,string>={commission:'Sua comissão',sale:'Valor da venda',received:'Valor recebido',custom:'Valor personalizado'}
+export const valueKindLabels:Record<ManualValueKind,string>={commission:'Sua comissão',sale:'Valor da venda',received:'Valor recebido',none:'Sem valor'}
 export const normalizeBrazilianAmount=(raw:string)=>{
  const filtered=raw.replace(/[^\d.,]/g,'')
  if(!filtered)return''
@@ -34,7 +34,7 @@ export const normalizeBrazilianAmount=(raw:string)=>{
 export const amountToMinor=(raw:string)=>{const value=Number(raw.replace(/\./g,'').replace(',','.'));return Number.isFinite(value)&&value>=0?Math.round(value*100):null}
 export const applyAiSuggestion=<T extends ManualNotificationDraft>(draft:T,suggestion:{title:string;body:string}):T=>({...draft,title:suggestion.title.slice(0,60),body:suggestion.body.slice(0,160)})
 export const intervalToMilliseconds=(value:number,unit:NotificationIntervalUnit)=>value*({seconds:1000,minutes:60000,hours:3600000}[unit])
-export const intervalLimits:Record<NotificationIntervalUnit,{min:number;max:number}>={seconds:{min:3,max:3600},minutes:{min:1,max:1440},hours:{min:1,max:168}}
+export const intervalLimits:Record<NotificationIntervalUnit,{min:number;max:number}>={seconds:{min:5,max:3600},minutes:{min:1,max:1440},hours:{min:1,max:168}}
 export function validateSequence(quantity:number,interval:number,unit:NotificationIntervalUnit){
  if(!Number.isInteger(quantity)||quantity<1||quantity>100)return'A quantidade deve ser um número inteiro entre 1 e 100.'
  const limits=intervalLimits[unit]
@@ -47,8 +47,25 @@ export function formatEstimatedDuration(milliseconds:number){
  const parts=[hours&&`${hours} hora${hours===1?'':'s'}`,minutes&&`${minutes} minuto${minutes===1?'':'s'}`,seconds&&`${seconds} segundo${seconds===1?'':'s'}`].filter(Boolean)
  return`Duração estimada: ${parts.join(' e ')}.`
 }
-export function localNotificationVariations(type:ManualNotificationType,value:string){
+const valueLine=(kind:ManualValueKind,amount:string)=>{
+ if(kind==='none')return''
+ return`${valueKindLabels[kind]}: ${amount}`
+}
+export function notificationContent(type:ManualNotificationType,kind:ManualValueKind='commission',method=''){
+ const template=manualNotificationTemplates[type],amount='{valor}',line=valueLine(kind,amount)
+ const methodTitle=type==='sale_approved'&&method?`Venda aprovada — ${method}`:template.title
+ const fallback:Record<ManualNotificationType,string>={
+  sale_approved:'Uma nova venda foi aprovada.',sale_pending:'Uma venda aguarda confirmação.',pix_generated:'Um pagamento Pix aguarda confirmação.',
+  pix_paid:'O pagamento via Pix foi confirmado.',credit_card_approved:'O pagamento no cartão foi aprovado.',credit_card_refused:'O pagamento no cartão não foi aprovado.',
+  boleto_generated:'Um boleto aguarda pagamento.',boleto_paid:'O boleto foi pago.',subscription_renewed:'A assinatura foi renovada.',
+  withdrawal_completed:'Seu saque foi concluído.',refund_done:'O reembolso foi processado.',chargeback_received:'Uma contestação requer atenção.',custom:'Escreva sua mensagem.'
+ }
+ const actionTypes:ManualNotificationType[]=['sale_pending','pix_generated','credit_card_refused','boleto_generated','chargeback_received']
+ return{title:methodTitle,body:kind==='none'?fallback[type]:actionTypes.includes(type)?template.body:line||fallback[type]}
+}
+export function localNotificationVariations(type:ManualNotificationType,value:string,kind:ManualValueKind='commission'){
  const amount=value||'o valor informado'
+ const line=valueLine(kind,amount)
  const variations:Record<ManualNotificationType,Array<{title:string;body:string}>>={
   sale_approved:[{title:'Venda aprovada!',body:`Sua comissão de ${amount} foi confirmada.`},{title:'Pagamento confirmado!',body:`Uma nova venda de ${amount} foi aprovada.`},{title:'Venda concluída!',body:`A confirmação de ${amount} foi recebida com sucesso.`}],
   sale_pending:[{title:'Venda pendente',body:`Um pagamento de ${amount} aguarda confirmação.`},{title:'Pagamento em análise',body:`O valor de ${amount} está sendo processado.`},{title:'Confirmação pendente',body:`A venda de ${amount} ainda está em análise.`}],
@@ -64,6 +81,8 @@ export function localNotificationVariations(type:ManualNotificationType,value:st
   chargeback_received:[{title:'Chargeback recebido',body:`Uma contestação de ${amount} requer atenção.`},{title:'Contestação recebida',body:`O valor de ${amount} está em disputa.`},{title:'Atenção ao chargeback',body:`Revise a contestação de ${amount}.`}],
   custom:[{title:'Aviso da SphexPay',body:'Você tem uma nova atualização.'},{title:'Nova informação',body:'Confira a atualização disponível.'},{title:'Aviso importante',body:'Há uma nova informação para você.'}]
  }
+ if(kind==='none')return variations[type].map(item=>({...item,body:item.body.replace(new RegExp(`(?:de |por |: )?${amount.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}`,'g'),'').replace(/\s+([.,])/g,'$1').replace(/\s{2,}/g,' ').trim()}))
+ if(['sale_approved','pix_paid','credit_card_approved'].includes(type))return variations[type].map((item,index)=>({...item,body:index===0?line:item.body.replace(/Sua comissão de|Uma nova venda de|A confirmação de|Um pagamento de|O recebimento de|O Pix de|Pagamento de|A cobrança de|Uma venda no cartão confirmada|O valor de/,valueKindLabels[kind])}))
  return variations[type]
 }
 const money=(raw:string,currency:ManualCurrency)=>{if(!raw.trim())return'';const clean=raw.trim().replace(/\s/g,'');const normalized=clean.includes(',')?clean.replace(/\./g,'').replace(',','.'):clean.replace(/,/g,'');const value=Number(normalized);if(!Number.isFinite(value)||value<0)return'';return new Intl.NumberFormat(currency==='USD'?'en-US':currency==='EUR'?'de-DE':'pt-BR',{style:'currency',currency}).format(value)}
@@ -73,9 +92,10 @@ export function formatManualNotification(draft:ManualNotificationDraft){
  const used=[...draft.title.matchAll(/\{(\w+)\}/g),...draft.body.matchAll(/\{(\w+)\}/g)].map(match=>match[1])
  const labels:Partial<Record<keyof ManualNotificationDraft,string>>={value:'valor',customer:'cliente',method:'método'}
  const missing=[...new Set(used.filter(name=>required[name]&&!values[name]).map(name=>required[name]))].map(name=>labels[name]||name)
- const replace=(text:string)=>text.replace(/\{(\w+)\}/g,(_,name:string)=>values[name]||'').replace(/\s{2,}/g,' ').replace(/\s+([.,;:!?])/g,'$1').trim()
+ const replace=(text:string)=>text.replace(/\{produto\}/gi,'').replace(/\{(\w+)\}/g,(_,name:string)=>values[name]||'').replace(/\s{2,}/g,' ').replace(/\s+([.,;:!?])/g,'$1').trim()
  if(!draft.title.trim())missing.unshift('título')
  if(!draft.body.trim())missing.push('mensagem')
  if(!draft.route.startsWith('/app'))missing.push('rota de destino')
- return{title:replace(draft.title).slice(0,80),body:replace(draft.body).slice(0,180),formattedValue,valueLabel:valueKindLabels[draft.valueKind],missing:[...new Set(missing)]}
+ if(draft.valueKind==='none')for(let index=missing.length-1;index>=0;index--)if(missing[index]==='valor')missing.splice(index,1)
+ return{title:replace(draft.title).slice(0,60),body:replace(draft.body).slice(0,160),formattedValue,valueLabel:valueKindLabels[draft.valueKind],missing:[...new Set(missing)]}
 }

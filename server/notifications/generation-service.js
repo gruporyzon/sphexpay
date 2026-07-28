@@ -49,7 +49,7 @@ export function sanitizeGenerationInput(input={}){
   size:oneOf(input.size,allowed.size,'Curto'),
   emoji:oneOf(input.emoji,allowed.emoji,'Sem emoji'),
   audience:oneOf(input.audience,allowed.audience,'Produtor'),
-  product:clean(input.product,120),value:clean(input.value,40),
+  value:clean(input.value,40),
   currency:oneOf(input.currency,allowed.currency,'BRL'),
   customer:clean(input.customer,120),method:clean(input.method,80),
   route:/^\/app(?:\/[A-Za-z0-9_?=&%./-]*)?$/.test(clean(input.route,160))?clean(input.route,160):'/app',
@@ -80,6 +80,7 @@ export function validateGenerationResult(value){
 const instructions=`Você escreve notificações Push da SphexPay em português do Brasil.
 Retorne exatamente três versões: Direta, Motivacional e Premium.
 Use somente fatos fornecidos. Nunca invente produto, cliente, valor, desconto, pagamento ou urgência.
+Nunca cite, sugira ou inclua nome de produto. O gerador manual não usa produtos.
 Não afirme confirmação financeira se o pedido não disser que ela ocorreu.
 Evite spam, promessas, pressão enganosa e urgência falsa.
 Respeite título até 60 caracteres e mensagem até 160 caracteres.
@@ -89,7 +90,7 @@ O motivo deve explicar brevemente a escolha editorial, sem revelar raciocínio i
 const promptFor=input=>JSON.stringify({
  pedido:input.request,ação:input.action,objetivo:input.objective,tom:input.tone,tamanho:input.size,
  emojis:input.emoji,público:input.audience,contexto:{
-  produto:input.product||null,valor:input.value||null,moeda:input.currency,
+  valor:input.value||null,moeda:input.currency,
   cliente:input.customer||null,método:input.method||null,rota:input.route,
   informaçõesAdicionais:input.additional||null,títuloAtual:input.currentTitle||null,mensagemAtual:input.currentBody||null
  }
