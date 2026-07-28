@@ -31,6 +31,7 @@ type TypeOption={id:string;type:ManualNotificationType;label:string}
 type SequenceProgress={id:string;status:SequenceStatus;planned:number;completed:number;sent:number;failed:number;expired:number;nextAt:number|null}
 
 const historyKey='sphexpay_manual_push_history_v4'
+const legacyHistoryKey='sphexpay_manual_push_history_v3'
 const initialDraft:ManualNotificationDraft={
  ...manualNotificationTemplates.sale_approved,notificationType:'sale_approved',value:'',
  valueKind:'commission',currency:'BRL',customer:'',method:'',route:'/app',
@@ -45,9 +46,10 @@ const typeOptions:TypeOption[]=[
  {id:'subscription',type:'subscription_renewed',label:'Assinatura renovada'},{id:'purchase-approved',type:'sale_approved',label:'Compra aprovada'}
 ]
 const unitLabels:Record<NotificationIntervalUnit,{singular:string;plural:string}>={seconds:{singular:'segundo',plural:'segundos'},minutes:{singular:'minuto',plural:'minutos'},hours:{singular:'hora',plural:'horas'}}
-const readHistory=():DeliveryHistory[]=>{try{return JSON.parse(localStorage.getItem(historyKey)||'[]')}catch{return[]}}
+const readHistory=():DeliveryHistory[]=>{try{return JSON.parse(localStorage.getItem(historyKey)||localStorage.getItem(legacyHistoryKey)||'[]')}catch{return[]}}
 const saveHistory=(value:DeliveryHistory[])=>{try{localStorage.setItem(historyKey,JSON.stringify(value))}catch{/* Histórico local complementa o log real do backend. */}}
 const relativeTime=(value:string)=>{const seconds=(Date.now()-new Date(value).getTime())/1000;if(seconds<60)return'agora';if(seconds<3600)return`há ${Math.floor(seconds/60)} min`;if(seconds<86400)return`há ${Math.floor(seconds/3600)} h`;return new Date(value).toLocaleDateString('pt-BR')}
+const sanitizeLegacyBody=(value:string)=>value.replace(/^.+?\s*•\s*(?=Sua comissão)/i,'').replace(/\s+(confirmado|gerado)\s+para\s+.+[.!]?$/i,' $1.').trim()
 const aiError=(code?:string)=>({AI_NOT_CONFIGURED:'A criação com IA ainda não está configurada.',UNAUTHORIZED:'Sua sessão expirou. Entre novamente.',AI_RATE_LIMITED:'Limite de criações atingido. Aguarde um minuto.',REQUEST_TOO_LONG:'O contexto informado é muito longo.',AI_TIMEOUT:'A criação demorou mais que o esperado. Tente novamente.'}[code||'']||'Não foi possível gerar a mensagem agora.')
 
 export function NotificationDelivery(){
@@ -258,7 +260,7 @@ export function NotificationDelivery(){
  }
  const reuse=(item:DeliveryHistory)=>{
   if(sequenceActive)return
-  setDraft(current=>({...current,notificationType:item.type,title:item.title,body:item.body}))
+  setDraft(current=>({...current,notificationType:item.type,title:item.title,body:sanitizeLegacyBody(item.body)}))
   setSelectedType(typeOptions.find(option=>option.type===item.type)?.id||'sale-approved')
   if(item.planned&&item.planned>1){setMode('sequence');setQuantity(item.planned);setIntervalValue(item.interval||5);setUnit(item.unit||'seconds')}else setMode('now')
   setTab('generator');setFeedback('Programação carregada para revisão.')
