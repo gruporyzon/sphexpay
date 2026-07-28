@@ -1,5 +1,5 @@
 import { describe,expect,it } from 'vitest'
-import { amountToMinor,formatManualNotification,manualNotificationTemplates,normalizeBrazilianAmount,type ManualNotificationDraft } from '../lib/manualNotification'
+import { amountToMinor,applyAiSuggestion,formatManualNotification,manualNotificationTemplates,normalizeBrazilianAmount,type ManualNotificationDraft } from '../lib/manualNotification'
 
 const draft=(values:Partial<ManualNotificationDraft>={}):ManualNotificationDraft=>({
  notificationType:'sale_approved',
@@ -53,5 +53,12 @@ describe('gerador manual de notificações',()=>{
   expect(normalizeBrazilianAmount('-97,00')).toBe('97,00')
   expect(amountToMinor('1.000,00')).toBe(100000)
   expect(amountToMinor('-1,00')).toBeNull()
+ })
+
+ it('aplica sugestão de IA apenas ao texto da notificação',()=>{
+  const original=draft({product:'Mentoria Escala',value:'297,00'})
+  const next=applyAiSuggestion(original,{title:'Pagamento confirmado',body:'Mentoria Escala vendida por R$ 297,00.'})
+  expect(next).toMatchObject({title:'Pagamento confirmado',body:'Mentoria Escala vendida por R$ 297,00.',product:'Mentoria Escala',value:'297,00'})
+  expect(original.title).toBe('Venda aprovada!')
  })
 })

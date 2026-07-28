@@ -31,6 +31,7 @@ export const normalizeBrazilianAmount=(raw:string)=>{
  return `${integer.replace(/\B(?=(\d{3})+(?!\d))/g,'.')},${fraction}`
 }
 export const amountToMinor=(raw:string)=>{const value=Number(raw.replace(/\./g,'').replace(',','.'));return Number.isFinite(value)&&value>=0?Math.round(value*100):null}
+export const applyAiSuggestion=<T extends ManualNotificationDraft>(draft:T,suggestion:{title:string;body:string}):T=>({...draft,title:suggestion.title.slice(0,60),body:suggestion.body.slice(0,160)})
 const money=(raw:string,currency:ManualCurrency)=>{if(!raw.trim())return'';const clean=raw.trim().replace(/\s/g,'');const normalized=clean.includes(',')?clean.replace(/\./g,'').replace(',','.'):clean.replace(/,/g,'');const value=Number(normalized);if(!Number.isFinite(value)||value<0)return'';return new Intl.NumberFormat(currency==='USD'?'en-US':currency==='EUR'?'de-DE':'pt-BR',{style:'currency',currency}).format(value)}
 export function formatManualNotification(draft:ManualNotificationDraft){
  const formattedValue=money(draft.value,draft.currency)
