@@ -5,7 +5,7 @@ import { browserPermissionService,type BrowserNotificationStatus } from '../../s
 import { pushSubscriptionService,type PushDevice, type PushSendResult } from '../../services/pushSubscriptionService'
 import { productService } from '../../services/productService'
 import { useDemoStore } from '../../store/useDemoStore'
-import { formatManualNotification,manualNotificationTemplates,notificationVariables,type ManualNotificationDraft,type ManualNotificationType } from '../../lib/manualNotification'
+import { amountToMinor,formatManualNotification,manualNotificationTemplates,notificationVariables,type ManualNotificationDraft,type ManualNotificationType } from '../../lib/manualNotification'
 import type { Product } from '../../types'
 import { SphexPayLogo } from '../branding/SphexPayLogo'
 
@@ -14,13 +14,13 @@ type Tab='generator'|'models'|'history'
 type DeliveryHistory={id:string;type:string;title:string;body:string;createdAt:string;sent:number;failed:number;expired:number;status:'Entregue'|'Parcial'|'Falhou'|'Processando'|'Cancelado';quantity:number;destination:string}
 type SavedModel={id:string;name:string;config:ManualNotificationDraft;favorite?:boolean}
 const historyKey='sphexpay_manual_push_history_v2',modelsKey='sphexpay_manual_push_models_v1'
-const initialDraft:ManualNotificationDraft={...manualNotificationTemplates.sale_approved,notificationType:'sale_approved',value:'',currency:'BRL',product:'',customer:'',method:'',route:'/app',icon:'/icons/sphexpay-app-192.png',showTime:true}
+const initialDraft:ManualNotificationDraft={...manualNotificationTemplates.sale_approved,notificationType:'sale_approved',value:'',valueKind:'commission',currency:'BRL',product:'',customer:'',method:'',route:'/app',icon:'/icons/sphexpay-app-192.png',showTime:true}
 const quantityOptions=[1,5,10,20,50],intervalOptions=[3000,5000,10000,30000,60000,300000]
 const readJson=<T,>(key:string,fallback:T):T=>{try{return JSON.parse(localStorage.getItem(key)||'null')??fallback}catch{return fallback}}
 const saveJson=(key:string,value:unknown)=>{try{localStorage.setItem(key,JSON.stringify(value))}catch{/* armazenamento local é opcional. */}}
 const relativeTime=(value:string)=>{const seconds=Math.max(0,Math.round((Date.now()-new Date(value).getTime())/1000));if(seconds<60)return'agora';if(seconds<3600)return`há ${Math.floor(seconds/60)} min`;if(seconds<86400)return`há ${Math.floor(seconds/3600)} h`;return new Date(value).toLocaleDateString('pt-BR')}
 const permissionMessage=(status:BrowserNotificationStatus)=>status==='denied'?'As notificações estão bloqueadas neste navegador.':status==='default'?'Ative as notificações para conectar este dispositivo.':'Não foi possível conectar este dispositivo.'
-const parseAmount=(raw:string)=>{const value=raw.trim().replace(/\s/g,'');if(!value)return null;const normalized=value.includes(',')?value.replace(/\./g,'').replace(',','.'):value.replace(/,/g,'');const amount=Number(normalized);return Number.isFinite(amount)&&amount>=0?Math.round(amount*100):null}
+const parseAmount=amountToMinor
 const smartVariants:Partial<Record<ManualNotificationType,{titles:string[];bodies:string[]}>>={sale_approved:{titles:['Nova venda aprovada!','Pagamento confirmado!','Venda concluída com sucesso!'],bodies:['{produto} • Sua comissão: {valor}','Você recebeu uma nova venda de {valor}.','Pagamento confirmado para {produto}: {valor}.']},pix_paid:{titles:['Pix pago!','Pagamento Pix confirmado!'],bodies:['Pagamento de {valor} confirmado para {produto}.','O Pix de {valor} foi recebido com sucesso.']},credit_card_approved:{titles:['Cartão aprovado!','Pagamento aprovado!'],bodies:['Pagamento de {valor} aprovado com sucesso.','A compra de {valor} foi autorizada no cartão.']}}
 
 export function NotificationDelivery(){
@@ -37,7 +37,29 @@ export function NotificationDelivery(){
  const selectProduct=(id:string)=>{const product=products.find(item=>item.id===id);if(product)updateDraft({product:product.name,value:product.price.toLocaleString('pt-BR',{minimumFractionDigits:2}),currency:product.currency||'BRL'});else updateDraft({product:'',value:''})}
  const sendOne=async(index:number)=>{const value=vary&&products.length?products[index%products.length]:undefined;const body=value?formatted.body.replaceAll(draft.product,value.name):formatted.body;const result=await pushSubscriptionService.sendManual({notificationType:draft.notificationType,title:formatted.title,body,route:draft.route,icon:draft.icon,deviceIds:selectedIds,currency:draft.currency});return result}
  const addHistory=(result:PushSendResult,status:DeliveryHistory['status'],requested:number)=>{const item:DeliveryHistory={id:result.eventId||crypto.randomUUID(),type:manualNotificationTemplates[draft.notificationType].label,title:formatted.title,body:formatted.body,createdAt:new Date().toISOString(),sent:result.sent||0,failed:result.failed||0,expired:result.expired||0,status,quantity:requested,destination:target==='all'?'Todos os dispositivos':target==='current'?'Dispositivo atual':'Dispositivo selecionado'};setHistory(current=>{const next=[item,...current].slice(0,100);saveJson(historyKey,next);return next})}
- const send=async()=>{if(sending)return;const amount=parseAmount(draft.value);const missing=formatted.missing.filter(item=>item!=='valor'||amount===null);if(missing.length||!selectedIds.length){setSendState('failed');setMessage(!selectedIds.length?'Nenhum dispositivo conectado foi selecionado.':`Preencha: ${missing.join(', ')}.`);return}setSending(true);setSendState('idle');setMessage(quantity>1?`Enviando sequência de ${quantity} notificações…`:'Validando envio…');cancelRef.current=false;let totalSent=0,totalFailed=0;try{for(let index=0;index<quantity;index++){if(cancelRef.current)break;const result=await sendOne(index);totalSent+=result.sent||0;totalFailed+=(result.failed||0)+(result.expired||0);if(!result.ok&&!(result.sent))break;if(index<quantity-1)await new Promise(resolve=>setTimeout(resolve,interval))}const result={ok:totalSent>0, sent:totalSent,failed:totalFailed,expired:0,eventId:crypto.randomUUID()};const status=cancelRef.current?'Cancelado':totalSent&&!totalFailed?'Entregue':totalSent?'Parcial':'Falhou';addHistory(result,status,quantity);setSendState(totalSent?'sent':'failed');setMessage(cancelRef.current?'Envio cancelado.':totalSent&&!totalFailed?'Notificação enviada.':totalSent?`Enviada com ${totalFailed} falha(s).`:'Não foi possível entregar a notificação.')}finally{setSending(false)}}
+ const send=async()=>{
+  if(sending)return
+  const amount=parseAmount(draft.value),missing=formatted.missing.filter(item=>item!=='valor'||amount===null)
+  if(missing.length||!selectedIds.length){setSendState('failed');setMessage(!selectedIds.length?'Nenhum dispositivo conectado foi selecionado.':`Preencha: ${missing.join(', ')}.`);return}
+  if(quantity>=20&&!window.confirm(`Enviar ${quantity} notificações para ${selectedIds.length} dispositivo${selectedIds.length===1?'':'s'}?`))return
+  setSending(true);setSendState('idle');setMessage(quantity>1?`Enviando 1 de ${quantity}…`:'Validando envio…');cancelRef.current=false
+  let totalSent=0,totalFailed=0,totalExpired=0,attempted=0,sessionExpired=false
+  try{
+   for(let index=0;index<quantity;index++){
+    if(cancelRef.current)break
+    setMessage(quantity>1?`Enviando ${index+1} de ${quantity}…`:'Enviando…')
+    const result=await sendOne(index);attempted+=1;totalSent+=result.sent||0;totalFailed+=result.failed||0;totalExpired+=result.expired||0
+    if(result.code==='SESSION_MISSING'){sessionExpired=true;cancelRef.current=true;setMessage('Sua sessão expirou. Entre novamente.');break}
+    if(result.expired){await refresh();setMessage('Este dispositivo precisa ser conectado novamente.')}
+    if(!result.ok&&!result.sent)break
+    if(index<quantity-1)await new Promise(resolve=>window.setTimeout(resolve,interval))
+   }
+   const result={ok:totalSent>0,sent:totalSent,failed:totalFailed,expired:totalExpired,eventId:crypto.randomUUID()}
+   const status=cancelRef.current?'Cancelado':totalSent&&!totalFailed&&!totalExpired?'Entregue':totalSent?'Parcial':'Falhou'
+   addHistory(result,status,attempted);setSendState(totalSent?'sent':'failed')
+   if(!sessionExpired)setMessage(cancelRef.current?'Envio cancelado.':totalSent&&!totalFailed&&!totalExpired?'Notificação enviada.':totalSent?`Envio parcial: ${totalFailed+totalExpired} falha(s).`:'Não foi possível entregar a notificação.')
+  }finally{setSending(false)}
+ }
  const cancel=()=>{cancelRef.current=true;setMessage('Cancelando sequência…')}
  const saveModel=()=>{if(!modelName.trim())return;const model={id:crypto.randomUUID(),name:modelName.trim(),config:{...draft}};setModels(current=>{const next=[model,...current];saveJson(modelsKey,next);return next});setModelName('');setMessage('Modelo salvo.')}
  const loadModel=(model:SavedModel)=>{setDraft(model.config);setTab('generator');setMessage(`Modelo “${model.name}” carregado.`)}

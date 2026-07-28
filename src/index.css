@@ -476,4 +476,25 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 @media(max-width:1150px){.push-studio-grid{grid-template-columns:1fr}.push-studio-preview{position:static;grid-template-columns:minmax(0,1fr) minmax(280px,.65fr)}}
 @media(max-width:767px){.push-settings-shell{border-radius:16px}.push-studio-header{align-items:flex-start;flex-direction:column;padding:23px 18px}.push-activation{grid-template-columns:auto minmax(0,1fr);margin:16px 14px 0}.push-activation .btn{grid-column:1/-1;width:100%;min-height:48px}.push-feedback{margin-inline:14px}.push-studio-grid{padding:18px 14px}.push-studio-section{padding:17px}.push-form-grid{grid-template-columns:1fr}.push-form-grid label.wide,.push-variable-row.wide{grid-column:auto}.push-form-grid input,.push-form-grid select,.push-form-grid textarea{font-size:16px}.push-studio-preview{grid-template-columns:1fr}.push-studio-preview>section{padding:17px}.push-studio-preview>section>header{align-items:stretch;flex-direction:column}.push-studio-preview nav{width:100%}.push-studio-preview nav button{flex:1;justify-content:center;min-height:44px}.push-preview-device{min-height:230px}.push-send-card .btn{min-height:52px}.push-history{margin:0 14px max(20px,var(--safe-bottom))}.push-history>header{align-items:stretch;flex-direction:column}.push-history>header .btn{width:100%;min-height:48px}.push-history>div>article{grid-template-columns:1fr}.push-history dl{grid-template-columns:repeat(3,1fr)}.push-preferences>div{grid-template-columns:1fr}.push-variable-row button{min-height:38px}}
 @media(max-width:359px){.push-studio-grid{padding-inline:10px}.push-history{margin-inline:10px}.push-studio-section,.push-studio-preview>section{padding:14px}.push-preview-device{padding-inline:12px}}
+
+/* Notification studio: legibilidade, ordem mobile e áreas de toque. */
+.push-studio :is(button,input,select,textarea):focus-visible{outline:3px solid color-mix(in srgb,var(--orange) 45%,transparent);outline-offset:2px}
+.push-studio-section header p,.push-studio-preview header p,.push-send-card p,.push-tab-heading p{font-size:11px;line-height:1.5}
+.push-form-grid>label>span,.push-send-options>label>span{font-size:11px}
+.push-destinations label{min-height:56px}
+.push-destinations small,.push-model-list small,.push-history-list small{font-size:10px;line-height:1.4}
+.push-variable-row button{min-height:40px}
+.push-preview-device p{font-size:11px}
+.push-preview-device strong{font-size:12px}
+.push-feedback{min-height:24px}
+@media(max-width:767px){
+ .push-generator-layout{display:flex;flex-direction:column}
+ .push-studio-preview{order:-1}
+ .push-studio-preview .push-send-card{order:2}
+ .push-studio-editor{order:1}
+ .push-send-card{position:sticky;bottom:calc(68px + var(--safe-bottom));z-index:4;box-shadow:0 -12px 30px color-mix(in srgb,var(--bg) 75%,transparent)}
+ .push-studio-grid{padding-bottom:calc(28px + var(--safe-bottom))}
+ .push-preview-device{min-height:190px;margin-top:12px;padding-top:20px}
+}
+@media(prefers-reduced-motion:reduce){.push-studio *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
 @media(prefers-reduced-motion:reduce){.push-preferences summary svg,.push-preferences label>i:after{transition:none}}

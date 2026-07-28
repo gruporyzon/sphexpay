@@ -1,11 +1,12 @@
 import { describe,expect,it } from 'vitest'
-import { formatManualNotification,manualNotificationTemplates,type ManualNotificationDraft } from '../lib/manualNotification'
+import { amountToMinor,formatManualNotification,manualNotificationTemplates,normalizeBrazilianAmount,type ManualNotificationDraft } from '../lib/manualNotification'
 
 const draft=(values:Partial<ManualNotificationDraft>={}):ManualNotificationDraft=>({
  notificationType:'sale_approved',
  title:manualNotificationTemplates.sale_approved.title,
  body:manualNotificationTemplates.sale_approved.body,
  value:'128,50',
+ valueKind:'commission',
  currency:'BRL',
  product:'Plano Premium',
  customer:'Ronald',
@@ -45,5 +46,12 @@ describe('gerador manual de notificações',()=>{
   const result=formatManualNotification(draft({title:'T'.repeat(100),body:'M'.repeat(220)}))
   expect(result.title).toHaveLength(80)
   expect(result.body).toHaveLength(180)
+ })
+
+ it('normaliza entrada brasileira e converte o valor somente para centavos',()=>{
+  expect(normalizeBrazilianAmount('R$ 10.000,009')).toBe('10.000,00')
+  expect(normalizeBrazilianAmount('-97,00')).toBe('97,00')
+  expect(amountToMinor('1.000,00')).toBe(100000)
+  expect(amountToMinor('-1,00')).toBeNull()
  })
 })
