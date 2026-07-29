@@ -39,11 +39,24 @@ describe('entrada pública SphexPay',()=>{
   expect(screen.getByRole('button',{name:'Abrir menu'})).toHaveFocus()
   expect(document.body.style.overflow).toBe('')
  })
- it('troca a prova visual por tabs reais e mantém o conteúdo sem dados financeiros',async()=>{
+ it('troca a prova visual por tabs reais, usa mapa geográfico e aceita navegação por setas',async()=>{
   const user=userEvent.setup();const view=renderLanding()
-  await user.click(screen.getByRole('tab',{name:'Vendas ao vivo'}))
-  expect(screen.getByRole('tabpanel')).toHaveTextContent('Atividade global')
-  expect(view.container.querySelector('.product-preview')).toHaveTextContent('Prévia sem dados financeiros')
+  await user.click(screen.getByRole('tab',{name:'Vendas ao Vivo'}))
+  expect(screen.getByRole('tabpanel')).toHaveTextContent('Atividade da operação')
+  expect((await screen.findAllByRole('img',{name:/Mapa mundial do módulo Vendas ao Vivo/i},{timeout:10000})).length).toBeGreaterThan(0)
+  await user.keyboard('{ArrowRight}')
+  expect(screen.getByRole('tab',{name:'Financeiro'})).toHaveAttribute('aria-selected','true')
+  expect(screen.getByRole('tabpanel')).toHaveTextContent('Saldo disponível')
+  expect(view.container).not.toHaveTextContent(/prévia estática|não inicia consultas|contexto protegido/i)
+ })
+ it('apresenta gráfico contextual e feed de Vendas ao Vivo sem esqueletos',async()=>{
+  const {container}=renderLanding()
+  expect(screen.getAllByRole('img',{name:/Gráfico ilustrativo de resultado/i}).length).toBeGreaterThanOrEqual(2)
+  expect(screen.getByRole('heading',{name:/Veja sua operação ganhar alcance/i})).toBeInTheDocument()
+  expect(screen.getAllByText('Eventos recentes').length).toBeGreaterThan(0)
+  expect((await screen.findAllByRole('img',{name:/Mapa mundial do módulo Vendas ao Vivo/i},{timeout:10000})).length).toBeGreaterThan(0)
+  expect(container.querySelector('.public-map-countries')).toHaveAttribute('d',expect.stringMatching(/^M/))
+  expect(container.querySelector('.live-public-visual')).not.toBeInTheDocument()
  })
  it('expande FAQ com estado aria e conteúdo associado',async()=>{
   const user=userEvent.setup();renderLanding();const button=screen.getByRole('button',{name:'Como recuperar minha senha?'})
