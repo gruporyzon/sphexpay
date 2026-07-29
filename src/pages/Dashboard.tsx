@@ -1,4 +1,4 @@
-import { useCallback,useEffect,useMemo,useState } from 'react'
+import { useCallback,useEffect,useMemo,useState,type ReactNode } from 'react'
 import { ArrowDownRight,BadgeDollarSign,CircleDollarSign,CreditCard,Percent,ReceiptText,ShieldAlert,Wallet } from 'lucide-react'
 import { Card,PageTitle } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
@@ -21,11 +21,15 @@ import { LiveSalesFeedContent,LiveSalesSkeleton } from '../components/dashboard/
 import { RealtimeStatus } from '../components/dashboard/RealtimeStatus'
 import { LiveOperationsPanel } from '../components/dashboard/LiveOperationsPanel'
 import { demoExchangeRates } from '../demo/demoSimulationEngine'
+import { useDashboardLayout } from '../hooks/useDashboardLayout'
+import { DashboardLayoutButton,DashboardLayoutEditor } from '../components/dashboard/DashboardLayoutEditor'
+import type { DashboardWidgetId } from '../lib/dashboardLayout'
 
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
 
 export default function Dashboard(){
  const {user}=useAuth(),adminAccess=useDashboardAdmin(user?.id),admin=adminAccess.allowed
+ const layoutEditor=useDashboardLayout(user?.id)
  const {period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
  const [mode,setMode]=useState<'production'|'planning'>('production'),[rates,setRates]=useState<ExchangeRate[]>([]),[rateError,setRateError]=useState(false)
  const live=useLiveSales(user?.id,period),planner=useScenarioPlanner(user?.id,Boolean(admin))
@@ -64,16 +68,21 @@ export default function Dashboard(){
  const buyers=useMemo(()=>{if(planning)return[];const grouped=new Map<string,{name:string;count:number;total:number}>();for(const row of currentConverted.filter(item=>item.status==='approved')){const name=maskBuyerName(row.buyerName),current=grouped.get(name)??{name,count:0,total:0};current.count++;current.total+=row.amountCents;grouped.set(name,current)}return[...grouped.values()].sort((a,b)=>b.total-a.total).slice(0,4)},[planning,currentConverted])
  const loading=planning?planner.loading:live.loading,error=planning?planner.error:live.error
  const saveRates=async(next:ExchangeRate[])=>{if(!user?.id)throw new Error('EXCHANGE_RATE_SAVE_FORBIDDEN');await dashboardService.saveRates(user.id,next);setRates(await dashboardService.loadRates());setRateError(false)}
+ const widgetIds:DashboardWidgetId[]=['gross-revenue','net-revenue','fees','approved-sales','average-ticket','approval-rate','refunds','chargebacks']
+ const widgets=Object.fromEntries([
+  ...cards.map((stat,index)=>[widgetIds[index],<PremiumStatCard key={widgetIds[index]} stat={stat} index={index} refreshing={loading} format={formatMetric(stat.format)}/>]),
+  ['revenue-chart',<RevenueSection key="revenue-chart" label={periodTitle(period)} totalCents={chartTotal} growth={metrics.growthRate} data={series} currency={planning?planner.scenario.currency:currency} loading={loading} error={error} planning={Boolean(planning)}/>],
+  ['recent-sales',loading?<LiveSalesSkeleton key="recent-sales"/>:<LiveSalesFeedContent key="recent-sales" sales={feed} displayCurrency={planning?planner.scenario.currency:currency} rates={planning?[]:effectiveRates} planning={Boolean(planning)}/>]
+ ]) as Record<DashboardWidgetId,ReactNode>
 
  return <div className="page-enter dashboard-page">
   <OverviewHeroCarousel/>
-  <PageTitle title="Dashboard" subtitle={live.demo?'Acompanhe resultados, vendas e indicadores em tempo real.':'Resultados financeiros persistidos e planejamento administrativo isolado.'} action={<div className="dashboard-header-actions"><DashboardModeIndicator mode={live.demo?'demo':planning?'planning':'production'}/>{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin&&!live.demo?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>}</div>}/>
+  <PageTitle title="Dashboard" subtitle={live.demo?'Acompanhe resultados, vendas e indicadores em tempo real.':'Resultados financeiros persistidos e planejamento administrativo isolado.'} action={<div className="dashboard-header-actions"><DashboardModeIndicator mode={live.demo?'demo':planning?'planning':'production'}/>{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin?<DashboardLayoutButton editor={layoutEditor}/>:null}{admin&&!live.demo?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>}</div>}/>
   {adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}
   <Card className="dashboard-filter-bar"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/>{!planning&&!live.demo&&<RealtimeStatus status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</Card>
   {(rateError||unavailableConversions>0)&&!planning&&!live.demo&&<p className="dashboard-conversion-notice">{unavailableConversions?`${unavailableConversions} transação(ões) permanecem na moeda original e não entram no total convertido porque não há taxa disponível.`:'As taxas de conversão estão temporariamente indisponíveis. Valores originais foram preservados.'}</p>}
   {!planning&&<NextAwardCard currentRevenue={live.eligibleRevenueCents/100}/>}
-  <section className={`dashboard-metrics dashboard-metrics-compact ${loading?'is-loading':''}`} aria-label="Indicadores financeiros">{cards.map((stat,index)=><PremiumStatCard key={stat.label} stat={stat} index={index} refreshing={loading} format={formatMetric(stat.format)}/>)}</section>
-  <section className="dashboard-content"><RevenueSection label={periodTitle(period)} totalCents={chartTotal} growth={metrics.growthRate} data={series} currency={planning?planner.scenario.currency:currency} loading={loading} error={error} planning={Boolean(planning)}/>{loading?<LiveSalesSkeleton/>:<LiveSalesFeedContent sales={feed} displayCurrency={planning?planner.scenario.currency:currency} rates={planning?[]:effectiveRates} planning={Boolean(planning)}/>}</section>
+  <DashboardLayoutEditor editor={layoutEditor} widgets={widgets}/>
   <section className="dashboard-insight-grid">
    <Card><div className="insight-heading"><div><span className="section-eyebrow"><Wallet/> MEIOS DE PAGAMENTO</span><h2>Desempenho por canal</h2></div></div>{planning?<div className="dashboard-inline-empty">Canais reais não são misturados ao planejamento.</div>:<div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count} transações · {item.approved} aprovadas</span></div><strong>{formatCents(item.total,currency)}</strong></div>)}{!paymentStats.length&&<div className="dashboard-inline-empty">Nenhuma venda registrada neste período.</div>}</div>}</Card>
    <Card><div className="insight-heading"><div><span className="section-eyebrow"><ShieldAlert/> INTEGRIDADE</span><h2>{live.demo?'Integridade dos dados':planning?'Cenário isolado':'Fonte financeira'}</h2></div></div><p>{live.demo?'Nenhuma gravação no Supabase, webhook, Push ou processador de pagamento é acionado.':planning?'A timeline e os indicadores são projeções determinísticas. Nada é persistido como venda ou enviado a notificações e relatórios.':'Somente transações persistidas para esta conta, protegidas por RLS, entram nos indicadores.'}</p></Card>

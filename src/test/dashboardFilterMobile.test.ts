@@ -26,7 +26,7 @@ describe('filtros do Dashboard no mobile',()=>{
   expect(controls).toContain('EUR — Euro')
  })
  it('limita a alteração ao breakpoint mobile',()=>{
-  const block=css.slice(css.lastIndexOf('/* Native dashboard selects'))
+  const start=css.indexOf('/* Native dashboard selects'),end=css.indexOf('}',css.indexOf('}',start)+1),block=css.slice(start,end+1)
   expect(block).toContain('@media(max-width:767px)')
   expect(block).not.toContain('@media(min-width')
  })
