@@ -13,7 +13,7 @@ import { dashboardService } from '../services/dashboardService'
 import { OverviewHeroCarousel } from '../components/dashboard/OverviewHeroCarousel'
 import { NextAwardCard } from '../components/dashboard/NextAwardCard'
 import { PremiumStatCard,type PremiumStat } from '../components/dashboard/PremiumStatCard'
-import { DashboardCurrencySelector,DashboardModeIndicator,DashboardPeriodFilter } from '../components/dashboard/DashboardControls'
+import { DashboardCurrencySelector,DashboardPeriodFilter } from '../components/dashboard/DashboardControls'
 import { DashboardScenarioEditor } from '../components/dashboard/DashboardScenarioEditor'
 import { formatCents } from '../lib/currencyFormat'
 import { RevenueSection } from '../components/dashboard/RevenueSection'
@@ -77,7 +77,7 @@ export default function Dashboard(){
 
  return <div className="page-enter dashboard-page">
   <OverviewHeroCarousel/>
-  <PageTitle title="Dashboard" subtitle={live.demo?'Acompanhe resultados, vendas e indicadores em tempo real.':'Resultados financeiros persistidos e planejamento administrativo isolado.'} action={<div className="dashboard-header-actions"><DashboardModeIndicator mode={live.demo?'demo':planning?'planning':'production'}/>{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin?<DashboardLayoutButton editor={layoutEditor}/>:null}{admin&&!live.demo?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>}</div>}/>
+  <PageTitle title="Dashboard" subtitle={live.demo?'Acompanhe resultados, vendas e indicadores em tempo real.':'Resultados financeiros persistidos e planejamento administrativo isolado.'} action={<div className="dashboard-header-actions">{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin?<DashboardLayoutButton editor={layoutEditor}/>:null}{admin&&!live.demo?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>}</div>}/>
   {adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}
   <Card className="dashboard-filter-bar"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/>{!planning&&!live.demo&&<RealtimeStatus status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</Card>
   {(rateError||unavailableConversions>0)&&!planning&&!live.demo&&<p className="dashboard-conversion-notice">{unavailableConversions?`${unavailableConversions} transação(ões) permanecem na moeda original e não entram no total convertido porque não há taxa disponível.`:'As taxas de conversão estão temporariamente indisponíveis. Valores originais foram preservados.'}</p>}

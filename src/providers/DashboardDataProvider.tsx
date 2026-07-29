@@ -10,7 +10,7 @@ import {productToDemo,type DemoConfig,type DemoCustomer,type DemoNotification,ty
 const STORAGE_KEY='sphexpay_demo_v2',LEGACY_KEY='sphexpay_demo_v1',TTL=24*60*60*1000
 type ContextValue={
  active:boolean;paused:boolean;allowed:boolean;loadingPermission:boolean;ledger:DemoTransaction[];notifications:DemoNotification[];customers:DemoCustomer[]
- config:DemoConfig;sessionId:string;eventCount:number;approvedCount:number;sessionVolumeCents:number;nextEventAt:number|null;intensity:number
+ config:DemoConfig;sessionId:string;startedAt:string;eventCount:number;approvedCount:number;sessionVolumeCents:number;nextEventAt:number|null;intensity:number
  toggle:()=>Promise<void>;applyConfig:(config:DemoConfig)=>void;pause:()=>void;resume:()=>void;restart:()=>void;adjustIntensity:(direction:-1|1)=>void
  markNotificationRead:(id:string)=>void;markAllNotificationsRead:()=>void;clearDemoNotifications:()=>void
 }
@@ -91,7 +91,7 @@ export function DashboardDataProvider({children}:PropsWithChildren){
   }
   return[...grouped.values()].sort((a,b)=>b.lastOrderAt.localeCompare(a.lastOrderAt))
  },[session?.ledger])
- const value=useMemo<ContextValue>(()=>({active:Boolean(session?.active&&permission.allowed),paused:Boolean(session?.paused),allowed:permission.allowed,loadingPermission:permission.loading,ledger:session?.ledger??[],notifications,customers,config:session?.config??defaultDemoConfig(),sessionId:session?.sessionId??'',eventCount:session?.eventCount??0,approvedCount:session?.approvedCount??0,sessionVolumeCents:session?.sessionVolumeCents??0,nextEventAt,intensity:session?.intensity??1,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications}),[session,permission.allowed,permission.loading,notifications,customers,nextEventAt,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications])
+ const value=useMemo<ContextValue>(()=>({active:Boolean(session?.active&&permission.allowed),paused:Boolean(session?.paused),allowed:permission.allowed,loadingPermission:permission.loading,ledger:session?.ledger??[],notifications,customers,config:session?.config??defaultDemoConfig(),sessionId:session?.sessionId??'',startedAt:session?.startedAt??'',eventCount:session?.eventCount??0,approvedCount:session?.approvedCount??0,sessionVolumeCents:session?.sessionVolumeCents??0,nextEventAt,intensity:session?.intensity??1,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications}),[session,permission.allowed,permission.loading,notifications,customers,nextEventAt,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications])
  return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>
 }
 export function useDashboardData(){const value=useContext(DashboardDataContext);if(!value)throw new Error('useDashboardData deve ser usado dentro de DashboardDataProvider');return value}
