@@ -43,7 +43,6 @@ export const authMessage=(error:unknown)=>{
  if(message.includes('rate')||message.includes('too many')||message.includes('over_email_send_rate_limit'))return'Muitas tentativas foram realizadas. Aguarde alguns minutos.'
  if(message.includes('expired')||message.includes('otp_expired'))return'O link expirou. Solicite um novo e tente novamente.'
  if(message.includes('timeout')||message.includes('fetch')||message.includes('network'))return'Não foi possível conectar. Verifique sua internet e tente novamente.'
- if(originalMessage)return originalMessage
  return'Não foi possível concluir a autenticação. Tente novamente.'
 }
 function client(){if(!supabase)throw new Error('not_configured');return supabase}
@@ -55,14 +54,6 @@ export const authService={
  signIn:(email:string,password:string)=>timed(client().auth.signInWithPassword({email,password})),
  signUp:async(email:string,password:string,userData:Record<string,unknown>)=>{
   const {data,error}=await client().auth.signUp({email,password,options:{data:userData,emailRedirectTo:callback()}})
-  if(error){
-   console.error('Supabase signup error:',{
-    name:error.name,
-    code:error.code,
-    status:error.status,
-    message:error.message
-   })
-  }
   return{data,error}
  },
  signInWithOAuth:(provider:Provider)=>{if(!oauthAvailability[provider as 'google'|'apple'])throw new Error('provider_not_configured');sessionStorage.setItem('sphexpay-oauth-return','/app');return timed(client().auth.signInWithOAuth({provider,options:{redirectTo:callback(),skipBrowserRedirect:false}}))},
