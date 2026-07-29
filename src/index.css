@@ -227,6 +227,101 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 @media(max-width:360px){.mode-config-card .demo-preset-grid{grid-template-columns:1fr}.mode-rhythm{align-items:flex-start;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.mode-settings *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation:none!important}}
 
+/* Mobile headers: compact composition without changing tablet or desktop. */
+@media(max-width:767px){
+ .app-header{
+  height:calc(52px + var(--safe-top));
+  min-height:calc(52px + var(--safe-top));
+  padding-top:var(--safe-top);
+  padding-right:max(8px,var(--safe-right));
+  padding-bottom:4px;
+  padding-left:max(8px,var(--safe-left));
+  gap:5px
+ }
+ .app-header>.icon-btn{width:44px;min-width:44px;height:44px;min-height:44px}
+ .app-header .header-brand{display:inline-flex;flex:0 0 28px;width:28px}
+ .app-header .header-brand img{width:28px;height:28px;border-radius:8px}
+ .mobile-page-title{font-size:12px;line-height:1.2}
+ .header-actions{gap:2px}
+ .header-actions>.icon-btn,.notification-bell{width:44px;min-width:44px;height:44px;min-height:44px}
+ .header-profile{display:flex;padding:4px 2px}
+ .profile-avatar{width:34px;height:34px}
+
+ .dashboard-page>.overview-carousel{margin-bottom:18px}
+ .overview-carousel{height:390px;min-height:390px;border-radius:18px}
+ .overview-track{height:100%}
+ .overview-slide{
+  min-height:390px;
+  height:390px;
+  padding:20px 17px 58px
+ }
+ .overview-copy{position:relative;z-index:2}
+ .overview-copy>span{font-size:8px;letter-spacing:.16em}
+ .overview-copy h2{max-width:100%;margin-top:7px;font-size:clamp(1.38rem,6.8vw,1.78rem);line-height:1.08}
+ .overview-copy p{max-width:95%;margin-top:9px;font-size:10px;line-height:1.55}
+ .overview-copy button,.overview-cta{min-height:44px;margin-top:13px;padding:9px 13px}
+ .gateway-art,.iphone-art,.overview-slide.competition .iphone-art{
+  position:absolute;
+  inset:auto 8px 48px auto;
+  width:156px;
+  height:132px;
+  margin:0;
+  pointer-events:none
+ }
+ .art-ring{top:0;right:5px;width:122px;height:122px;transform:none}
+ .art-ring:before{inset:12px}.art-ring:after{inset:28px}
+ .art-ring .hero-brand img{width:42px;height:42px}
+ .art-stack{left:0;bottom:2px;width:100px;padding:10px;transform:none}
+ .art-stack span{margin-top:6px;font-size:16px}.art-stack small{font-size:6px}
+ .iphone-art .competition-product-image{width:118px;max-width:100%;height:132px}
+ .prize-seal{left:0;bottom:3px;width:66px;height:66px;transform:none}
+ .prize-seal svg{width:20px}.prize-seal span{font-size:6px}
+ .overview-controls{right:10px;bottom:7px;left:10px;height:44px}
+ .overview-controls>button{width:44px;height:44px}
+
+ .competition-hero{
+  position:relative;
+  display:block;
+  padding:20px 17px 18px;
+  border-radius:19px
+ }
+ .competition-kicker{max-width:calc(100% - 104px)}
+ .competition-hero h1{max-width:calc(100% - 104px);margin-top:11px;font-size:clamp(1.8rem,8.7vw,2.3rem);line-height:1}
+ .competition-hero-copy>p{max-width:calc(100% - 104px);margin-top:10px;font-size:11px;line-height:1.5}
+ .competition-hero-product{
+  position:absolute;
+  top:54px;
+  right:8px;
+  width:104px;
+  min-height:0;
+  margin:0;
+  padding:0
+ }
+ .competition-hero-product>i{width:100px;height:100px}
+ .competition-hero-product img{width:96px;max-width:100%;height:154px;max-height:none;object-fit:contain;object-position:center}
+ .competition-hero-facts{gap:7px;margin-top:15px}
+ .competition-hero-facts span{padding:8px;font-size:9px}
+ .competition-countdown{margin-top:13px}
+ .competition-countdown span{padding:7px 3px}
+ .competition-countdown b{font-size:15px}
+ .competition-hero-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:14px}
+ .competition-hero-actions .btn{min-height:44px;padding-inline:8px;font-size:10px}
+}
+@media(max-width:359px){
+ .mobile-page-title{display:none}
+ .header-actions>.icon-btn{display:grid}
+ .overview-carousel,.overview-slide{height:405px;min-height:405px}
+ .overview-copy h2{font-size:1.32rem}
+ .overview-copy p{font-size:9.5px}
+ .gateway-art,.iphone-art,.overview-slide.competition .iphone-art{right:4px;width:142px}
+ .competition-hero{padding-inline:14px}
+ .competition-kicker,.competition-hero h1,.competition-hero-copy>p{max-width:calc(100% - 88px)}
+ .competition-hero-product{right:3px;width:88px}
+ .competition-hero-product>i{width:86px;height:86px}
+ .competition-hero-product img{width:84px;height:140px}
+ .competition-hero-actions{grid-template-columns:1fr}
+}
+
 /* Dashboard production: eight indicators without incomplete grid rows */
 .dashboard-header-actions,.dashboard-filter-bar,.dashboard-realtime{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}
 .dashboard-period-control,.dashboard-custom-dates{display:flex;align-items:flex-end;gap:.55rem;flex-wrap:wrap}

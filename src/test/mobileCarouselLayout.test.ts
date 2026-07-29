@@ -7,16 +7,20 @@ const carousel=readFileSync(resolve(process.cwd(),'src/components/dashboard/Over
 
 describe('layout mobile do carrossel e da competição',()=>{
  it('mantém as correções estruturais limitadas ao breakpoint mobile',()=>{
-  expect(css).toContain('@media(max-width:767px){')
-  expect(css).toContain('.overview-slide{')
-  expect(css).toContain('flex-direction:column')
-  expect(css).toContain('height:auto')
+  const marker=css.indexOf('/* Mobile headers: compact composition without changing tablet or desktop. */')
+  const mobile=css.slice(marker,css.indexOf('/* Dashboard production:',marker))
+  expect(mobile).toContain('@media(max-width:767px){')
+  expect(mobile).toContain('.overview-slide{')
+  expect(mobile).toContain('height:390px')
+  expect(mobile).not.toContain('@media(min-width:768px)')
  })
- it('mantém as artes essenciais contidas e sem deslocamento absoluto no mobile',()=>{
-  expect(css).toContain('.gateway-art,.iphone-art,.overview-slide.competition .iphone-art')
-  expect(css).toContain('position:relative')
-  expect(css).toContain('object-fit:contain')
-  expect(css).toContain('.competition-hero-product img{width:min(220px,66vw);max-width:100%;height:auto')
+ it('enquadra as artes completas em uma composição compacta no mobile',()=>{
+  const marker=css.indexOf('/* Mobile headers: compact composition without changing tablet or desktop. */')
+  const mobile=css.slice(marker,css.indexOf('/* Dashboard production:',marker))
+  expect(mobile).toContain('.gateway-art,.iphone-art,.overview-slide.competition .iphone-art')
+  expect(mobile).toContain('position:absolute')
+  expect(mobile).toContain('object-fit:contain;object-position:center')
+  expect(mobile).toContain('.competition-hero-product img{width:96px;max-width:100%;height:154px')
  })
  it('organiza controles acessíveis em uma faixa própria e oferece swipe',()=>{
   expect(css).toContain('.overview-controls>button{width:44px;height:44px')

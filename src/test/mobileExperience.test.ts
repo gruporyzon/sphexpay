@@ -71,4 +71,18 @@ describe('experiência mobile',()=>{
   expect(globalCss).toContain('.live-world-kpis{grid-template-columns:repeat(2,minmax(0,1fr))')
   expect(globalCss).toContain('.live-world-routes path,.live-world-origin .wave,.live-world-points .wave')
  })
+
+ it('refina somente no mobile o topo e os banners principais',()=>{
+  const marker=globalCss.indexOf('/* Mobile headers: compact composition without changing tablet or desktop. */')
+  const mobile=globalCss.slice(marker,globalCss.indexOf('/* Dashboard production:',marker))
+  expect(marker).toBeGreaterThan(0)
+  expect(mobile).toMatch(/^\/\*[\s\S]*@media\(max-width:767px\)/)
+  expect(mobile).toContain('height:calc(52px + var(--safe-top))')
+  expect(mobile).toContain('.app-header .header-brand{display:inline-flex')
+  expect(mobile).toContain('.overview-carousel{height:390px;min-height:390px')
+  expect(mobile).toContain('object-fit:contain;object-position:center')
+  expect(mobile).toContain('.competition-hero-product{')
+  expect(mobile).toContain('position:absolute')
+  expect(mobile).not.toContain('@media(min-width:768px)')
+ })
 })
