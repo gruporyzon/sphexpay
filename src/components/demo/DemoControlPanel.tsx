@@ -11,6 +11,7 @@ const number=(value:string)=>Number.isFinite(Number(value))?Number(value):0
 const moneyInput=(cents:number)=>new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}).format(cents/100)
 const moneyCents=(value:string)=>Math.max(0,Math.round(Number(value.replace(/\./g,'').replace(',','.'))*100)||0)
 const time=(value:string|number|null)=>value?new Date(value).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:typeof value==='number'?'2-digit':undefined}):'—'
+const speed=(value:number)=>`${value.toFixed(2).replace('.',',')}x`
 
 export function DemoControlPanel(){
  const demo=useDashboardData(),navigate=useNavigate(),configRef=useRef<HTMLDivElement>(null),noticeTimer=useRef<number|undefined>(undefined)
@@ -25,10 +26,11 @@ export function DemoControlPanel(){
  const restore=()=>{setDraft(defaultDemoConfig());setErrors([])}
  const cancel=()=>{setDraft(structuredClone(demo.config));setErrors([])}
  const activate=async()=>{await demo.toggle();announce('Ativado.')}
- const end=async()=>{if(!window.confirm('Encerrar a sessão atual?'))return;await demo.toggle();announce('Encerrado.')}
- const pause=()=>{demo.pause();announce('Pausado.')}
- const resume=()=>{demo.resume();announce('Continuado.')}
+ const end=async()=>{if(!window.confirm('Encerrar a sessão atual?'))return;await demo.toggle();announce('Operação encerrada.')}
+ const pause=()=>{demo.pause();announce('Operação pausada.')}
+ const resume=()=>{demo.resume();announce('Operação continuada.')}
  const restart=()=>{demo.restart();announce('Sessão reiniciada.')}
+ const changeSpeed=(direction:-1|1)=>{const next=Math.min(3,Math.max(.25,Number((demo.intensity+direction*.25).toFixed(2))));demo.adjustIntensity(direction);announce(`Velocidade alterada para ${speed(next)}.`)}
  const updateWeight=<K extends 'methods'|'currencies'|'countries'>(key:K,index:number,field:'enabled'|'weight',value:boolean|number)=>setDraft(current=>({...current,preset:'custom',[key]:current[key].map((item,itemIndex)=>itemIndex===index?{...item,[field]:value}:item)}))
  if(demo.loadingPermission)return <div className="mode-access-state" role="status">Validando acesso administrativo...</div>
  if(!demo.allowed)return null
@@ -36,22 +38,24 @@ export function DemoControlPanel(){
  return <section className="mode-settings" aria-labelledby="mode-settings-title">
   <header className="mode-settings-header"><div><span>CONTROLE DA OPERAÇÃO</span><h2 id="mode-settings-title">Modo</h2><p>Configure uma operação dinâmica para visualizar o funcionamento da plataforma.</p></div><strong className={`mode-status ${status.toLowerCase()}`}><i/>{status}</strong></header>
   <div className="mode-overview">
-   <div className="mode-session-card">
-    <header><Activity/><div><span>Estado atual</span><strong>{status}</strong></div></header>
-    <dl><div><dt>Cenário</dt><dd>{presetLabels[demo.config.preset]}</dd></div><div><dt>Intensidade</dt><dd>{demo.intensity.toFixed(2)}×</dd></div><div><dt>Eventos da sessão</dt><dd>{demo.eventCount}</dd></div><div><dt>Vendas aprovadas</dt><dd>{demo.approvedCount}</dd></div><div><dt>Volume acumulado</dt><dd>{formatCents(demo.sessionVolumeCents,'BRL')}</dd></div><div><dt>Próximo evento</dt><dd>{demo.paused?'Pausado':time(demo.nextEventAt)}</dd></div><div><dt>Velocidade</dt><dd>{demo.intensity.toFixed(2)}×</dd></div><div><dt>Horário de início</dt><dd>{time(demo.startedAt)}</dd></div></dl>
+   <div className="mode-command-card" aria-labelledby="mode-control-title">
+    <span>CONTROLE DA OPERAÇÃO</span><h3 id="mode-control-title">Controle da operação</h3>
+    {!demo.active?<div className="mode-primary-actions"><button className="btn btn-primary" onClick={()=>void activate()}><Play/> Ativar</button><button className="btn" onClick={()=>navigate('/app')}><ArrowRight/> Ver Dashboard</button></div>:<>
+     <div className="mode-session-actions">{demo.paused?<button className="btn" onClick={resume}><Play/> Continuar</button>:<button className="btn" onClick={pause}><Pause/> Pausar</button>}<button className="btn" onClick={()=>configRef.current?.scrollIntoView({behavior:'smooth',block:'start'})}><Settings2/> Configurar</button><button className="btn" onClick={()=>navigate('/app')}><ArrowRight/> Ver Dashboard</button></div>
+     <div className="mode-rhythm"><span>Velocidade</span><div><button className="btn icon-btn" aria-label="Reduzir velocidade" disabled={demo.intensity<=.25} onClick={()=>changeSpeed(-1)}>−</button><strong aria-live="polite">{speed(demo.intensity)}</strong><button className="btn icon-btn" aria-label="Aumentar velocidade" disabled={demo.intensity>=3} onClick={()=>changeSpeed(1)}>+</button></div></div>
+    </>}
    </div>
-   <div className="mode-command-card">
-    <span>AÇÕES DA SESSÃO</span><h3>{demo.active?'Gerencie a atividade em andamento.':'Pronto para começar.'}</h3>
-    <div className="mode-primary-actions">{!demo.active?<button className="btn btn-primary" onClick={()=>void activate()}><Play/> Ativar</button>:<button className="btn mode-end" onClick={()=>void end()}><Square/> Encerrar</button>}<button className="btn" onClick={()=>navigate('/app')}><ArrowRight/> Ver Dashboard</button></div>
-    {demo.active&&<div className="mode-session-actions">{demo.paused?<button className="btn" onClick={resume}><Play/> Continuar</button>:<button className="btn" onClick={pause}><Pause/> Pausar</button>}<button className="btn" onClick={()=>configRef.current?.scrollIntoView({behavior:'smooth',block:'start'})}><Settings2/> Configurar</button><button className="btn" onClick={restart}><RotateCcw/> Reiniciar</button></div>}
-    <div className="mode-rhythm"><span>Ritmo da atividade</span><div><button className="btn icon-btn" aria-label="Reduzir ritmo" disabled={!demo.active} onClick={()=>demo.adjustIntensity(-1)}>−</button><strong>{demo.intensity.toFixed(2)}×</strong><button className="btn icon-btn" aria-label="Aumentar ritmo" disabled={!demo.active} onClick={()=>demo.adjustIntensity(1)}>+</button></div></div>
+   <div className="mode-session-card" aria-labelledby="mode-summary-title">
+    <header><Activity/><div><span>Estado atual</span><strong>{status}</strong></div></header>
+    <h3 id="mode-summary-title" className="sr-only">Resumo da sessão</h3>
+    <dl><div><dt>Cenário</dt><dd>{presetLabels[demo.config.preset]}</dd></div><div><dt>Eventos</dt><dd>{demo.eventCount}</dd></div><div><dt>Aprovadas</dt><dd>{demo.approvedCount}</dd></div><div><dt>Volume acumulado</dt><dd>{formatCents(demo.sessionVolumeCents,'BRL')}</dd></div><div><dt>Velocidade</dt><dd>{speed(demo.intensity)}</dd></div><div><dt>Início da sessão</dt><dd>{time(demo.startedAt)}</dd></div><div><dt>Próximo evento</dt><dd>{demo.paused?'Pausado':time(demo.nextEventAt)}</dd></div></dl>
    </div>
   </div>
   <div className="mode-config-card" ref={configRef}>
    <header><div><span>CONFIGURAÇÃO EDITÁVEL</span><h3>Personalize o comportamento</h3></div><Gauge/></header>
    <div className="demo-config-summary"><Gauge/><p>Este cenário produzirá aproximadamente <b>{frequencyHour.min} a {frequencyHour.max} vendas por hora</b>, com ticket entre <b>{formatCents(draft.minAmountCents,'BRL')} e {formatCents(draft.maxAmountCents,'BRL')}</b>.</p></div>
    <div className="demo-config-scroll">
-    <section><h3>Cenário</h3><div className="demo-preset-grid">{(Object.keys(presetLabels) as DemoPreset[]).map(id=><button type="button" className={draft.preset===id?'active':''} aria-pressed={draft.preset===id} onClick={()=>choosePreset(id)} key={id}>{presetLabels[id]}</button>)}</div></section>
+    <section><h3>Cenários</h3><div className="demo-preset-grid">{(Object.keys(presetLabels) as DemoPreset[]).map(id=><button type="button" className={draft.preset===id?'active':''} aria-pressed={draft.preset===id} onClick={()=>choosePreset(id)} key={id}>{id==='normal'?'Normal':presetLabels[id]}</button>)}</div></section>
     <details open><summary>Vendas</summary><div className="demo-config-grid">
      <Field label="Quantidade inicial"><input type="number" min="30" max="2000" value={draft.initialSales} onChange={event=>set('initialSales',number(event.target.value))}/></Field>
      <Field label="Limite da sessão"><input type="number" min="100" max="2000" value={draft.memoryLimit} onChange={event=>set('memoryLimit',number(event.target.value))}/></Field>
@@ -69,8 +73,9 @@ export function DemoControlPanel(){
     <details><summary>Automação</summary><div className="demo-config-grid"><Field label="Início do pico"><input type="number" min="0" max="23" value={draft.peakStartHour} onChange={event=>set('peakStartHour',number(event.target.value))}/></Field><Field label="Fim do pico"><input type="number" min="0" max="23" value={draft.peakEndHour} onChange={event=>set('peakEndHour',number(event.target.value))}/></Field><Field label="Multiplicador do pico"><input type="number" min="1" max="3" step=".1" value={draft.peakMultiplier} onChange={event=>set('peakMultiplier',number(event.target.value))}/></Field><label className="demo-config-check"><input type="checkbox" checked={draft.adaptive} onChange={event=>set('adaptive',event.target.checked)}/><span><b>Automação inteligente</b><small>Ajusta o ritmo gradualmente para evitar repetições.</small></span></label><label className="demo-config-check"><input type="checkbox" checked={draft.useProductPrices} onChange={event=>set('useProductPrices',event.target.checked)}/><span><b>Usar preços cadastrados</b><small>Somente como referência de leitura.</small></span></label></div></details>
     {draft.adaptive&&<p className="demo-adaptive-note">O ritmo será ajustado gradualmente conforme o horário e a intensidade escolhida.</p>}{errors.length>0&&<div className="demo-config-errors" role="alert">{errors.map(error=><p key={error}>{error}</p>)}</div>}
    </div>
-   <footer><button className="btn" onClick={restore}><RotateCcw/> Restaurar padrão</button><button className="btn" onClick={cancel}>Cancelar</button><button className="btn" disabled={!demo.active} onClick={restart}><RotateCcw/> Reiniciar sessão</button><button className="btn btn-primary" onClick={apply}>Aplicar</button></footer>
+   <footer><button className="btn" onClick={restore}><RotateCcw/> Restaurar padrão</button><button className="btn" onClick={cancel}>Cancelar</button><button className="btn btn-primary" onClick={apply}>Aplicar</button></footer>
   </div>
+  <section className="mode-advanced-actions" aria-labelledby="mode-advanced-title"><div><span>AÇÕES AVANÇADAS</span><h3 id="mode-advanced-title">Ações avançadas</h3><p>Reinicie a atividade preservando as configurações ou encerre a sessão atual.</p></div><div><button className="btn" disabled={!demo.active} onClick={restart}><RotateCcw/> Reiniciar sessão</button><button className="btn mode-end" disabled={!demo.active} onClick={()=>void end()}><Square/> Encerrar</button></div></section>
   <p className="mode-announcement" role="status" aria-live="polite">{notice}</p>
  </section>
 }
