@@ -58,6 +58,14 @@ describe('entrada pública SphexPay',()=>{
   expect(container.querySelector('.public-map-countries')).toHaveAttribute('d',expect.stringMatching(/^M/))
   expect(container.querySelector('.live-public-visual')).not.toBeInTheDocument()
  })
+ it.each([320,360,375,390,393,414,430])('mantém hero e mockup sem overflow no viewport mobile de %i px',width=>{
+  Object.defineProperty(window,'innerWidth',{configurable:true,value:width})
+  const {container}=renderLanding(),hero=container.querySelector('.landing-hero') as HTMLElement,mockup=container.querySelector('.landing-hero-visual') as HTMLElement
+  expect(hero).toBeInTheDocument();expect(mockup).toBeInTheDocument()
+  expect(hero.scrollWidth).toBeLessThanOrEqual(hero.clientWidth)
+  expect(mockup.scrollWidth).toBeLessThanOrEqual(mockup.clientWidth)
+  expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth)
+ })
  it('expande FAQ com estado aria e conteúdo associado',async()=>{
   const user=userEvent.setup();renderLanding();const button=screen.getByRole('button',{name:'Como recuperar minha senha?'})
   expect(button).toHaveAttribute('aria-expanded','false');await user.click(button)

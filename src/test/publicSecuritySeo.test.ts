@@ -33,4 +33,12 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(css).toContain('@media(prefers-reduced-motion:reduce)')
   expect(css).toContain('overflow-x:clip')
  })
+ it('mantém o hero e o mockup contidos abaixo de 768px sem alterar o breakpoint desktop',()=>{
+  const mobileRule=css.slice(css.lastIndexOf('@media(max-width:767px)'))
+  expect(mobileRule).toContain('grid-template-columns:minmax(0,1fr)')
+  expect(mobileRule).toMatch(/\.landing-hero-visual\{[\s\S]*width:100%;[\s\S]*max-width:100%;[\s\S]*min-width:0;[\s\S]*transform:none/)
+  expect(mobileRule).toMatch(/\.landing-dashboard\{[\s\S]*width:100%;[\s\S]*max-width:100%;[\s\S]*min-width:0;[\s\S]*transform:none/)
+  expect(mobileRule).toContain('.floating-sale{right:8px;max-width:calc(100% - 16px)}')
+  expect(css.slice(0,css.lastIndexOf('@media(max-width:767px)'))).toContain('grid-template-columns:minmax(420px,.82fr) minmax(600px,1.18fr)')
+ })
 })
