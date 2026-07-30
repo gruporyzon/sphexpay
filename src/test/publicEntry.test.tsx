@@ -14,7 +14,7 @@ describe('entrada pública SphexPay',()=>{
  it('renderiza a narrativa pública completa com apenas um título principal',()=>{
   const view=renderLanding()
   expect(screen.getAllByRole('heading',{level:1})).toHaveLength(1)
-  expect(screen.getByRole('heading',{name:/Sua operação no ritmo/i})).toBeInTheDocument()
+  expect(screen.getByRole('heading',{name:/Pagamentos em movimento.*Resultados sob controle/i})).toBeInTheDocument()
   expect(view.container.querySelector('#plataforma')).toBeInTheDocument()
   expect(view.container.querySelector('#recursos')).toBeInTheDocument()
   expect(view.container.querySelector('#seguranca')).toBeInTheDocument()
@@ -24,7 +24,17 @@ describe('entrada pública SphexPay',()=>{
   expect(view.container.querySelector('#ajuda')).toBeInTheDocument()
   expect(screen.getByText('Sphex 5M+')).toBeInTheDocument()
   expect(view.container.querySelector('.public-phone')).toBeInTheDocument()
+  expect(view.container.querySelectorAll('.phone-float')).toHaveLength(4)
+  expect(view.container.querySelector('.phone-payment-chip')).toHaveTextContent(/Pix.*Cartão/)
   expect(screen.getByText('Venda aprovada com sucesso')).toBeInTheDocument()
+ })
+ it.each([768,834,1024,1280,1440,1920])('mantém a composição premium funcional no viewport de %i px',width=>{
+  Object.defineProperty(window,'innerWidth',{configurable:true,value:width})
+  const {container}=renderLanding(),hero=container.querySelector('.landing-hero') as HTMLElement
+  expect(hero).toBeInTheDocument()
+  expect(container.querySelector('.public-phone')).toBeInTheDocument()
+  expect(container.querySelectorAll('.phone-float')).toHaveLength(4)
+  expect(hero.scrollWidth).toBeLessThanOrEqual(hero.clientWidth)
  })
  it('conecta login, cadastro e CTA ao fluxo real e adapta a sessão existente',()=>{
   const view=renderLanding()
