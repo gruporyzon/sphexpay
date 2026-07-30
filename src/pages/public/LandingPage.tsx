@@ -1,24 +1,16 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight,BarChart3,Bell,BrainCircuit,Check,ChevronDown,CreditCard,Globe2,Layers3,Link2,LockKeyhole,RefreshCcw,ShieldCheck,Sparkles,Trophy,WalletCards,Zap } from 'lucide-react'
+import { ArrowRight,Bell,Check,ChevronDown,CreditCard,Globe2,Layers3,Link2,LockKeyhole,RefreshCcw,ShieldCheck,Sparkles,Trophy,Zap } from 'lucide-react'
 import { PublicHeader } from '../../components/landing/PublicHeader'
 import { PublicPhoneExperience } from '../../components/landing/PublicPhoneExperience'
 import { PublicProductShowcase } from '../../components/landing/PublicProductShowcase'
 import { PublicCompetitionSection } from '../../components/landing/PublicCompetitionSection'
 import { PublicFaq } from '../../components/landing/PublicFaq'
 import { PublicLiveSalesPreview } from '../../components/landing/PublicLiveSalesPreview'
+import { PublicEditorialBenefits,PublicOperationalFlow,PublicResourceRail,PublicSecurityNote } from '../../components/landing/PublicEditorialSections'
 import { SphexPayLogo } from '../../components/branding/SphexPayLogo'
 import { revenueAwards } from '../../config/revenueAwards'
 import { useAuth } from '../../hooks/useAuth'
-
-const benefits=[
- ['Acompanhamento centralizado','Indicadores financeiros, períodos e moedas organizados em uma única experiência.',BarChart3],
- ['Vendas e transações','Consulte o histórico disponível e acompanhe cada etapa sem perder contexto.',WalletCards],
- ['Produtos e links','Estruture ofertas, produtos, checkouts e links em fluxos conectados.',Link2],
- ['Notificações','Mantenha eventos importantes visíveis na central e nos dispositivos autorizados.',Bell],
- ['Premiações','Acompanhe os marcos oficiais de reconhecimento da jornada SphexPay.',Trophy],
- ['Inteligência operacional','Transforme as informações disponíveis em leituras diretas sobre a operação.',BrainCircuit]
-] as const
 
 const capabilityLabels=['Dashboard','Vendas ao vivo','Transações','Produtos','Clientes','Financeiro','Notificações','Premiações']
 
@@ -41,8 +33,10 @@ export default function LandingPage(){
     </div><div className="landing-hero-visual"><PublicPhoneExperience/></div><a className="hero-scroll" href="#plataforma"><span>Explore a plataforma</span><ChevronDown/></a>
    </section>
    <section className="landing-trust" data-reveal aria-label="Áreas da plataforma"><span>UMA EXPERIÊNCIA CONECTADA À SUA OPERAÇÃO</span><div>{capabilityLabels.map(item=><b key={item}>{item}</b>)}</div></section>
+   <PublicOperationalFlow/>
+   <PublicEditorialBenefits/>
+   <PublicResourceRail/>
    <PublicProductShowcase/>
-   <section className="feature-zone" id="recursos"><header data-reveal><span>RECURSOS DA PLATAFORMA</span><h2>Tudo o que você precisa para operar e crescer.</h2><p>Uma base organizada para acompanhar a operação sem misturar informações reais com ambientes de apresentação.</p></header><div className="feature-grid">{benefits.map(([title,copy,Icon],index)=><article data-reveal key={title} className={index===0||index===5?'wide':''}><i><Icon/></i><span>0{index+1}</span><h3>{title}</h3><p>{copy}</p></article>)}</div></section>
    <section className="payment-section" id="solucoes"><div data-reveal><span>JORNADAS DE COBRANÇA</span><h2>Meios de pagamento organizados com transparência.</h2><p>A interface contempla Pix, cartão, boleto, assinaturas e links. O processamento real e a disponibilidade de cada modalidade dependem de integrações oficiais ainda não conectadas neste ambiente.</p><div className="condition-card"><strong>Condições ajustadas à sua operação</strong><p>Conheça as condições disponíveis para o perfil e o volume do seu negócio quando os provedores oficiais estiverem integrados.</p><Link to={accountDestination}>{user?'Acessar painel':'Criar conta'} <ArrowRight/></Link></div></div><div className="payment-methods" data-reveal>{[[Zap,'Pix'],[CreditCard,'Cartão'],[Layers3,'Boleto'],[RefreshCcw,'Assinaturas'],[Link2,'Links']].map(([Icon,label])=><article key={label as string}><Icon/><span><b>{label as string}</b><small>Disponibilidade vinculada à integração oficial</small></span></article>)}</div></section>
    <section className="live-public-section" id="vendas-ao-vivo"><div className="live-public-copy" data-reveal><span>VENDAS EM TEMPO REAL</span><h2>Veja sua operação ganhar alcance em cada nova venda.</h2><p>Acompanhe eventos, regiões e resultados em uma experiência visual integrada ao seu gateway.</p><Link to={accountDestination} className="public-text-link">Abrir Vendas ao Vivo <ArrowRight/></Link><div className="live-public-highlights"><span><b>Mapa conectado</b><small>Atividade por região</small></span><span><b>Feed organizado</b><small>Método, valor e horário</small></span></div></div><div data-reveal><PublicLiveSalesPreview/></div></section>
    <section className="smart-notifications-section" id="notificacoes"><div className="smart-notifications-visual" data-reveal><div className="notification-orbit"/><article><i><Check/></i><span><small>SphexPay</small><b>Venda aprovada com sucesso</b><em>Pix · R$ 284,90</em></span><time>agora</time></article><article><i><Bell/></i><span><small>Resumo da operação</small><b>Sua sequência foi concluída</b><em>5 notificações processadas</em></span><time>12:42</time></article><article><i><Sparkles/></i><span><small>Mensagem inteligente</small><b>Uma comunicação para cada momento</b><em>Variação automática ativada</em></span><time>12:40</time></article></div><div data-reveal><span>NOTIFICAÇÕES INTELIGENTES</span><h2>Mensagens que acompanham o ritmo da sua operação.</h2><p>Personalize títulos e conteúdos, escolha dispositivos e programe sequências com uma experiência clara, previsível e organizada.</p><ul><li><Check/> Personalização de título e mensagem</li><li><Check/> Agendamento e sequências controladas</li><li><Check/> Variações inteligentes com fallback seguro</li></ul></div></section>
@@ -50,6 +44,7 @@ export default function LandingPage(){
    <section className="rewards-section" id="premiacoes"><div data-reveal><Trophy/><span>RECONHECIMENTO SPHEXPAY</span><h2>Resultados que merecem reconhecimento.</h2><p>A jornada de premiações apresenta os marcos oficiais configurados na plataforma, sem fabricar ganhadores ou resultados públicos.</p></div><div className="reward-track official-reward-track" data-reveal>{revenueAwards.map(award=><article key={award.id}><img src={award.image} width="220" height="160" loading="lazy" alt={`Plaquinha ${award.name}`}/><strong>{award.name}</strong><span>Marco de reconhecimento</span></article>)}</div></section>
    <PublicCompetitionSection destination={accountDestination} authenticated={Boolean(user)}/>
    <section className="integration-section" id="integracoes"><header data-reveal><span>ECOSSISTEMA SPHEXPAY</span><h2>Recursos internos trabalhando no mesmo fluxo.</h2><p>Sem logos ou parceiros fictícios: a experiência conecta apenas módulos confirmados no produto.</p></header><div data-reveal>{['Produtos','Checkouts','Links de pagamento','Clientes','Notificações','Relatórios'].map(item=><span key={item}>{item}</span>)}</div></section>
+   <PublicSecurityNote/>
    <PublicFaq/>
    <section className="landing-cta" data-reveal><Sparkles/><span>COMECE COM CLAREZA</span><h2>Seu próximo nível começa com uma operação melhor.</h2><p>Centralize sua gestão, acompanhe seus resultados e construa uma operação preparada para crescer.</p><div><Link className="public-primary" to={accountDestination}>{user?'Acessar meu painel':'Criar minha conta'} <ArrowRight/></Link><Link to="/entrar">Entrar na plataforma</Link></div><small>Cadastre-se e acompanhe sua evolução na Competição SphexPay.</small></section>
   </main>
