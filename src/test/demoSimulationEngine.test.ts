@@ -47,6 +47,7 @@ describe('DemoSimulationEngine',()=>{
   expect(event.cityName).toBeTruthy()
   expect(event.customerEmail).toMatch(/^cliente\d{3}@example\.com$/)
   expect(['BRL','USD','EUR']).toContain(event.currency)
+  expect(event).toMatchObject({demo:true,source:'mode'})
  })
  it('calcula um único próximo intervalo com intensidade configurável',()=>{
   const value=session(),normal=calculateDynamicInterval(value,now),faster=calculateDynamicInterval({...value,intensity:2},now)

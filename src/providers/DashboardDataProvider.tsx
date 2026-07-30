@@ -3,14 +3,17 @@ import {createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,t
 import {useAuth} from '../hooks/useAuth'
 import {useDashboardAdmin} from '../hooks/useDashboardAdmin'
 import {productService} from '../services/productService'
+import {pushSubscriptionService} from '../services/pushSubscriptionService'
 import type {AppNotification,Product} from '../types'
-import {calculateDynamicInterval,convertDemoCents,createHistory,defaultDemoConfig,fallbackDemoProducts,generateNextEvent,reconcileDemoLedger,seedFromSession} from '../demo/demoSimulationEngine'
-import {productToDemo,type DemoConfig,type DemoCustomer,type DemoNotification,type DemoSession,type DemoTransaction} from '../demo/types'
+import {calculateDynamicInterval,convertDemoCents,createHistory,defaultDemoConfig,defaultModePushConfig,fallbackDemoProducts,generateNextEvent,reconcileDemoLedger,seedFromSession} from '../demo/demoSimulationEngine'
+import {productToDemo,type DemoConfig,type DemoCustomer,type DemoNotification,type DemoSession,type DemoTransaction,type ModePushStats} from '../demo/types'
+import {ModePushQueue} from '../lib/modePushQueue'
 
 const STORAGE_KEY='sphexpay_demo_v2',LEGACY_KEY='sphexpay_demo_v1',TTL=24*60*60*1000
 type ContextValue={
  active:boolean;paused:boolean;allowed:boolean;loadingPermission:boolean;ledger:DemoTransaction[];notifications:DemoNotification[];customers:DemoCustomer[]
  config:DemoConfig;sessionId:string;startedAt:string;eventCount:number;approvedCount:number;sessionVolumeCents:number;nextEventAt:number|null;intensity:number
+ pushStats:ModePushStats
  toggle:()=>Promise<void>;applyConfig:(config:DemoConfig)=>void;pause:()=>void;resume:()=>void;restart:()=>void;adjustIntensity:(direction:-1|1)=>void
  markNotificationRead:(id:string)=>void;markAllNotificationsRead:()=>void;clearDemoNotifications:()=>void
 }
@@ -20,10 +23,10 @@ const migrate=(raw:unknown,ownerId:string):DemoSession|null=>{
  if(!raw||typeof raw!=='object')return null
  const value=raw as Partial<DemoSession>&{version?:number}
  if(value.ownerId!==ownerId||!value.expiresAt||Date.now()>=new Date(value.expiresAt).getTime())return null
- const settings=value.version===2&&value.config?value.config:defaultDemoConfig()
+ const stored=value.version===2&&value.config?value.config:defaultDemoConfig(),settings={...defaultDemoConfig(),...stored,pushNotifications:{...defaultModePushConfig(),...stored.pushNotifications,methods:stored.pushNotifications?.methods??defaultModePushConfig().methods,deviceIds:stored.pushNotifications?.deviceIds??[]}}
  const ledger=(Array.isArray(value.ledger)?value.ledger:[]).map((item,index)=>{
   const transaction=item as DemoTransaction
-  return{...transaction,customerId:transaction.customerId??`legacy-${index}`,countryCode:transaction.countryCode??'BR',countryName:transaction.countryName??'Brasil',cityName:transaction.cityName??'São Paulo'}
+  return{...transaction,demo:true as const,source:'mode' as const,customerId:transaction.customerId??`legacy-${index}`,countryCode:transaction.countryCode??'BR',countryName:transaction.countryName??'Brasil',cityName:transaction.cityName??'São Paulo'}
  })
  return{version:2,active:Boolean(value.active),paused:Boolean(value.paused),sessionId:value.sessionId||crypto.randomUUID(),seed:value.seed||seedFromSession(value.sessionId||ownerId),ownerId,startedAt:value.startedAt||new Date().toISOString(),expiresAt:value.expiresAt,lastEventAt:value.lastEventAt||new Date().toISOString(),ledger,notifications:value.notifications??[],products:value.products?.length?value.products:fallbackDemoProducts,config:settings,eventCount:value.eventCount??ledger.length,approvedCount:value.approvedCount??ledger.filter(item=>item.status==='approved').length,sessionVolumeCents:value.sessionVolumeCents??ledger.filter(item=>item.status==='approved').reduce((sum,item)=>sum+convertDemoCents(item.amountCents,item.currency,'BRL'),0),intensity:value.intensity??1,exchangeRates:value.exchangeRates??{BRL:1,USD:.19,EUR:.17}}
 }
@@ -37,45 +40,56 @@ const load=(ownerId:string):DemoSession|null=>{
 const persist=(session:DemoSession|null)=>{if(session)localStorage.setItem(STORAGE_KEY,JSON.stringify(session));else localStorage.removeItem(STORAGE_KEY)}
 const createSession=(ownerId:string,products:DemoSession['products'],settings=defaultDemoConfig()):DemoSession=>{
  const sessionId=crypto.randomUUID?.()??`${Date.now()}-${ownerId}`,now=new Date(),seed=seedFromSession(sessionId)
- const base:DemoSession={version:2,active:true,paused:false,ownerId,sessionId,seed,startedAt:now.toISOString(),expiresAt:new Date(now.getTime()+TTL).toISOString(),lastEventAt:now.toISOString(),products:products.length?products:fallbackDemoProducts,config:settings,ledger:[],notifications:[],eventCount:0,approvedCount:0,sessionVolumeCents:0,intensity:1,exchangeRates:{BRL:1,USD:.19,EUR:.17}}
+ const config={...settings,pushNotifications:{...settings.pushNotifications,enabledAt:settings.pushNotifications.enabled?now.toISOString():settings.pushNotifications.enabledAt}}
+ const base:DemoSession={version:2,active:true,paused:false,ownerId,sessionId,seed,startedAt:now.toISOString(),expiresAt:new Date(now.getTime()+TTL).toISOString(),lastEventAt:now.toISOString(),products:products.length?products:fallbackDemoProducts,config,ledger:[],notifications:[],eventCount:0,approvedCount:0,sessionVolumeCents:0,intensity:1,exchangeRates:{BRL:1,USD:.19,EUR:.17}}
  base.ledger=createHistory(base,now);base.eventCount=base.ledger.length;base.approvedCount=base.ledger.filter(item=>item.status==='approved').length;base.sessionVolumeCents=base.ledger.filter(item=>item.status==='approved').reduce((sum,item)=>sum+convertDemoCents(item.amountCents,item.currency,'BRL',base.exchangeRates),0)
  return base
 }
 
 export function DashboardDataProvider({children}:PropsWithChildren){
- const {user}=useAuth(),permission=useDashboardAdmin(user?.id),[session,setSession]=useState<DemoSession|null>(()=>user?.id?load(user.id):null),[nextEventAt,setNextEventAt]=useState<number|null>(null),timer=useRef<ReturnType<typeof setTimeout>|null>(null)
+ const {user}=useAuth(),permission=useDashboardAdmin(user?.id),initialSession=useRef<DemoSession|null>(user?.id?load(user.id):null),[session,setSession]=useState<DemoSession|null>(initialSession.current),sessionRef=useRef<DemoSession|null>(initialSession.current),[nextEventAt,setNextEventAt]=useState<number|null>(null),[pushStats,setPushStats]=useState<ModePushStats>({attempted:0,sent:0,failed:0,expired:0,skipped:0,lastSentAt:'',lastError:''}),timer=useRef<ReturnType<typeof setTimeout>|null>(null),pushQueue=useRef<ModePushQueue|null>(null)
+ if(!pushQueue.current)pushQueue.current=new ModePushQueue({send:command=>pushSubscriptionService.sendMode(command),onStats:setPushStats})
  const stop=useCallback(()=>{if(timer.current)clearTimeout(timer.current);timer.current=null;setNextEventAt(null)},[])
- const update=useCallback((recipe:(current:DemoSession)=>DemoSession)=>setSession(current=>{if(!current)return current;const next=recipe(current);persist(next);return next}),[])
+ const replace=useCallback((next:DemoSession|null)=>{sessionRef.current=next;persist(next);setSession(next)},[])
+ const update=useCallback((recipe:(current:DemoSession)=>DemoSession)=>{const current=sessionRef.current;if(!current)return null;const next=recipe(current);replace(next);return next},[replace])
  const schedule=useCallback((current:DemoSession)=>{
   stop();if(!current.active||current.paused||document.hidden)return
   const delay=calculateDynamicInterval(current),due=Date.now()+delay;setNextEventAt(due)
-  timer.current=setTimeout(()=>update(value=>{
+  timer.current=setTimeout(()=>{
+   const emitted:DemoTransaction[]=[]
+   update(value=>{
    if(!value.active||value.paused)return value
    const now=new Date(),reconciled=reconcileDemoLedger(value.ledger,now,value.config),live=generateNextEvent({...value,ledger:reconciled.ledger},now),notifications=[...value.notifications]
+   if(live.status==='approved')emitted.push(live)
    let approvedCount=value.approvedCount,sessionVolumeCents=value.sessionVolumeCents
    if(reconciled.approved){
+    emitted.push(reconciled.approved)
     approvedCount++;sessionVolumeCents+=convertDemoCents(reconciled.approved.amountCents,reconciled.approved.currency,'BRL',value.exchangeRates)
     notifications.unshift({id:`notification-${reconciled.approved.transactionId}`,demo:true,title:'Venda aprovada',description:`${reconciled.approved.customerDisplayName} · ${reconciled.approved.countryName}`,createdAt:now.toISOString(),read:false,transactionId:reconciled.approved.transactionId})
     const before=sessionVolumeCents-convertDemoCents(reconciled.approved.amountCents,reconciled.approved.currency,'BRL',value.exchangeRates),target=[1_000_000,10_000_000,50_000_000,100_000_000,500_000_000].find(goal=>before<goal&&sessionVolumeCents>=goal)
     if(target)notifications.unshift({id:`notification-award-${target}-${value.sessionId}`,demo:true,title:'Meta alcançada',description:'A próxima plaquinha foi liberada nesta sessão.',createdAt:now.toISOString(),read:false})
    }
    return{...value,ledger:[live,...reconciled.ledger].slice(0,value.config.memoryLimit),notifications:notifications.slice(0,50),lastEventAt:now.toISOString(),eventCount:value.eventCount+1,approvedCount,sessionVolumeCents}
-  }),delay)
+   })
+   const latest=sessionRef.current
+   if(latest?.active&&!latest.paused)for(const event of emitted)pushQueue.current?.enqueue(latest.sessionId,event,latest.config.pushNotifications)
+  },delay)
  },[stop,update])
- useEffect(()=>{if(!user?.id){stop();setSession(null);return}setSession(load(user.id))},[user?.id,stop])
+ useEffect(()=>{if(!user?.id){stop();pushQueue.current?.stop();replace(null);return}const restored=load(user.id);replace(restored);if(restored){pushQueue.current?.markKnown(restored.sessionId,restored.ledger);if(restored.active&&!restored.paused)pushQueue.current?.start()}},[user?.id,stop,replace])
  useEffect(()=>{if(session?.active&&!session.paused)schedule(session);else stop();return stop},[session,schedule,stop])
  const active=Boolean(session?.active)
- useEffect(()=>{const visibility=()=>{if(document.hidden)stop();else if(active&&!session?.paused)update(value=>{const reconciled=reconcileDemoLedger(value.ledger,new Date(),value.config);return{...value,ledger:reconciled.ledger,lastEventAt:new Date().toISOString()}})};document.addEventListener('visibilitychange',visibility);return()=>document.removeEventListener('visibilitychange',visibility)},[active,session?.paused,stop,update])
+ useEffect(()=>{const visibility=()=>{if(document.hidden)stop();else if(active&&!session?.paused)update(value=>({...value,lastEventAt:new Date().toISOString()}))};document.addEventListener('visibilitychange',visibility);return()=>document.removeEventListener('visibilitychange',visibility)},[active,session?.paused,stop,update])
+ useEffect(()=>()=>{stop();pushQueue.current?.stop()},[stop])
  const toggle=useCallback(async()=>{
   if(!user?.id||!permission.allowed)return
-  if(session?.active){stop();persist(null);setSession(null);return}
+  if(session?.active){stop();pushQueue.current?.stop();replace(null);return}
   const products=await productService.list(user.id).catch(()=>[] as Product[]),next=createSession(user.id,products.filter(item=>item.active).map(productToDemo))
-  persist(next);setSession(next)
- },[permission.allowed,session?.active,stop,user?.id])
- const applyConfig=useCallback((config:DemoConfig)=>update(value=>({...value,config:{...config,preset:config.preset},ledger:value.ledger.slice(0,config.memoryLimit)})),[update])
- const pause=useCallback(()=>update(value=>({...value,paused:true})),[update])
- const resume=useCallback(()=>update(value=>({...value,paused:false,lastEventAt:new Date().toISOString()})),[update])
- const restart=useCallback(()=>update(value=>createSession(value.ownerId,value.products,value.config)),[update])
+  pushQueue.current?.reset();pushQueue.current?.markKnown(next.sessionId,next.ledger);replace(next)
+ },[permission.allowed,session?.active,stop,user?.id,replace])
+ const applyConfig=useCallback((config:DemoConfig)=>update(value=>{const enabledNow=!value.config.pushNotifications.enabled&&config.pushNotifications.enabled;return{...value,config:{...config,preset:config.preset,pushNotifications:{...config.pushNotifications,enabledAt:enabledNow?new Date().toISOString():config.pushNotifications.enabledAt}},ledger:value.ledger.slice(0,config.memoryLimit)}}),[update])
+ const pause=useCallback(()=>{pushQueue.current?.pause();update(value=>({...value,paused:true}))},[update])
+ const resume=useCallback(()=>{pushQueue.current?.resume();update(value=>({...value,paused:false,lastEventAt:new Date().toISOString()}))},[update])
+ const restart=useCallback(()=>{const current=sessionRef.current;if(!current)return;const next=createSession(current.ownerId,current.products,current.config);pushQueue.current?.reset();pushQueue.current?.markKnown(next.sessionId,next.ledger);replace(next)},[replace])
  const adjustIntensity=useCallback((direction:-1|1)=>update(value=>({...value,intensity:Math.min(3,Math.max(.25,Number((value.intensity+direction*.25).toFixed(2))))})),[update])
  const notifications=useMemo(()=>session?.notifications??[],[session?.notifications])
  const markNotificationRead=useCallback((id:string)=>update(value=>({...value,notifications:value.notifications.map(item=>item.id===id?{...item,read:true}:item)})),[update])
@@ -91,7 +105,7 @@ export function DashboardDataProvider({children}:PropsWithChildren){
   }
   return[...grouped.values()].sort((a,b)=>b.lastOrderAt.localeCompare(a.lastOrderAt))
  },[session?.ledger])
- const value=useMemo<ContextValue>(()=>({active:Boolean(session?.active&&permission.allowed),paused:Boolean(session?.paused),allowed:permission.allowed,loadingPermission:permission.loading,ledger:session?.ledger??[],notifications,customers,config:session?.config??defaultDemoConfig(),sessionId:session?.sessionId??'',startedAt:session?.startedAt??'',eventCount:session?.eventCount??0,approvedCount:session?.approvedCount??0,sessionVolumeCents:session?.sessionVolumeCents??0,nextEventAt,intensity:session?.intensity??1,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications}),[session,permission.allowed,permission.loading,notifications,customers,nextEventAt,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications])
+ const value=useMemo<ContextValue>(()=>({active:Boolean(session?.active&&permission.allowed),paused:Boolean(session?.paused),allowed:permission.allowed,loadingPermission:permission.loading,ledger:session?.ledger??[],notifications,customers,config:session?.config??defaultDemoConfig(),sessionId:session?.sessionId??'',startedAt:session?.startedAt??'',eventCount:session?.eventCount??0,approvedCount:session?.approvedCount??0,sessionVolumeCents:session?.sessionVolumeCents??0,nextEventAt,intensity:session?.intensity??1,pushStats,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications}),[session,permission.allowed,permission.loading,notifications,customers,nextEventAt,pushStats,toggle,applyConfig,pause,resume,restart,adjustIntensity,markNotificationRead,markAllNotificationsRead,clearDemoNotifications])
  return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>
 }
 export function useDashboardData(){const value=useContext(DashboardDataContext);if(!value)throw new Error('useDashboardData deve ser usado dentro de DashboardDataProvider');return value}

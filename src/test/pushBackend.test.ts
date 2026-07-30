@@ -127,6 +127,29 @@ describe('backend de Push',()=>{
   expect(query.in).toHaveBeenCalledWith('device_id',['22222222-2222-4222-8222-222222222222'])
  })
 
+ it('aceita evento controlado do modo no endpoint existente e preserva a origem',async()=>{
+  configureVapid()
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const query={eq:vi.fn(()=>query),then:(resolve:(value:unknown)=>void)=>resolve({data:[],error:null})}
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-mode'}}}))},from:vi.fn(()=>({select:vi.fn(()=>query)}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await sendHandler({method:'POST',headers:{authorization:'Bearer token'},body:{eventId:'mode-sale:session-1:event-demo-1',type:'mode_notification',notificationType:'pix_paid',title:'Venda aprovada · Pix',body:'Sua comissão: R$ 60,00',route:'/rota-invalida',icon:'/icons/sphexpay-app-192.png',target:'all',metadata:{source:'mode',currency:'BRL'}}},output)
+  expect(output.result).toMatchObject({statusCode:404,body:{success:false,code:'NO_ACTIVE_SUBSCRIPTIONS'}})
+  expect(query.eq).toHaveBeenCalledWith('user_id','user-mode')
+ })
+
+ it('recusa evento do modo sem origem controlada',async()=>{
+  configureVapid()
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  createClientMock.mockReturnValue({auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-mode'}}}))}})
+  const output=response()
+  await sendHandler({method:'POST',headers:{authorization:'Bearer token'},body:{eventId:'mode-sale:session-1:event-demo-1',type:'mode_notification',notificationType:'pix_paid',title:'Venda aprovada · Pix',body:'Valor: R$ 10,00',target:'all',metadata:{source:'manual'}}},output)
+  expect(output.result).toMatchObject({statusCode:400,body:{code:'INVALID_PAYLOAD'}})
+ })
+
  it('ignora SUPABASE_URL inválida e usa a URL pública válida como fallback seguro',()=>{
   configureVapid()
   vi.stubEnv('SUPABASE_URL','valor-invalido')

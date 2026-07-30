@@ -3,6 +3,7 @@ import type { Currency,FinancialTransaction } from '../lib/dashboardFinance'
 
 export interface DemoTransaction extends FinancialTransaction{
  demo:true
+ source:'mode'
  eventId:string
  productId:string|null
  productPriceCents:number
@@ -42,6 +43,28 @@ export interface DemoNotification{
 export type DemoPreset='light'|'normal'|'high'|'launch'|'peak'|'subscriptions'|'international'|'custom'
 export type DemoFrequencyUnit='seconds'|'minutes'
 export type DemoPaymentMethod='Pix'|'Cartão de crédito'|'Boleto'|'Assinatura'
+export type ModePushFrequency='each'|'5s'|'15s'|'60s'|'summary'
+export type ModePushDestination='current'|'all'|'selected'
+export interface ModePushConfig{
+ enabled:boolean
+ approved:boolean
+ methods:DemoPaymentMethod[]
+ destination:ModePushDestination
+ deviceIds:string[]
+ vary:boolean
+ frequency:ModePushFrequency
+ maxPerSession:number
+ enabledAt:string
+}
+export interface ModePushStats{
+ attempted:number
+ sent:number
+ failed:number
+ expired:number
+ skipped:number
+ lastSentAt:string
+ lastError:string
+}
 export type DemoCountryCode='BR'|'US'|'CA'|'PT'|'GB'|'FR'|'DE'|'ES'|'IT'|'NL'|'IE'|'CH'
 export interface DemoWeightedOption<T extends string>{id:T;enabled:boolean;weight:number}
 export interface DemoConfig{
@@ -71,6 +94,7 @@ export interface DemoConfig{
  useProductPrices:boolean
  adaptive:boolean
  sessionGoalCents:number
+ pushNotifications:ModePushConfig
 }
 
 export interface DemoSession{

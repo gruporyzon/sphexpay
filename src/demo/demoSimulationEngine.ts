@@ -24,15 +24,19 @@ export const fallbackDemoProducts:DemoProduct[]=[
 ]
 
 const weighted=<T extends string>(ids:readonly T[],weights:number[]):DemoWeightedOption<T>[]=>ids.map((id,index)=>({id,enabled:weights[index]>0,weight:weights[index]}))
+export const defaultModePushConfig=()=>({
+ enabled:true,approved:true,methods:['Pix','Cartão de crédito','Boleto','Assinatura'] as DemoPaymentMethod[],
+ destination:'all' as const,deviceIds:[],vary:true,frequency:'each' as const,maxPerSession:100,enabledAt:''
+})
 const baseConfig:DemoConfig={
  preset:'normal',initialSales:360,minFrequency:8,maxFrequency:18,frequencyUnit:'seconds',minAmountCents:4700,maxAmountCents:49700,targetTicketCents:19700,memoryLimit:1200,
  peakStartHour:19,peakEndHour:22,peakMultiplier:1.8,peakDurationMinutes:90,graphSpeed:1,awardMultiplier:1,approvalRate:82,declinedRate:8,pendingRate:7,refundRate:2,chargebackRate:1,
  methods:weighted(['Pix','Cartão de crédito','Boleto','Assinatura'] as const,[50,35,10,5]),
  currencies:weighted(['BRL','USD','EUR'] as const,[80,10,10]),
  countries:weighted(Object.keys(demoCountries) as DemoCountryCode[],[55,12,4,7,5,3,3,3,2,2,2,2]),
- useProductPrices:true,adaptive:true,sessionGoalCents:3_000_000
+ useProductPrices:true,adaptive:true,sessionGoalCents:3_000_000,pushNotifications:defaultModePushConfig()
 }
-const config=(changes:Partial<DemoConfig>):DemoConfig=>({...baseConfig,...changes,methods:changes.methods??baseConfig.methods.map(item=>({...item})),currencies:changes.currencies??baseConfig.currencies.map(item=>({...item})),countries:changes.countries??baseConfig.countries.map(item=>({...item}))})
+const config=(changes:Partial<DemoConfig>):DemoConfig=>({...baseConfig,...changes,methods:changes.methods??baseConfig.methods.map(item=>({...item})),currencies:changes.currencies??baseConfig.currencies.map(item=>({...item})),countries:changes.countries??baseConfig.countries.map(item=>({...item})),pushNotifications:{...baseConfig.pushNotifications,...changes.pushNotifications,methods:changes.pushNotifications?.methods??[...baseConfig.pushNotifications.methods],deviceIds:changes.pushNotifications?.deviceIds??[]}})
 export const demoPresets:Record<Exclude<DemoConfig['preset'],'custom'>,DemoConfig>={
  light:config({preset:'light',initialSales:180,minFrequency:25,maxFrequency:55,minAmountCents:4700,maxAmountCents:29700,targetTicketCents:9700,peakMultiplier:1.25,graphSpeed:.7}),
  normal:config({preset:'normal'}),
@@ -96,7 +100,7 @@ function transaction(session:Pick<DemoSession,'sessionId'|'products'|'config'|'s
  const amountCents=Math.max(settings.minAmountCents,Math.min(settings.maxAmountCents,reference)),discountCents=random()<.12?Math.round(amountCents*(random()<.7?.1:.15)):0,grossAmountCents=amountCents+discountCents
  const feeRate=method==='Pix'?.0099:method==='Boleto'?.0179:method==='Assinatura'?.0299:.0399,feeCents=status==='approved'?Math.round(amountCents*feeRate):0
  const createdAt=at.toISOString(),id=`demo-${session.sessionId.slice(-8)}-${at.getTime().toString(36)}-${index}`,customerId=`demo-customer-${seedFromSession(`${customer[0]}:${countryCode}`).toString(36)}`
- return{transactionId:id,demo:true,eventId:`event-${id}`,ownerId:undefined,productId:product.fallback?null:product.id,productName:product.name,productPriceCents:product.priceCents,buyerName:customer[0],customerId,customerDisplayName:customer[0],customerEmail:`cliente${String(seedFromSession(customerId)%1000).padStart(3,'0')}@example.com`,countryCode,countryName:country.name,cityName:customer[2]||country.city,paymentMethod:method,status,amountCents,grossAmountCents,discountCents,feeCents,netAmountCents:status==='approved'?amountCents-feeCents:0,commissionCents:status==='approved'?Math.round(amountCents*.6):0,currency,occurredAt:createdAt,createdAt,approvedAt:status==='approved'?createdAt:undefined,updatedAt:createdAt}
+ return{transactionId:id,demo:true,source:'mode',eventId:`event-${id}`,ownerId:undefined,productId:product.fallback?null:product.id,productName:product.name,productPriceCents:product.priceCents,buyerName:customer[0],customerId,customerDisplayName:customer[0],customerEmail:`cliente${String(seedFromSession(customerId)%1000).padStart(3,'0')}@example.com`,countryCode,countryName:country.name,cityName:customer[2]||country.city,paymentMethod:method,status,amountCents,grossAmountCents,discountCents,feeCents,netAmountCents:status==='approved'?amountCents-feeCents:0,commissionCents:status==='approved'?Math.round(amountCents*.6):0,currency,occurredAt:createdAt,createdAt,approvedAt:status==='approved'?createdAt:undefined,updatedAt:createdAt}
 }
 export function createHistory(session:Pick<DemoSession,'sessionId'|'seed'|'products'|'config'>,now=new Date()){
  const random=createSeededGenerator(session.seed),ledger:DemoTransaction[]=[],count=Math.max(30,Math.min(session.config.initialSales,session.config.memoryLimit))

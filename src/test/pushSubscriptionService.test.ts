@@ -121,4 +121,12 @@ describe('pushSubscriptionService',()=>{
   expect(payload).toMatchObject({eventId:'manual-sequence-test-1',tag:'manual-sequence-test-1',type:'manual_notification',notificationType:'sale_approved',targetDeviceIds:['22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333'],metadata:{notificationType:'sale_approved',currency:'BRL'}})
   expect(payload).not.toHaveProperty('userId')
  })
+ it('envia evento do modo com origem, rota e idempotência preservadas',async()=>{
+  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({success:true,eventId:'mode-sale:session:event-1',sent:1,failed:0,expired:0}),{status:200,headers:{'Content-Type':'application/json'}}))
+  vi.stubGlobal('fetch',fetchMock)
+  await pushSubscriptionService.sendMode({eventId:'mode-sale:session:event-1',notificationType:'pix_paid',title:'Venda aprovada · Pix',body:'Sua comissão: R$ 60,00',currency:'BRL',target:'all',deviceIds:[]})
+  const [,request]=fetchMock.mock.calls[0] as unknown as [string,RequestInit],payload=JSON.parse(String(request.body))
+  expect(payload).toMatchObject({eventId:'mode-sale:session:event-1',tag:'mode-sale:session:event-1',type:'mode_notification',route:'/app/vendas-ao-vivo',target:'all',metadata:{source:'mode',currency:'BRL'}})
+  expect(payload).not.toHaveProperty('userId')
+ })
 })

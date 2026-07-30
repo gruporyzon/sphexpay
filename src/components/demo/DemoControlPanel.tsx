@@ -1,10 +1,11 @@
 import {useEffect,useMemo,useRef,useState} from 'react'
-import {Activity,ArrowRight,Gauge,Pause,Play,RotateCcw,Settings2,Square} from 'lucide-react'
+import {Activity,ArrowRight,Bell,Gauge,Pause,Play,RotateCcw,Settings2,Square} from 'lucide-react'
 import {useNavigate} from 'react-router-dom'
 import {demoPresets,defaultDemoConfig,validateDemoConfig} from '../../demo/demoSimulationEngine'
 import type {DemoConfig,DemoPreset} from '../../demo/types'
 import {formatCents} from '../../lib/currencyFormat'
 import {useDashboardData} from '../../providers/DashboardDataProvider'
+import {pushSubscriptionService,type PushDevice} from '../../services/pushSubscriptionService'
 
 const presetLabels:Record<DemoPreset,string>={light:'Movimento leve',normal:'Operação normal',high:'Alto volume',launch:'Lançamento',peak:'Pico de vendas',subscriptions:'Assinaturas',international:'Internacional',custom:'Personalizado'}
 const number=(value:string)=>Number.isFinite(Number(value))?Number(value):0
@@ -15,13 +16,14 @@ const speed=(value:number)=>`${value.toFixed(2).replace('.',',')}x`
 
 export function DemoControlPanel(){
  const demo=useDashboardData(),navigate=useNavigate(),configRef=useRef<HTMLDivElement>(null),noticeTimer=useRef<number|undefined>(undefined)
- const [draft,setDraft]=useState<DemoConfig>(()=>structuredClone(demo.config)),[errors,setErrors]=useState<string[]>([]),[notice,setNotice]=useState('')
+ const [draft,setDraft]=useState<DemoConfig>(()=>structuredClone(demo.config)),[errors,setErrors]=useState<string[]>([]),[notice,setNotice]=useState(''),[devices,setDevices]=useState<PushDevice[]>([])
  useEffect(()=>setDraft(structuredClone(demo.config)),[demo.config])
+ useEffect(()=>{let alive=true;void pushSubscriptionService.devices().then(value=>{if(alive)setDevices(value.filter(device=>device.enabled))});return()=>{alive=false}},[])
  useEffect(()=>()=>{if(noticeTimer.current)clearTimeout(noticeTimer.current)},[])
  const announce=(message:string)=>{setNotice(message);if(noticeTimer.current)clearTimeout(noticeTimer.current);noticeTimer.current=window.setTimeout(()=>setNotice(''),2200)}
  const frequencyHour=useMemo(()=>{const multiplier=draft.frequencyUnit==='minutes'?60:1,min=Math.max(1,draft.minFrequency*multiplier),max=Math.max(min,draft.maxFrequency*multiplier);return{min:Math.round(3600/max),max:Math.round(3600/min)}},[draft])
  const set=<K extends keyof DemoConfig>(key:K,value:DemoConfig[K])=>setDraft(current=>({...current,[key]:value,preset:key==='preset'?value:'custom'} as DemoConfig))
- const choosePreset=(preset:DemoPreset)=>{if(preset==='custom'){set('preset','custom');return}setDraft(structuredClone(demoPresets[preset]));setErrors([])}
+ const choosePreset=(preset:DemoPreset)=>{if(preset==='custom'){set('preset','custom');return}setDraft(current=>({...structuredClone(demoPresets[preset]),pushNotifications:structuredClone(current.pushNotifications)}));setErrors([])}
  const apply=()=>{const failures=validateDemoConfig(draft);setErrors(failures);if(failures.length)return;demo.applyConfig(draft);announce('Configurações aplicadas.')}
  const restore=()=>{setDraft(defaultDemoConfig());setErrors([])}
  const cancel=()=>{setDraft(structuredClone(demo.config));setErrors([])}
@@ -32,6 +34,7 @@ export function DemoControlPanel(){
  const restart=()=>{demo.restart();announce('Sessão reiniciada.')}
  const changeSpeed=(direction:-1|1)=>{const next=Math.min(3,Math.max(.25,Number((demo.intensity+direction*.25).toFixed(2))));demo.adjustIntensity(direction);announce(`Velocidade alterada para ${speed(next)}.`)}
  const updateWeight=<K extends 'methods'|'currencies'|'countries'>(key:K,index:number,field:'enabled'|'weight',value:boolean|number)=>setDraft(current=>({...current,preset:'custom',[key]:current[key].map((item,itemIndex)=>itemIndex===index?{...item,[field]:value}:item)}))
+ const setPush=<K extends keyof DemoConfig['pushNotifications']>(key:K,value:DemoConfig['pushNotifications'][K])=>setDraft(current=>({...current,preset:'custom',pushNotifications:{...current.pushNotifications,[key]:value}}))
  if(demo.loadingPermission)return <div className="mode-access-state" role="status">Validando acesso administrativo...</div>
  if(!demo.allowed)return null
  const status=demo.paused?'Pausado':demo.active?'Ativo':'Inativo'
@@ -71,6 +74,20 @@ export function DemoControlPanel(){
     <details><summary>Resultados</summary><div className="demo-config-grid">{([['approvalRate','Aprovação'],['declinedRate','Recusa'],['pendingRate','Pendência'],['refundRate','Reembolso'],['chargebackRate','Chargeback']] as const).map(([key,label])=><Field label={`${label} (%)`} key={key}><input type="number" min="0" max="100" value={draft[key]} onChange={event=>set(key,number(event.target.value))}/></Field>)}</div></details>
     <details><summary>Premiações</summary><div className="demo-config-grid"><Field label="Meta da sessão"><select value={draft.sessionGoalCents} onChange={event=>set('sessionGoalCents',number(event.target.value))}><option value="1000000">R$ 10.000,00</option><option value="3000000">R$ 30.000,00</option><option value="10000000">R$ 100.000,00</option></select></Field><Field label="Ritmo das premiações"><input type="number" min=".25" max="3" step=".25" value={draft.awardMultiplier} onChange={event=>set('awardMultiplier',number(event.target.value))}/></Field></div></details>
     <details><summary>Automação</summary><div className="demo-config-grid"><Field label="Início do pico"><input type="number" min="0" max="23" value={draft.peakStartHour} onChange={event=>set('peakStartHour',number(event.target.value))}/></Field><Field label="Fim do pico"><input type="number" min="0" max="23" value={draft.peakEndHour} onChange={event=>set('peakEndHour',number(event.target.value))}/></Field><Field label="Multiplicador do pico"><input type="number" min="1" max="3" step=".1" value={draft.peakMultiplier} onChange={event=>set('peakMultiplier',number(event.target.value))}/></Field><label className="demo-config-check"><input type="checkbox" checked={draft.adaptive} onChange={event=>set('adaptive',event.target.checked)}/><span><b>Automação inteligente</b><small>Ajusta o ritmo gradualmente para evitar repetições.</small></span></label><label className="demo-config-check"><input type="checkbox" checked={draft.useProductPrices} onChange={event=>set('useProductPrices',event.target.checked)}/><span><b>Usar preços cadastrados</b><small>Somente como referência de leitura.</small></span></label></div></details>
+    <details open><summary>Notificações da operação</summary><div className="mode-push-settings">
+     <label className="demo-config-check"><input type="checkbox" checked={draft.pushNotifications.enabled} onChange={event=>setPush('enabled',event.target.checked)}/><span><b>Notificações automáticas</b><small>Envia somente novas vendas aprovadas produzidas por esta operação.</small></span></label>
+     <div className="demo-config-grid">
+      <Field label="Enviar para"><select value={draft.pushNotifications.destination} onChange={event=>setPush('destination',event.target.value as DemoConfig['pushNotifications']['destination'])}><option value="all">Todos os meus dispositivos</option><option value="current">Este dispositivo</option><option value="selected">Dispositivos selecionados</option></select></Field>
+      <Field label="Frequência das notificações"><select value={draft.pushNotifications.frequency} onChange={event=>setPush('frequency',event.target.value as DemoConfig['pushNotifications']['frequency'])}><option value="each">Cada venda</option><option value="5s">No máximo uma a cada 5 segundos</option><option value="15s">No máximo uma a cada 15 segundos</option><option value="60s">No máximo uma por minuto</option><option value="summary">Resumo por período</option></select></Field>
+      <Field label="Limite por sessão"><input type="number" min="1" max="500" value={draft.pushNotifications.maxPerSession} onChange={event=>setPush('maxPerSession',Math.min(500,Math.max(1,number(event.target.value))))}/></Field>
+     </div>
+     <div className="mode-push-methods" aria-label="Tipos de vendas aprovadas">{draft.methods.map(item=><label key={item.id}><input type="checkbox" checked={draft.pushNotifications.methods.includes(item.id)} onChange={event=>setPush('methods',event.target.checked?[...draft.pushNotifications.methods,item.id]:draft.pushNotifications.methods.filter(method=>method!==item.id))}/><span>{item.id}</span></label>)}</div>
+     {(draft.pushNotifications.destination==='current'||draft.pushNotifications.destination==='selected')&&<div className="mode-push-devices">{devices.map(device=><label key={device.deviceId}><input type={draft.pushNotifications.destination==='current'?'radio':'checkbox'} name="mode-push-device" checked={draft.pushNotifications.deviceIds.includes(device.deviceId)} onChange={event=>setPush('deviceIds',draft.pushNotifications.destination==='current'?[device.deviceId]:event.target.checked?[...draft.pushNotifications.deviceIds,device.deviceId]:draft.pushNotifications.deviceIds.filter(id=>id!==device.deviceId))}/><span><b>{device.name}</b><small>{device.platform} · {device.browser}</small></span></label>)}</div>}
+     <label className="demo-config-check"><input type="checkbox" checked={draft.pushNotifications.vary} onChange={event=>setPush('vary',event.target.checked)}/><span><b>Variar mensagens automaticamente</b><small>Usa variações locais curtas, sem chamar IA a cada venda.</small></span></label>
+     <div className="mode-push-status" role="status" aria-live="polite"><Bell/><div><b>{devices.length===0?'Nenhum dispositivo conectado':demo.paused?'Notificações pausadas':draft.pushNotifications.enabled?'Notificações ativas':'Notificações desativadas'}</b><small>{devices.length===0?'O modo continua funcionando normalmente.':demo.paused?'Operação pausada. Novas notificações também foram pausadas.':'As novas vendas aprovadas serão enviadas aos seus dispositivos.'}</small></div><dl><span>{demo.pushStats.attempted} tentativas</span><span>{demo.pushStats.sent} entregas</span><span>{demo.pushStats.failed} falhas</span></dl></div>
+     {draft.minFrequency<5&&draft.frequencyUnit==='seconds'&&draft.pushNotifications.frequency==='each'&&<p className="demo-adaptive-note">Um ritmo alto pode gerar muitas notificações.</p>}
+     <button type="button" className="btn" onClick={()=>navigate('/app/configuracoes?secao=Notificações')}><ArrowRight/> Abrir configurações de notificações</button>
+    </div></details>
     {draft.adaptive&&<p className="demo-adaptive-note">O ritmo será ajustado gradualmente conforme o horário e a intensidade escolhida.</p>}{errors.length>0&&<div className="demo-config-errors" role="alert">{errors.map(error=><p key={error}>{error}</p>)}</div>}
    </div>
    <footer><button className="btn" onClick={restore}><RotateCcw/> Restaurar padrão</button><button className="btn" onClick={cancel}>Cancelar</button><button className="btn btn-primary" onClick={apply}>Aplicar</button></footer>
