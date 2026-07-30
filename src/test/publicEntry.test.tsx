@@ -14,14 +14,17 @@ describe('entrada pública SphexPay',()=>{
  it('renderiza a narrativa pública completa com apenas um título principal',()=>{
   const view=renderLanding()
   expect(screen.getAllByRole('heading',{level:1})).toHaveLength(1)
-  expect(screen.getByRole('heading',{name:/Venda, receba e escale/i})).toBeInTheDocument()
+  expect(screen.getByRole('heading',{name:/Sua operação no ritmo/i})).toBeInTheDocument()
   expect(view.container.querySelector('#plataforma')).toBeInTheDocument()
   expect(view.container.querySelector('#recursos')).toBeInTheDocument()
   expect(view.container.querySelector('#seguranca')).toBeInTheDocument()
   expect(view.container.querySelector('#premiacoes')).toBeInTheDocument()
   expect(view.container.querySelector('#campeonato')).toBeInTheDocument()
+  expect(view.container.querySelector('#notificacoes')).toBeInTheDocument()
   expect(view.container.querySelector('#ajuda')).toBeInTheDocument()
   expect(screen.getByText('Sphex 5M+')).toBeInTheDocument()
+  expect(view.container.querySelector('.public-phone')).toBeInTheDocument()
+  expect(screen.getByText('Venda aprovada com sucesso')).toBeInTheDocument()
  })
  it('conecta login, cadastro e CTA ao fluxo real e adapta a sessão existente',()=>{
   const view=renderLanding()
@@ -51,14 +54,15 @@ describe('entrada pública SphexPay',()=>{
  })
  it('apresenta gráfico contextual e feed de Vendas ao Vivo sem esqueletos',async()=>{
   const {container}=renderLanding()
-  expect(screen.getAllByRole('img',{name:/Gráfico ilustrativo de resultado/i}).length).toBeGreaterThanOrEqual(2)
+  expect(screen.getAllByRole('img',{name:/Gráfico ilustrativo de resultado/i}).length).toBeGreaterThanOrEqual(1)
+  expect(screen.getByRole('img',{name:/Gráfico ilustrativo de performance/i})).toBeInTheDocument()
   expect(screen.getByRole('heading',{name:/Veja sua operação ganhar alcance/i})).toBeInTheDocument()
   expect(screen.getAllByText('Eventos recentes').length).toBeGreaterThan(0)
   expect((await screen.findAllByRole('img',{name:/Mapa mundial do módulo Vendas ao Vivo/i},{timeout:10000})).length).toBeGreaterThan(0)
   expect(container.querySelector('.public-map-countries')).toHaveAttribute('d',expect.stringMatching(/^M/))
   expect(container.querySelector('.live-public-visual')).not.toBeInTheDocument()
  })
- it.each([320,360,375,390,393,414,430])('mantém hero e mockup sem overflow no viewport mobile de %i px',width=>{
+ it.each([320,360,375,390,393,412,414,430])('mantém hero e mockup sem overflow no viewport mobile de %i px',width=>{
   Object.defineProperty(window,'innerWidth',{configurable:true,value:width})
   const {container}=renderLanding(),hero=container.querySelector('.landing-hero') as HTMLElement,mockup=container.querySelector('.landing-hero-visual') as HTMLElement
   expect(hero).toBeInTheDocument();expect(mockup).toBeInTheDocument()
