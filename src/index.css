@@ -377,6 +377,18 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .dashboard-realtime>span{align-self:end}
  .dashboard-realtime>small{grid-column:2;align-self:start;min-width:0;white-space:normal}
  .dashboard-realtime>.icon-btn{grid-column:3;grid-row:1/3;width:44px;height:44px}
+ .dashboard-page .dashboard-filter-bar{display:grid;grid-template-columns:minmax(112px,.8fr) minmax(0,1.2fr);align-items:start;gap:12px;padding:16px;border-radius:16px}
+ .dashboard-page .dashboard-filter-bar>*{width:100%;min-width:0}
+ .dashboard-page .dashboard-period-control,.dashboard-page .dashboard-period-control>label,.dashboard-page .dashboard-currency-selector{width:100%;min-width:0}
+ .dashboard-page .dashboard-period-control>label,.dashboard-page .dashboard-currency-selector{grid-template-columns:20px minmax(0,1fr);gap:7px 8px;font-size:12px;line-height:1.25}
+ .dashboard-page .dashboard-period-control>label>svg,.dashboard-page .dashboard-currency-selector>svg{width:20px;height:20px}
+ .dashboard-page .dashboard-period-control select,.dashboard-page .dashboard-currency-selector select,.dashboard-page .dashboard-custom-dates input{width:100%;min-height:50px;font-size:16px}
+ .dashboard-page .dashboard-custom-dates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+ .dashboard-page .dashboard-realtime{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr) 44px;margin:0;padding-top:2px;gap:2px 7px;font-size:14px;line-height:1.25}
+ .dashboard-page .dashboard-realtime>i{width:7px;height:7px}
+ .dashboard-page .dashboard-realtime>span{align-self:end;font-size:14px}
+ .dashboard-page .dashboard-realtime>small{grid-column:2;align-self:start;min-width:0;white-space:normal}
+ .dashboard-page .dashboard-realtime>.icon-btn{grid-column:3;grid-row:1/3;width:44px;height:44px}
  .dashboard-metrics{grid-template-columns:1fr;gap:11px}
  .dashboard-metrics-compact .metric-card,.dashboard-metrics-compact .metric-card:first-child,.dashboard-metrics-compact .metric-card:nth-child(2){grid-column:1/-1;min-width:0}
  .metric-value,.metric-card-featured .metric-value{font-size:clamp(1.15rem,7vw,1.55rem)}
@@ -495,6 +507,8 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .competition-section{width:100%;min-width:0;max-width:100%;padding:20px 16px}
 }
 @media(max-width:359px){
+ .dashboard-page .dashboard-filter-bar{grid-template-columns:minmax(0,1fr);gap:12px}
+ .dashboard-page .dashboard-realtime{grid-column:1}
  .overview-slide{min-height:610px;padding-inline:15px}
  .overview-copy h2{font-size:clamp(1.5rem,8vw,1.8rem)}
  .gateway-art,.iphone-art,.overview-slide.competition .iphone-art{height:205px}
@@ -524,6 +538,27 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   width:100%;
   height:60px;
   min-height:60px;
+  padding:0 42px 0 14px;
+  font:inherit;
+  font-size:16px;
+  line-height:1.3;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  overflow:visible;
+  -webkit-appearance:auto;
+  appearance:auto;
+ }
+ .dashboard-page .dashboard-filter-bar .dashboard-period-control>label,
+ .dashboard-page .dashboard-filter-bar .dashboard-currency-selector{
+  align-content:start;
+  min-height:0;
+ }
+ .dashboard-page .dashboard-filter-bar .dashboard-period-control select,
+ .dashboard-page .dashboard-filter-bar .dashboard-currency-selector select{
+  box-sizing:border-box;
+  width:100%;
+  height:50px;
+  min-height:50px;
   padding:0 42px 0 14px;
   font:inherit;
   font-size:16px;
