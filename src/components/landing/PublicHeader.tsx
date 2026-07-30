@@ -22,8 +22,15 @@ export function PublicHeader(){
  },[open])
  useEffect(()=>{
   const sections=navigation.map(([id])=>document.getElementById(id)).filter((item):item is HTMLElement=>Boolean(item))
-  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)setActive(entry.target.id)}),{rootMargin:'-18% 0px -68%',threshold:0})
-  sections.forEach(section=>observer.observe(section));return()=>observer.disconnect()
+  let observer:IntersectionObserver|null=null
+  const observe=()=>{
+   observer?.disconnect()
+   const headerHeight=Math.ceil(headerRef.current?.getBoundingClientRect().height??72)
+   observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting)setActive(entry.target.id)}),{rootMargin:`-${headerHeight+16}px 0px -55% 0px`,threshold:0})
+   sections.forEach(section=>observer?.observe(section))
+  }
+  observe();addEventListener('resize',observe,{passive:true})
+  return()=>{removeEventListener('resize',observe);observer?.disconnect()}
  },[])
  useEffect(()=>{
   document.body.style.overflow=open&&innerWidth<=900?'hidden':''
@@ -34,7 +41,7 @@ export function PublicHeader(){
  const close=()=>setOpen(false)
  return <header ref={headerRef} className={`public-header ${scrolled?'scrolled':''}`}>
   <Link to="/" className="public-logo" aria-label="SphexPay — página inicial"><SphexPayLogo showName priority/></Link>
-  <nav id="public-navigation" className={open?'open':''} aria-label="Navegação principal">{navigation.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined} onClick={close}>{label}</a>)}<div className="public-mobile-actions"><Link to="/entrar" onClick={close}>Entrar</Link><Link className="public-primary" to={destination} onClick={close}>{user?'Acessar painel':'Criar conta'}</Link></div></nav>
+  <nav id="public-navigation" className={open?'open':''} aria-label="Navegação principal">{navigation.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined} onClick={()=>{setActive(id);close()}}>{label}</a>)}<div className="public-mobile-actions"><Link to="/entrar" onClick={close}>Entrar</Link><Link className="public-primary" to={destination} onClick={close}>{user?'Acessar painel':'Criar conta'}</Link></div></nav>
   <div className="public-actions"><Link to="/entrar">Entrar</Link><Link className="public-primary" to={destination}>{user?'Acessar painel':'Criar conta'}</Link></div>
   <button ref={menuRef} className="public-menu" onClick={()=>setOpen(value=>!value)} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="public-navigation">{open?<X/>:<Menu/>}</button>
  </header>

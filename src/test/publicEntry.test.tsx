@@ -65,6 +65,16 @@ describe('entrada pública SphexPay',()=>{
   expect(screen.getByRole('button',{name:'Abrir menu'})).toHaveFocus()
   expect(document.body.style.overflow).toBe('')
  })
+ it('mantém todos os destinos da navbar ativos e associados a seções reais',()=>{
+  const {container}=renderLanding(),nav=screen.getByRole('navigation',{name:'Navegação principal'})
+  for(const [label,id] of [['Recursos','recursos'],['Soluções','solucoes'],['Segurança','seguranca'],['Premiações','premiacoes'],['Campeonato','campeonato'],['Dúvidas','ajuda']] as const){
+   const link=within(nav).getByRole('link',{name:label})
+   expect(link).toHaveAttribute('href',`#${id}`)
+   expect(container.querySelector(`#${id}`)).toBeInTheDocument()
+   fireEvent.click(link)
+   expect(link).toHaveAttribute('aria-current','location')
+  }
+ })
  it('troca a prova visual por tabs reais, usa mapa geográfico e aceita navegação por setas',async()=>{
   const user=userEvent.setup();const view=renderLanding()
   await user.click(screen.getByRole('tab',{name:'Vendas ao Vivo'}))
@@ -98,6 +108,7 @@ describe('entrada pública SphexPay',()=>{
   expect(button).toHaveAttribute('aria-expanded','false');await user.click(button)
   expect(button).toHaveAttribute('aria-expanded','true')
   expect(screen.getByText(/Esqueci minha senha/)).toBeVisible()
+  expect(screen.getByRole('heading',{name:'Seu próximo nível começa com uma operação melhor.'})).toHaveClass('public-heading--on-dark')
  })
  it('apresenta a competição confirmada no código como provisória',()=>{
   renderLanding();const section=screen.getByRole('heading',{name:'Rumo ao iPhone 17 Pro Max'}).closest('section')!
