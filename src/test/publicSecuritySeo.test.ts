@@ -65,6 +65,7 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(final).toContain('--public-header-height:calc(64px + env(safe-area-inset-top))')
   expect(final).toContain('.landing-v2 .faq-section{min-height:0;height:auto')
   expect(final).toContain('.landing-v2 .payment-section{min-height:0')
+  expect(final).not.toContain('.landing-v2 .security-section')
  })
  it('força contraste claro nas seções escuras e no CTA final',()=>{
   const final=css.slice(css.indexOf('/* Public navigation and section rhythm — authoritative final layer. */'))

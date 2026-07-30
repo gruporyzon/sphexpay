@@ -5,7 +5,7 @@ import { SphexPayLogo } from '../branding/SphexPayLogo'
 import { useAuth } from '../../hooks/useAuth'
 
 const navigation=[
- ['recursos','Recursos'],['solucoes','Soluções'],['seguranca','Segurança'],
+ ['recursos','Recursos'],['solucoes','Soluções'],
  ['premiacoes','Premiações'],['campeonato','Campeonato'],['ajuda','Dúvidas']
 ] as const
 

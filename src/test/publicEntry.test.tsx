@@ -17,7 +17,8 @@ describe('entrada pública SphexPay',()=>{
   expect(screen.getByRole('heading',{name:/Pagamentos em movimento.*Resultados sob controle/i})).toBeInTheDocument()
   expect(view.container.querySelector('#plataforma')).toBeInTheDocument()
   expect(view.container.querySelector('#recursos')).toBeInTheDocument()
-  expect(view.container.querySelector('#seguranca')).toBeInTheDocument()
+  expect(view.container.querySelector('#seguranca')).not.toBeInTheDocument()
+  expect(screen.queryByText('SEGURANÇA DESDE O ACESSO')).not.toBeInTheDocument()
   expect(view.container.querySelector('#premiacoes')).toBeInTheDocument()
   expect(view.container.querySelector('#campeonato')).toBeInTheDocument()
   expect(view.container.querySelector('#notificacoes')).toBeInTheDocument()
@@ -67,13 +68,14 @@ describe('entrada pública SphexPay',()=>{
  })
  it('mantém todos os destinos da navbar ativos e associados a seções reais',()=>{
   const {container}=renderLanding(),nav=screen.getByRole('navigation',{name:'Navegação principal'})
-  for(const [label,id] of [['Recursos','recursos'],['Soluções','solucoes'],['Segurança','seguranca'],['Premiações','premiacoes'],['Campeonato','campeonato'],['Dúvidas','ajuda']] as const){
+  for(const [label,id] of [['Recursos','recursos'],['Soluções','solucoes'],['Premiações','premiacoes'],['Campeonato','campeonato'],['Dúvidas','ajuda']] as const){
    const link=within(nav).getByRole('link',{name:label})
    expect(link).toHaveAttribute('href',`#${id}`)
    expect(container.querySelector(`#${id}`)).toBeInTheDocument()
    fireEvent.click(link)
    expect(link).toHaveAttribute('aria-current','location')
   }
+  expect(within(nav).queryByRole('link',{name:'Segurança'})).not.toBeInTheDocument()
  })
  it('troca a prova visual por tabs reais, usa mapa geográfico e aceita navegação por setas',async()=>{
   const user=userEvent.setup();const view=renderLanding()
