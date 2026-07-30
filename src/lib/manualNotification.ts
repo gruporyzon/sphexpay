@@ -1,7 +1,8 @@
 export type ManualNotificationType='sale_approved'|'sale_pending'|'pix_generated'|'pix_paid'|'credit_card_approved'|'credit_card_refused'|'boleto_generated'|'boleto_paid'|'subscription_renewed'|'withdrawal_completed'|'refund_done'|'chargeback_received'|'custom'
 export type ManualCurrency='BRL'|'USD'|'EUR'
 export type ManualValueKind='commission'|'sale'|'received'|'none'
-export type NotificationIntervalUnit='seconds'|'minutes'|'hours'
+export type IntervalUnit='seconds'|'minutes'|'hours'
+export type NotificationIntervalUnit=IntervalUnit
 export interface ManualNotificationDraft{notificationType:ManualNotificationType;title:string;body:string;value:string;valueKind:ManualValueKind;currency:ManualCurrency;customer:string;method:string;route:string;icon:string;showTime:boolean}
 type Template={label:string;title:string;body:string}
 export const manualNotificationTemplates:Record<ManualNotificationType,Template>={
@@ -33,7 +34,14 @@ export const normalizeBrazilianAmount=(raw:string)=>{
 }
 export const amountToMinor=(raw:string)=>{const value=Number(raw.replace(/\./g,'').replace(',','.'));return Number.isFinite(value)&&value>=0?Math.round(value*100):null}
 export const applyAiSuggestion=<T extends ManualNotificationDraft>(draft:T,suggestion:{title:string;body:string}):T=>({...draft,title:suggestion.title.slice(0,60),body:suggestion.body.slice(0,160)})
-export const intervalToMilliseconds=(value:number,unit:NotificationIntervalUnit)=>value*({seconds:1000,minutes:60000,hours:3600000}[unit])
+export const intervalToMilliseconds=(value:number,unit:IntervalUnit)=>{
+ if(!Number.isFinite(value)||!Number.isInteger(value)||value<=0)throw new RangeError('INVALID_INTERVAL_VALUE')
+ const multiplier:Record<IntervalUnit,number>={seconds:1000,minutes:60*1000,hours:60*60*1000}
+ if(!Object.hasOwn(multiplier,unit))throw new RangeError('INVALID_INTERVAL_UNIT')
+ const milliseconds=value*multiplier[unit]
+ if(!Number.isSafeInteger(milliseconds))throw new RangeError('INTERVAL_TOO_LARGE')
+ return milliseconds
+}
 export const intervalLimits:Record<NotificationIntervalUnit,{min:number;max:number}>={seconds:{min:5,max:3600},minutes:{min:1,max:1440},hours:{min:1,max:168}}
 export function validateSequence(quantity:number,interval:number,unit:NotificationIntervalUnit){
  if(!Number.isInteger(quantity)||quantity<1||quantity>100)return'A quantidade deve ser um número inteiro entre 1 e 100.'

@@ -65,8 +65,13 @@ describe('gerador manual de notificações',()=>{
 
  it('converte segundos, minutos e horas em um único helper',()=>{
   expect(intervalToMilliseconds(5,'seconds')).toBe(5000)
+  expect(intervalToMilliseconds(1,'minutes')).toBe(60000)
   expect(intervalToMilliseconds(2,'minutes')).toBe(120000)
   expect(intervalToMilliseconds(1,'hours')).toBe(3600000)
+  expect(()=>intervalToMilliseconds(0,'seconds')).toThrow('INVALID_INTERVAL_VALUE')
+  expect(()=>intervalToMilliseconds(-1,'seconds')).toThrow('INVALID_INTERVAL_VALUE')
+  expect(()=>intervalToMilliseconds(Number.NaN,'seconds')).toThrow('INVALID_INTERVAL_VALUE')
+  expect(()=>intervalToMilliseconds(1,'days' as 'seconds')).toThrow('INVALID_INTERVAL_UNIT')
  })
 
  it('valida quantidade e limites seguros de intervalo',()=>{

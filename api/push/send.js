@@ -19,7 +19,7 @@ export default async function handler(request,response){
  const client=createClient(supabaseUrl(),serviceRoleKey())
  const {data:{user}}=await client.auth.getUser(token)
  if(!user)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
- if(!rateLimit(user.id))return response.status(429).json({success:false,code:'RATE_LIMITED',message:'Limite de envios atingido. Aguarde um minuto.'})
+ if(!rateLimit(user.id)){response.setHeader?.('Retry-After','60');return response.status(429).json({success:false,code:'RATE_LIMITED',message:'Limite de envios atingido. Aguarde um minuto.'})}
  let input
  try{input=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}
  catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})}

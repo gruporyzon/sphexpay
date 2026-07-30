@@ -6,6 +6,7 @@ import {
  localNotificationVariations,manualNotificationTemplates,normalizeBrazilianAmount,notificationContent,validateSequence,valueKindLabels,
  type ManualCurrency,type ManualNotificationDraft,type ManualNotificationType,type ManualValueKind,type NotificationIntervalUnit
 } from '../../lib/manualNotification'
+import {ManualNotificationScheduler,type ManualSequenceSnapshot,type ManualSequenceStatus} from '../../lib/manualNotificationScheduler'
 import {supabase} from '../../lib/supabase'
 import {browserPermissionService,type BrowserNotificationStatus} from '../../services/browserPermissionService'
 import {pushSubscriptionService,type PushDevice,type PushSendResult} from '../../services/pushSubscriptionService'
@@ -19,8 +20,8 @@ type AiResult={suggestions:AiSuggestion[];recommendedIndex:number}
 type AiState='idle'|'loading'|'ready'|'error'|'unavailable'
 type TargetMode='current'|'all'|'choose'
 type SequenceMode='now'|'sequence'
-type SequenceStatus='idle'|'validating'|'scheduled'|'running'|'paused'|'cancelling'|'completed'|'failed'
-type DeliveryStatus='Entregue'|'Parcial'|'Falhou'|'Programada'|'Em andamento'|'Pausada'|'Concluída'|'Cancelada'
+type SequenceStatus=ManualSequenceStatus
+type DeliveryStatus='Entregue'|'Parcial'|'Falhou'|'Programada'|'Em andamento'|'Pausada'|'Concluída'|'Cancelada'|'Interrompida'
 type DeliveryHistory={
  id:string;type:ManualNotificationType;title:string;body:string;createdAt:string;
  sent:number;failed:number;expired:number;status:DeliveryStatus;destination:string;
@@ -80,12 +81,11 @@ export function NotificationDelivery(){
  const [historyPeriod,setHistoryPeriod]=useState('30')
  const [clock,setClock]=useState(Date.now())
  const aiAbort=useRef<AbortController|null>(null)
- const timerRef=useRef<number|null>(null)
+ const schedulerRef=useRef<ManualNotificationScheduler|null>(null)
  const mountedRef=useRef(true)
  const sequenceLockRef=useRef(false)
  const cancelledIdsRef=useRef(new Set<string>())
  const progressRef=useRef(progress)
- const executeNextRef=useRef<()=>Promise<void>>(async()=>undefined)
  const sequenceConfigRef=useRef<{mode:TargetMode;ids:string[];intervalMs:number;variations:Array<{title:string;body:string}>;base:{title:string;body:string};variationIndex:number}>({mode:'all',ids:[],intervalMs:5000,variations:[],base:{title:'',body:''},variationIndex:-1})
 
  progressRef.current=progress
@@ -95,9 +95,9 @@ export function NotificationDelivery(){
  const formatted=useMemo(()=>formatManualNotification(draft),[draft])
  const effectiveQuantity=mode==='now'?1:quantity
  const intervalError=mode==='sequence'?validateSequence(quantity,interval,unit):''
- const intervalMs=mode==='sequence'?intervalToMilliseconds(interval,unit):0
+ const intervalMs=mode==='sequence'&&!intervalError?intervalToMilliseconds(interval,unit):0
  const estimatedDuration=intervalMs*Math.max(0,effectiveQuantity-1)
- const sequenceActive=['validating','scheduled','running','paused','cancelling'].includes(progress.status)
+ const sequenceActive=['validating','preparing','running','paused','cancelling'].includes(progress.status)
 
  const refresh=useCallback(async()=>{
   setLoading(true)
@@ -118,11 +118,11 @@ export function NotificationDelivery(){
   })()
   return()=>{
    mountedRef.current=false;aiAbort.current?.abort()
-   if(timerRef.current)window.clearTimeout(timerRef.current)
+   schedulerRef.current?.interrupt()
    const current=progressRef.current
-   if(current.id&&['scheduled','running','paused','validating'].includes(current.status)){
+   if(current.id&&['preparing','running','paused','validating'].includes(current.status)){
     cancelledIds.add(current.id)
-    const stored=readHistory().map(item=>item.id===current.id?{...item,status:'Cancelada' as const,cancelledAt:new Date().toISOString()}:item)
+    const stored=readHistory().map(item=>item.id===current.id?{...item,status:'Interrompida' as const,finishedAt:new Date().toISOString()}:item)
     saveHistory(stored)
    }
   }
@@ -189,43 +189,23 @@ export function NotificationDelivery(){
   finally{aiAbort.current=null}
  }
 
- const resolveTargets=async()=>{
-  const registered=(await pushSubscriptionService.devices()).filter(device=>device.enabled&&(device.status==='Conectado'||device.status==='Ativo'))
-  const config=sequenceConfigRef.current
-  if(config.mode==='all')return registered.map(device=>device.deviceId)
-  if(config.mode==='current')return registered.filter(device=>device.isCurrentDevice).map(device=>device.deviceId)
-  const allowed=new Set(registered.map(device=>device.deviceId));return config.ids.filter(id=>allowed.has(id))
- }
- const sendAttempt=async(title:string,body:string):Promise<PushSendResult>=>{
-  const deviceIds=await resolveTargets()
+ const sendAttempt=async(title:string,body:string,eventId:string):Promise<PushSendResult>=>{
+  const deviceIds=sequenceConfigRef.current.ids
   if(!deviceIds.length)return{ok:false,sent:0,failed:1,expired:0,code:'NO_ACTIVE_SUBSCRIPTIONS',message:'Nenhum dispositivo ativo foi encontrado.'}
-  return pushSubscriptionService.sendManual({notificationType:draft.notificationType,title,body,route:draft.route,icon:draft.icon,deviceIds,currency:draft.currency})
+  return pushSubscriptionService.sendManual({eventId,notificationType:draft.notificationType,title,body,route:draft.route,icon:draft.icon,deviceIds,currency:draft.currency})
  }
- const scheduleNext=(delay:number)=>{
-  if(timerRef.current)window.clearTimeout(timerRef.current)
-  const nextAt=Date.now()+delay
-  setProgress(current=>({...current,status:'scheduled',nextAt}))
-  timerRef.current=window.setTimeout(()=>void executeNextRef.current(),delay)
- }
- executeNextRef.current=async()=>{
-  const current=progressRef.current
-  if(!mountedRef.current||!current.id||!['scheduled','running'].includes(current.status))return
-  setProgress(value=>({...value,status:'running',nextAt:null}))
-  const config=sequenceConfigRef.current
-  let content=config.base
-  if(config.variations.length){
-   config.variationIndex=(config.variationIndex+1)%config.variations.length
-   content=config.variations[config.variationIndex]
+ const applySchedulerSnapshot=(snapshot:ManualSequenceSnapshot,result?:{message?:string})=>{
+  const next:SequenceProgress={id:snapshot.sequenceId,status:snapshot.status,planned:snapshot.plannedCount,completed:snapshot.attemptedCount,sent:snapshot.sentCount,failed:snapshot.failedCount,expired:snapshot.expiredCount,nextAt:snapshot.nextRunAt}
+  progressRef.current=next;setProgress(next)
+  const terminal=['completed','failed','cancelled','interrupted'].includes(snapshot.status)
+  const deliveryStatus:DeliveryStatus=snapshot.status==='completed'?(snapshot.failedCount||snapshot.expiredCount?'Parcial':'Concluída'):snapshot.status==='failed'?'Falhou':snapshot.status==='paused'?'Pausada':snapshot.status==='cancelled'?'Cancelada':snapshot.status==='interrupted'?'Interrompida':'Em andamento'
+  updateHistory(snapshot.sequenceId,{completed:snapshot.attemptedCount,sent:snapshot.sentCount,failed:snapshot.failedCount,expired:snapshot.expiredCount,status:deliveryStatus,finishedAt:terminal?new Date().toISOString():undefined})
+  if(terminal){
+   sequenceLockRef.current=false
+   if(snapshot.status==='completed')setFeedback(`${snapshot.attemptedCount} processadas: ${snapshot.sentCount} entregues e ${snapshot.failedCount+snapshot.expiredCount} falharam.`)
+   else if(snapshot.status==='failed')setFeedback(result?.message||'A sequência foi interrompida por uma falha que exige ação.')
+   if(snapshot.status!=='interrupted')void refresh()
   }
-  const result=await sendAttempt(content.title,content.body)
-  if(!mountedRef.current||progressRef.current.id!==current.id||cancelledIdsRef.current.has(current.id))return
-  const paused=progressRef.current.status==='paused'
-  const completed=current.completed+1,sent=current.sent+(result.sent?1:0),failed=current.failed+(result.failed||(!result.sent?1:0)),expired=current.expired+(result.expired||0)
-  const done=completed>=current.planned,status:SequenceStatus=done?(sent?'completed':'failed'):paused?'paused':'running'
-  setProgress(value=>({...value,completed,sent,failed,expired,status,nextAt:null}))
-  updateHistory(current.id,{completed,sent,failed,expired,status:done?(sent&&(failed||expired)?'Parcial':sent?'Concluída':'Falhou'):paused?'Pausada':'Em andamento',finishedAt:done?new Date().toISOString():undefined})
-  if(done){sequenceLockRef.current=false;setFeedback(sent&&(failed||expired)?'Sequência concluída com entregas parciais.':sent?'Sequência concluída.':'A sequência não pôde ser entregue.');await refresh()}
-  else if(!paused)scheduleNext(config.intervalMs)
  }
 
  const start=async()=>{
@@ -244,27 +224,39 @@ export function NotificationDelivery(){
   if(mode==='sequence'&&varyMessages&&!variations.length){variations=localNotificationVariations(draft.notificationType,formatted.formattedValue,draft.valueKind);setFeedback('Variações automáticas ativas.')}
   const now=new Date().toISOString()
   sequenceConfigRef.current={mode:targetMode,ids:[...selectedIds],intervalMs,variations:mode==='sequence'&&varyMessages?variations:[],base:{title:formatted.title,body:formatted.body},variationIndex:-1}
-  const nextProgress:SequenceProgress={id,status:'scheduled',planned:effectiveQuantity,completed:0,sent:0,failed:0,expired:0,nextAt:Date.now()}
+  const nextProgress:SequenceProgress={id,status:'preparing',planned:effectiveQuantity,completed:0,sent:0,failed:0,expired:0,nextAt:null}
   setProgress(nextProgress);progressRef.current=nextProgress
   addHistory({id,type:draft.notificationType,title:formatted.title,body:formatted.body,createdAt:now,startedAt:now,sent:0,failed:0,expired:0,status:'Programada',destination:targetMode==='all'?'Todos os dispositivos':targetMode==='current'?'Este dispositivo':'Dispositivos escolhidos',planned:effectiveQuantity,completed:0,interval:mode==='sequence'?interval:0,unit:mode==='sequence'?unit:undefined,origin:'manual'})
-  void executeNextRef.current()
+  schedulerRef.current=new ManualNotificationScheduler({
+   sequenceId:id,plannedCount:effectiveQuantity,intervalMs,
+   attempt:async(index,eventId)=>{
+    if(!mountedRef.current||cancelledIdsRef.current.has(id))return{sent:0,failed:0,expired:0,stop:true}
+    const config=sequenceConfigRef.current
+    const content=config.variations.length?config.variations[index%config.variations.length]:config.base
+    const result=await sendAttempt(content.title,content.body,`manual-${eventId}`)
+    const stop=[401,403,429].includes(result.httpStatus||0)||['SESSION_MISSING','INVALID_ACCESS_TOKEN','UNAUTHORIZED','RATE_LIMITED'].includes(result.code||'')
+    if((result.httpStatus===404||result.httpStatus===410||result.expired)&&mountedRef.current)void refresh()
+    const expired=result.expired||0
+    const failed=Math.max(0,(result.failed||0)-expired)||(!result.ok&&!expired?1:0)
+    return{sent:(result.sent||0)+(result.duplicates||0),failed,expired,stop,message:result.httpStatus===429?'Limite de envios atingido. A sequência foi interrompida com segurança.':result.message}
+   },
+   onChange:applySchedulerSnapshot
+  })
+  schedulerRef.current.start()
  }
  const pause=()=>{
-  if(!['scheduled','running'].includes(progress.status))return
-  if(timerRef.current)window.clearTimeout(timerRef.current);timerRef.current=null
-  setProgress(current=>({...current,status:'paused',nextAt:null}));updateHistory(progress.id,{status:'Pausada'});setFeedback('Sequência pausada.')
+  schedulerRef.current?.pause();setFeedback('Sequência pausada.')
  }
  const resume=()=>{
   if(progress.status!=='paused')return
-  setFeedback('Sequência retomada.');updateHistory(progress.id,{status:'Em andamento'});scheduleNext(sequenceConfigRef.current.intervalMs)
+  schedulerRef.current?.resume();setFeedback('Sequência retomada.')
  }
  const cancel=()=>{
   if(!sequenceActive||!window.confirm('Cancelar a sequência? As notificações já enviadas serão preservadas.'))return
-  setProgress(current=>({...current,status:'cancelling',nextAt:null}))
-  if(timerRef.current)window.clearTimeout(timerRef.current);timerRef.current=null
-  cancelledIdsRef.current.add(progress.id);sequenceLockRef.current=false
+  cancelledIdsRef.current.add(progress.id)
+  schedulerRef.current?.cancel()
   updateHistory(progress.id,{status:'Cancelada',cancelledAt:new Date().toISOString()})
-  setProgress(current=>({...current,status:'idle',nextAt:null}));setFeedback('Sequência cancelada.')
+  setFeedback('Sequência cancelada.')
  }
  const reuse=(item:DeliveryHistory)=>{
   if(sequenceActive)return
@@ -300,7 +292,7 @@ export function NotificationDelivery(){
       <div className="sequence-interval"><label><span>Enviar a cada</span><input aria-label="Intervalo" aria-describedby="interval-error" disabled={sequenceActive} type="number" inputMode="numeric" min={unit==='seconds'?5:1} max={unit==='seconds'?3600:unit==='minutes'?1440:168} step="1" value={interval} onChange={event=>setIntervalValue(Number(event.target.value))}/></label><label><span>Unidade</span><select aria-label="Unidade do intervalo" disabled={sequenceActive} value={unit} onChange={event=>setUnit(event.target.value as NotificationIntervalUnit)}><option value="seconds">Segundos</option><option value="minutes">Minutos</option><option value="hours">Horas</option></select></label></div>
       {intervalError&&<p className="sequence-error" id="interval-error" role="alert">{intervalError}</p>}</>}
      <div className="sequence-summary"><b>{effectiveQuantity===1?'Uma notificação será enviada imediatamente.':`Serão enviadas ${effectiveQuantity} notificações, uma a cada ${interval} ${unitLabel}.`}</b><span>{formatEstimatedDuration(estimatedDuration)}</span>{mode==='sequence'&&<small>Mantenha esta página aberta durante a sequência.</small>}</div>
-     {progress.status!=='idle'&&<div className="sequence-progress" aria-live="polite"><div><b>{progress.completed} de {progress.planned} enviadas</b><span>{Math.max(0,progress.planned-progress.completed)} restantes · {progress.sent} com sucesso · {progress.failed+progress.expired} com falha</span></div><div className="sequence-progressbar" role="progressbar" aria-label="Progresso da sequência" aria-valuemin={0} aria-valuemax={progress.planned} aria-valuenow={progress.completed}><i style={{width:`${progress.planned?progress.completed/progress.planned*100:0}%`}}/></div><p>{progress.status==='paused'?'Sequência pausada':progress.nextAt?`Próxima em ${nextSeconds} segundos`:progress.status==='running'?'Enviando agora…':progress.status==='completed'?'Sequência concluída':progress.status==='failed'?'Falha na sequência':'Preparando…'}</p><div className="sequence-controls">{progress.status==='paused'?<button className="btn" onClick={resume}><Play/>Continuar</button>:<button className="btn" disabled={!['scheduled','running'].includes(progress.status)} onClick={pause}><Pause/>Pausar</button>}<button className="btn sequence-cancel" aria-label="Cancelar sequência" disabled={!sequenceActive} onClick={cancel}><Square/>Cancelar</button></div></div>}
+     {progress.status!=='idle'&&<div className="sequence-progress" aria-live="polite"><div><b>{progress.completed} de {progress.planned} processadas</b><span>{Math.max(0,progress.planned-progress.completed)} restantes · {progress.sent} entregues · {progress.failed} falharam · {progress.expired} expiradas</span></div><div className="sequence-progressbar" role="progressbar" aria-label="Progresso da sequência" aria-valuemin={0} aria-valuemax={progress.planned} aria-valuenow={progress.completed}><i style={{width:`${progress.planned?progress.completed/progress.planned*100:0}%`}}/></div><p>{progress.status==='paused'?'Sequência pausada':progress.nextAt?`Próxima em ${nextSeconds} segundos`:progress.status==='running'?'Enviando agora…':progress.status==='completed'?'Sequência concluída':progress.status==='cancelled'?'Sequência cancelada':progress.status==='interrupted'?'Sequência interrompida':progress.status==='failed'?'Falha na sequência':'Preparando…'}</p><div className="sequence-controls">{progress.status==='paused'?<button className="btn" onClick={resume}><Play/>Continuar</button>:<button className="btn" disabled={progress.status!=='running'} onClick={pause}><Pause/>Pausar</button>}<button className="btn sequence-cancel" aria-label="Cancelar sequência" disabled={!sequenceActive} onClick={cancel}><Square/>Cancelar</button></div></div>}
     </section>
     <section className="simple-push-section simple-push-intelligence"><SectionTitle title="Texto inteligente" description="Alterne mensagens curtas sem mudar o valor ou o tipo."/><Toggle label="Variar automaticamente" checked={varyMessages} onChange={setVaryMessages} disabled={sequenceActive||mode==='now'}/>{varyMessages&&mode==='sequence'&&<p className="simple-push-note">{aiState==='unavailable'?'Variações automáticas ativas.':'A IA prepara um conjunto limitado antes do primeiro envio. Se não estiver disponível, as variações locais serão usadas.'}</p>}<div className="simple-push-final">
      <label><span>Título</span><input aria-label="Título da notificação" disabled={sequenceActive} maxLength={60} value={draft.title} onChange={event=>setDraft(current=>({...current,title:event.target.value}))}/><small>{draft.title.length}/60</small></label>

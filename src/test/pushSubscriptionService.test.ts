@@ -114,11 +114,11 @@ describe('pushSubscriptionService',()=>{
  it('envia notificação manual somente ao backend com IDs seguros',async()=>{
   const fetchMock=vi.fn(async()=>new Response(JSON.stringify({success:true,eventId:'manual-event',sent:2,failed:0,expired:0}),{status:200,headers:{'Content-Type':'application/json'}}))
   vi.stubGlobal('fetch',fetchMock)
-  const result=await pushSubscriptionService.sendManual({notificationType:'sale_approved',title:'Venda aprovada!',body:'Plano • R$ 10,00',route:'/app/transacoes',icon:'/icons/sphexpay-app-192.png',deviceIds:['22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333'],currency:'BRL'})
+  const result=await pushSubscriptionService.sendManual({eventId:'manual-sequence-test-1',notificationType:'sale_approved',title:'Venda aprovada!',body:'Plano • R$ 10,00',route:'/app/transacoes',icon:'/icons/sphexpay-app-192.png',deviceIds:['22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333'],currency:'BRL'})
   expect(result).toMatchObject({ok:true,eventId:'manual-event',sent:2,failed:0,expired:0})
   const [,request]=fetchMock.mock.calls[0] as unknown as [string,RequestInit]
   const payload=JSON.parse(String(request?.body))
-  expect(payload).toMatchObject({type:'manual_notification',notificationType:'sale_approved',targetDeviceIds:['22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333'],metadata:{notificationType:'sale_approved',currency:'BRL'}})
+  expect(payload).toMatchObject({eventId:'manual-sequence-test-1',tag:'manual-sequence-test-1',type:'manual_notification',notificationType:'sale_approved',targetDeviceIds:['22222222-2222-4222-8222-222222222222','33333333-3333-4333-8333-333333333333'],metadata:{notificationType:'sale_approved',currency:'BRL'}})
   expect(payload).not.toHaveProperty('userId')
  })
 })
