@@ -537,3 +537,45 @@ html{scroll-padding-top:calc(var(--public-header-height) + var(--public-anchor-g
 @media(max-width:767px){.landing-v2 .payment-section{gap:32px;padding:64px max(22px,env(safe-area-inset-right)) 64px max(22px,env(safe-area-inset-left))}.landing-v2 .payment-section h2{font-size:clamp(36px,10.5vw,48px);line-height:1}.landing-v2 .payment-section>div>p{font-size:14px}.landing-v2 .condition-card{margin-top:24px;padding:18px}.landing-v2 .payment-methods{grid-template-columns:minmax(0,1fr);gap:10px}.landing-v2 .payment-methods article,.landing-v2 .payment-methods article:last-child{grid-column:1;min-height:88px;padding:16px}.landing-v2 .payment-methods b{font-size:13px}.landing-v2 .payment-methods small{font-size:10px}}
 @media(max-width:359px){.landing-v2 .payment-section{padding-inline:max(20px,env(safe-area-inset-left))}.landing-v2 .payment-section h2{font-size:34px}}
 @media(prefers-reduced-motion:reduce){.landing-v2 .condition-card,.landing-v2 .payment-methods article,.landing-v2 .payment-methods article>svg{transition:none}.landing-v2 .condition-card:hover,.landing-v2 .payment-methods article:hover{transform:none}}
+
+/* Cabeçalho público mobile — camada final isolada; tablet e desktop permanecem intactos. */
+@media(max-width:767px){
+ :root{--public-header-height:calc(64px + env(safe-area-inset-top))}
+ .landing-v2 .public-header,.landing-v2 .public-header.scrolled{
+  position:fixed;
+  top:0;
+  right:0;
+  left:0;
+  width:100%;
+  height:var(--public-header-height);
+  min-height:var(--public-header-height);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  transform:none;
+  padding:env(safe-area-inset-top) max(20px,env(safe-area-inset-right)) 0 max(20px,env(safe-area-inset-left));
+  border-width:0 0 1px;
+  border-radius:0;
+  border-color:#e8e3dc;
+  background:#fffffff7;
+  box-shadow:0 5px 18px #2d1b0f0a;
+  backdrop-filter:blur(14px)
+ }
+ .landing-v2 .public-logo{display:flex;align-items:center;min-width:0;max-width:calc(100% - 56px);flex:0 1 auto}
+ .landing-v2 .public-logo .sphexpay-brand{display:inline-flex;align-items:center;min-width:0;max-width:100%;flex-shrink:1}
+ .landing-v2 .public-logo .sphexpay-brand img{display:block;width:36px;height:36px;flex:0 0 36px;border-radius:10px}
+ .landing-v2 .public-logo .sphexpay-wordmark{display:inline-block;min-width:0;margin-left:9px;color:#171717;font-size:18px;line-height:1;opacity:1}
+ .landing-v2 .public-actions{display:none}
+ .landing-v2 .public-menu{position:static;display:grid;width:44px;min-width:44px;height:44px;min-height:44px;flex:0 0 44px;place-items:center;margin:0;padding:0;border:1px solid #e6e0d9;border-radius:12px;background:#fff;color:#171717;box-shadow:0 5px 14px #2d1b0f0c}
+ .landing-v2 .public-menu:focus-visible{outline:2px solid var(--public-accent);outline-offset:2px}
+ .landing-v2 .public-menu svg{width:21px;height:21px}
+ .landing-v2 .public-header nav{position:fixed;top:var(--public-header-height);right:12px;left:12px;width:auto;max-height:calc(100dvh - var(--public-header-height) - 12px);margin:0;padding:18px;overflow:auto;border:1px solid #e5dfd8;border-radius:0 0 18px 18px;background:#fffffff9;box-shadow:0 22px 54px #24160d26;color:#171717}
+ .landing-v2 .public-header nav>a{min-height:44px;display:flex;align-items:center;color:#4e4944;font-size:13px}.landing-v2 .public-header nav>a[aria-current=location]{color:var(--public-accent)}
+ .landing-v2 .public-mobile-actions{grid-template-columns:1fr 1fr}.landing-v2 .public-mobile-actions>a{min-height:44px;border-color:#e6dfd8;color:#171717}.landing-v2 .public-mobile-actions .public-primary{color:#fff!important}
+ .landing-v2 .competition-ribbon{top:calc(var(--public-header-height) + 16px)}
+}
+@media(max-width:360px){
+ .landing-v2 .public-header,.landing-v2 .public-header.scrolled{padding-right:max(16px,env(safe-area-inset-right));padding-left:max(16px,env(safe-area-inset-left))}
+ .landing-v2 .public-logo .sphexpay-wordmark{font-size:17px}
+}
