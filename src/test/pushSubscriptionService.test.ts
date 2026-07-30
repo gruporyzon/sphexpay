@@ -35,6 +35,24 @@ describe('pushSubscriptionService',()=>{
   expect(requiresStandaloneForPush('Mozilla/5.0 (iPad)',false)).toBe(true)
   expect(requiresStandaloneForPush('Mozilla/5.0 (iPhone)',true)).toBe(false)
  })
+ it('não solicita novamente quando a permissão foi bloqueada',async()=>{
+  class MockNotification{static permission='denied';static requestPermission=vi.fn()}
+  vi.stubGlobal('Notification',MockNotification);vi.stubGlobal('PushManager',class {})
+  Object.defineProperty(window,'isSecureContext',{configurable:true,value:true})
+  Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{}})
+  const result=await pushSubscriptionService.subscribe()
+  expect(result).toMatchObject({ok:false,status:'permission-denied',code:'PERMISSION_DENIED'})
+  expect(MockNotification.requestPermission).not.toHaveBeenCalled()
+ })
+ it('sincronização silenciosa não solicita permissão nem cria subscription',async()=>{
+  class MockNotification{static permission='default';static requestPermission=vi.fn()}
+  vi.stubGlobal('Notification',MockNotification);vi.stubGlobal('PushManager',class {})
+  Object.defineProperty(window,'isSecureContext',{configurable:true,value:true})
+  Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{}})
+  const result=await pushSubscriptionService.syncExisting()
+  expect(result).toMatchObject({ok:false,status:'permission-required',code:'PERMISSION_REQUIRED'})
+  expect(MockNotification.requestPermission).not.toHaveBeenCalled()
+ })
  it('cria a subscription inexistente e só confirma após registrá-la no backend',async()=>{
   const bytes=Uint8Array.from({length:65},(_,index)=>index===0?4:index)
   const key=btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')
@@ -128,5 +146,14 @@ describe('pushSubscriptionService',()=>{
   const [,request]=fetchMock.mock.calls[0] as unknown as [string,RequestInit],payload=JSON.parse(String(request.body))
   expect(payload).toMatchObject({eventId:'mode-sale:session:event-1',tag:'mode-sale:session:event-1',type:'mode_notification',route:'/app/vendas-ao-vivo',target:'all',metadata:{source:'mode',currency:'BRL'}})
   expect(payload).not.toHaveProperty('userId')
+ })
+ it.each(['desktop','mobile'] as const)('envia o destino %s do modo como categoria segura',async target=>{
+  const fetchMock=vi.fn(async()=>new Response(JSON.stringify({success:true,eventId:'mode-sale:session:event-2',sent:1}),{status:200}))
+  vi.stubGlobal('fetch',fetchMock)
+  await pushSubscriptionService.sendMode({eventId:'mode-sale:session:event-2',notificationType:'pix_paid',title:'Venda aprovada · Pix',body:'Sua comissão: R$ 10,00',currency:'BRL',target,deviceIds:[]})
+  const [,request]=fetchMock.mock.calls[0] as unknown as [string,RequestInit]
+  const payload=JSON.parse(String(request.body))
+  expect(payload).toMatchObject({targetCategory:target})
+  expect(payload).not.toHaveProperty('targetDeviceIds')
  })
 })

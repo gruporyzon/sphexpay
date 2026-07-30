@@ -25,7 +25,13 @@ self.addEventListener('fetch',event=>{
  event.respondWith(fetch(event.request).catch(()=>caches.match(event.request).then(cached=>cached||Response.error())))
 })
 
-const routeFor=value=>typeof value==='string'&&value.startsWith('/')?value:'/app/dashboard'
+const safeRoute=value=>{
+ if(typeof value!=='string'||!/^\/(?!\/)[A-Za-z0-9_?=&%./-]*$/.test(value))return'/app'
+ try{
+  const url=new URL(value,self.location.origin)
+  return url.origin===self.location.origin?`${url.pathname}${url.search}${url.hash}`:'/app'
+ }catch{return'/app'}
+}
 const cleanBody=value=>typeof value==='string'
  ? value.replace(/^\s*from\s+SphexPay\s*/i,'').replace(/^\s*via\s+SphexPay\s*/i,'').trim()
  : ''
@@ -46,12 +52,14 @@ async function handlePush(event){
  }
  await self.registration.showNotification(title,{
   body,
-  icon:'/icons/sphexpay-app-192.png',
-  badge:'/branding/sphexpay-logo-96.png',
+  icon:typeof payload.icon==='string'&&payload.icon.startsWith('/icons/')?payload.icon:'/icons/sphexpay-app-192.png',
+  badge:typeof payload.badge==='string'&&payload.badge.startsWith('/branding/')?payload.badge:'/branding/sphexpay-logo-96.png',
   tag,
   renotify:false,
   silent:false,
-  data:{route:routeFor(payload.route),eventId:payload.eventId,type:payload.type}
+  timestamp:Number.isFinite(payload.timestamp)?payload.timestamp:Date.now(),
+  requireInteraction:payload.requireInteraction===true,
+  data:{route:safeRoute(payload.route),eventId:payload.eventId,type:payload.type}
  })
 }
 
@@ -61,17 +69,27 @@ self.addEventListener('push',event=>{
 
 self.addEventListener('notificationclick',event=>{
  event.notification.close()
- const route=routeFor(event.notification.data?.route)
+ const route=safeRoute(event.notification.data?.route)
  event.waitUntil((async()=>{
   const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true})
   const current=windows.find(client=>{
    try{return new URL(client.url).origin===self.location.origin}catch{return false}
   })
   if(current){
-   if('navigate'in current)await current.navigate(route)
+   if('navigate'in current){
+    const currentRoute=new URL(current.url)
+    if(`${currentRoute.pathname}${currentRoute.search}${currentRoute.hash}`!==route)await current.navigate(route)
+   }
    await current.focus()
    return
   }
   await self.clients.openWindow(route)
+ })())
+})
+
+self.addEventListener('pushsubscriptionchange',event=>{
+ event.waitUntil((async()=>{
+  const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true})
+  for(const client of windows)client.postMessage({type:'PUSH_SUBSCRIPTION_CHANGED'})
  })())
 })

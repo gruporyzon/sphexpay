@@ -7,7 +7,7 @@ export type ModePushCommand={
  title:string
  body:string
  currency:string
- target:'all'|'devices'
+ target:'all'|'devices'|'desktop'|'mobile'
  deviceIds:string[]
 }
 type Task={sessionId:string;sale:DemoTransaction;config:ModePushConfig}
@@ -59,7 +59,7 @@ export class ModePushQueue{
   if(config.enabledAt&&new Date(sale.approvedAt??sale.updatedAt??sale.createdAt).getTime()<=new Date(config.enabledAt).getTime()){this.skip();return false}
   if(!this.running){this.skip();return false}
   if(this.stats.attempted+this.pending.length+this.summary.length>=config.maxPerSession){this.skip('Limite da sessão atingido.');return false}
-  if(config.destination!=='all'&&!config.deviceIds.length){this.skip('Nenhum dispositivo disponível para notificações.');return false}
+  if((config.destination==='current'||config.destination==='selected')&&!config.deviceIds.length){this.skip('Nenhum dispositivo disponível para notificações.');return false}
   const task={sessionId,sale,config}
   if(config.frequency==='summary'){this.summary.push(task);this.scheduleSummary();return true}
   const interval=intervalFor(config.frequency)
@@ -93,7 +93,7 @@ export class ModePushQueue{
   const titles=config.vary?[[baseTitle,`Pagamento confirmado · ${label}`,`Mais uma venda aprovada`][index]]:[baseTitle]
   const commission=sale.commissionCents??0,amount=commission>0?commission:sale.amountCents
   const bodies=config.vary?[commission>0?`Sua comissão: ${money(amount,sale.currency)}`:`Valor: ${money(amount,sale.currency)}`,`Valor confirmado: ${money(amount,sale.currency)}`,`Recebimento aprovado: ${money(amount,sale.currency)}`]:[commission>0?`Sua comissão: ${money(amount,sale.currency)}`:`Valor: ${money(amount,sale.currency)}`]
-  return{eventId:`mode-sale:${sessionId}:${eventSuffix??sale.eventId}`,notificationType:methodType[method],title:title??titles[0],body:body??bodies[index],currency:sale.currency,target:config.destination==='all'?'all':'devices',deviceIds:[...config.deviceIds]}
+  return{eventId:`mode-sale:${sessionId}:${eventSuffix??sale.eventId}`,notificationType:methodType[method],title:title??titles[0],body:body??bodies[index],currency:sale.currency,target:config.destination==='all'?'all':config.destination==='desktop'?'desktop':config.destination==='mobile'?'mobile':'devices',deviceIds:[...config.deviceIds]}
  }
  private skip(message=''){this.stats.skipped++;if(message)this.stats.lastError=message;this.emit()}
  private emit(){this.onStats?.({...this.stats})}

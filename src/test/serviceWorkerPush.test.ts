@@ -4,12 +4,13 @@ import { describe,expect,it,vi } from 'vitest'
 
 type Listener=(event:Record<string,unknown>)=>void
 
-function loadWorker(existingNotifications:unknown[]=[]){
+function loadWorker(existingNotifications:unknown[]=[],hasWindow=true){
  const listeners=new Map<string,Listener>()
  const showNotification=vi.fn(async()=>undefined)
  const navigate=vi.fn(async()=>undefined)
  const focus=vi.fn(async()=>undefined)
  const openWindow=vi.fn(async()=>undefined)
+ const postMessage=vi.fn()
  const context={
   URL,
   Response,
@@ -20,7 +21,7 @@ function loadWorker(existingNotifications:unknown[]=[]){
    skipWaiting:vi.fn(),
    clients:{
     claim:vi.fn(),
-    matchAll:vi.fn(async()=>[{url:'https://sphexpay.vercel.app/app',navigate,focus}]),
+    matchAll:vi.fn(async()=>hasWindow?[{url:'https://sphexpay.vercel.app/app',navigate,focus,postMessage}]:[]),
     openWindow
    },
    registration:{
@@ -31,7 +32,7 @@ function loadWorker(existingNotifications:unknown[]=[]){
   }
  }
  vm.runInNewContext(readFileSync('public/sw.js','utf8'),context)
- return{listeners,showNotification,navigate,focus,openWindow}
+ return{listeners,showNotification,navigate,focus,openWindow,postMessage}
 }
 
 async function dispatch(listener:Listener,event:Record<string,unknown>){
@@ -69,5 +70,23 @@ describe('Service Worker Push',()=>{
   expect(worker.navigate).toHaveBeenCalledWith('/app/transacoes/tx-1')
   expect(worker.focus).toHaveBeenCalled()
   expect(worker.openWindow).not.toHaveBeenCalled()
+ })
+ it('bloqueia URL externa disfarçada e mantém navegação interna',async()=>{
+  const worker=loadWorker(),close=vi.fn()
+  await dispatch(worker.listeners.get('notificationclick')!,{notification:{close,data:{route:'//evil.example/roubo'}}})
+  expect(worker.navigate).not.toHaveBeenCalled()
+  expect(worker.focus).toHaveBeenCalled()
+  expect(worker.openWindow).not.toHaveBeenCalled()
+ })
+ it('abre uma única janela segura quando nenhuma aba existe',async()=>{
+  const worker=loadWorker([],false)
+  await dispatch(worker.listeners.get('notificationclick')!,{notification:{close:vi.fn(),data:{route:'/app/vendas-ao-vivo'}}})
+  expect(worker.openWindow).toHaveBeenCalledTimes(1)
+  expect(worker.openWindow).toHaveBeenCalledWith('/app/vendas-ao-vivo')
+ })
+ it('avisa abas abertas quando a subscription muda',async()=>{
+  const worker=loadWorker()
+  await dispatch(worker.listeners.get('pushsubscriptionchange')!,{})
+  expect(worker.postMessage).toHaveBeenCalledWith({type:'PUSH_SUBSCRIPTION_CHANGED'})
  })
 })

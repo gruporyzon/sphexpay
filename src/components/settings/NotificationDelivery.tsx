@@ -12,6 +12,7 @@ import {browserPermissionService,type BrowserNotificationStatus} from '../../ser
 import {pushSubscriptionService,type PushDevice,type PushSendResult} from '../../services/pushSubscriptionService'
 import {useDemoStore} from '../../store/useDemoStore'
 import {SphexPayLogo} from '../branding/SphexPayLogo'
+import {ComputerPushCard} from './ComputerPushCard'
 
 type Tab='generator'|'history'
 type AiAction='generate'|'similar'
@@ -101,6 +102,7 @@ export function NotificationDelivery(){
  const intervalMs=mode==='sequence'&&!intervalError?intervalToMilliseconds(interval,unit):0
  const estimatedDuration=intervalMs*Math.max(0,effectiveQuantity-1)
  const sequenceActive=['validating','preparing','running','paused','cancelling'].includes(progress.status)
+ const desktopDevice=!/Mobile|iPhone|iPad|Android/i.test(navigator.userAgent)
 
  const refresh=useCallback(async()=>{
   setLoading(true)
@@ -131,7 +133,7 @@ export function NotificationDelivery(){
     setFeedback('Sua sessão expirou. Entre novamente.');setLoading(false);return
    }
    if(browserPermissionService.status()==='granted'){
-    const result=await pushSubscriptionService.subscribe()
+    const result=await pushSubscriptionService.syncExisting()
     if(!result.ok)console.warn('[PUSH] Device reconciliation failed',result.code)
    }
    if(mountedRef.current)await refresh()
@@ -296,7 +298,8 @@ export function NotificationDelivery(){
  return <div className="push-studio simple-push-studio">
   <header className="push-studio-header"><div><span>NOTIFICAÇÕES PUSH</span><h2>Gerador de notificações</h2><p>Crie, programe e acompanhe Pushes reais em poucos passos.</p></div><div className={`push-connection ${connection.tone}`}><i/>{connection.label}</div></header>
   <nav className="simple-push-tabs" aria-label="Seções de notificações"><button className={tab==='generator'?'active':''} onClick={()=>setTab('generator')}>Gerador</button><button className={tab==='history'?'active':''} onClick={()=>setTab('history')}><HistoryIcon/> Histórico</button></nav>
-  {!activeDevices.length&&<section className="push-activation"><div className="push-activation-icon"><BellRing/></div><div><h3>Ativar notificações</h3><p>Conecte este dispositivo para receber e enviar alertas da SphexPay.</p></div><button className="btn btn-primary" onClick={()=>void activate()} disabled={connecting||permission==='denied'}>{connecting?'Conectando…':'Ativar neste dispositivo'}</button></section>}
+  <ComputerPushCard devices={devices} onRefresh={refresh}/>
+  {!desktopDevice&&!activeDevices.length&&permission!=='denied'&&<section className="push-activation"><div className="push-activation-icon"><BellRing/></div><div><h3>Ativar notificações</h3><p>Conecte este dispositivo para receber e enviar alertas da SphexPay.</p></div><button className="btn btn-primary" onClick={()=>void activate()} disabled={connecting}>{connecting?'Conectando…':'Ativar neste dispositivo'}</button></section>}
   {feedback&&<p className="push-feedback" role="status" aria-live="polite">{feedback}</p>}
 
   {tab==='generator'&&<main className="simple-push-generator">

@@ -44,7 +44,7 @@ export type DemoPreset='light'|'normal'|'high'|'launch'|'peak'|'subscriptions'|'
 export type DemoFrequencyUnit='seconds'|'minutes'
 export type DemoPaymentMethod='Pix'|'Cartão de crédito'|'Boleto'|'Assinatura'
 export type ModePushFrequency='each'|'5s'|'15s'|'60s'|'summary'
-export type ModePushDestination='current'|'all'|'selected'
+export type ModePushDestination='current'|'all'|'desktop'|'mobile'|'selected'
 export interface ModePushConfig{
  enabled:boolean
  approved:boolean

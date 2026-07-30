@@ -4,7 +4,7 @@ import { sendPushToUser } from '../../server/push/send-service.js'
 // @ts-expect-error API serverless JavaScript fora do bundle TypeScript.
 import { formatMoney,notifyConfirmedFinancialEvent } from '../../server/push/financial-events.js'
 
-type Subscription={id:string;device_id:string;endpoint:string;p256dh:string;auth:string;failure_count:number}
+type Subscription={id:string;device_id:string;endpoint:string;p256dh:string;auth:string;failure_count:number;platform:'desktop'|'mobile'}
 
 function fakeClient(subscriptions:Subscription[],duplicateIds:string[]=[]){
  const logs:{subscriptionId:string;eventId:string;status:string;httpStatus?:number|null;errorCode?:string|null}[]=[]
@@ -13,7 +13,7 @@ function fakeClient(subscriptions:Subscription[],duplicateIds:string[]=[]){
   if(table==='push_subscriptions'){
    let selected=subscriptions
    const query={
-    select:()=>query,eq:(field:string,value:unknown)=>{if(field==='device_id')selected=selected.filter(item=>item.device_id===value);return query},
+    select:()=>query,eq:(field:string,value:unknown)=>{if(field==='device_id')selected=selected.filter(item=>item.device_id===value);if(field==='platform')selected=selected.filter(item=>item.platform===value);return query},
     in:(field:string,values:unknown[])=>{if(field==='device_id')selected=selected.filter(item=>values.includes(item.device_id));return query},
     update:(values:Record<string,unknown>)=>({eq:(_field:string,id:string)=>{if(values.enabled===false)enabled.set(id,false);return Promise.resolve({error:null})}}),
     then:(resolve:(value:unknown)=>void)=>resolve({data:selected,error:null})
@@ -39,7 +39,7 @@ function fakeClient(subscriptions:Subscription[],duplicateIds:string[]=[]){
  return{client:{from},logs,enabled}
 }
 
-const subscription=(id:string):Subscription=>({id,device_id:`22222222-2222-4222-8222-${id.padEnd(12,'0').slice(0,12)}`,endpoint:`https://push.example/${id}`,p256dh:`p256dh-${id}`,auth:`auth-${id}`,failure_count:0})
+const subscription=(id:string,platform:'desktop'|'mobile'='desktop'):Subscription=>({id,device_id:`22222222-2222-4222-8222-${id.padEnd(12,'0').slice(0,12)}`,endpoint:`https://push.example/${id}`,p256dh:`p256dh-${id}`,auth:`auth-${id}`,failure_count:0,platform})
 const input=(client:unknown)=>({client,userId:'user-1',eventId:'event-1',type:'sale_approved',title:'Venda aprovada!',body:'Sua comissão: R$ 17,65',route:'/app/vendas'})
 
 describe('sendPushToUser',()=>{
@@ -93,6 +93,12 @@ describe('sendPushToUser',()=>{
  it('envia para todos quando nenhum filtro de dispositivo é informado',async()=>{
   const {client}=fakeClient([subscription('one'),subscription('two')]),sendNotification=vi.fn(async()=>({statusCode:201}))
   expect(await sendPushToUser({...input(client),pushClient:{sendNotification}})).toMatchObject({success:true,sent:2})
+ })
+ it.each(['desktop','mobile'] as const)('filtra entregas pela categoria %s',async platform=>{
+  const desktop=subscription('desktop','desktop'),mobile=subscription('mobile','mobile'),{client}=fakeClient([desktop,mobile]),sendNotification=vi.fn(async()=>({statusCode:201}))
+  const result=await sendPushToUser({...input(client),platform,pushClient:{sendNotification}})
+  expect(result).toMatchObject({success:true,sent:1})
+  expect(result.results).toEqual([expect.objectContaining({deviceId:platform==='desktop'?desktop.device_id:mobile.device_id})])
  })
 
  it('deduplica por eventId e subscriptionId',async()=>{

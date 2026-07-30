@@ -33,17 +33,19 @@ export default async function handler(request,response){
  const title=generator||manual||mode?safeText(input.title,manual?80:70):'SphexPay conectada'
  const body=generator||manual||mode?safeText(input.body,180):'Este dispositivo está pronto para receber notificações.'
  const targetDeviceId=safeText(input.targetDeviceId,64),targetDeviceIds=Array.isArray(input.targetDeviceIds)?[...new Set(input.targetDeviceIds.map(value=>safeText(value,64)))]:[]
+ const targetCategory=['desktop','mobile'].includes(input.targetCategory)?input.targetCategory:''
  const uuid=value=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
  if((targetDeviceId&&!uuid(targetDeviceId))||targetDeviceIds.some(value=>!uuid(value))||targetDeviceIds.length>50)return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'O dispositivo selecionado é inválido.'})
  if(input.type==='infrastructure_test'&&!targetDeviceId)return response.status(400).json({success:false,code:'DEVICE_ID_REQUIRED',message:'O dispositivo atual não foi informado.'})
  if(generator&&(!allowedGeneratorTypes.has(generatorType)||!title||!body||(!targetDeviceId&&!targetDeviceIds.length&&input.target!=='all')))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  if(manual&&(!allowedManualTypes.has(generatorType)||!title||!body||!targetDeviceIds.length))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
- if(mode&&(!allowedModeTypes.has(generatorType)||!title||!body||input.metadata?.source!=='mode'||(!targetDeviceIds.length&&input.target!=='all')))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
+ if(mode&&(!allowedModeTypes.has(generatorType)||!title||!body||input.metadata?.source!=='mode'||(!targetDeviceIds.length&&input.target!=='all'&&!targetCategory)))return response.status(400).json({success:false,code:'INVALID_PAYLOAD',message:'Os dados da notificação são inválidos.'})
  const route=mode?'/app/vendas-ao-vivo':manual&&/^\/app(?:\/[A-Za-z0-9_?=&%./-]*)?$/.test(clean(input.route))?clean(input.route):'/app/configuracoes'
  const icon=(manual||mode)&&['/icons/sphexpay-app-192.png','/icons/sphexpay-app-512.png'].includes(clean(input.icon))?clean(input.icon):'/icons/sphexpay-app-192.png'
  const result=await sendPushToUser({
   client,userId:user.id,eventId,type:generator||manual||mode?generatorType:input.type,title,body,
   route,tag:manual||mode?safeText(input.tag,160)||eventId:generator?eventId:'sphexpay-infrastructure-test',icon,deviceId:targetDeviceId||undefined,deviceIds:targetDeviceIds.length?targetDeviceIds:undefined,
+  platform:targetCategory||undefined,
   metadata:mode?{source:'mode',notificationType:generatorType,currency:['BRL','USD','EUR'].includes(input.metadata?.currency)?input.metadata.currency:'BRL'}:manual?{source:'manual',notificationType:generatorType,currency:['BRL','USD','EUR'].includes(input.metadata?.currency)?input.metadata.currency:'BRL'}:generator?{source:'manual'}:{}
  }).catch(error=>({success:false,code:error?.code||'PUSH_DELIVERY_FAILED',sent:0,failed:0,duplicates:0}))
  if(result.success)return response.status(200).json({...result,eventId})

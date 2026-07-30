@@ -139,6 +139,18 @@ describe('backend de Push',()=>{
   expect(output.result).toMatchObject({statusCode:404,body:{success:false,code:'NO_ACTIVE_SUBSCRIPTIONS'}})
   expect(query.eq).toHaveBeenCalledWith('user_id','user-mode')
  })
+ it.each(['desktop','mobile'])('limita evento do modo à categoria %s',async targetCategory=>{
+  configureVapid()
+  vi.stubEnv('SUPABASE_URL','https://project.supabase.co')
+  vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','server-only-key')
+  const query={eq:vi.fn(()=>query),then:(resolve:(value:unknown)=>void)=>resolve({data:[],error:null})}
+  const client={auth:{getUser:vi.fn(async()=>({data:{user:{id:'user-mode'}}}))},from:vi.fn(()=>({select:vi.fn(()=>query)}))}
+  createClientMock.mockReturnValue(client)
+  const output=response()
+  await sendHandler({method:'POST',headers:{authorization:'Bearer token'},body:{eventId:`mode-sale:session-1:event-${targetCategory}`,type:'mode_notification',notificationType:'pix_paid',title:'Venda aprovada · Pix',body:'Sua comissão: R$ 60,00',targetCategory,metadata:{source:'mode',currency:'BRL'}}},output)
+  expect(output.result).toMatchObject({statusCode:404,body:{code:'NO_ACTIVE_SUBSCRIPTIONS'}})
+  expect(query.eq).toHaveBeenCalledWith('platform',targetCategory)
+ })
 
  it('recusa evento do modo sem origem controlada',async()=>{
   configureVapid()

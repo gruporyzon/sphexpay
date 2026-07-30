@@ -65,6 +65,13 @@ describe('ModePushQueue',()=>{
   expect(send).toHaveBeenCalledTimes(2)
   expect(send.mock.calls[0][0]).toMatchObject({target:'devices',deviceIds:config.deviceIds})
  })
+ it.each(['desktop','mobile'] as const)('encaminha vendas somente para %s sem exigir IDs',async destination=>{
+  const send=vi.fn().mockResolvedValue({ok:true,sent:1}),queue=new ModePushQueue({send})
+  const config={...defaultModePushConfig(),enabledAt:'2026-07-30T15:00:00.000Z',destination,deviceIds:[]}
+  expect(queue.enqueue('session',sale(destination),config)).toBe(true)
+  await flush()
+  expect(send).toHaveBeenCalledWith(expect.objectContaining({target:destination,deviceIds:[]}))
+ })
  it('agrupa resumo usando a mesma fila e um único timer',async()=>{
   vi.useFakeTimers()
   const send=vi.fn().mockResolvedValue({ok:true,sent:1}),queue=new ModePushQueue({send})
