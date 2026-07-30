@@ -75,6 +75,16 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(final).toContain('.landing-v2 .landing-cta h2{max-width:800px;color:#f8f7f4}')
   expect(final).not.toMatch(/landing-cta h2[^}]*color:#1/)
  })
+ it('isola o banner preto premium de jornadas de cobrança',()=>{
+  const marker='/* Jornadas de cobrança — banner preto premium, isolado da restante landing. */',section=css.slice(css.indexOf(marker))
+  expect(section).toContain('.landing-v2 .payment-section')
+  expect(section).toContain('background:#000;color:#fff')
+  expect(section).not.toMatch(/payment-section[^}]*radial-gradient/)
+  expect(section).toContain('.landing-v2 .payment-methods article:last-child{grid-column:1/-1}')
+  expect(section).toContain('@media(max-width:767px)')
+  expect(section).toContain('padding:64px max(22px,env(safe-area-inset-right))')
+  expect(section).toContain('@media(prefers-reduced-motion:reduce)')
+ })
  it('cobre safe areas, áreas de toque, redução de movimento e larguras críticas',()=>{
   expect(css).toContain('env(safe-area-inset-top)')
   expect(css).toContain('min-height:44px')
