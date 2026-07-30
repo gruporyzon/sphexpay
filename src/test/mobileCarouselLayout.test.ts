@@ -6,6 +6,28 @@ const css=readFileSync(resolve(process.cwd(),'src/index.css'),'utf8')
 const carousel=readFileSync(resolve(process.cwd(),'src/components/dashboard/OverviewHeroCarousel.tsx'),'utf8')
 
 describe('layout mobile do carrossel e da competição',()=>{
+ const finalMobile=css.slice(css.indexOf('/* Mobile gateway hero — final cascade layer; desktop and tablet stay untouched. */'))
+ it('aplica a composição final somente no mobile com proporção responsiva 16:9',()=>{
+  expect(finalMobile).toContain('@media(max-width:767px){')
+  expect(finalMobile).toContain('aspect-ratio:16/9')
+  expect(finalMobile).toContain('height:clamp(250px,56.25vw,278px)')
+  expect(finalMobile).not.toContain('@media(min-width:768px)')
+ })
+ it('mantém conteúdo, arte e controles inteiros dentro do banner',()=>{
+  expect(finalMobile).toContain('grid-template-columns:minmax(0,1fr)')
+  expect(finalMobile).toContain('object-fit:contain')
+  expect(finalMobile).toContain('max-height:174px')
+  expect(finalMobile).toContain('.overview-controls')
+  expect(finalMobile).toContain('width:44px')
+  expect(finalMobile).toContain('min-height:44px')
+  expect(finalMobile).toContain('pointer-events:auto')
+ })
+ it('afina o topo autenticado sem reduzir as áreas de toque',()=>{
+  expect(finalMobile).toContain('height:calc(52px + var(--safe-top))')
+  expect(finalMobile).toContain('padding:var(--safe-top) max(8px,var(--safe-right))')
+  expect(finalMobile).toContain('min-width:44px')
+  expect(finalMobile).toContain('min-height:44px')
+ })
  it('mantém as correções estruturais limitadas ao breakpoint mobile',()=>{
   const marker=css.indexOf('/* Mobile headers: compact composition without changing tablet or desktop. */')
   const mobile=css.slice(marker,css.indexOf('/* Dashboard production:',marker))

@@ -732,3 +732,191 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 @media(min-width:390px) and (max-width:767px){.dashboard-layout-grid:not(.is-editing) .dashboard-layout-widget[data-widget-id]:not([data-widget-id="gross-revenue"]):not([data-widget-id="net-revenue"]):not([data-widget-id="revenue-chart"]):not([data-widget-id="recent-sales"]){grid-column:span 1!important}}
 @media(prefers-reduced-motion:reduce){.dashboard-layout-widget.editable{transition:none}}
 @media(max-width:360px){.sequence-mode,.sequence-interval,.sequence-controls{grid-template-columns:minmax(0,1fr)}.sequence-quick{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Mobile gateway hero — final cascade layer; desktop and tablet stay untouched. */
+@media(max-width:767px){
+ .app-header{
+  height:calc(52px + var(--safe-top));
+  min-height:calc(52px + var(--safe-top));
+  padding:var(--safe-top) max(8px,var(--safe-right)) 4px max(8px,var(--safe-left));
+  gap:5px
+ }
+ .app-header>.icon-btn,.app-header .header-actions>.icon-btn,.app-header .notification-bell{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  min-height:44px
+ }
+ .app-header .header-brand{display:inline-flex;flex:0 0 28px;width:28px}
+ .app-header .header-brand img{width:28px;height:28px;border-radius:8px}
+ .mobile-page-title{min-width:0;font-size:12px;line-height:1.15}
+ .header-actions{gap:2px}
+ .profile-avatar{width:34px;height:34px}
+
+ .dashboard-page>.overview-carousel{margin-bottom:18px}
+ .overview-carousel{
+  width:100%;
+  max-width:100%;
+  height:clamp(250px,56.25vw,278px);
+  min-height:250px;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-color:#ff7b3d38;
+  border-radius:20px;
+  box-shadow:0 18px 42px #00000038,0 0 0 1px #ffffff08 inset;
+  touch-action:pan-y
+ }
+ .overview-track{height:100%;align-items:stretch}
+ .overview-slide{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-content:start;
+  width:100%;
+  min-width:100%;
+  min-height:100%;
+  height:100%;
+  padding:17px 16px 52px;
+  overflow:hidden
+ }
+ .overview-slide:before{
+  background:
+   radial-gradient(circle at 86% 22%,#ff7a3d4d,transparent 31%),
+   radial-gradient(circle at 15% 110%,#f15a2426,transparent 38%),
+   linear-gradient(128deg,#09090b 4%,#151519 62%,#29130b)
+ }
+ .overview-slide.competition:before{
+  background:
+   radial-gradient(circle at 85% 36%,#ff7b3d58,transparent 31%),
+   linear-gradient(125deg,#120906,#101013 64%,#2a160d)
+ }
+ .overview-slide:after{opacity:.12;background-size:24px 24px;mask-image:linear-gradient(90deg,#000 5%,transparent 96%)}
+ .overview-copy{position:relative;z-index:3;width:72%;max-width:72%;min-width:0}
+ .overview-copy>span{display:block;font-size:7px;line-height:1.35;letter-spacing:.17em}
+ .overview-copy h2{
+  max-width:100%;
+  margin-top:6px;
+  font-size:clamp(18px,5.45vw,23px);
+  line-height:1.04;
+  letter-spacing:-.042em;
+  overflow-wrap:normal;
+  text-wrap:balance
+ }
+ .overview-copy p{
+  display:-webkit-box;
+  max-width:100%;
+  margin-top:7px;
+  overflow:hidden;
+  color:#ffffffb3;
+  font-size:clamp(8px,2.45vw,10px);
+  line-height:1.42;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  text-wrap:pretty
+ }
+ .overview-copy button,.overview-cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:auto;
+  max-width:100%;
+  min-height:44px;
+  margin-top:10px;
+  padding:8px 11px;
+  border:1px solid #ff9b6b50;
+  border-radius:11px;
+  background:linear-gradient(135deg,#ff6a2f24,#ffffff0a);
+  color:#fff;
+  box-shadow:0 9px 24px #0005;
+  font-size:8px;
+  font-weight:800;
+  text-decoration:none;
+  white-space:nowrap
+ }
+ .overview-copy :is(button,.overview-cta):focus-visible,.overview-controls button:focus-visible{
+  outline:2px solid #ff9b6b;
+  outline-offset:2px
+ }
+ .overview-copy :is(button,.overview-cta) svg{width:12px;flex:0 0 auto}
+ .gateway-art,.iphone-art,.overview-slide.competition .iphone-art{
+  position:absolute;
+  z-index:2;
+  inset:50% 4px auto auto;
+  width:32%;
+  max-width:132px;
+  height:72%;
+  min-width:0;
+  margin:0;
+  opacity:1;
+  transform:translateY(-43%);
+  pointer-events:none
+ }
+ .gateway-art{display:grid;place-items:center}
+ .art-ring{
+  top:10px;
+  right:50%;
+  width:min(116px,29vw);
+  height:min(116px,29vw);
+  transform:translateX(50%)
+ }
+ .art-ring:before{inset:11px}.art-ring:after{inset:26px}
+ .art-ring .hero-brand img{width:38px;height:38px}
+ .art-stack{
+  left:50%;
+  bottom:4px;
+  width:min(98px,25vw);
+  padding:9px;
+  transform:translateX(-74%);
+  border-radius:12px
+ }
+ .art-stack svg{width:15px}.art-stack span{margin-top:5px;font-size:15px}.art-stack small{font-size:5.5px}
+ .iphone-art{display:grid;place-items:center}
+ .iphone-art .competition-product-image{
+  width:min(126px,31vw);
+  max-width:100%;
+  height:100%;
+  max-height:174px;
+  object-fit:contain;
+  object-position:center;
+  filter:drop-shadow(0 16px 24px #0009)
+ }
+ .prize-seal{
+  left:2px;
+  bottom:12px;
+  width:min(68px,17vw);
+  height:min(68px,17vw);
+  transform:none;
+  backdrop-filter:blur(8px)
+ }
+ .prize-seal svg{width:19px}.prize-seal span{font-size:5.5px}
+ .overview-controls{
+  right:10px;
+  bottom:4px;
+  left:10px;
+  z-index:5;
+  height:44px;
+  justify-content:space-between;
+  gap:8px;
+  pointer-events:none
+ }
+ .overview-controls>button{
+  width:44px;
+  min-width:44px;
+  height:44px;
+  border-radius:12px;
+  background:#0d0d0f99;
+  backdrop-filter:blur(10px);
+  pointer-events:auto
+ }
+ .overview-controls>div{align-items:center;justify-content:center;pointer-events:auto}
+ .overview-controls>div button{min-width:22px;min-height:12px;padding-block:4px;background-clip:content-box}
+ .overview-controls>div button.active{width:32px}
+}
+@media(max-width:359px){
+ .mobile-page-title{display:none}
+ .overview-slide{padding-inline:14px}
+ .overview-copy{width:73%;max-width:73%}
+ .overview-copy h2{font-size:18px}
+ .overview-copy p{font-size:8px;-webkit-line-clamp:3}
+ .gateway-art,.iphone-art,.overview-slide.competition .iphone-art{right:1px;width:31%}
+}
