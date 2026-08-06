@@ -5,7 +5,7 @@ import { SphexPayLogo } from '../branding/SphexPayLogo'
 import { useAuth } from '../../hooks/useAuth'
 
 const navigation=[
- ['recursos','Recursos'],['solucoes','Soluções'],
+ ['experiencia','Plataforma'],['recursos','Recursos'],['solucoes','Soluções'],
  ['premiacoes','Premiações'],['campeonato','Campeonato'],['ajuda','Dúvidas']
 ] as const
 
@@ -39,7 +39,7 @@ export function PublicHeader(){
   return()=>{document.body.style.overflow=''}
  },[open])
  const close=()=>setOpen(false)
- return <header ref={headerRef} className={`public-header ${scrolled?'scrolled':''}`}>
+ return <header ref={headerRef} className={`public-header public-header-redesign public-header-hero ${scrolled?'scrolled':''}`}>
   <Link to="/" className="public-logo" aria-label="SphexPay — página inicial"><SphexPayLogo showName priority/></Link>
   <nav id="public-navigation" className={open?'open':''} aria-label="Navegação principal">{navigation.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined} onClick={()=>{setActive(id);close()}}>{label}</a>)}<div className="public-mobile-actions"><Link to="/entrar" onClick={close}>Entrar</Link><Link className="public-primary" to={destination} onClick={close}>{user?'Acessar painel':'Criar conta'}</Link></div></nav>
   <div className="public-actions"><Link to="/entrar">Entrar</Link><Link className="public-primary" to={destination}>{user?'Acessar painel':'Criar conta'}</Link></div>

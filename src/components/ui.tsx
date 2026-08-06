@@ -1,9 +1,37 @@
-import type { ReactNode } from 'react'; import { createPortal } from 'react-dom'; import { LoaderCircle, Search, Inbox, X } from 'lucide-react'; import { cn } from '../lib/utils'
-export const Card=({children,className=''}:{children:ReactNode,className?:string})=><div className={cn('panel',className)}>{children}</div>
-export const PageTitle=({title,subtitle,action}:{title:string,subtitle:string,action?:ReactNode})=><div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"><div><h1 className="text-2xl md:text-[28px] font-bold tracking-[-.04em]">{title}</h1><p className="muted text-sm mt-1">{subtitle}</p></div>{action}</div>
-export const SearchBox=({value,onChange,placeholder='Buscar...'}:{value:string,onChange:(v:string)=>void,placeholder?:string})=><label className="relative block"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 muted"/><input className="input pl-9" value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>{value&&<button onClick={()=>onChange('')} className="absolute right-3 top-1/2 -translate-y-1/2 muted" aria-label="Limpar"><X size={15}/></button>}</label>
-export const StatusBadge=({status}:{status:string})=><span className={cn('badge',status==='Aprovado'||status==='Ativo'||status==='Ativa'||status==='Concluído'?'badge-ok':status==='Recusado'||status==='Reembolsado'||status==='Inadimplente'?'badge-bad':status==='Pendente'||status==='Processando'?'badge-warn':'badge-info')}>{status}</span>
-export const Empty=({text='Nenhum registro encontrado'}:{text?:string})=><div className="py-14 text-center"><Inbox className="mx-auto muted mb-3"/><p className="muted text-sm">{text}</p></div>
-export const Loading=()=> <div className="py-14 flex justify-center"><LoaderCircle className="animate-spin orange"/></div>
-export const Avatar=({name}:{name:string})=><div className="w-9 h-9 rounded-full bg-[var(--orange-soft)] orange grid place-items-center text-xs font-bold shrink-0">{name.split(' ').slice(0,2).map(x=>x[0]).join('')}</div>
-export const Modal=({title,children,onClose}:{title:string,children:ReactNode,onClose:()=>void})=>createPortal(<div className="fixed inset-0 z-[100] bg-black/55 backdrop-blur-sm grid place-items-center p-4" onMouseDown={onClose}><div className="panel w-full max-w-xl max-h-[90vh] overflow-auto p-5" role="dialog" aria-modal="true" aria-label={title} onMouseDown={e=>e.stopPropagation()}><div className="flex items-center justify-between mb-5"><h2 className="font-bold text-lg">{title}</h2><button className="btn btn-ghost icon-btn" aria-label="Fechar" onClick={onClose}><X size={19}/></button></div>{children}</div></div>,document.body)
+import type {
+  ButtonHTMLAttributes,
+  HTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from 'react'
+import { createPortal } from 'react-dom'
+import { AlertCircle, CheckCircle2, Inbox, LoaderCircle, Search, X } from 'lucide-react'
+import { cn } from '../lib/utils'
+
+type ButtonProps=ButtonHTMLAttributes<HTMLButtonElement>&{variant?:'default'|'primary'|'ghost'|'danger';size?:'sm'|'md'|'lg'|'icon'}
+export const Button=({className='',variant='default',size='md',type='button',...props}:ButtonProps)=><button type={type} className={cn('btn',variant!=='default'&&`btn-${variant}`,size!=='md'&&`btn-${size}`,className)} {...props}/>
+
+export const Input=({className='',...props}:InputHTMLAttributes<HTMLInputElement>)=><input className={cn('input',className)} {...props}/>
+export const Select=({className='',children,...props}:SelectHTMLAttributes<HTMLSelectElement>)=><select className={cn('input select',className)} {...props}>{children}</select>
+export const Textarea=({className='',...props}:TextareaHTMLAttributes<HTMLTextAreaElement>)=><textarea className={cn('input textarea',className)} {...props}/>
+
+export const Card=({children,className='',...props}:HTMLAttributes<HTMLDivElement>)=><div className={cn('panel',className)} {...props}>{children}</div>
+export const PageTitle=({title,subtitle,action}:{title:string,subtitle:string,action?:ReactNode})=><div className="page-title"><div><h1>{title}</h1><p>{subtitle}</p></div>{action}</div>
+export const SearchBox=({value,onChange,placeholder='Buscar...'}:{value:string,onChange:(v:string)=>void,placeholder?:string})=><label className="search-box"><Search aria-hidden="true"/><span className="sr-only">Pesquisar</span><Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>{value&&<button onClick={()=>onChange('')} aria-label="Limpar"><X/></button>}</label>
+
+const statusTone=(status:string)=>status==='Aprovado'||status==='Ativo'||status==='Ativa'||status==='Concluído'?'ok':status==='Recusado'||status==='Reembolsado'||status==='Inadimplente'?'bad':status==='Pendente'||status==='Processando'?'warn':'info'
+export const Badge=({children,tone='neutral',className='',...props}:HTMLAttributes<HTMLSpanElement>&{tone?:'neutral'|'ok'|'warn'|'bad'|'info'})=><span className={cn('badge',tone!=='neutral'&&`badge-${tone}`,className)} {...props}>{children}</span>
+export const StatusBadge=({status}:{status:string})=><Badge tone={statusTone(status)}>{status}</Badge>
+
+export const Empty=({text='Nenhum registro encontrado',title='Nada por aqui'}:{text?:string;title?:string})=><div className="empty-state"><span><Inbox/></span><strong>{title}</strong><p>{text}</p></div>
+export const Loading=({label='Carregando'}:{label?:string})=><div className="loading-state" role="status"><LoaderCircle/><span>{label}</span></div>
+export const Skeleton=({className='',...props}:HTMLAttributes<HTMLDivElement>)=><div className={cn('skeleton',className)} aria-hidden="true" {...props}/>
+export const StateMessage=({tone='error',title,children}:HTMLAttributes<HTMLDivElement>&{tone?:'error'|'success';title:string})=><div className={cn('state-message',`state-message-${tone}`)} role={tone==='error'?'alert':'status'}>{tone==='error'?<AlertCircle/>:<CheckCircle2/>}<span><strong>{title}</strong>{children}</span></div>
+
+export const Tooltip=({content,children}:{content:string;children:ReactNode})=><span className="tooltip" data-tooltip={content}>{children}</span>
+export const Dropdown=({open,children,align='right',className=''}:{open:boolean;children:ReactNode;align?:'left'|'right';className?:string})=>open?<div className={cn('dropdown',`dropdown-${align}`,className)} role="menu">{children}</div>:null
+
+export const Avatar=({name}:{name:string})=><div className="ui-avatar">{name.split(' ').slice(0,2).map(x=>x[0]).join('')}</div>
+export const Modal=({title,children,onClose}:{title:string;children:ReactNode;onClose:()=>void})=>createPortal(<div className="modal-backdrop" onMouseDown={onClose}><section className="modal-surface" role="dialog" aria-modal="true" aria-label={title} onMouseDown={event=>event.stopPropagation()}><header><h2>{title}</h2><Button variant="ghost" size="icon" aria-label="Fechar" onClick={onClose}><X/></Button></header><div className="modal-content">{children}</div></section></div>,document.body)

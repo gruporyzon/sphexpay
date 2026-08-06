@@ -29,11 +29,9 @@ describe('segurança, SEO e responsividade pública',()=>{
  it('usa direção pública clara e composição própria de celular e notificações',()=>{
   expect(landing).toContain('landing landing-v2')
   expect(landing).toContain('<PublicPhoneExperience/>')
-  expect(landing).toContain('smart-notifications-section')
   expect(css).toContain('Public landing v2 — original light editorial direction for SphexPay.')
   expect(css).toContain('background:var(--pv2-paper)')
   expect(css).toContain('.public-phone-stage')
-  expect(css).toContain('.smart-notifications-section')
  })
  it('mantém o hero final compacto, profundo e responsivo',()=>{
   const finalHero=css.slice(css.indexOf('/* Premium compact hero — final public cascade. */'))
@@ -45,15 +43,15 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(finalHero).toContain('@media(max-width:767px)')
   expect(finalHero).toContain('@media(prefers-reduced-motion:reduce)')
  })
- it('inclui narrativa editorial, fluxo e carrossel sem dependências pesadas',()=>{
+ it('inclui narrativa editorial, fluxo e showcase acessível sem dependências pesadas',()=>{
   const editorial=read('src/components/landing/PublicEditorialSections.tsx')
+  const commerce=read('src/components/landing/PublicCheckoutShowcase.tsx')
   expect(editorial).toContain('PublicOperationalFlow')
   expect(editorial).toContain('PublicEditorialBenefits')
-  expect(editorial).toContain('PublicResourceRail')
-  expect(editorial).toContain("scrollBy({left:direction*340,behavior:'smooth'})")
-  expect(editorial).not.toMatch(/WebGL|three|framer-motion|supabase|Realtime/)
-  expect(css).toContain('scroll-snap-type:x mandatory')
-  expect(css).toContain('overscroll-behavior-inline:contain')
+  expect(commerce).toContain('PublicCheckoutShowcase')
+  expect(commerce).toContain('role="tablist"')
+  expect(commerce).toContain('role="tabpanel"')
+  expect(`${editorial}${commerce}`).not.toMatch(/WebGL|three|framer-motion|supabase|Realtime/)
  })
  it('centraliza altura do header, offsets de âncora e ritmo das seções',()=>{
   const final=css.slice(css.indexOf('/* Public navigation and section rhythm — authoritative final layer. */'))

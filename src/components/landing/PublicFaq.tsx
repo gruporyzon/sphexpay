@@ -1,19 +1,137 @@
 import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { ArrowUpRight, Plus, X } from 'lucide-react'
 
-const faqs=[
- ['O que é a SphexPay?','É uma plataforma para organizar a visão de vendas, transações, produtos, clientes, financeiro, notificações e resultados. O processamento real depende de provedores oficiais ainda não conectados neste ambiente.'],
- ['Como criar minha conta?','Acesse “Criar conta”, preencha os dados suportados e siga as orientações de confirmação enviadas pelo sistema de autenticação.'],
- ['Como confirmar meu e-mail?','Abra a mensagem enviada após o cadastro e use o link de confirmação. Se necessário, a tela de confirmação permite solicitar um novo envio após o intervalo de segurança.'],
- ['Quais recursos estão disponíveis?','O produto possui Dashboard, vendas, transações, produtos, clientes, links, financeiro, notificações, premiações e recursos de inteligência. Algumas operações dependem de integrações oficiais.'],
- ['Como funcionam vendas e transações?','A plataforma organiza os eventos que estiverem disponíveis para a conta. Ela não cria transações financeiras reais pelo navegador.'],
- ['Como funciona o campeonato?','A configuração atual prevê período, meta, critérios de elegibilidade e três prêmios. O regulamento ainda está marcado como provisório e será confirmado antes da campanha.'],
- ['Como funcionam as premiações?','A jornada possui os marcos Sphex 10K, 100K, 500K, 1M e 5M+. A plataforma não apresenta ganhadores sem registros confirmados.'],
- ['Como recuperar minha senha?','Use “Esqueci minha senha” no login. A resposta é neutra e o link seguro permite definir uma nova senha quando a sessão de recuperação é válida.'],
- ['Como falar com o suporte?','Um canal público de suporte ainda não está documentado no projeto. Ele será incluído aqui quando houver confirmação oficial.']
+const INITIAL_FAQ_COUNT = 5
+
+const faqs = [
+  {
+    question: 'O que é a SphexPay?',
+    answer:
+      'A SphexPay é uma plataforma visual para acompanhar operações, vendas, transações, recursos e fluxos de produto em uma experiência centralizada.',
+  },
+  {
+    question: 'Como criar minha conta?',
+    answer:
+      'Você pode iniciar seu cadastro pela landing page e seguir o fluxo de criação de conta conforme a disponibilidade do ambiente.',
+  },
+  {
+    question: 'Quais recursos estão disponíveis?',
+    answer:
+      'A experiência inclui áreas de operação, visão de vendas, recursos visuais, acompanhamento de eventos e módulos de apoio ao crescimento operacional.',
+  },
+  {
+    question: 'Como acompanho minhas vendas?',
+    answer:
+      'A plataforma organiza informações relevantes em painéis visuais, indicadores e módulos de acompanhamento pensados para facilitar a leitura da operação.',
+  },
+  {
+    question: 'Como funciona o checkout?',
+    answer:
+      'A experiência de checkout pode ser adaptada a diferentes contextos, com foco em clareza e continuidade da jornada. O processamento real depende das integrações oficiais disponíveis.',
+  },
+  {
+    question: 'Posso acompanhar notificações e eventos?',
+    answer:
+      'Sim. A interface foi desenhada para apresentar atualizações, eventos e contextos operacionais de forma mais clara e organizada.',
+  },
+  {
+    question: 'A plataforma é responsiva?',
+    answer:
+      'Sim. A proposta visual da SphexPay considera diferentes tamanhos de tela, mantendo leitura, contexto e consistência de uso.',
+  },
 ] as const
 
-export function PublicFaq(){
- const [open,setOpen]=useState<number|null>(0)
- return <section className="faq-section" id="ajuda"><header data-reveal><span>PERGUNTAS FREQUENTES</span><h2>Informação clara antes de começar.</h2></header><div data-reveal>{faqs.map(([question,answer],index)=>{const expanded=open===index,id=`faq-answer-${index}`;return <article key={question}><h3><button aria-expanded={expanded} aria-controls={id} onClick={()=>setOpen(expanded?null:index)}>{question}<ChevronDown/></button></h3><div id={id} hidden={!expanded}><p>{answer}</p></div></article>})}</div></section>
+export function PublicFaq() {
+  const [open, setOpen] = useState<number | null>(0)
+  const [showAll, setShowAll] = useState(false)
+  const visibleFaqs = showAll ? faqs : faqs.slice(0, INITIAL_FAQ_COUNT)
+  const remaining = faqs.length - INITIAL_FAQ_COUNT
+
+  return (
+    <section className="spx-faq-section" id="ajuda" aria-labelledby="spx-faq-title">
+      <div className="spx-faq-container">
+        <header className="spx-faq-copy">
+          <span className="spx-faq-label" data-motion>
+            <i aria-hidden="true" /> FAQ
+          </span>
+          <h2 id="spx-faq-title">
+            <span data-motion data-motion-delay="1">Respostas</span>
+            <span className="spx-faq-accent" data-motion data-motion-delay="2">diretas.</span>
+          </h2>
+          <i className="spx-faq-stroke" aria-hidden="true" data-motion data-motion-delay="3" />
+          <p data-motion data-motion-delay="3">
+            As principais respostas sobre acesso, recursos e operação da SphexPay, organizadas de forma simples.
+          </p>
+          <a className="spx-faq-help" href="#spx-faq-list" data-motion data-motion-delay="4">
+            Central de ajuda <ArrowUpRight aria-hidden="true" />
+          </a>
+        </header>
+
+        <div className="spx-faq-content">
+          <div className="spx-faq-list" id="spx-faq-list">
+            {visibleFaqs.map(({ question, answer }, index) => {
+              const expanded = open === index
+              const answerId = `spx-faq-answer-${index}`
+              const questionId = `spx-faq-question-${index}`
+
+              return (
+                <article
+                  className={`spx-faq-item${expanded ? ' is-open' : ''}`}
+                  data-motion
+                  data-motion-delay={String(Math.min(index + 1, 6))}
+                  key={question}
+                >
+                  <h3>
+                    <button
+                      id={questionId}
+                      type="button"
+                      aria-expanded={expanded}
+                      aria-controls={answerId}
+                      onClick={() => setOpen(expanded ? null : index)}
+                    >
+                      <small aria-hidden="true">{String(index + 1).padStart(2, '0')}</small>
+                      <span>{question}</span>
+                      <i className="spx-faq-toggle" aria-hidden="true">
+                        {expanded ? <X /> : <Plus />}
+                      </i>
+                    </button>
+                  </h3>
+                  <div
+                    className="spx-faq-answer"
+                    id={answerId}
+                    role="region"
+                    aria-labelledby={questionId}
+                    aria-hidden={!expanded}
+                  >
+                    <div><p>{answer}</p></div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+
+          {remaining > 0 && (
+            <button
+              className="spx-faq-more"
+              type="button"
+              aria-expanded={showAll}
+              aria-controls="spx-faq-list"
+              onClick={() => {
+                setShowAll((current) => !current)
+                if (showAll && open !== null && open >= INITIAL_FAQ_COUNT) setOpen(0)
+              }}
+            >
+              <span>{showAll ? 'Exibir menos' : `Exibir mais +${remaining}`}</span>
+              <Plus aria-hidden="true" />
+            </button>
+          )}
+
+          <a className="spx-faq-bottom-cta" href="#spx-faq-list">
+            <span>Ainda com dúvidas? Explore mais respostas</span>
+            <ArrowUpRight aria-hidden="true" />
+          </a>
+        </div>
+      </div>
+    </section>
+  )
 }
