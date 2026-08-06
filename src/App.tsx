@@ -30,11 +30,28 @@ import { SoundProvider } from './providers/SoundProvider'
 import CompetitionPage from './pages/Competition'
 import { DashboardDataProvider } from './providers/DashboardDataProvider'
 import { Loading } from './components/ui'
+import DevDashboardPreview from './pages/DevDashboardPreview'
+import DevLiveSalesPreview from './pages/DevLiveSalesPreview'
+import DevTransactionsPreview from './pages/DevTransactionsPreview'
+import DevProductsPreview from './pages/DevProductsPreview'
+import DevCustomersPreview from './pages/DevCustomersPreview'
+import DevFinancePreview from './pages/DevFinancePreview'
+import DevNotificationsPreview from './pages/DevNotificationsPreview'
+import { DevPreviewNavigator } from './components/dev/DevPreviewNavigator'
+import DevSettingsPreview from './pages/DevSettingsPreview'
 
 const LiveSalesWorld=lazy(()=>import('./pages/LiveSalesWorld'))
 
 const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<ProductsPage/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><Routes>
+ {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/transactions-preview" element={<><DevPreviewNavigator/><DevTransactionsPreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/products-preview" element={<><DevPreviewNavigator/><DevProductsPreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/customers-preview" element={<><DevPreviewNavigator/><DevCustomersPreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/finance-preview" element={<><DevPreviewNavigator/><DevFinancePreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/notifications-preview" element={<><DevPreviewNavigator/><DevNotificationsPreview/></>}/>}
+ {import.meta.env.DEV&&<Route path="/dev/settings-preview" element={<><DevPreviewNavigator/><DevSettingsPreview/></>}/>}
  <Route path="/" element={<LandingPage/>}/>
  <Route path="/termos" element={<LegalPage type="terms"/>}/>
  <Route path="/privacidade" element={<LegalPage type="privacy"/>}/>
