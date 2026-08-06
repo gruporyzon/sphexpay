@@ -22,7 +22,7 @@ export default function LiveSales({transactions=false}:{transactions?:boolean}){
  useEffect(()=>{if(live.demo)return;let active=true;dashboardService.loadRates().then(value=>{if(active)setRates(value)}).catch(()=>{});return()=>{active=false}},[live.demo])
  const effectiveRates=live.demo?demoRates:rates
  const rows=useMemo(()=>live.sales.filter(row=>`${row.transactionId} ${row.productName} ${row.buyerName||''}`.toLowerCase().includes(query.toLowerCase())&&(status==='all'||row.status===status)),[live.sales,query,status])
- return <div className={transactions?'transactions-page page-enter':'page-enter'}>
+ return <div className={transactions?'transactions-page internal-real-page page-enter':'live-sales-page internal-real-page page-enter'}>
   <PageTitle title={transactions?'Transações':'Vendas'} subtitle={live.demo?'Acompanhe os registros recentes. Ações financeiras reais estão desabilitadas.':transactions?'Movimentações financeiras persistidas no Supabase.':'Vendas reais confirmadas e atualizadas em tempo real.'} action={!live.demo?<button className="btn" onClick={()=>void live.refresh()} disabled={live.loading}><RefreshCcw className={live.loading?'spin':''}/> Atualizar</button>:undefined}/>
   <Card className="dashboard-filter-bar"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/>{!live.demo&&<RealtimeStatus status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</Card>
   {live.error&&<p className="dashboard-admin-warning" role="alert">{live.error}</p>}
