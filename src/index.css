@@ -422,6 +422,17 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .internal-page-content>.page-enter .table th{color:var(--internal-text-muted);border-color:var(--internal-border-subtle)}
 .internal-page-content>.page-enter .table td{border-color:var(--internal-border-subtle)}
 .internal-page-content>.page-enter .table tbody tr:hover{background:color-mix(in srgb,var(--internal-accent) 5%,transparent)}
+.internal-page-content>.page-enter .page-title{margin-bottom:18px}
+.internal-page-content>.page-enter .page-title h1{font-size:clamp(26px,2.4vw,34px);font-weight:600;letter-spacing:-.04em}
+.internal-page-content>.page-enter .page-title p{max-width:620px;color:var(--internal-text-secondary);font-size:13px;line-height:1.5}
+.internal-page-content>.page-enter .card,.internal-page-content>.page-enter .panel{border-radius:16px}
+.internal-page-content>.page-enter .input,.internal-page-content>.page-enter select.input{border-color:var(--internal-border-default);background:var(--internal-surface-2);color:var(--internal-text-primary);min-height:38px}
+.internal-page-content>.page-enter .input:focus,.internal-page-content>.page-enter select.input:focus{border-color:color-mix(in srgb,var(--internal-accent) 65%,var(--internal-border-default));box-shadow:0 0 0 3px color-mix(in srgb,var(--internal-accent) 16%,transparent);outline:0}
+.internal-page-content>.page-enter .table{font-variant-numeric:tabular-nums}
+.internal-page-content>.page-enter .table th{font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+.internal-page-content>.page-enter .table td{font-size:12px}
+.internal-page-content>.page-enter .financial-money,.internal-page-content>.page-enter .product-price{font-variant-numeric:tabular-nums}
+@media(max-width:700px){.internal-page-content>.page-enter .page-title{align-items:flex-start;gap:12px}.internal-page-content>.page-enter .page-title h1{font-size:26px}.internal-page-content>.page-enter .page-title p{font-size:12px}.internal-page-content>.page-enter .card{border-radius:13px}}
 .internal-sidebar .sidebar-brand{height:76px;min-height:76px;padding-inline:18px}
 .internal-sidebar .sidebar-navigation{padding-inline:10px}
 .internal-sidebar .sidebar-link:focus-visible,.internal-sidebar .competition-sidebar-item:focus-visible{outline-offset:-2px}
