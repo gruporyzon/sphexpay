@@ -1,5 +1,5 @@
 const CACHE='sphexpay-static-v12'
-const STATIC=['/offline.html','/manifest.webmanifest','/icons/sphexpay-app-192.png','/branding/sphexpay-logo-96.png']
+const STATIC=['/offline.html','/manifest.webmanifest','/icons/sphexpay-app-192.png','/branding/sphex-logo-master.png']
 
 self.addEventListener('install',event=>{
  self.skipWaiting()
@@ -53,7 +53,7 @@ async function handlePush(event){
  await self.registration.showNotification(title,{
   body,
   icon:typeof payload.icon==='string'&&payload.icon.startsWith('/icons/')?payload.icon:'/icons/sphexpay-app-192.png',
-  badge:typeof payload.badge==='string'&&payload.badge.startsWith('/branding/')?payload.badge:'/branding/sphexpay-logo-96.png',
+  badge:typeof payload.badge==='string'&&payload.badge.startsWith('/branding/')?payload.badge:'/branding/sphex-logo-master.png',
   tag,
   renotify:false,
   silent:false,

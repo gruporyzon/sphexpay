@@ -1,7 +1,8 @@
 import { cn } from '../../lib/utils'
 
-type SphexPayLogoProps={className?:string;showName?:boolean;priority?:boolean}
+type SphexPayLogoProps={className?:string;showName?:boolean;showWordmark?:boolean;priority?:boolean;shortName?:boolean;size?:number|string;alt?:string}
 
-export function SphexPayLogo({className,showName=false,priority=false}:SphexPayLogoProps){
- return <span className={cn('sphexpay-brand',className)} aria-label="SphexPay"><img src="/branding/sphexpay-logo-96.png" alt="" width="96" height="96" draggable="false" loading={priority?'eager':'lazy'} fetchPriority={priority?'high':'auto'}/>{showName&&<span className="sphexpay-wordmark">Sphex<span>Pay</span></span>}</span>
+export function SphexPayLogo({className,showName=false,showWordmark=false,priority=false,size=96,alt='Sphex'}:SphexPayLogoProps){
+ const wordmark=showName||showWordmark
+ return <span className={cn('sphexpay-brand',className)} aria-label="Sphex"><img src="/branding/sphex-logo-master.png" alt={wordmark?'':alt} width={size} height={size} draggable="false" loading={priority?'eager':'lazy'} fetchPriority={priority?'high':'auto'} style={{objectFit:'contain',objectPosition:'center',height:'auto'}}/>{wordmark&&<span className="sphexpay-wordmark">Sphex</span>}</span>
 }

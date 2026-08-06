@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react'
+import { BarChart3,CheckCircle2,CreditCard,ShoppingBag,Wallet } from 'lucide-react'
 import { type DashboardDemoEvent,useAnimatedDashboardValue,useDashboardDemo } from '../../hooks/useDashboardDemo'
 
 const money=new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'})
@@ -11,9 +11,9 @@ const chartPaths=[
  'M44 179 C84 158 108 164 145 133 S205 139 242 104 S301 117 338 76 S394 90 431 61 S489 72 532 37 S575 46 600 18',
 ]
 
-function LiveMetric({label,target,status,kind='money'}:{label:string;target:number;status:string;kind?:'money'|'integer'}){
+function LiveMetric({label,target,status,kind='money',Icon,trend}:{label:string;target:number;status:string;kind?:'money'|'integer';Icon:typeof Wallet;trend:string}){
  const value=useAnimatedDashboardValue(target)
- return <article className="live-metric"><span>{label}</span><strong>{kind==='money'?money.format(value):integer.format(value)}</strong><small><CheckCircle2/>{status}</small><i aria-hidden="true"/></article>
+ return <article className="live-metric"><header><span><Icon/>{label}</span><small>{trend}</small></header><strong>{kind==='money'?money.format(value):integer.format(value)}</strong><footer><CheckCircle2/>{status}</footer><i aria-hidden="true"/></article>
 }
 
 function ProductChart({total,revision}:{total:number;revision:number}){
@@ -27,5 +27,5 @@ function LiveSales({events}:{events:DashboardDemoEvent[]}){
 
 export function PublicDashboardDemo({className=''}:{className?:string}){
  const {metrics,events,revision}=useDashboardDemo()
- return <div className={`preview-overview live-overview ${className}`.trim()}><div className="preview-metrics"><LiveMetric label="Faturamento" target={metrics.revenue} status="+8,6%"/><LiveMetric label="Resultado líquido" target={metrics.net} status="+6,4%"/><LiveMetric label="Vendas aprovadas" target={metrics.sales} status={`${metrics.approval.toLocaleString('pt-BR')}%`} kind="integer"/></div><ProductChart total={metrics.revenue} revision={revision}/><LiveSales events={events}/></div>
+ return <div className={`preview-overview live-overview ${className}`.trim()}><div className="preview-metrics"><LiveMetric label="Receita total" target={metrics.revenue} status="+8,6%" trend="vs. período anterior" Icon={Wallet}/><LiveMetric label="Receita líquida" target={metrics.net} status="+6,4%" trend="margem saudável" Icon={BarChart3}/><LiveMetric label="Pedidos" target={metrics.sales} status={`${metrics.approval.toLocaleString('pt-BR')}% aprovados`} kind="integer" trend="hoje" Icon={ShoppingBag}/><LiveMetric label="Ticket médio" target={284.9+revision*2.4} status="+4,2%" trend="por pedido" Icon={CreditCard}/></div><ProductChart total={metrics.revenue} revision={revision}/><LiveSales events={events}/></div>
 }
