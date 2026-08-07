@@ -16,7 +16,7 @@ describe('entrada pública SphexPay',()=>{
   expect(screen.getAllByRole('heading',{level:1})).toHaveLength(1)
   expect(screen.getByRole('heading',{name:/Pagamentos em movimento.*Resultados sob controle/i})).toBeInTheDocument()
   expect(view.container.querySelector('#experiencia')).toBeInTheDocument()
-  expect(view.container.querySelector('#recursos')).toBeInTheDocument()
+  expect(view.container.querySelector('#recursos')).not.toBeInTheDocument()
   expect(view.container.querySelector('#seguranca')).not.toBeInTheDocument()
   expect(screen.queryByText('SEGURANÇA DESDE O ACESSO')).not.toBeInTheDocument()
   expect(view.container.querySelector('#premiacoes')).toBeInTheDocument()
@@ -29,7 +29,7 @@ describe('entrada pública SphexPay',()=>{
   expect(view.container.querySelector('.phone-payment-chip')).toHaveTextContent(/Pix.*Cartão/)
   expect(screen.getByText('Venda aprovada com sucesso')).toBeInTheDocument()
   expect(screen.getByRole('heading',{name:'Cada venda movimenta toda a operação.'})).toBeInTheDocument()
-  expect(screen.getByRole('heading',{name:'Criado para sua operação avançar.'})).toBeInTheDocument()
+  expect(screen.queryByRole('heading',{name:'Criado para sua operação avançar.'})).not.toBeInTheDocument()
   expect(screen.getByRole('heading',{name:'Vendas multiplicadas.'})).toBeInTheDocument()
  })
  it('oferece tabs acessíveis para os recursos de checkout',()=>{
@@ -69,13 +69,14 @@ describe('entrada pública SphexPay',()=>{
  })
  it('mantém todos os destinos da navbar ativos e associados a seções reais',()=>{
   const {container}=renderLanding(),nav=screen.getByRole('navigation',{name:'Navegação principal'})
-  for(const [label,id] of [['Recursos','recursos'],['Soluções','solucoes'],['Premiações','premiacoes'],['Campeonato','campeonato'],['Dúvidas','ajuda']] as const){
+  for(const [label,id] of [['Soluções','solucoes'],['Premiações','premiacoes'],['Campeonato','campeonato'],['Dúvidas','ajuda']] as const){
    const link=within(nav).getByRole('link',{name:label})
    expect(link).toHaveAttribute('href',`#${id}`)
    expect(container.querySelector(`#${id}`)).toBeInTheDocument()
    fireEvent.click(link)
    expect(link).toHaveAttribute('aria-current','location')
   }
+  expect(within(nav).queryByRole('link',{name:'Recursos'})).not.toBeInTheDocument()
   expect(within(nav).queryByRole('link',{name:'Segurança'})).not.toBeInTheDocument()
  })
  it('troca a prova visual por tabs reais, usa mapa geográfico e aceita navegação por setas',async()=>{

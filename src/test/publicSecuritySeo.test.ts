@@ -43,15 +43,12 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(finalHero).toContain('@media(max-width:767px)')
   expect(finalHero).toContain('@media(prefers-reduced-motion:reduce)')
  })
- it('inclui narrativa editorial, fluxo e showcase acessível sem dependências pesadas',()=>{
-  const editorial=read('src/components/landing/PublicEditorialSections.tsx')
+ it('mantém o showcase acessível sem dependências pesadas',()=>{
   const commerce=read('src/components/landing/PublicCheckoutShowcase.tsx')
-  expect(editorial).toContain('PublicOperationalFlow')
-  expect(editorial).toContain('PublicEditorialBenefits')
   expect(commerce).toContain('PublicCheckoutShowcase')
   expect(commerce).toContain('role="tablist"')
   expect(commerce).toContain('role="tabpanel"')
-  expect(`${editorial}${commerce}`).not.toMatch(/WebGL|three|framer-motion|supabase|Realtime/)
+  expect(commerce).not.toMatch(/WebGL|three|framer-motion|supabase|Realtime/)
  })
  it('centraliza altura do header, offsets de âncora e ritmo das seções',()=>{
   const final=css.slice(css.indexOf('/* Public navigation and section rhythm — authoritative final layer. */'))
