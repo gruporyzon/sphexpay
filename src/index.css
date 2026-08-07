@@ -1574,3 +1574,16 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   .dashboard-page .dashboard-period-control,.dashboard-page .dashboard-currency-selector{width:100%}
   .dashboard-page .dashboard-filter-actions .dashboard-layout-trigger{width:100%;justify-content:center}
 }
+
+/* Shared functional icon language for the authenticated workspace. */
+.internal-app-shell .sidebar-link svg,
+.internal-app-shell .competition-sidebar-item svg,
+.internal-app-shell .internal-topbar svg,
+.internal-app-shell .dashboard-filter-bar svg,
+.internal-app-shell .dashboard-layout-trigger svg{stroke-width:1.7}
+.internal-app-shell .sidebar-link svg,
+.internal-app-shell .competition-sidebar-item svg{width:18px;height:18px}
+.internal-app-shell .internal-topbar .icon-btn svg{width:18px;height:18px}
+.internal-app-shell .sidebar-link:hover svg,
+.internal-app-shell .sidebar-link:focus-visible svg,
+.internal-app-shell .competition-sidebar-item:hover svg{stroke-width:1.8}
