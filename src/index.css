@@ -1734,3 +1734,75 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   .dashboard-page .dashboard-period-control{flex-basis:100px;width:100px}
   .dashboard-page .dashboard-currency-selector{flex-basis:174px;min-width:174px}
 }
+
+/* Final authenticated mobile pass: drawer, theme control and compact dashboard hierarchy. */
+@media(max-width:768px){
+  .internal-topbar{
+    position:sticky;
+    top:0;
+    z-index:70;
+    box-sizing:border-box;
+    height:calc(54px + var(--safe-top));
+    min-height:calc(54px + var(--safe-top));
+    padding:var(--safe-top) max(10px,var(--safe-right)) 4px max(10px,var(--safe-left));
+    gap:6px;
+  }
+  .internal-topbar .mobile-page-title{display:none!important}
+  .internal-topbar .header-brand{display:inline-flex;flex:0 0 28px;width:28px}
+  .internal-topbar .header-brand img{width:28px;height:28px}
+  .internal-topbar .mobile-menu-toggle{display:grid!important;flex:0 0 44px;width:44px;min-width:44px;height:44px;min-height:44px}
+  .internal-topbar .header-actions{display:flex;align-items:center;gap:2px;margin-left:auto;min-width:0}
+  .internal-topbar .header-actions>.theme-toggle,
+  .internal-topbar .header-actions>.notification-bell-wrap{display:block!important}
+  .internal-topbar .header-actions>.theme-toggle{width:42px;min-width:42px;height:42px;min-height:42px}
+  .internal-topbar .header-actions>.theme-toggle svg{width:18px;height:18px}
+  .internal-topbar .notification-bell,
+  .internal-topbar .header-actions>.notification-bell-wrap .notification-bell{display:grid;width:42px;min-width:42px;height:42px;min-height:42px}
+  .internal-topbar .header-profile-wrap{display:block;min-width:36px}
+  .internal-topbar .header-profile{padding:1px;border:0}
+  .internal-topbar .header-profile-trigger{width:12px;min-width:12px;padding:0}
+  .internal-topbar .header-profile-trigger>span,.internal-topbar .header-profile-trigger>svg{display:none}
+  .internal-topbar .profile-avatar{width:34px;height:34px}
+
+  .internal-sidebar{
+    z-index:80!important;
+    width:min(88vw,320px)!important;
+    height:100dvh;
+    min-height:100dvh;
+    padding-left:var(--safe-left);
+    padding-bottom:var(--safe-bottom);
+    transform:translate3d(-105%,0,0);
+  }
+  .internal-sidebar.mobile-open{transform:translate3d(0,0,0)}
+  .app-menu-backdrop{position:fixed;z-index:75;inset:0;width:100%;height:100%;background:rgba(0,0,0,.58);backdrop-filter:blur(3px)}
+  .internal-page-content{padding-top:12px;padding-right:max(16px,var(--safe-right));padding-left:max(16px,var(--safe-left));padding-bottom:max(24px,var(--safe-bottom))}
+  .dashboard-page>.page-title{margin-bottom:12px;gap:5px}
+  .dashboard-page>.page-title h1{font-size:clamp(30px,8vw,36px);line-height:1.06}
+  .dashboard-page>.page-title p{max-width:100%;margin-top:3px;font-size:15px;line-height:1.4}
+  .dashboard-page .dashboard-preview-heading{margin-top:4px;margin-bottom:10px}
+  .dashboard-page .dashboard-preview-heading h2{display:none}
+  .dashboard-page .dashboard-preview-heading .section-eyebrow{font-size:10px}
+  .dashboard-page .internal-dashboard-layout{grid-template-columns:minmax(0,1fr);gap:10px}
+  .dashboard-page .dashboard-preview-summary{grid-template-columns:minmax(0,1fr);gap:8px}
+  .dashboard-page .dashboard-preview-balance{grid-row:auto;padding:15px}
+  .dashboard-page .dashboard-preview-balance>strong{font-size:clamp(24px,8vw,32px)}
+  .dashboard-page .dashboard-preview-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .dashboard-page .dashboard-preview-metrics .metric-card{min-width:0;min-height:116px;padding:13px}
+  .dashboard-page .dashboard-preview-metrics .metric-card .metric-value{font-size:clamp(17px,5.8vw,22px)}
+  .dashboard-page .dashboard-preview-metrics .metric-card .metric-label{font-size:10px;white-space:normal;line-height:1.25}
+  .dashboard-page .dashboard-preview-mini-list{padding:3px 13px}
+  .dashboard-page .dashboard-preview-chart-panel{padding:12px}
+}
+
+@media(max-width:389px){
+  .internal-topbar{gap:3px;padding-inline:max(8px,var(--safe-left)) max(8px,var(--safe-right))}
+  .internal-topbar .header-actions>.theme-toggle{display:grid!important;width:40px;min-width:40px}
+  .internal-topbar .notification-bell,.internal-topbar .header-actions>.notification-bell-wrap .notification-bell{width:40px;min-width:40px}
+  .internal-topbar .profile-avatar{width:32px;height:32px}
+  .internal-page-content{padding-inline:12px}
+}
+
+@media(max-width:359px){
+  .dashboard-page .dashboard-preview-metrics{grid-template-columns:1fr}
+  .dashboard-page .dashboard-preview-metrics .metric-card{min-height:108px}
+}

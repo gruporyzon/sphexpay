@@ -52,7 +52,7 @@ export function DashboardOverviewVisual({
 }: DashboardOverviewVisualProps) {
   return <>
     <div className="dashboard-preview-heading">
-      <div><span className="section-eyebrow"><TrendingUp /> {eyebrow}</span><h2>{heading}</h2></div>
+      <div><span className="section-eyebrow"><TrendingUp /> {eyebrow}</span>{heading&&<h2>{heading}</h2>}</div>
       {showPeriodFilters && <div className="dashboard-preview-filters"><Filter /><span>Período</span><button className="active">7 dias</button></div>}
     </div>
     <section className="internal-dashboard-layout">
