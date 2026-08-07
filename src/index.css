@@ -1426,6 +1426,7 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 
 /* Keep the desktop sidebar labels synchronized with the React collapsed state. */
 .sidebar-collapse-toggle{display:none}
+@media(min-width:1024px){.mobile-menu-toggle,.mobile-sidebar-close{display:none!important}}
 @media(min-width:1024px){
  .internal-topbar .sidebar-collapse-toggle{display:inline-flex;flex:0 0 44px}
  .internal-sidebar .sidebar-collapse-toggle{display:none}
@@ -1444,3 +1445,4 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-footer .btn{justify-content:flex-start;padding-inline:12px}
  .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-footer .btn span{display:inline}
 }
+@media(max-width:1023px){.mobile-menu-toggle{display:grid}.mobile-sidebar-close{display:grid}}
