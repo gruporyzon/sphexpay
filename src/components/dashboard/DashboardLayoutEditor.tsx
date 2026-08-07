@@ -7,7 +7,7 @@ type Editor=ReturnType<typeof useDashboardLayout>
 const breakpointLabels:Record<DashboardBreakpoint,string>={desktop:'Computador',tablet:'Tablet',mobile:'Celular'}
 const presetLabels:Record<DashboardLayoutPreset,string>={default:'Padrão','metrics-first':'Métricas primeiro','chart-focus':'Gráfico em destaque','sales-focus':'Vendas recentes em destaque',compact:'Compacto',executive:'Executivo'}
 
-export function DashboardLayoutButton({editor}:{editor:Editor}){return <button className="btn dashboard-layout-trigger" onClick={editor.enter}><LayoutGrid/> Editar layout</button>}
+export function DashboardLayoutButton({editor}:{editor:Editor}){return <button className="btn dashboard-layout-trigger" aria-label="Editar layout" onClick={editor.enter}><LayoutGrid/><span className="dashboard-layout-label">Editar layout</span></button>}
 
 export function DashboardLayoutEditor({editor,widgets}:{editor:Editor;widgets:Record<DashboardWidgetId,ReactNode>}){
  const [dragging,setDragging]=useState<DashboardWidgetId|null>(null),items=editor.layouts[editor.breakpoint].slice().sort((a,b)=>a.order-b.order)
