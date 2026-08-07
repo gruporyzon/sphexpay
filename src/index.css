@@ -1423,3 +1423,16 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 @media(max-width:767px){.app-header{height:calc(64px + var(--safe-top));min-height:calc(64px + var(--safe-top));padding-top:max(8px,var(--safe-top));padding-right:max(8px,var(--safe-right));padding-bottom:8px;padding-left:max(8px,var(--safe-left));gap:4px}.app-header>.icon-btn,.app-header .header-actions>.icon-btn,.app-header .notification-bell{width:44px;min-width:44px;height:44px}.app-header .header-brand{display:inline-flex;flex:0 0 30px;width:30px}.app-header .header-brand img{width:30px;height:30px}.mobile-page-title{display:block;font-size:.75rem}.header-actions{gap:0}.header-profile{padding:4px 1px;border:0}.header-profile>span,.header-profile>svg{display:none}.app-main{min-height:calc(100dvh - 64px - var(--safe-top));padding:18px max(14px,var(--safe-right)) max(24px,var(--safe-bottom)) max(14px,var(--safe-left))}}
 @media(max-width:389px){.mobile-page-title{font-size:.6875rem}.header-actions>.icon-btn{display:none}.app-main{padding-inline:12px}}
 @media(max-width:359px){.mobile-page-title{display:none}.header-brand{margin-right:auto}}
+
+/* Keep the desktop sidebar labels synchronized with the React collapsed state. */
+.sidebar-collapse-toggle{display:none}
+@media(min-width:1024px){
+ .internal-sidebar .sidebar-collapse-toggle{display:inline-flex}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-link{justify-content:flex-start;gap:12px;padding-inline:12px}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-link span{display:block}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-group-label{display:block}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .competition-sidebar-item{justify-content:flex-start;padding-inline:12px}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .competition-sidebar-item>span{display:grid}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-footer .btn{justify-content:flex-start;padding-inline:12px}
+ .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-footer .btn span{display:inline}
+}
