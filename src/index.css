@@ -1528,3 +1528,49 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   .internal-topbar .header-brand{flex-basis:28px;width:28px}
   .internal-topbar .header-brand img{width:28px;height:28px}
 }
+
+/* Compact dashboard toolbar: controls stay low-profile without changing behavior. */
+.dashboard-page .dashboard-filter-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:54px;
+  margin-bottom:18px;
+  padding:7px 9px;
+  border-radius:14px;
+}
+.dashboard-page .dashboard-filter-controls,
+.dashboard-page .dashboard-filter-actions{display:flex;align-items:center;gap:8px;min-width:0}
+.dashboard-page .dashboard-filter-actions{margin-left:auto;justify-content:flex-end}
+.dashboard-page .dashboard-period-control,
+.dashboard-page .dashboard-currency-selector{display:flex;align-items:center;gap:7px;min-width:0;min-height:38px;padding:5px 10px;border:1px solid var(--internal-border-subtle);border-radius:11px;background:var(--internal-surface-2)}
+.dashboard-page .dashboard-period-control>label,
+.dashboard-page .dashboard-currency-selector{display:grid;grid-template-columns:15px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;gap:1px 7px;min-width:0;padding:0;border:0;background:transparent;color:var(--internal-text-muted);font-size:8px;line-height:1.1}
+.dashboard-page .dashboard-period-control>label>svg,
+.dashboard-page .dashboard-currency-selector>svg{grid-row:1/-1;width:15px;height:15px;color:var(--internal-accent)}
+.dashboard-page .dashboard-period-control select,
+.dashboard-page .dashboard-currency-selector select{grid-column:2;width:auto;min-width:0;height:17px;min-height:17px;padding:0 17px 0 0;border:0;border-radius:0;background:transparent;color:var(--internal-text-primary);font:inherit;font-size:11px;font-weight:650;line-height:1.1}
+.dashboard-page .dashboard-period-control select:focus,
+.dashboard-page .dashboard-currency-selector select:focus{outline:2px solid color-mix(in srgb,var(--internal-accent) 55%,transparent);outline-offset:2px}
+.dashboard-page .dashboard-currency-selector{display:grid;grid-template-columns:15px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;gap:1px 7px;width:184px;min-height:38px;padding:5px 10px;border:1px solid var(--internal-border-subtle);border-radius:11px;background:var(--internal-surface-2)}
+.dashboard-page .dashboard-period-control>label{width:124px}
+.dashboard-page .dashboard-custom-dates{gap:6px}
+.dashboard-page .dashboard-custom-dates label{gap:3px;font-size:8px}
+.dashboard-page .dashboard-custom-dates input{height:30px;padding:0 7px;border-radius:8px;font-size:10px}
+.dashboard-page .dashboard-layout-trigger{min-height:36px;padding:0 11px;border:1px solid var(--internal-border-default);border-radius:10px;background:var(--internal-surface-2);color:var(--internal-text-secondary);font-size:10px;font-weight:650;box-shadow:none}
+.dashboard-page .dashboard-layout-trigger svg{width:14px;height:14px;color:var(--internal-accent)}
+.dashboard-page .dashboard-layout-trigger:hover,.dashboard-page .dashboard-layout-trigger:focus-visible{border-color:color-mix(in srgb,var(--internal-accent) 42%,var(--internal-border-default));background:var(--internal-surface-hover);color:var(--internal-text-primary)}
+.dashboard-page .dashboard-filter-actions .dashboard-realtime{margin-left:0;font-size:9px}
+@media(max-width:700px){
+  .dashboard-page .dashboard-filter-bar{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;gap:8px;padding:8px}
+  .dashboard-page .dashboard-filter-controls,.dashboard-page .dashboard-filter-actions{width:100%;margin-left:0}
+  .dashboard-page .dashboard-filter-controls{flex-wrap:wrap}
+  .dashboard-page .dashboard-period-control,.dashboard-page .dashboard-currency-selector{flex:1 1 150px}
+  .dashboard-page .dashboard-filter-actions{justify-content:flex-start;flex-wrap:wrap}
+}
+@media(max-width:420px){
+  .dashboard-page .dashboard-filter-controls{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
+  .dashboard-page .dashboard-period-control,.dashboard-page .dashboard-currency-selector{width:100%}
+  .dashboard-page .dashboard-filter-actions .dashboard-layout-trigger{width:100%;justify-content:center}
+}
