@@ -1492,3 +1492,39 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   background-image:none;
   backdrop-filter:none;
 }
+
+/* Mobile authenticated header: keep only navigation, notifications and profile. */
+@media(max-width:768px){
+  .internal-topbar{
+    height:calc(56px + var(--safe-top));
+    min-height:calc(56px + var(--safe-top));
+    padding:var(--safe-top) max(8px,var(--safe-right)) 4px max(8px,var(--safe-left));
+    gap:6px;
+  }
+  .internal-topbar .internal-topbar-context,
+  .internal-topbar .mobile-page-title,
+  .internal-topbar .top-search,
+  .internal-topbar .sidebar-collapse-toggle,
+  .internal-topbar .theme-toggle{display:none!important}
+  .internal-topbar .mobile-menu-toggle{display:grid;flex:0 0 44px;width:44px;min-width:44px;height:44px;min-height:44px}
+  .internal-topbar .header-brand{display:inline-flex;flex:0 0 30px;width:30px}
+  .internal-topbar .header-brand img{width:30px;height:30px}
+  .internal-topbar .header-actions{display:flex;align-items:center;gap:2px;margin-left:auto}
+  .internal-topbar .header-actions>.notification-bell-wrap,
+  .internal-topbar .header-profile-wrap{display:block}
+  .internal-topbar .notification-bell,
+  .internal-topbar .header-actions>.notification-bell-wrap .notification-bell{width:44px;min-width:44px;height:44px;min-height:44px}
+  .internal-topbar .header-profile{padding:1px;border:0}
+  .internal-topbar .header-profile-trigger{width:12px;min-width:12px;padding:0}
+  .internal-topbar .header-profile-trigger>span,
+  .internal-topbar .header-profile-trigger>svg{display:none}
+  .internal-topbar .profile-avatar{width:34px;height:34px}
+  .internal-topbar .dropdown{position:fixed;top:calc(60px + var(--safe-top));right:max(8px,var(--safe-right));left:auto;width:min(270px,calc(100vw - 16px))}
+  .internal-page-content{padding-top:12px;padding-right:max(14px,var(--safe-right));padding-bottom:max(28px,var(--safe-bottom));padding-left:max(14px,var(--safe-left))}
+}
+@media(max-width:389px){
+  .internal-topbar{gap:3px}
+  .internal-topbar .mobile-menu-toggle{flex-basis:44px}
+  .internal-topbar .header-brand{flex-basis:28px;width:28px}
+  .internal-topbar .header-brand img{width:28px;height:28px}
+}
