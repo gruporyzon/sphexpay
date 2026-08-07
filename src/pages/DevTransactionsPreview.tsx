@@ -4,8 +4,10 @@ import { Card } from '../components/ui'
 import { SphexPayLogo } from '../components/branding/SphexPayLogo'
 import { formatCents } from '../lib/currencyFormat'
 import type { FinancialTransaction } from '../lib/dashboardFinance'
+import { TransactionStatusBadge } from '../components/transactions/TransactionStatusBadge'
+import { transactionStatusLabels } from '../components/transactions/transactionStatus'
 
-const labels={approved:'Aprovada',pending:'Pendente',declined:'Recusada',refunded:'Reembolsada',chargeback:'Chargeback'} as const
+const labels=transactionStatusLabels
 const demoRows:FinancialTransaction[]=[
  {transactionId:'preview-tx-1001',buyerName:'Cliente demonstração',productName:'Plano Scale',paymentMethod:'Pix',status:'approved',amountCents:129700,feeCents:6485,netAmountCents:123215,currency:'BRL',occurredAt:'2026-08-06T16:42:00-03:00',demo:true},
  {transactionId:'preview-tx-1002',buyerName:'Conta de teste',productName:'Oferta Pro',paymentMethod:'Cartão',status:'approved',amountCents:89700,feeCents:4485,netAmountCents:85215,currency:'BRL',occurredAt:'2026-08-06T16:18:00-03:00',demo:true},
@@ -33,5 +35,5 @@ export default function DevTransactionsPreview(){
  </div>
 }
 function Summary({label,value,detail}:{label:string;value:string;detail:string}){return <Card className="dev-transactions-summary-card"><span>{label}</span><strong>{value}</strong><small>{detail}</small></Card>}
-function Status({value}:{value:FinancialTransaction['status']}){return <span className={`dev-transaction-status ${value}`}><i/>{labels[value]}</span>}
+function Status({value}:{value:FinancialTransaction['status']}){return <TransactionStatusBadge status={value} className="dev-transaction-status"/>}
 function Detail({label,value}:{label:string;value:string}){return <div><dt>{label}</dt><dd>{value}</dd></div>}
