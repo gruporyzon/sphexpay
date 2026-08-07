@@ -1982,6 +1982,9 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   border-color:color-mix(in srgb,var(--internal-accent) 55%,var(--internal-border-default));
   box-shadow:0 0 0 3px color-mix(in srgb,var(--internal-accent) 14%,transparent);
 }
+.internal-filter-select:hover{border-color:var(--internal-border-default);background:var(--internal-surface-hover)}
+.internal-filter-select:has(.internal-filter-value:disabled){cursor:not-allowed;opacity:.48}
+.internal-filter-select>.internal-filter-value:disabled{cursor:not-allowed}
 .internal-filter-select>.internal-filter-icon{
   display:block;
   grid-column:1;
@@ -2102,6 +2105,30 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .internal-segmented-item:hover{color:var(--internal-text-primary);background:var(--internal-surface-hover)}
 .internal-segmented-item.active{background:var(--internal-text-primary);color:var(--internal-surface-1)}
 .internal-segmented-item:focus-visible{outline:2px solid var(--internal-accent);outline-offset:2px}
+.internal-segmented-item:disabled{cursor:not-allowed;opacity:.45}
+
+/* Search is the third member of the shared filter family. */
+.internal-real-page .search-box,
+.products-page .search-box,
+.customers-page .search-box{
+  min-height:44px;
+  border:1px solid var(--internal-border-subtle);
+  border-radius:16px;
+  background:var(--internal-surface-2);
+  box-shadow:none;
+  transition:background 160ms ease,border-color 160ms ease,box-shadow 160ms ease;
+}
+.internal-real-page .search-box:hover,
+.products-page .search-box:hover,
+.customers-page .search-box:hover{border-color:var(--internal-border-default);background:var(--internal-surface-hover)}
+.internal-real-page .search-box:focus-within,
+.products-page .search-box:focus-within,
+.customers-page .search-box:focus-within{border-color:color-mix(in srgb,var(--internal-accent) 55%,var(--internal-border-default));box-shadow:0 0 0 3px color-mix(in srgb,var(--internal-accent) 14%,transparent)}
+.internal-real-page .search-box>svg,
+.products-page .search-box>svg,
+.customers-page .search-box>svg{width:17px;height:17px;color:var(--internal-accent)}
+.period-selector>.internal-filter-select{width:180px}
+.period-custom input{min-height:44px;border-radius:14px}
 
 @media(max-width:768px){
   .internal-filter-bar{gap:6px}
@@ -2116,8 +2143,13 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   .showcase-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;min-width:0}
   .showcase-filters .internal-filter-select{width:100%;height:40px}
   .showcase-filters .internal-filter-select:last-child{grid-column:1/-1}
-  .internal-segmented-control{width:100%;overflow:auto}
-  .internal-segmented-item{flex:1;min-width:max-content;min-height:34px;padding-inline:11px}
+  .internal-segmented-control{width:100%;max-width:100%;flex-wrap:wrap;overflow:visible}
+  .internal-segmented-item{flex:1 1 auto;min-width:0;min-height:34px;padding-inline:11px}
+  .internal-real-page .search-box,
+  .products-page .search-box,
+  .customers-page .search-box{min-height:40px;border-radius:13px}
+  .period-selector>.internal-filter-select{width:min(100%,180px)}
+  .period-custom input{min-height:40px;border-radius:13px}
 }
 @media(max-width:380px){
   .showcase-filters .internal-filter-select>.internal-filter-value{font-size:11px}
