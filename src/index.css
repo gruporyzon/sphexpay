@@ -617,16 +617,20 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 
 /* Tokens semânticos exclusivos do painel autenticado. */
 :root{
-  --internal-app-bg:#f5f5f2;
-  --internal-sidebar-bg:#fafaf8;
+  --internal-app-bg:#fff;
+  --internal-page-bg:#fff;
+  --internal-shell-bg:#fff;
+  --internal-main-bg:#fff;
+  --internal-sidebar-bg:#fff;
   --internal-surface-1:#fff;
-  --internal-surface-2:#f7f7f4;
-  --internal-surface-hover:#efefeb;
-  --internal-border-subtle:rgba(23,23,23,.08);
-  --internal-border-default:rgba(23,23,23,.12);
-  --internal-text-primary:#171717;
-  --internal-text-secondary:#4f504d;
-  --internal-text-muted:#686864;
+  --internal-surface-2:#fafafa;
+  --internal-surface-3:#f5f5f5;
+  --internal-surface-hover:#f5f5f5;
+  --internal-border-subtle:rgba(0,0,0,.06);
+  --internal-border-default:rgba(0,0,0,.10);
+  --internal-text-primary:#111111;
+  --internal-text-secondary:#5f5f5f;
+  --internal-text-muted:#8a8a8a;
   --internal-accent:var(--orange);
   --internal-positive:#137a4f;
   --internal-negative:#b8322a;
@@ -634,16 +638,20 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   --internal-info:#315e9e;
 }
 :root[data-theme=dark]{
-  --internal-app-bg:#080909;
-  --internal-sidebar-bg:#090a0a;
-  --internal-surface-1:#101111;
-  --internal-surface-2:#151616;
-  --internal-surface-hover:#1b1c1c;
-  --internal-border-subtle:rgba(255,255,255,.07);
-  --internal-border-default:rgba(255,255,255,.11);
-  --internal-text-primary:#f4f5f5;
-  --internal-text-secondary:#a2a5a5;
-  --internal-text-muted:#6f7272;
+  --internal-app-bg:#000;
+  --internal-page-bg:#000;
+  --internal-shell-bg:#000;
+  --internal-main-bg:#000;
+  --internal-sidebar-bg:#000;
+  --internal-surface-1:#0a0a0a;
+  --internal-surface-2:#101010;
+  --internal-surface-3:#161616;
+  --internal-surface-hover:#161616;
+  --internal-border-subtle:rgba(255,255,255,.06);
+  --internal-border-default:rgba(255,255,255,.10);
+  --internal-text-primary:#f5f5f5;
+  --internal-text-secondary:#a3a3a3;
+  --internal-text-muted:#707070;
   --internal-accent:var(--orange);
   --internal-positive:#15d59a;
   --internal-negative:#ff4b55;
@@ -651,11 +659,17 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   --internal-info:#3aa7ff;
 }
 .internal-app-shell{
+  --bg:var(--internal-app-bg);
   --app-bg:var(--internal-app-bg);
+  --page-bg:var(--internal-page-bg);
+  --shell-bg:var(--internal-shell-bg);
+  --main-bg:var(--internal-main-bg);
   --sidebar-bg:var(--internal-sidebar-bg);
+  --gradient-glow:none;
+  --gradient-surface:var(--internal-surface-1);
   --surface-1:var(--internal-surface-1);
   --surface-2:var(--internal-surface-2);
-  --surface-3:var(--internal-surface-2);
+  --surface-3:var(--internal-surface-3, var(--internal-surface-2));
   --surface-hover:var(--internal-surface-hover);
   --border-subtle:var(--internal-border-subtle);
   --border-default:var(--internal-border-default);
@@ -1446,3 +1460,23 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .internal-app-shell:not(.sidebar-collapsed) .internal-sidebar .sidebar-footer .btn span{display:inline}
 }
 @media(max-width:1023px){.mobile-menu-toggle{display:grid}.mobile-sidebar-close{display:grid}}
+
+/* Authenticated shell backgrounds stay neutral after the shared shell cascade. */
+.internal-app-shell{
+  background:var(--shell-bg);
+  background-image:none;
+}
+.internal-app-shell .internal-main{
+  background:var(--main-bg);
+  background-image:none;
+}
+.internal-app-shell .internal-page-content{
+  background:var(--page-bg);
+  background-image:none;
+}
+.internal-app-shell .internal-sidebar,
+.internal-app-shell .internal-topbar{
+  background:var(--internal-sidebar-bg);
+  background-image:none;
+  backdrop-filter:none;
+}
