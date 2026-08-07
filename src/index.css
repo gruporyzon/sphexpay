@@ -2155,3 +2155,128 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
   .showcase-filters .internal-filter-select>.internal-filter-value{font-size:11px}
   .internal-segmented-item{font-size:10px;padding-inline:9px}
 }
+
+/* Dashboard filter correction: the period owns an outer shell, while currency
+   is its own shell. Both expose the same icon/value/chevron geometry. */
+.dashboard-page .dashboard-filter-bar .dashboard-period-control,
+.dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field{
+  box-sizing:border-box;
+  min-width:0;
+  height:44px;
+  min-height:44px;
+  padding:0 12px;
+  border:1px solid var(--internal-border-default);
+  border-radius:16px;
+  background:var(--internal-surface-2);
+  box-shadow:none;
+}
+.dashboard-page .dashboard-filter-bar .dashboard-period-control:hover,
+.dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field:hover{
+  border-color:color-mix(in srgb,var(--internal-accent) 28%,var(--internal-border-default));
+  background:var(--internal-surface-hover);
+}
+.dashboard-page .dashboard-filter-bar .dashboard-period-control:focus-within,
+.dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field:focus-within{
+  border-color:color-mix(in srgb,var(--internal-accent) 55%,var(--internal-border-default));
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--internal-accent) 14%,transparent);
+}
+.dashboard-page .dashboard-filter-bar .dashboard-period-control>.dashboard-control-field,
+.dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field{
+  display:grid;
+  grid-template-columns:25px minmax(0,1fr) 16px;
+  grid-template-rows:1fr;
+  align-items:center;
+  column-gap:8px;
+}
+.dashboard-page .dashboard-filter-bar .dashboard-period-control>.dashboard-control-field{
+  width:100%;
+  height:100%;
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+}
+.dashboard-page .dashboard-filter-bar .dashboard-control-field>span{display:none}
+.dashboard-page .dashboard-filter-bar .dashboard-control-field>.internal-filter-icon{
+  grid-column:1;
+  grid-row:1;
+  box-sizing:content-box;
+  width:16px;
+  height:16px;
+  padding-right:8px;
+  border-right:1px solid var(--internal-border-subtle);
+  align-self:center;
+  justify-self:start;
+}
+.dashboard-page .dashboard-filter-bar .dashboard-control-field>.internal-filter-value{
+  grid-column:2;
+  grid-row:1;
+  width:100%;
+  min-width:0;
+  height:30px;
+  min-height:30px;
+  padding:0;
+  border:0;
+  background:transparent;
+  font-size:12px;
+  line-height:1.25;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.dashboard-page .dashboard-filter-bar .dashboard-control-field>.internal-filter-chevron{
+  display:block;
+  grid-column:3;
+  grid-row:1;
+  width:15px;
+  height:15px;
+  align-self:center;
+  justify-self:center;
+}
+
+@media(max-width:768px){
+  .dashboard-page .dashboard-filter-bar .dashboard-filter-controls{
+    display:grid;
+    grid-template-columns:minmax(108px,.82fr) minmax(0,1.4fr);
+    align-items:center;
+    gap:6px;
+    width:100%;
+    min-width:0;
+  }
+  .dashboard-page .dashboard-filter-bar .dashboard-period-control,
+  .dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field{
+    width:100%;
+    max-width:none;
+    height:40px;
+    min-height:40px;
+    padding:0 10px;
+    border-radius:13px;
+    overflow:visible;
+  }
+  .dashboard-page .dashboard-filter-bar .dashboard-period-control>.dashboard-control-field,
+  .dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field{
+    grid-template-columns:24px minmax(0,1fr) 15px;
+    column-gap:6px;
+  }
+  .dashboard-page .dashboard-filter-bar .dashboard-control-field>.internal-filter-icon{
+    width:15px;
+    height:15px;
+    padding-right:8px;
+  }
+  .dashboard-page .dashboard-filter-bar .dashboard-control-field>.internal-filter-value{
+    height:30px;
+    min-height:30px;
+    font-size:12px;
+    line-height:30px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .dashboard-page .dashboard-filter-bar .dashboard-control-field>.internal-filter-chevron{width:15px;height:15px}
+}
+
+@media(max-width:359px){
+  .dashboard-page .dashboard-filter-bar .dashboard-filter-controls{grid-template-columns:minmax(0,1fr)}
+  .dashboard-page .dashboard-filter-bar .dashboard-period-control,
+  .dashboard-page .dashboard-filter-bar .dashboard-currency-selector.dashboard-control-field{height:40px;min-height:40px}
+}
