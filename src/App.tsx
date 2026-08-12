@@ -5,7 +5,6 @@ import Dashboard from './pages/Dashboard'
 import { CheckoutPage,LinksPage,WithdrawalsPage } from './pages/Operations'
 import Settings from './pages/Settings'
 import NotificationsPage from './pages/Notifications'
-import AssistantPage from './pages/Assistant'
 import DemoAwareAwards from './pages/DemoAwards'
 import LiveReports from './pages/LiveReports'
 import FinancialHub from './pages/FinancialHub'
@@ -46,7 +45,7 @@ const MembersProductPage=lazy(()=>import('./features/products/ProductAdvanced').
 const CheckoutBuilderPage=lazy(()=>import('./features/products/CheckoutStudio').then(m=>({default:m.CheckoutBuilderPage})))
 const CheckoutPreviewPage=lazy(()=>import('./features/products/CheckoutStudio').then(m=>({default:m.CheckoutPreviewPage})))
 
-const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['assistente',<AssistantPage/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><Routes>
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}

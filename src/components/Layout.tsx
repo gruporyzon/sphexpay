@@ -1,6 +1,6 @@
 import { useEffect,useRef,useState } from 'react'
 import { NavLink,Outlet,useLocation,useNavigate } from 'react-router-dom'
-import { ArrowLeftRight,Bell,ChevronDown,Crown,FileBarChart,Landmark,LayoutDashboard,Link2,LogOut,Menu,Moon,Package,PanelLeftClose,PanelLeftOpen,PanelTop,PlugZap,RadioTower,RefreshCcw,Settings,ShoppingBag,Sparkles,Store,Sun,Trophy,Users,WalletCards,X,type LucideIcon } from 'lucide-react'
+import { ArrowLeftRight,Bell,ChevronDown,Crown,FileBarChart,Landmark,LayoutDashboard,Link2,LogOut,Menu,Moon,Package,PanelLeftClose,PanelLeftOpen,PanelTop,PlugZap,RadioTower,RefreshCcw,Settings,ShoppingBag,Store,Sun,Trophy,Users,WalletCards,X,type LucideIcon } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useDemoStore } from '../store/useDemoStore'
 import { NotificationBell } from './notifications/NotificationBell'
@@ -17,7 +17,7 @@ const groups:readonly NavGroup[]=[
  {label:'Visão geral',items:[['Dashboard','/app',LayoutDashboard],['Vendas ao Vivo','/app/vendas-ao-vivo',RadioTower]]},
  {label:'Operação',items:[['Vendas','/app/vendas',ShoppingBag],['Transações','/app/transacoes',ArrowLeftRight],['Produtos','/app/produtos',Package],['Vitrine','/app/vitrine',Store],['Assinaturas','/app/assinaturas',RefreshCcw],['Clientes','/app/clientes',Users]]},
  {label:'Pagamentos',items:[['Checkout','/app/checkout',PanelTop],['Links de pagamento','/app/links',Link2],['Financeiro','/app/financeiro',Landmark],['Saques','/app/saques',WalletCards],['Integrações','/app/integracoes',PlugZap]]},
- {label:'Crescimento',items:[['Premiações','/app/premiacoes',Trophy],['Inteligência artificial','/app/assistente',Sparkles],['Relatórios','/app/relatorios',FileBarChart],['Notificações','/app/notificacoes',Bell],['Configurações','/app/configuracoes',Settings]]},
+ {label:'Crescimento',items:[['Premiações','/app/premiacoes',Trophy],['Relatórios','/app/relatorios',FileBarChart],['Notificações','/app/notificacoes',Bell],['Configurações','/app/configuracoes',Settings]]},
 ] as const
 const items=groups.flatMap(group=>group.items)
 
