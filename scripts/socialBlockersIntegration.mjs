@@ -3,15 +3,15 @@ import {createClient} from '@supabase/supabase-js'
 const url=process.env.API_URL,anon=process.env.ANON_KEY,service=process.env.SERVICE_ROLE_KEY
 if(!url||!anon||!service)throw new Error('Execute com as variáveis do Supabase local.')
 const admin=createClient(url,service),stamp=Date.now(),password=`Local-${stamp}-Aa1!`
-const users=[]
+const users=[],uploadedPaths=[]
 const wait=(ms=600)=>new Promise(resolve=>setTimeout(resolve,ms))
 const decode=value=>new Uint8Array(Buffer.from(value,'base64'))
 const fixtures={'image/jpeg':decode('/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////2wBDAf//////////////////////////////////////////////////////////////////////////////////////wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABBQJ//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwF//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwF//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQAGPwJ//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPyF//9oADAMBAAIAAwAAABAf/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPxB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPxB//8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxB//9k='),'image/png':decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='),'image/webp':decode('UklGRhwAAABXRUJQVlA4IBAAAADQAQCdASoBAAEAAUAmJaQA')}
 const makeImage=mime=>fixtures[mime]
 const session=async(label)=>{const email=`social-${label}-${stamp}@example.invalid`,{data:{user},error}=await admin.auth.admin.createUser({email,password,email_confirm:true});if(error)throw error;users.push(user.id);const client=createClient(url,anon),{error:login}=await client.auth.signInWithPassword({email,password});if(login)throw login;await client.from('social_profiles').insert({user_id:user.id,username:`social_${label}_${String(stamp).slice(-6)}`,display_name:`Social ${label}`});return{client,user}}
-const upload=async(client,mime,bytes,name='image.jpg',kind='posts',conversationId='')=>{const form=new FormData();form.append('file',new File([bytes],name,{type:mime}));form.append('kind',kind);if(conversationId)form.append('conversationId',conversationId);return client.functions.invoke('social-media-upload',{body:form})}
+const upload=async(client,mime,bytes,name='image.jpg',kind='posts',conversationId='')=>{const form=new FormData();form.append('file',new File([bytes],name,{type:mime}));form.append('kind',kind);if(conversationId)form.append('conversationId',conversationId);const result=await client.functions.invoke('social-media-upload',{body:form});if(result.data?.path)uploadedPaths.push(result.data.path);return result}
 const directStorageSetup=process.env.DIRECT_STORAGE_SETUP==='1'
-const placeFixture=async(user,mime,kind,conversationId='')=>{const extension=mime==='image/jpeg'?'jpg':mime.split('/')[1],suffix=kind==='messages'?`messages/${conversationId}`:kind,path=`${user.id}/${suffix}/${crypto.randomUUID()}.${extension}`,result=await admin.storage.from('social-media').upload(path,makeImage(mime),{contentType:mime});if(result.error)throw result.error;return{data:{path}}}
+const placeFixture=async(user,mime,kind,conversationId='')=>{const extension=mime==='image/jpeg'?'jpg':mime.split('/')[1],suffix=kind==='messages'?`messages/${conversationId}`:kind,path=`${user.id}/${suffix}/${crypto.randomUUID()}.${extension}`,result=await admin.storage.from('social-media').upload(path,makeImage(mime),{contentType:mime});if(result.error)throw result.error;uploadedPaths.push(path);return{data:{path}}}
 
 let A,B,C
 try{
@@ -53,4 +53,4 @@ try{
  }
  if(Object.values(result.realtime).some(v=>!v)||(!directStorageSetup&&(Object.values(result.mime.valid).some(v=>!v)||Object.values(result.mime).filter(v=>typeof v==='boolean').some(v=>!v)))||Object.values(result.storage).some(v=>!v)||Object.entries(result.search).some(([key,value])=>key!=='termDetails'&&!value))throw new Error(JSON.stringify(result))
  console.log(JSON.stringify(result,null,2))
-}finally{for(const sessionClient of [A?.client,B?.client,C?.client])if(sessionClient)await sessionClient.auth.signOut();for(const id of users)await admin.auth.admin.deleteUser(id)}
+}finally{if(uploadedPaths.length)await admin.storage.from('social-media').remove(uploadedPaths);for(const sessionClient of [A?.client,B?.client,C?.client])if(sessionClient)await sessionClient.auth.signOut();for(const id of users)await admin.auth.admin.deleteUser(id)}
