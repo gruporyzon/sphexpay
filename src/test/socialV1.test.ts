@@ -1,7 +1,7 @@
 import {describe,expect,it} from 'vitest'
 import fs from 'node:fs'
 
-const app=fs.readFileSync('src/App.tsx','utf8'),layout=fs.readFileSync('src/components/Layout.tsx','utf8'),service=fs.readFileSync('src/features/social/socialService.ts','utf8'),page=fs.readFileSync('src/features/social/SocialPage.tsx','utf8'),sql=fs.readFileSync('supabase/migrations/20260812180000_social_v1.sql','utf8')
+const app=fs.readFileSync('src/App.tsx','utf8'),layout=fs.readFileSync('src/components/Layout.tsx','utf8'),service=fs.readFileSync('src/features/social/socialService.ts','utf8'),page=fs.readFileSync('src/features/social/SocialPage.tsx','utf8'),socialCss=fs.readFileSync('src/features/social/social.css','utf8'),sql=fs.readFileSync('supabase/migrations/20260812180000_social_v1.sql','utf8')
 describe('Sphex Social V1',()=>{
  it('registra todas as rotas e aliases sem links mortos',()=>{for(const route of ['social','social/explore','social/notifications','social/messages','social/saved','social/ranking','social/post/:id','social/:username','social/tag/:tag'])expect(app).toContain(`path="${route}"`);expect(app).toContain('/dashboard/social/*');expect(layout).toContain("['Social','/app/social'")})
  it('é carregado sob demanda',()=>expect(app).toContain("lazy(()=>import('./features/social/SocialPage'))"))
@@ -20,4 +20,6 @@ describe('Sphex Social V1',()=>{
  it('renderiza loading, erro, posts e vazio como estados exclusivos',()=>{expect(page).toContain("let content:ReactNode;if(feed.loading)");expect(page).toContain("else if(feed.error)");expect(page).toContain("else if(feed.posts.length)")})
  it('não mantém sentinel ou skeleton de paginação após erro ou feed vazio',()=>expect(page).toContain("!feed.loading&&!feed.error&&!feed.done&&feed.posts.length>0"))
  it('oferece retry real e estado específico para Seguindo vazio',()=>{expect(page).toContain('onClick={reload}');expect(page).toContain('Você ainda não segue ninguém.');expect(page).toContain('Explorar produtores')})
+ it('carrega o design Social junto ao chunk lazy e mantém cinco ações móveis',()=>{expect(page).toContain("import './social.css'");expect(page).toContain('social-mobile-publish');expect(page).toContain('nav.slice(0,2)');expect(page).toContain('nav.slice(2,4)')})
+ it('preserva viewport dinâmica, safe-area e breakpoints Social consolidados',()=>{expect(socialCss).toContain('env(safe-area-inset-bottom)');expect(socialCss).toContain('@media(max-width:767px)');expect(socialCss).toContain('@media(max-width:1120px)');expect(socialCss).toContain('min-height:0')})
 })
