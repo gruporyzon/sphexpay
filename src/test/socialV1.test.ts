@@ -16,4 +16,8 @@ describe('Sphex Social V1',()=>{
  it('ativa realtime apenas para notificações e mensagens',()=>{expect(sql).toContain('add table public.social_notifications');expect(sql).toContain('add table public.social_messages');expect(sql).not.toContain('add table public.social_posts')})
  it('pesquisa posts no PostgreSQL com configuração portuguesa e sob RLS',()=>{expect(service).toContain("rpc('social_search_posts'");expect(sql).toContain("to_tsvector('portuguese',p.body)");expect(sql).toContain('security invoker')})
  it('não retorna Promises como cleanup dos effects assíncronos',()=>{expect(page).toContain("useEffect(()=>{void socialService.getProfile");expect(page).toContain("useEffect(()=>{void socialService.ranking")})
+ it('desambigua o relacionamento do autor na query PostgREST',()=>expect(service).toContain('social_profiles!social_posts_author_id_fkey(*)'))
+ it('renderiza loading, erro, posts e vazio como estados exclusivos',()=>{expect(page).toContain("let content:ReactNode;if(feed.loading)");expect(page).toContain("else if(feed.error)");expect(page).toContain("else if(feed.posts.length)")})
+ it('não mantém sentinel ou skeleton de paginação após erro ou feed vazio',()=>expect(page).toContain("!feed.loading&&!feed.error&&!feed.done&&feed.posts.length>0"))
+ it('oferece retry real e estado específico para Seguindo vazio',()=>{expect(page).toContain('onClick={reload}');expect(page).toContain('Você ainda não segue ninguém.');expect(page).toContain('Explorar produtores')})
 })
