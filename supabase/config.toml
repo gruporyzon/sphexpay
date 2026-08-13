@@ -91,6 +91,10 @@ enabled = true
 # The maximum length in bytes of HTTP request headers. (default: 4096)
 # max_header_length = 4096
 
+[functions.social-media-upload]
+enabled = true
+verify_jwt = false
+
 [studio]
 enabled = false
 # Port to use for Supabase Studio.
