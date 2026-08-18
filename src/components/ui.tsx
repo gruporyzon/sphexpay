@@ -18,11 +18,11 @@ export const Select=({className='',children,...props}:SelectHTMLAttributes<HTMLS
 export const Textarea=({className='',...props}:TextareaHTMLAttributes<HTMLTextAreaElement>)=><textarea className={cn('input textarea',className)} {...props}/>
 
 export const Card=({children,className='',...props}:HTMLAttributes<HTMLDivElement>)=><div className={cn('panel',className)} {...props}>{children}</div>
-export const PageTitle=({title,subtitle,action}:{title:string,subtitle:string,action?:ReactNode})=><div className="page-title"><div><h1>{title}</h1><p>{subtitle}</p></div>{action}</div>
+export const PageTitle=({title,subtitle,action}:{title:string,subtitle:string,action?:ReactNode})=><div className="page-title spx-page-heading"><div><h1>{title}</h1><p className="spx-page-caption">{subtitle}</p></div>{action}</div>
 export const SearchBox=({value,onChange,placeholder='Buscar...'}:{value:string,onChange:(v:string)=>void,placeholder?:string})=><label className="search-box"><Search aria-hidden="true"/><span className="sr-only">Pesquisar</span><Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}/>{value&&<button onClick={()=>onChange('')} aria-label="Limpar"><X/></button>}</label>
 
 const statusTone=(status:string)=>status==='Aprovado'||status==='Ativo'||status==='Ativa'||status==='Concluído'?'ok':status==='Recusado'||status==='Reembolsado'||status==='Inadimplente'?'bad':status==='Pendente'||status==='Processando'?'warn':'info'
-export const Badge=({children,tone='neutral',className='',...props}:HTMLAttributes<HTMLSpanElement>&{tone?:'neutral'|'ok'|'warn'|'bad'|'info'})=><span className={cn('badge',tone!=='neutral'&&`badge-${tone}`,className)} {...props}>{children}</span>
+export const Badge=({children,tone='neutral',className='',...props}:HTMLAttributes<HTMLSpanElement>&{tone?:'neutral'|'ok'|'warn'|'bad'|'info'})=><span className={cn('badge',tone!=='neutral'&&`badge-${tone}`,className)} {...props}>{tone!=='neutral'&&<i className="badge-indicator" aria-hidden="true"/>}{children}</span>
 export const StatusBadge=({status}:{status:string})=><Badge tone={statusTone(status)}>{status}</Badge>
 
 export const Empty=({text='Nenhum registro encontrado',title='Nada por aqui'}:{text?:string;title?:string})=><div className="empty-state"><span><Inbox/></span><strong>{title}</strong><p>{text}</p></div>
