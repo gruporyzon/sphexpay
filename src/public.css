@@ -654,3 +654,21 @@ html{scroll-padding-top:calc(var(--public-header-height) + var(--public-anchor-g
 @media(max-width:767px){.landing-redesign .hero-metrics dd{font-size:9px;line-height:1.35}.landing-redesign .hero-metrics dt{line-height:1.2}.landing-redesign .landing-hero-visual{left:50%;width:720px;transform:translateX(-50%)}.landing-redesign .landing-hero-copy{flex:0 0 auto}.landing-redesign .feature-mosaic article p,.landing-redesign .live-public-highlights small,.landing-redesign .mobile-benefit-grid small{font-size:10px;line-height:1.5}.landing-redesign .faq-section article h3 button span{font-size:12px;line-height:1.4}}
 @media(max-width:389px){.landing-redesign .landing-hero-visual{width:660px}.landing-redesign .hero-metrics>div{padding-inline:6px}.landing-redesign .hero-metrics dd{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.landing-redesign *{scroll-behavior:auto!important}.landing-redesign .faq-answer,.landing-redesign .faq-answer>p{transition:none}.landing-redesign .public-phone,.landing-redesign .phone-float,.landing-redesign .editorial-flow ol:before{animation:none!important}}
+
+/* Mobile top surface: keep the iOS safe area inside the solid landing header. */
+@media(max-width:767px){
+ .landing-redesign .public-header-hero,
+ .landing-redesign .public-header-hero.scrolled{
+  height:calc(74px + env(safe-area-inset-top,0px));
+  min-height:calc(74px + env(safe-area-inset-top,0px));
+  padding-top:env(safe-area-inset-top,0px);
+  background:#000;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+ }
+ .landing-redesign .public-header-hero.scrolled{
+  height:calc(64px + env(safe-area-inset-top,0px));
+  min-height:calc(64px + env(safe-area-inset-top,0px));
+ }
+ .landing-redesign .public-header-hero nav.open{top:calc(64px + env(safe-area-inset-top,0px))}
+}

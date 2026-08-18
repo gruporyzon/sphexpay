@@ -2728,3 +2728,13 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .dashboard-page .spx-operation-hero .overview-track,.dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta) svg{transition:none!important}
  .dashboard-page .operation-orbit,.dashboard-page .operation-brand,.dashboard-page .operation-packet{animation:none!important}
 }
+
+/* Mobile top surface: the safe area belongs to the header, without translucent blur. */
+@media(max-width:767px){
+ .internal-app-shell,.internal-app-shell .internal-main{background:var(--bg)}
+ .internal-app-shell .internal-topbar{
+  background:var(--bg);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+ }
+}
