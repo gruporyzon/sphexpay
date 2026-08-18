@@ -21,7 +21,7 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(html).toContain('rel="canonical"')
   expect(html).toContain('property="og:title"')
   expect(html).toContain('name="twitter:card"')
-  expect(html).toContain('<meta name="theme-color" content="#fbfaf7"')
+  expect(html).toContain('<meta name="theme-color" content="#000000"')
   expect(html).toContain('Sua operação no ritmo do próximo nível')
   expect(read('public/robots.txt')).toContain('sitemap.xml')
   expect(read('public/sitemap.xml')).toContain('https://sphexpay.vercel.app/')

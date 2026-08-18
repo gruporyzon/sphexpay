@@ -1,5 +1,5 @@
 {
-  "id":"/","name":"SphexPay — Gateway","short_name":"Sphex","description":"Gateway e painel financeiro SphexPay","start_url":"/","scope":"/","display":"standalone","background_color":"#090909","theme_color":"#ff4b0b","orientation":"any",
+  "id":"/","name":"SphexPay — Gateway","short_name":"Sphex","description":"Gateway e painel financeiro SphexPay","start_url":"/","scope":"/","display":"standalone","background_color":"#090909","theme_color":"#090909","orientation":"any",
   "categories":["finance","business","productivity"],"lang":"pt-BR","dir":"ltr","prefer_related_applications":false,
   "icons":[
     {"src":"/icons/sphexpay-app-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},

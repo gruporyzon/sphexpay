@@ -1,5 +1,5 @@
-import { lazy,Suspense } from 'react'
-import { BrowserRouter,Navigate,Route,Routes } from 'react-router-dom'
+import { lazy,Suspense,useLayoutEffect } from 'react'
+import { BrowserRouter,Navigate,Route,Routes,useLocation } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import { CheckoutPage,LinksPage,WithdrawalsPage } from './pages/Operations'
@@ -37,6 +37,8 @@ import DevFinancePreview from './pages/DevFinancePreview'
 import DevNotificationsPreview from './pages/DevNotificationsPreview'
 import { DevPreviewNavigator } from './components/dev/DevPreviewNavigator'
 import DevSettingsPreview from './pages/DevSettingsPreview'
+import { useDemoStore } from './store/useDemoStore'
+import { syncSystemChrome } from './lib/systemChrome'
 
 const LiveSalesWorld=lazy(()=>import('./pages/LiveSalesWorld'))
 const ProductsV2Page=lazy(()=>import('./features/products/ProductsV2').then(m=>({default:m.ProductsV2Page})))
@@ -46,8 +48,14 @@ const CheckoutBuilderPage=lazy(()=>import('./features/products/CheckoutStudio').
 const CheckoutPreviewPage=lazy(()=>import('./features/products/CheckoutStudio').then(m=>({default:m.CheckoutPreviewPage})))
 const SocialPage=lazy(()=>import('./features/social/SocialPage'))
 
+function SystemChrome(){
+ const {pathname}=useLocation(),theme=useDemoStore(state=>state.theme)
+ useLayoutEffect(()=>syncSystemChrome(pathname,theme),[pathname,theme])
+ return null
+}
+
 const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['financeiro',<FinancialHub/>],['saques',<WithdrawalsPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
-export default function App(){return <BrowserRouter><Routes>
+export default function App(){return <BrowserRouter><SystemChrome/><Routes>
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/transactions-preview" element={<><DevPreviewNavigator/><DevTransactionsPreview/></>}/>}
