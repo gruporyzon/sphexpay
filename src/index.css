@@ -2704,10 +2704,10 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .dashboard-page .spx-operation-hero .overview-copy h2{max-width:100%;margin-top:8px;font-size:clamp(23px,7.2vw,31px);line-height:1.04}
  .dashboard-page .spx-operation-hero .overview-copy p{display:-webkit-box;max-width:100%;margin-top:9px;overflow:hidden;font-size:10px;line-height:1.5;-webkit-box-orient:vertical;-webkit-line-clamp:3}
  .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta){min-height:40px;margin-top:12px;padding-inline:12px}
- .dashboard-page .operation-core{position:relative;inset:auto;align-self:end;justify-self:center;width:min(100%,300px);height:180px;max-width:300px;opacity:1;transform:scale(.8);transform-origin:center}
+ .dashboard-page .operation-core{position:relative;inset:auto;align-self:end;justify-self:center;width:min(100%,340px);height:190px;max-width:340px;opacity:1;transform:scale(.78);transform-origin:center bottom}
  .dashboard-page .operation-integrity{display:none}
- .dashboard-page .node-processing{right:0}
- .dashboard-page .node-network,.dashboard-page .operation-performance{display:none}
+ .dashboard-page .node-processing{right:-3px}.dashboard-page .node-network{right:3px;bottom:6px}
+ .dashboard-page .operation-performance{left:0;bottom:0}
  .dashboard-page .spx-operation-hero .overview-slide.competition{grid-template-rows:auto minmax(120px,1fr)}
  .dashboard-page .spx-operation-hero .overview-slide.competition .overview-copy{width:72%;max-width:72%}
  .dashboard-page .spx-operation-hero .iphone-art,.dashboard-page .spx-operation-hero .overview-slide.competition .iphone-art{position:absolute;inset:auto 8px 45px auto;width:30%;max-width:125px;height:52%;opacity:1;transform:none}
@@ -2722,7 +2722,7 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
  .dashboard-page>.spx-operation-hero{height:430px}
  .dashboard-page .spx-operation-hero .overview-slide{padding-inline:14px}
  .dashboard-page .spx-operation-hero .overview-copy h2{font-size:22px}
- .dashboard-page .operation-core{width:280px;transform:scale(.78)}
+ .dashboard-page .operation-core{width:320px;transform:scale(.7)}
 }
 @media(prefers-reduced-motion:reduce){
  .dashboard-page .spx-operation-hero .overview-track,.dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta) svg{transition:none!important}

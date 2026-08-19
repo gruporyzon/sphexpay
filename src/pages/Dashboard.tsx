@@ -27,10 +27,23 @@ import { DashboardOverviewVisual } from '../components/dashboard/DashboardOvervi
 import type { DashboardWidgetId } from '../lib/dashboardLayout'
 
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
+const mobileHeroQuery='(max-width: 768px)'
+
+function useMobileDashboard(){
+ const [mobile,setMobile]=useState(()=>typeof window!=='undefined'&&window.matchMedia(mobileHeroQuery).matches)
+ useEffect(()=>{
+  const media=window.matchMedia(mobileHeroQuery),update=()=>setMobile(media.matches)
+  update()
+  if(typeof media.addEventListener==='function')media.addEventListener('change',update)
+  else media.addListener(update)
+  return()=>{if(typeof media.removeEventListener==='function')media.removeEventListener('change',update);else media.removeListener(update)}
+ },[])
+ return mobile
+}
 
 export default function Dashboard(){
  const {user}=useAuth(),adminAccess=useDashboardAdmin(user?.id),admin=adminAccess.allowed
- const layoutEditor=useDashboardLayout(user?.id)
+ const layoutEditor=useDashboardLayout(user?.id),mobileDashboard=useMobileDashboard()
  const {period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
  const [mode,setMode]=useState<'production'|'planning'>('production'),[rates,setRates]=useState<ExchangeRate[]>([]),[rateError,setRateError]=useState(false)
  const live=useLiveSales(user?.id,period),planner=useScenarioPlanner(user?.id,Boolean(admin))
@@ -77,7 +90,7 @@ export default function Dashboard(){
  ]) as Record<DashboardWidgetId,ReactNode>
 
  return <div className="page-enter dashboard-page">
-  <OverviewHeroCarousel/>
+  {!mobileDashboard&&<OverviewHeroCarousel/>}
   <PageTitle title="Dashboard" subtitle={live.demo?'Acompanhe resultados, vendas e indicadores em tempo real.':'Resultados financeiros persistidos e planejamento administrativo isolado.'} action={<div className="dashboard-header-actions">{admin&&!live.demo?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>}</div>}/>
   {adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}
   <Card className="dashboard-filter-bar"><div className="dashboard-filter-controls"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/></div><div className="dashboard-filter-actions">{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin&&!mobileLayout?<DashboardLayoutButton editor={layoutEditor}/>:null}{!planning&&!live.demo&&<RealtimeStatus status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</div></Card>
