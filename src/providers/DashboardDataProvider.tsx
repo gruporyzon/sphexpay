@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import {createContext,useCallback,useContext,useEffect,useMemo,useRef,useState,type PropsWithChildren} from 'react'
 import {useAuth} from '../hooks/useAuth'
-import {useDashboardAdmin} from '../hooks/useDashboardAdmin'
+import {useDashboardDemoAccess} from '../hooks/useDashboardDemoAccess'
 import {productService} from '../services/productService'
 import {pushSubscriptionService} from '../services/pushSubscriptionService'
 import type {AppNotification,Product} from '../types'
@@ -47,7 +47,7 @@ const createSession=(ownerId:string,products:DemoSession['products'],settings=de
 }
 
 export function DashboardDataProvider({children}:PropsWithChildren){
- const {user}=useAuth(),permission=useDashboardAdmin(user?.id),initialSession=useRef<DemoSession|null>(user?.id?load(user.id):null),[session,setSession]=useState<DemoSession|null>(initialSession.current),sessionRef=useRef<DemoSession|null>(initialSession.current),[nextEventAt,setNextEventAt]=useState<number|null>(null),[pushStats,setPushStats]=useState<ModePushStats>({attempted:0,sent:0,failed:0,expired:0,skipped:0,lastSentAt:'',lastError:''}),timer=useRef<ReturnType<typeof setTimeout>|null>(null),pushQueue=useRef<ModePushQueue|null>(null)
+ const {user}=useAuth(),permission=useDashboardDemoAccess(user?.id,user?.email),initialSession=useRef<DemoSession|null>(user?.id?load(user.id):null),[session,setSession]=useState<DemoSession|null>(initialSession.current),sessionRef=useRef<DemoSession|null>(initialSession.current),[nextEventAt,setNextEventAt]=useState<number|null>(null),[pushStats,setPushStats]=useState<ModePushStats>({attempted:0,sent:0,failed:0,expired:0,skipped:0,lastSentAt:'',lastError:''}),timer=useRef<ReturnType<typeof setTimeout>|null>(null),pushQueue=useRef<ModePushQueue|null>(null)
  if(!pushQueue.current)pushQueue.current=new ModePushQueue({send:command=>pushSubscriptionService.sendMode(command),onStats:setPushStats})
  const stop=useCallback(()=>{if(timer.current)clearTimeout(timer.current);timer.current=null;setNextEventAt(null)},[])
  const replace=useCallback((next:DemoSession|null)=>{sessionRef.current=next;persist(next);setSession(next)},[])
