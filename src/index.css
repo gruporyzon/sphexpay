@@ -3129,3 +3129,50 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .internal-app-shell .studio-components button:hover{border-color:rgba(255,255,255,.22)}
 .internal-app-shell .studio-workspace{background:radial-gradient(circle at 50% 0,rgba(255,255,255,.055),transparent 30%),#080909}
 .internal-app-shell .dev-settings-sections>button.active,.internal-app-shell .dev-settings-theme button.active{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.08)}
+
+/* Dashboard competition hero: floating product treatment without a visible card. */
+.dashboard-page .spx-operation-hero .overview-slide.competition .iphone-art{
+ isolation:isolate;
+ overflow:visible;
+ border:0;
+ background:transparent;
+ box-shadow:none;
+ backdrop-filter:none;
+}
+.dashboard-page .spx-operation-hero .overview-slide.competition .iphone-art:before{
+ content:'';
+ position:absolute;
+ z-index:-1;
+ inset:18% 8%;
+ border-radius:50%;
+ background:radial-gradient(ellipse,rgba(255,255,255,.08),transparent 68%);
+ filter:blur(18px);
+ pointer-events:none;
+}
+.dashboard-page .spx-operation-hero .competition-product-image{
+ background:transparent;
+ border:0;
+ border-radius:0;
+ box-shadow:none;
+ mask-image:none;
+ filter:drop-shadow(0 15px 18px rgba(0,0,0,.38));
+}
+.dashboard-page .spx-operation-hero .iphone-art:hover .competition-product-image{
+ filter:drop-shadow(0 18px 22px rgba(0,0,0,.42));
+}
+.dashboard-page .spx-operation-hero .prize-seal{
+ border-color:rgba(255,255,255,.14);
+ background:rgba(12,12,14,.58);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 30px rgba(0,0,0,.24);
+ backdrop-filter:blur(12px);
+}
+.dashboard-page .spx-operation-hero .prize-seal svg{color:#f5f5f5}
+.dashboard-page .spx-operation-hero .overview-controls>button{
+ border-color:rgba(255,255,255,.12);
+ background:rgba(12,12,14,.62);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+}
+.dashboard-page .spx-operation-hero .overview-controls>button:hover{border-color:rgba(255,255,255,.24);background:rgba(255,255,255,.1);color:#fff}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.competition .iphone-art:before{background:radial-gradient(ellipse,rgba(0,0,0,.055),transparent 68%)}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .competition-product-image{filter:drop-shadow(0 14px 17px rgba(0,0,0,.16))}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .iphone-art:hover .competition-product-image{filter:drop-shadow(0 17px 21px rgba(0,0,0,.2))}
