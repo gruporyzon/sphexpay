@@ -3007,9 +3007,9 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 
 /* Sphex operational hero. Scoped to the Dashboard carousel. */
 .dashboard-page .spx-operation-hero{
- height:clamp(300px,25vw,350px);
- min-height:300px;
- margin-bottom:22px;
+ height:176px;
+ min-height:176px;
+ margin-bottom:16px;
  border:1px solid rgba(255,255,255,.105);
  border-radius:var(--spx-radius-lg);
  background:#09090b;
@@ -3019,23 +3019,24 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 }
 .dashboard-page .spx-operation-hero:before{content:'';position:absolute;z-index:2;top:-1px;right:12%;left:12%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,126,68,.62),transparent);pointer-events:none}
 .dashboard-page .spx-operation-hero .overview-track{height:100%;transition:transform 560ms cubic-bezier(.2,.75,.2,1)}
-.dashboard-page .spx-operation-hero .overview-slide{grid-template-columns:minmax(360px,1.08fr) minmax(390px,.92fr);gap:clamp(24px,4vw,68px);padding:clamp(34px,3.4vw,50px) clamp(38px,4.6vw,70px)}
+.dashboard-page .spx-operation-hero .overview-slide{grid-template-columns:minmax(360px,1.12fr) minmax(280px,.88fr);gap:clamp(18px,3vw,44px);padding:16px clamp(30px,3.6vw,52px)}
 .dashboard-page .spx-operation-hero .overview-slide:before{background:radial-gradient(circle at 77% 49%,rgba(241,90,36,.19),transparent 25%),radial-gradient(circle at 98% 8%,rgba(255,121,65,.11),transparent 28%),linear-gradient(118deg,#08090b 3%,#101014 57%,#17100d)}
 .dashboard-page .spx-operation-hero .overview-slide.competition:before{background:radial-gradient(circle at 78% 45%,rgba(255,113,51,.29),transparent 29%),linear-gradient(120deg,#0a090a,#121014 62%,#241109)}
 .dashboard-page .spx-operation-hero .overview-slide:after{opacity:.15;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:30px 30px;mask-image:linear-gradient(90deg,rgba(0,0,0,.65),transparent 88%)}
 .dashboard-page .spx-operation-hero .overview-copy{position:relative;z-index:4;max-width:590px}
-.dashboard-page .spx-operation-hero .overview-copy:before{content:'';position:absolute;top:-19px;left:0;width:38px;height:1px;background:linear-gradient(90deg,var(--spx-accent),transparent)}
+.dashboard-page .spx-operation-hero .overview-copy:before{content:'';position:absolute;top:-10px;left:0;width:32px;height:1px;background:linear-gradient(90deg,var(--spx-accent),transparent)}
 .dashboard-page .spx-operation-hero .overview-copy>span{display:flex;align-items:center;gap:8px;color:#ff9162;font-size:8px;font-weight:760;letter-spacing:.155em}
 .dashboard-page .spx-operation-hero .overview-copy>span:before{content:'';width:5px;height:5px;background:var(--spx-accent);clip-path:polygon(0 0,100% 25%,75% 100%,0 75%);box-shadow:0 0 10px rgba(241,90,36,.4)}
-.dashboard-page .spx-operation-hero .overview-copy h2{max-width:580px;margin-top:12px;font-size:clamp(29px,2.55vw,42px);font-weight:650;line-height:1.02;letter-spacing:-.05em;text-wrap:balance}
-.dashboard-page .spx-operation-hero .overview-copy p{max-width:520px;margin-top:14px;color:rgba(255,255,255,.62);font-size:11px;line-height:1.65;text-wrap:pretty}
-.dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta){display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:40px;margin-top:22px;padding:0 14px;border:1px solid rgba(255,136,82,.3);border-radius:var(--spx-radius-md);background:linear-gradient(110deg,rgba(241,90,36,.13),rgba(255,255,255,.045));box-shadow:inset 0 1px 0 rgba(255,255,255,.06);color:#fff;font-size:9px;font-weight:700;text-decoration:none;transition:border-color var(--spx-transition-fast) var(--spx-ease),background var(--spx-transition-fast) var(--spx-ease),box-shadow var(--spx-transition-fast) var(--spx-ease)}
+.dashboard-page .spx-operation-hero .overview-copy h2{max-width:580px;margin-top:7px;font-size:clamp(23px,2vw,29px);font-weight:650;line-height:1.02;letter-spacing:-.045em;text-wrap:balance}
+.dashboard-page .spx-operation-hero .overview-copy p{max-width:520px;margin-top:7px;color:rgba(255,255,255,.62);font-size:9px;line-height:1.45;text-wrap:pretty}
+.dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta){display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:34px;margin-top:10px;padding:0 12px;border:1px solid rgba(255,136,82,.3);border-radius:var(--spx-radius-md);background:linear-gradient(110deg,rgba(241,90,36,.13),rgba(255,255,255,.045));box-shadow:inset 0 1px 0 rgba(255,255,255,.06);color:#fff;font-size:8px;font-weight:700;text-decoration:none;transition:border-color var(--spx-transition-fast) var(--spx-ease),background var(--spx-transition-fast) var(--spx-ease),box-shadow var(--spx-transition-fast) var(--spx-ease)}
 .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta):hover{border-color:rgba(255,138,84,.55);background:linear-gradient(110deg,rgba(241,90,36,.2),rgba(255,255,255,.06));box-shadow:0 8px 24px rgba(0,0,0,.2)}
 .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta) svg{width:13px;height:13px;transition:transform var(--spx-transition-fast) var(--spx-ease)}
 .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta):hover svg{transform:translateX(3px)}
 .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta):focus-visible,.dashboard-page .spx-operation-hero .overview-controls button:focus-visible{outline:0;box-shadow:0 0 0 3px rgba(255,126,68,.25)}
 
-.dashboard-page .operation-core{position:relative;justify-self:end;width:min(430px,100%);height:250px;opacity:1;transform:none;pointer-events:none}
+.dashboard-page .operation-core{position:relative;justify-self:end;width:min(430px,100%);height:170px;opacity:1;transform:scale(.68);transform-origin:center right;pointer-events:none}
+.dashboard-page .spx-operation-hero .iphone-art{height:160px;transform:scale(.74);transform-origin:center}
 .dashboard-page .operation-orbit{position:absolute;left:50%;top:50%;border:1px solid rgba(255,255,255,.105);border-radius:50%;transform:translate(-50%,-50%);animation:spx-core-rotate 28s linear infinite}
 .dashboard-page .orbit-outer{width:226px;height:226px;border-style:dashed;border-color:rgba(255,126,68,.24)}
 .dashboard-page .orbit-inner{width:154px;height:154px;animation-direction:reverse;animation-duration:19s}
@@ -3070,13 +3071,15 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 @keyframes spx-core-breathe{50%{border-color:rgba(255,126,68,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 60px rgba(241,90,36,.23)}}
 @keyframes spx-data-packet{to{offset-distance:100%}}
 
-@media(max-width:1100px) and (min-width:769px){
- .dashboard-page .spx-operation-hero .overview-slide{grid-template-columns:minmax(310px,1fr) minmax(320px,.8fr);gap:20px;padding-inline:36px}
- .dashboard-page .operation-core{width:350px;transform:scale(.9);transform-origin:center right}
- .dashboard-page .spx-operation-hero .overview-copy h2{font-size:clamp(28px,3.3vw,36px)}
+@media(max-width:1279px) and (min-width:768px){
+ .dashboard-page .spx-operation-hero{height:190px;min-height:190px}
+ .dashboard-page .spx-operation-hero .overview-slide{grid-template-columns:minmax(310px,1fr) minmax(250px,.8fr);gap:18px;padding-inline:30px}
+ .dashboard-page .operation-core{width:350px;transform:scale(.68);transform-origin:center right}
+ .dashboard-page .spx-operation-hero .overview-copy h2{font-size:clamp(23px,2.7vw,28px)}
+ .dashboard-page .spx-operation-hero .iphone-art{height:160px;transform:scale(.74)}
 }
 
-@media(max-width:768px){
+@media(max-width:767px){
  .dashboard-page>.spx-operation-hero{display:block!important;width:100%;height:clamp(400px,118vw,480px);min-height:400px;margin:0 0 12px!important;border-radius:var(--spx-radius-lg);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 18px 40px rgba(0,0,0,.19);touch-action:pan-y}
  .dashboard-page .spx-operation-hero .overview-track{height:100%}
  .dashboard-page .spx-operation-hero .overview-slide{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(180px,1fr);align-content:start;gap:8px;width:100%;min-width:100%;height:100%;min-height:100%;padding:25px 18px 50px}
