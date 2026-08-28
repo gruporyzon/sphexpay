@@ -654,3 +654,39 @@ html{scroll-padding-top:calc(var(--public-header-height) + var(--public-anchor-g
 @media(max-width:767px){.landing-redesign .hero-metrics dd{font-size:9px;line-height:1.35}.landing-redesign .hero-metrics dt{line-height:1.2}.landing-redesign .landing-hero-visual{left:50%;width:720px;transform:translateX(-50%)}.landing-redesign .landing-hero-copy{flex:0 0 auto}.landing-redesign .feature-mosaic article p,.landing-redesign .live-public-highlights small,.landing-redesign .mobile-benefit-grid small{font-size:10px;line-height:1.5}.landing-redesign .faq-section article h3 button span{font-size:12px;line-height:1.4}}
 @media(max-width:389px){.landing-redesign .landing-hero-visual{width:660px}.landing-redesign .hero-metrics>div{padding-inline:6px}.landing-redesign .hero-metrics dd{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.landing-redesign *{scroll-behavior:auto!important}.landing-redesign .faq-answer,.landing-redesign .faq-answer>p{transition:none}.landing-redesign .public-phone,.landing-redesign .phone-float,.landing-redesign .editorial-flow ol:before{animation:none!important}}
+
+/* Entrada do gateway: identidade monocromatica, sem alterar o fluxo de autenticacao. */
+.auth-shell{--auth-accent:#111;--auth-accent-foreground:#fff;--auth-surface:#fff;--auth-surface-muted:#f5f5f5;--auth-border:rgba(0,0,0,.08);--auth-border-strong:rgba(0,0,0,.16);--auth-text:#111;--auth-muted:#777;background:#fafafa;color:var(--auth-text)}
+.auth-shell .auth-form-side{background:#fafafa}.auth-shell .auth-form-wrap{border-color:var(--auth-border);background:var(--auth-surface);box-shadow:0 26px 70px rgba(0,0,0,.08)}
+.auth-shell .auth-form-wrap>.sphexpay-brand img,.auth-shell .auth-form-side>.sphexpay-brand img{filter:grayscale(1) brightness(.12)}
+.auth-shell :is(.auth-eyebrow,.auth-visual-copy>span){color:#666}.auth-shell :is(.auth-subtitle,.auth-options label,.auth-consents label,.auth-divider,.auth-back){color:var(--auth-muted)}
+.auth-shell :is(.auth-options a,.auth-consents a,.auth-switch a){color:var(--auth-text);text-decoration-color:rgba(0,0,0,.28)}
+.auth-shell :is(.auth-options a,.auth-consents a,.auth-switch a):hover{text-decoration:underline;text-underline-offset:3px}
+.auth-shell :is(.auth-options input,.auth-consents input){accent-color:var(--auth-accent)}
+.auth-shell .field-control{border-color:rgba(0,0,0,.1);background:#fff;color:#111}.auth-shell .field-control input{color:#111}.auth-shell .field-control input::placeholder{color:#999}
+.auth-shell .field-control:focus-within{border-color:#111;box-shadow:0 0 0 3px rgba(0,0,0,.1)}
+.auth-shell .social-buttons button{border-color:var(--auth-border);background:var(--auth-surface-muted);color:#111}.auth-shell .social-buttons button:hover:not(:disabled){border-color:var(--auth-border-strong);background:#efefef}
+.auth-shell .auth-submit{background:#111;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.16)}.auth-shell .auth-submit:hover{background:#000;box-shadow:0 16px 34px rgba(0,0,0,.2)}
+.auth-shell .auth-state-icon{border-color:var(--auth-border);background:var(--auth-surface-muted);color:#111}.auth-shell .verify-steps svg{color:#222}
+.auth-shell .auth-divider:before,.auth-shell .auth-divider:after{background:var(--auth-border)}
+.auth-shell .auth-visual{background:radial-gradient(circle at 55% 42%,rgba(255,255,255,.08),transparent 28%),linear-gradient(145deg,#171717,#050505)}
+.auth-shell .auth-visual:before,.auth-shell .auth-visual:after{border-color:rgba(255,255,255,.08)}
+.auth-shell .auth-preview{border-color:rgba(255,255,255,.11);background:#0b0b0c;box-shadow:0 34px 90px rgba(0,0,0,.42)}
+.auth-shell .auth-preview-head img{filter:grayscale(1) brightness(4)}.auth-shell .auth-preview-metrics svg{color:#d4d4d4}.auth-shell .auth-preview-chart>div{filter:grayscale(1)}
+.auth-loading{background:#050505}.auth-loading .sphexpay-brand img{filter:grayscale(1) brightness(4)}.auth-loading-line:after{background:#e5e5e5;box-shadow:0 0 14px rgba(255,255,255,.18)}
+.auth-callback-error button{border-color:#f5f5f5;background:#f5f5f5;color:#050505}.auth-callback-error button:hover{background:#dcdcdc}
+.auth-shell :is(a,button,input,[tabindex="0"]):focus-visible{outline-color:#111}
+
+:root[data-theme=dark] .auth-shell{--auth-accent:#f5f5f5;--auth-accent-foreground:#050505;--auth-surface:#0a0a0a;--auth-surface-muted:#111;--auth-border:rgba(255,255,255,.08);--auth-border-strong:rgba(255,255,255,.18);--auth-text:#f5f5f5;--auth-muted:#8a8a8a;background:#050505;color:var(--auth-text)}
+:root[data-theme=dark] .auth-shell .auth-form-side{background:#050505}
+:root[data-theme=dark] .auth-shell .auth-form-wrap{border-color:var(--auth-border);background:var(--auth-surface);box-shadow:0 28px 80px rgba(0,0,0,.55)}
+:root[data-theme=dark] .auth-shell .auth-form-wrap>.sphexpay-brand img,:root[data-theme=dark] .auth-shell .auth-form-side>.sphexpay-brand img{filter:grayscale(1) brightness(4)}
+:root[data-theme=dark] .auth-shell :is(.auth-eyebrow,.auth-visual-copy>span){color:#a3a3a3}
+:root[data-theme=dark] .auth-shell :is(.auth-options a,.auth-consents a,.auth-switch a){color:#f5f5f5;text-decoration-color:rgba(255,255,255,.32)}
+:root[data-theme=dark] .auth-shell .field-control{border-color:rgba(255,255,255,.1);background:#0d0d0d;color:#fff}
+:root[data-theme=dark] .auth-shell .field-control input{color:#fff}:root[data-theme=dark] .auth-shell .field-control input::placeholder{color:#666}
+:root[data-theme=dark] .auth-shell .field-control:focus-within{border-color:rgba(255,255,255,.3);box-shadow:0 0 0 3px rgba(255,255,255,.08)}
+:root[data-theme=dark] .auth-shell .social-buttons button{border-color:var(--auth-border);background:#0d0d0d;color:#f5f5f5}:root[data-theme=dark] .auth-shell .social-buttons button:hover:not(:disabled){border-color:var(--auth-border-strong);background:#151515}
+:root[data-theme=dark] .auth-shell .auth-submit{background:#f5f5f5;color:#050505;box-shadow:0 14px 34px rgba(0,0,0,.5)}:root[data-theme=dark] .auth-shell .auth-submit:hover{background:#fff}
+:root[data-theme=dark] .auth-shell .auth-state-icon{border-color:var(--auth-border);background:#111;color:#f5f5f5}:root[data-theme=dark] .auth-shell .verify-steps svg{color:#d4d4d4}
+:root[data-theme=dark] .auth-shell :is(a,button,input,[tabindex="0"]):focus-visible{outline-color:#f5f5f5}
