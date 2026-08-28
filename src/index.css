@@ -408,6 +408,10 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 :root[data-theme=dark] .dashboard-page .spx-operation-hero .overview-controls>div button.active{background-image:linear-gradient(#e5e5e5,#e5e5e5)}
 :root[data-theme=dark] .dashboard-page .next-award-card{border-color:rgba(255,255,255,.07);background:radial-gradient(circle at 8% 50%,rgba(255,255,255,.04),transparent 26%),linear-gradient(105deg,#101010,#090909 65%)}
 :root[data-theme=dark] .dashboard-page .next-award-card:hover .next-award-plaque{filter:drop-shadow(0 15px 20px rgba(255,255,255,.08))}
+:root[data-theme=dark] .dashboard-page .next-award-progress{background:#222}
+:root[data-theme=dark] .dashboard-page .next-award-progress>i{background:#f5f5f5;box-shadow:none}
+:root[data-theme=dark] .dashboard-page .next-award-plaque .official-award-plaque:before{background:transparent;opacity:0}
+:root[data-theme=dark] .dashboard-page .next-award-plaque .official-award-plaque img{filter:drop-shadow(0 18px 18px rgba(0,0,0,.42))}
 :root[data-theme=dark] .internal-app-shell .premium-chart .recharts-area-curve,
 :root[data-theme=dark] .internal-app-shell .reports-live .recharts-area-curve{stroke:#e5e5e5}
 :root[data-theme=dark] .internal-app-shell .premium-chart .recharts-area-area,
@@ -492,6 +496,11 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-controls>div button{background-image:linear-gradient(#999,#999)}
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-controls>div button.active{background-image:linear-gradient(#111,#111)}
 :root:not([data-theme=dark]) .dashboard-page .next-award-card{border-color:rgba(0,0,0,.075);background:linear-gradient(105deg,#f7f7f7,#fff 65%)}
+:root:not([data-theme=dark]) .dashboard-page .next-award-progress{background:#e5e5e5}
+:root:not([data-theme=dark]) .dashboard-page .next-award-progress>i{background:#111;box-shadow:none}
+:root:not([data-theme=dark]) .dashboard-page .next-award-plaque .official-award-plaque:before{background:transparent;opacity:0}
+:root:not([data-theme=dark]) .dashboard-page .next-award-plaque .official-award-plaque img{filter:drop-shadow(0 14px 16px rgba(0,0,0,.08))}
+:root:not([data-theme=dark]) .dashboard-page .next-award-card:hover .next-award-plaque{filter:drop-shadow(0 15px 20px rgba(0,0,0,.08))}
 
 @media(max-width:1023px){
  :root[data-theme=dark] .internal-app-shell .internal-sidebar{box-shadow:30px 0 80px rgba(0,0,0,.62)}
