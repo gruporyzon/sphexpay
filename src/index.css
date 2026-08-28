@@ -3228,3 +3228,52 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy button:hover{border-color:#000;background:#000;box-shadow:0 13px 28px rgba(0,0,0,.16)}
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway .operation-brand{background:radial-gradient(circle at 38% 28%,rgba(0,0,0,.045),transparent 48%),#fff;box-shadow:inset 0 1px 0 #fff,0 15px 32px rgba(0,0,0,.1)}
 @media(max-width:767px){.dashboard-page .spx-operation-hero .overview-slide.gateway:after{opacity:.32;background-size:28px 28px,28px 28px,84px 84px}.dashboard-page .spx-operation-hero .overview-slide.gateway .operation-core:before{inset:12% 5% 4% 12%}}
+
+/* Continuous premium sidebar navigation. Section semantics remain in the DOM. */
+.internal-app-shell .internal-sidebar{
+ --sidebar-item-height:42px;
+ --sidebar-item-gap:2px;
+}
+.internal-app-shell .internal-sidebar .competition-sidebar-slot{padding:7px var(--sidebar-inline) 3px}
+.internal-app-shell .internal-sidebar .competition-sidebar-item{
+ min-height:var(--sidebar-item-height);
+ gap:10px;
+ padding:0 11px;
+ border-color:transparent;
+ border-radius:11px;
+ background:transparent;
+ box-shadow:none;
+ color:var(--spx-text-muted);
+}
+.internal-app-shell .internal-sidebar .competition-sidebar-item:before,
+.internal-app-shell .internal-sidebar .competition-sidebar-item:after{display:none}
+.internal-app-shell .internal-sidebar .competition-sidebar-item:hover{border-color:var(--spx-border);background:var(--spx-surface-soft);box-shadow:none;color:var(--spx-text)}
+.internal-app-shell .internal-sidebar .competition-sidebar-item.active{border-color:var(--spx-border);background:var(--spx-surface-soft);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--spx-text) 5%,transparent);color:var(--spx-text)}
+.internal-app-shell .internal-sidebar .competition-sidebar-item>svg{width:19px;height:19px;flex-basis:19px;color:currentColor;stroke-width:1.7}
+.internal-app-shell .internal-sidebar .competition-sidebar-item>span{display:flex;align-items:baseline;gap:6px;font-size:11px;font-weight:620}
+.internal-app-shell .internal-sidebar .competition-sidebar-item small{margin:0;padding:2px 5px;border:1px solid var(--spx-border);border-radius:999px;color:var(--spx-text-muted);font-size:6px;font-weight:650;line-height:1;white-space:nowrap}
+.internal-app-shell .internal-sidebar .sidebar-navigation{display:flex;flex-direction:column;gap:var(--sidebar-item-gap);padding:2px var(--sidebar-inline) 12px}
+.internal-app-shell .internal-sidebar .sidebar-group{display:contents}
+.internal-app-shell .internal-sidebar .sidebar-group+.sidebar-group{margin-top:0}
+.internal-app-shell .internal-sidebar .sidebar-group-label{position:absolute!important;width:1px!important;height:1px!important;min-height:0!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+.internal-app-shell .internal-sidebar .sidebar-group-label:after{display:none}
+.internal-app-shell .internal-sidebar .sidebar-link{
+ min-height:var(--sidebar-item-height);
+ gap:10px;
+ margin:0;
+ padding:0 11px;
+ border-radius:11px;
+ font-size:11px;
+ font-weight:590;
+ letter-spacing:0;
+ transition:background 160ms var(--spx-ease),border-color 160ms var(--spx-ease),color 160ms var(--spx-ease),box-shadow 160ms var(--spx-ease);
+}
+.internal-app-shell .internal-sidebar .sidebar-link:before,
+.internal-app-shell .internal-sidebar .sidebar-link:after{display:none}
+.internal-app-shell .internal-sidebar .sidebar-link svg{width:19px;height:19px;flex-basis:19px;stroke-width:1.7;filter:none}
+.internal-app-shell .internal-sidebar .sidebar-link:hover{border-color:var(--spx-border);background:var(--spx-surface-soft);color:var(--spx-text);transform:none}
+.internal-app-shell .internal-sidebar .sidebar-link:hover svg{color:currentColor;stroke-width:1.7;transform:none}
+.internal-app-shell .internal-sidebar .sidebar-link.active{border-color:var(--spx-border);background:var(--spx-surface-soft);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--spx-text) 5%,transparent);color:var(--spx-text);font-weight:650}
+.internal-app-shell .internal-sidebar .sidebar-link.active svg{color:currentColor;stroke-width:1.8;filter:none}
+.internal-app-shell .internal-sidebar .sidebar-footer{padding-top:7px}
+@media(max-width:1023px){.internal-app-shell .internal-sidebar{--sidebar-item-height:46px;--sidebar-item-gap:2px}.internal-app-shell .internal-sidebar .competition-sidebar-slot{padding-inline:12px}.internal-app-shell .internal-sidebar .sidebar-navigation{padding-inline:12px}.internal-app-shell .internal-sidebar .sidebar-link,.internal-app-shell .internal-sidebar .competition-sidebar-item{padding-inline:12px;font-size:12px}}
