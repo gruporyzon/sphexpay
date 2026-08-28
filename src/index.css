@@ -3176,3 +3176,55 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.competition .iphone-art:before{background:radial-gradient(ellipse,rgba(0,0,0,.055),transparent 68%)}
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .competition-product-image{filter:drop-shadow(0 14px 17px rgba(0,0,0,.16))}
 :root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .iphone-art:hover .competition-product-image{filter:drop-shadow(0 17px 21px rgba(0,0,0,.2))}
+
+/* Premium monochrome composition for the primary operational slide. */
+.dashboard-page .spx-operation-hero{
+ --hero-surface:#070809;
+ --hero-surface-2:#111315;
+ --hero-line:rgba(255,255,255,.1);
+ --hero-line-strong:rgba(255,255,255,.2);
+ --hero-ink:#f7f7f7;
+ --hero-muted:rgba(255,255,255,.62);
+ --hero-elevated:rgba(15,17,19,.78);
+ --hero-depth:rgba(0,0,0,.38);
+}
+.dashboard-page .spx-operation-hero .overview-slide.gateway:before{
+ background:radial-gradient(ellipse at 78% 46%,rgba(255,255,255,.095),transparent 24%),radial-gradient(ellipse at 45% -30%,rgba(255,255,255,.06),transparent 42%),linear-gradient(118deg,var(--hero-surface),var(--hero-surface-2) 68%,#08090a);
+}
+.dashboard-page .spx-operation-hero .overview-slide.gateway:after{
+ opacity:.5;
+ background-image:linear-gradient(var(--hero-line) 1px,transparent 1px),linear-gradient(90deg,var(--hero-line) 1px,transparent 1px),radial-gradient(circle,rgba(255,255,255,.2) 1px,transparent 1.5px);
+ background-size:32px 32px,32px 32px,96px 96px;
+ mask-image:linear-gradient(90deg,transparent 3%,rgba(0,0,0,.28) 40%,#000 72%,transparent 100%);
+}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy{max-width:560px}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy>span{color:var(--hero-muted);font-weight:720;letter-spacing:.18em}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy h2{max-width:540px;color:var(--hero-ink);font-weight:690;letter-spacing:-.048em}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy p{max-width:490px;color:var(--hero-muted)}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy button{border-color:var(--hero-ink);background:var(--hero-ink);box-shadow:0 10px 24px var(--hero-depth);color:#08090a}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy button:hover{border-color:#fff;background:#fff;box-shadow:0 13px 30px var(--hero-depth);transform:translateY(-1px)}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .operation-core:before{content:'';position:absolute;inset:6% 3% 2% 18%;border:1px solid var(--hero-line);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.045),transparent 63%);box-shadow:inset 0 0 32px rgba(255,255,255,.025);pointer-events:none}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .operation-core{filter:drop-shadow(0 18px 25px var(--hero-depth))}
+.dashboard-page .spx-operation-hero .overview-slide.gateway :is(.operation-node,.operation-performance,.operation-integrity){border-color:var(--hero-line);background:var(--hero-elevated);box-shadow:inset 0 1px 0 rgba(255,255,255,.065),0 12px 28px var(--hero-depth);backdrop-filter:blur(14px)}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .operation-brand{border-color:var(--hero-line-strong);background:radial-gradient(circle at 38% 28%,rgba(255,255,255,.1),transparent 48%),#111315;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 0 36px rgba(255,255,255,.07)}
+.dashboard-page .spx-operation-hero .overview-slide.gateway :is(.operation-node,.operation-integrity)>svg{color:#d7d7d7}
+.dashboard-page .spx-operation-hero .overview-slide.gateway .operation-performance>i b{background:linear-gradient(90deg,#777,#f5f5f5);box-shadow:none}
+.dashboard-page .spx-operation-hero .overview-controls>div button{opacity:.72;transition:width .2s ease,opacity .2s ease,background-image .2s ease}
+.dashboard-page .spx-operation-hero .overview-controls>div button.active{opacity:1}
+
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero{
+ --hero-surface:#fff;
+ --hero-surface-2:#f0f1f2;
+ --hero-line:rgba(0,0,0,.075);
+ --hero-line-strong:rgba(0,0,0,.15);
+ --hero-ink:#111;
+ --hero-muted:#626262;
+ --hero-elevated:rgba(255,255,255,.84);
+ --hero-depth:rgba(0,0,0,.1);
+}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway:before{background:radial-gradient(ellipse at 78% 46%,rgba(0,0,0,.065),transparent 24%),radial-gradient(ellipse at 44% -32%,rgba(0,0,0,.035),transparent 42%),linear-gradient(118deg,#fff,#f3f4f5 68%,#e9eaeb)}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway:after{background-image:linear-gradient(rgba(0,0,0,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.05) 1px,transparent 1px),radial-gradient(circle,rgba(0,0,0,.18) 1px,transparent 1.5px)}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy button{border-color:#111;background:#111;color:#fff}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway .overview-copy button:hover{border-color:#000;background:#000;box-shadow:0 13px 28px rgba(0,0,0,.16)}
+:root:not([data-theme=dark]) .dashboard-page .spx-operation-hero .overview-slide.gateway .operation-brand{background:radial-gradient(circle at 38% 28%,rgba(0,0,0,.045),transparent 48%),#fff;box-shadow:inset 0 1px 0 #fff,0 15px 32px rgba(0,0,0,.1)}
+@media(max-width:767px){.dashboard-page .spx-operation-hero .overview-slide.gateway:after{opacity:.32;background-size:28px 28px,28px 28px,84px 84px}.dashboard-page .spx-operation-hero .overview-slide.gateway .operation-core:before{inset:12% 5% 4% 12%}}
