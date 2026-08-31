@@ -54,7 +54,7 @@ function SystemChrome(){
  return null
 }
 
-const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['vendas/:transactionId',<LiveSales/>],['transacoes/*',<NavigateTransactionsAlias/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><SystemChrome/><Routes>
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}
@@ -76,4 +76,5 @@ export default function App(){return <BrowserRouter><SystemChrome/><Routes>
 function NavigateProductAlias(){const path=window.location.pathname.replace('/dashboard/products','/app/produtos');return <Navigate to={path} replace/>}
 function NavigateMembersAlias(){const path=window.location.pathname.replace('/dashboard/members','/app/members');return <Navigate to={path} replace/>}
 function NavigateSocialAlias(){const path=window.location.pathname.replace('/dashboard/social','/app/social');return <Navigate to={path} replace/>}
+function NavigateTransactionsAlias(){const location=useLocation(),suffix=location.pathname.replace(/^\/app\/transacoes/,'');return <Navigate to={`/app/vendas${suffix}${location.search}`} replace/>}
 function Deferred({children}:{children:React.ReactNode}){return <Suspense fallback={<Loading/>}>{children}</Suspense>}

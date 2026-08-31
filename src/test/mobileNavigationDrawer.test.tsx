@@ -14,7 +14,7 @@ vi.mock('../components/profile/AvatarUploader',()=>({AvatarUploader:()=>null}))
 vi.mock('../components/branding/SphexPayLogo',()=>({SphexPayLogo:()=> <span>SphexPay</span>}))
 vi.mock('../components/ui',()=>({Dropdown:()=>null}))
 
-const renderLayout=()=>render(<MemoryRouter initialEntries={['/app']}><Routes><Route path="/app" element={<Layout/>}><Route index element={<p>Dashboard atual</p>}/><Route path="transacoes" element={<p>Transações atuais</p>}/></Route></Routes></MemoryRouter>)
+const renderLayout=()=>render(<MemoryRouter initialEntries={['/app']}><Routes><Route path="/app" element={<Layout/>}><Route index element={<p>Dashboard atual</p>}/><Route path="vendas" element={<p>Vendas atuais</p>}/></Route></Routes></MemoryRouter>)
 
 describe('drawer autenticado mobile',()=>{
  it('usa uma única posição, abre acima do backdrop e restaura scroll e foco ao fechar',async()=>{
@@ -51,8 +51,8 @@ describe('drawer autenticado mobile',()=>{
   expect(drawer).not.toHaveClass('mobile-open')
 
   await user.click(trigger)
-  await user.click(screen.getByRole('link',{name:'Transações'}))
-  expect(screen.getByText('Transações atuais')).toBeVisible()
+  await user.click(screen.getByRole('link',{name:'Vendas'}))
+  expect(screen.getByText('Vendas atuais')).toBeVisible()
   expect(drawer).not.toHaveClass('mobile-open')
 
   for(let cycle=0;cycle<10;cycle+=1){await user.click(trigger);expect(drawer).toHaveClass('mobile-open');await user.keyboard('{Escape}');expect(drawer).not.toHaveClass('mobile-open')}
@@ -83,5 +83,14 @@ describe('drawer autenticado mobile',()=>{
   const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
   expect(within(drawer).getByRole('link',{name:'Relatórios'})).toBeVisible()
   expect(within(drawer).queryByRole('link',{name:'Clientes'})).not.toBeInTheDocument()
+ })
+
+ it('exibe somente Vendas no drawer principal, sem Transações independente',async()=>{
+  const user=userEvent.setup()
+  const view=renderLayout()
+  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
+  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
+  expect(within(drawer).getByRole('link',{name:'Vendas'})).toBeVisible()
+  expect(within(drawer).queryByRole('link',{name:'Transações'})).not.toBeInTheDocument()
  })
 })

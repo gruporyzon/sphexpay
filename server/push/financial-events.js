@@ -1,19 +1,19 @@
 import { sendPushToUser } from './send-service.js'
 
 const formats={
- sale_approved:{title:'Venda aprovada!',route:'/app/transacoes',kind:'sale'},
+ sale_approved:{title:'Venda aprovada!',route:'/app/vendas',kind:'sale'},
  sale_pending:{title:'Venda pendente!',route:'/app/vendas',kind:'commission'},
- pix_created:{title:'Pix gerado!',route:'/app/transacoes',kind:'commission'},
- pix_paid:{title:'Pix pago!',route:'/app/transacoes',kind:'commission'},
- card_approved:{title:'Pagamento no cartão aprovado!',route:'/app/transacoes',kind:'commission'},
- card_declined:{title:'Pagamento no cartão recusado',route:'/app/transacoes',kind:'declined'},
- boleto_created:{title:'Boleto gerado!',route:'/app/transacoes',kind:'commission'},
- boleto_paid:{title:'Boleto pago!',route:'/app/transacoes',kind:'commission'},
+ pix_created:{title:'Pix gerado!',route:'/app/vendas',kind:'commission'},
+ pix_paid:{title:'Pix pago!',route:'/app/vendas',kind:'commission'},
+ card_approved:{title:'Pagamento no cartão aprovado!',route:'/app/vendas',kind:'commission'},
+ card_declined:{title:'Pagamento no cartão recusado',route:'/app/vendas',kind:'declined'},
+ boleto_created:{title:'Boleto gerado!',route:'/app/vendas',kind:'commission'},
+ boleto_paid:{title:'Boleto pago!',route:'/app/vendas',kind:'commission'},
  subscription_approved:{title:'Assinatura aprovada!',route:'/app/assinaturas',kind:'commission'},
  subscription_renewed:{title:'Assinatura renovada!',route:'/app/assinaturas',kind:'commission'},
  withdrawal_completed:{title:'Saque realizado com sucesso',route:'/app/financeiro/saques',kind:'withdrawal'},
- refund_done:{title:'Reembolso realizado!',route:'/app/transacoes',kind:'commission'},
- chargeback_received:{title:'Chargeback recebido!',route:'/app/transacoes',kind:'commission'}
+ refund_done:{title:'Reembolso realizado!',route:'/app/vendas',kind:'commission'},
+ chargeback_received:{title:'Chargeback recebido!',route:'/app/vendas',kind:'commission'}
 }
 
 export const formatMoney=(minor,currency='BRL')=>new Intl.NumberFormat(currency==='USD'?'en-US':currency==='EUR'?'de-DE':'pt-BR',{style:'currency',currency}).format(minor/100)

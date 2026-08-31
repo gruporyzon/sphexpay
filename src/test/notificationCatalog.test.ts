@@ -6,6 +6,8 @@ describe('catálogo de notificações comerciais',()=>{
   expect(notificationTitles.sale_approved).toBe('Venda aprovada!')
   expect(notificationTitles.payment_refused).toBe('Pagamento recusado!')
   expect(notificationRoutes.withdrawal_sent).toBe('/app/financeiro/saques')
+  expect(notificationRoutes.pix_generated).toBe('/app/vendas')
+  expect(notificationRoutes.refund_done).toBe('/app/vendas')
  })
 
  it('formata comissão em BRL, USD e EUR sem converter valores',()=>{

@@ -10,10 +10,10 @@ const titles:Record<string,string>={
 }
 const routes:Record<string,string>={
  device_test:'/app/configuracoes',
- sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/transacoes',pix_approved:'/app/transacoes',pix_paid:'/app/transacoes',
- credit_card_approved:'/app/transacoes',credit_card_refused:'/app/transacoes',boleto_generated:'/app/transacoes',boleto_paid:'/app/transacoes',
- subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',
- withdrawal_requested:'/app/financeiro/saques',withdrawal_sent:'/app/financeiro/saques',withdrawal_completed:'/app/financeiro/saques',payment_refused:'/app/transacoes',
+ sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/vendas',pix_approved:'/app/vendas',pix_paid:'/app/vendas',
+ credit_card_approved:'/app/vendas',credit_card_refused:'/app/vendas',boleto_generated:'/app/vendas',boleto_paid:'/app/vendas',
+ subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/vendas',chargeback_received:'/app/vendas',
+ withdrawal_requested:'/app/financeiro/saques',withdrawal_sent:'/app/financeiro/saques',withdrawal_completed:'/app/financeiro/saques',payment_refused:'/app/vendas',
 }
 const sanitizeNotificationBody=(value:unknown)=>typeof value==='string'?value.replace(/^\s*(?:from\s+SphexPay\s*(?:\r?\n|[-–—:]\s*)?|enviado\s+por\s+SphexPay\s*(?:\r?\n)?)/i,'').trim():''
 

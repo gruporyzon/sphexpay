@@ -49,7 +49,7 @@ export async function processPaymentEvent({client,input,pushClient}){
    type:data.outboxEventType,currency:event.currency,
    commissionMinor:event.amounts.commissionCents,amountMinor:event.amounts.finalCents,
    metadata:{transactionId:data.publicTransactionId,productId:event.productId,type:data.outboxEventType,
-    route:`/app/transacoes/${data.publicTransactionId}`,currency:event.currency,productName:data.productName},
+    route:`/app/vendas/${data.publicTransactionId}`,currency:event.currency,productName:data.productName},
    pushClient
   })
   await client.from('financial_event_outbox').update({
