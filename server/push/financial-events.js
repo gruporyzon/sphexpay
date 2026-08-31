@@ -11,7 +11,7 @@ const formats={
  boleto_paid:{title:'Boleto pago!',route:'/app/transacoes',kind:'commission'},
  subscription_approved:{title:'Assinatura aprovada!',route:'/app/assinaturas',kind:'commission'},
  subscription_renewed:{title:'Assinatura renovada!',route:'/app/assinaturas',kind:'commission'},
- withdrawal_completed:{title:'Saque realizado com sucesso',route:'/app/saques',kind:'withdrawal'},
+ withdrawal_completed:{title:'Saque realizado com sucesso',route:'/app/financeiro/saques',kind:'withdrawal'},
  refund_done:{title:'Reembolso realizado!',route:'/app/transacoes',kind:'commission'},
  chargeback_received:{title:'Chargeback recebido!',route:'/app/transacoes',kind:'commission'}
 }

@@ -161,6 +161,10 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .spin{animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:1100px){.withdrawal-layout{grid-template-columns:1fr}.withdrawal-request-card{max-width:none}.withdrawal-history-list>article{grid-template-columns:1fr minmax(300px,1.3fr) minmax(80px,.4fr)}}
 @media(max-width:767px){.withdrawal-request-card{padding:20px}.withdrawal-request-card>p{font-size:25px}.withdrawal-history-card>header{align-items:flex-start}.withdrawal-history-list>article{grid-template-columns:1fr;padding:15px}.withdrawal-history-list dl{padding-left:19px}.withdrawal-history-list code{padding-left:19px}.withdrawal-modal-backdrop{padding:12px max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}.withdrawal-modal-backdrop>section{max-height:calc(100dvh - 24px);padding:25px 19px;border-radius:20px}.withdrawal-modal-backdrop footer{grid-template-columns:1fr}}
+
+/* Financial hub */
+.financial-module-tabs{display:flex;width:max-content;max-width:100%;gap:4px;margin:0 0 22px;padding:4px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2);overflow-x:auto;scrollbar-width:none}.financial-module-tabs::-webkit-scrollbar{display:none}.financial-module-tabs a{display:flex;align-items:center;justify-content:center;gap:8px;min-width:138px;min-height:42px;padding:0 17px;border-radius:10px;color:var(--muted);font-size:10px;font-weight:800;white-space:nowrap;transition:background .18s,color .18s,box-shadow .18s}.financial-module-tabs a svg{width:16px}.financial-module-tabs a[aria-selected=true]{background:var(--panel);color:var(--text);box-shadow:var(--shadow-sm)}.financial-module-tabs a[aria-selected=true] svg{color:var(--orange)}.financial-overview-actions{display:flex;justify-content:flex-end;gap:8px;margin:-64px 0 20px}.financial-section-heading{margin-bottom:18px}.financial-section-heading h2{font-size:18px;letter-spacing:-.025em}.financial-section-heading p{margin-top:4px;color:var(--muted);font-size:10px}.withdrawals-secure{animation:page-enter .24s ease both}
+@media(max-width:767px){.financial-module .page-title{align-items:flex-start}.financial-module-tabs{width:100%;margin-bottom:18px}.financial-module-tabs a{min-width:132px;flex:1;min-height:44px}.financial-overview-actions{justify-content:stretch;flex-wrap:wrap;margin:0 0 16px}.financial-overview-actions>*{flex:1}.financial-overview-actions>.btn{min-width:160px;justify-content:center}.financial-section-heading h2{font-size:16px}.financial-section-heading p{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.spin{animation:none}}
 
 /* Notification generator workspace */
@@ -3277,3 +3281,19 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .internal-app-shell .internal-sidebar .sidebar-link.active svg{color:currentColor;stroke-width:1.8;filter:none}
 .internal-app-shell .internal-sidebar .sidebar-footer{padding-top:7px}
 @media(max-width:1023px){.internal-app-shell .internal-sidebar{--sidebar-item-height:46px;--sidebar-item-gap:2px}.internal-app-shell .internal-sidebar .competition-sidebar-slot{padding-inline:12px}.internal-app-shell .internal-sidebar .sidebar-navigation{padding-inline:12px}.internal-app-shell .internal-sidebar .sidebar-link,.internal-app-shell .internal-sidebar .competition-sidebar-item{padding-inline:12px;font-size:12px}}
+
+/* Official horizontal Sphex symbol: transparent, monochrome and theme-aware. */
+.sphexpay-brand img{
+ height:auto;
+ aspect-ratio:1717/744;
+ border-radius:0;
+ background:transparent;
+ object-fit:contain;
+ object-position:center;
+ box-shadow:none;
+ filter:none!important;
+}
+.internal-app-shell .internal-sidebar .sidebar-brand .sphexpay-brand img{width:36px}
+.internal-app-shell.sidebar-collapsed .internal-sidebar .sidebar-brand .sphexpay-brand img{width:36px}
+.internal-app-shell .internal-topbar .header-brand img{width:30px;height:auto}
+.auth-shell .sphexpay-brand img,.auth-loading .sphexpay-brand img{filter:none!important}

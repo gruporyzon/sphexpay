@@ -1,6 +1,6 @@
 import { useEffect,useRef,useState } from 'react'
 import { NavLink,Outlet,useLocation,useNavigate } from 'react-router-dom'
-import { ArrowLeftRight,Bell,ChevronDown,Crown,FileBarChart,Landmark,LayoutDashboard,Link2,LogOut,Menu,MessageCircle,Moon,Package,PanelLeftClose,PanelLeftOpen,PanelTop,PlugZap,RadioTower,RefreshCcw,Settings,ShoppingBag,Store,Sun,Trophy,Users,WalletCards,X,type LucideIcon } from 'lucide-react'
+import { ArrowLeftRight,Bell,ChevronDown,Crown,FileBarChart,Landmark,LayoutDashboard,Link2,LogOut,Menu,MessageCircle,Moon,Package,PanelLeftClose,PanelLeftOpen,PanelTop,PlugZap,RadioTower,RefreshCcw,Settings,ShoppingBag,Store,Sun,Trophy,Users,X,type LucideIcon } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useDemoStore } from '../store/useDemoStore'
 import { NotificationBell } from './notifications/NotificationBell'
@@ -16,7 +16,7 @@ type NavGroup={label:string;items:readonly NavItem[]}
 const groups:readonly NavGroup[]=[
  {label:'Visão geral',items:[['Dashboard','/app',LayoutDashboard],['Vendas ao Vivo','/app/vendas-ao-vivo',RadioTower]]},
  {label:'Operação',items:[['Vendas','/app/vendas',ShoppingBag],['Transações','/app/transacoes',ArrowLeftRight],['Produtos','/app/produtos',Package],['Vitrine','/app/vitrine',Store],['Assinaturas','/app/assinaturas',RefreshCcw],['Clientes','/app/clientes',Users]]},
- {label:'Pagamentos',items:[['Checkout','/app/checkout',PanelTop],['Links de pagamento','/app/links',Link2],['Financeiro','/app/financeiro',Landmark],['Saques','/app/saques',WalletCards],['Integrações','/app/integracoes',PlugZap]]},
+ {label:'Pagamentos',items:[['Checkout','/app/checkout',PanelTop],['Links de pagamento','/app/links',Link2],['Financeiro','/app/financeiro',Landmark],['Integrações','/app/integracoes',PlugZap]]},
  {label:'Crescimento',items:[['Social','/app/social',MessageCircle],['Premiações','/app/premiacoes',Trophy],['Relatórios','/app/relatorios',FileBarChart],['Notificações','/app/notificacoes',Bell],['Configurações','/app/configuracoes',Settings]]},
 ] as const
 const items=groups.flatMap(group=>group.items)
@@ -26,7 +26,7 @@ export function Layout(){
  const [collapsed,setCollapsed]=useState(false),[mobile,setMobile]=useState(false),[profileOpen,setProfileOpen]=useState(false)
  const menuButton=useRef<HTMLButtonElement>(null),closeButton=useRef<HTMLButtonElement>(null),profile=useRef<HTMLDivElement>(null),wasMobile=useRef(false)
  const {theme,setTheme}=useDemoStore(),{signOut,user}=useAuth(),navigate=useNavigate(),loc=useLocation()
- const title=items.find(item=>item[1]===loc.pathname)?.[0]||'SphexPay',name=user?.user_metadata?.full_name||user?.email?.split('@')[0]||'Conta SphexPay'
+ const title=loc.pathname.startsWith('/app/financeiro')?'Financeiro':items.find(item=>item[1]===loc.pathname)?.[0]||'SphexPay',name=user?.user_metadata?.full_name||user?.email?.split('@')[0]||'Conta SphexPay'
  const logout=async()=>{try{await signOut()}finally{navigate('/',{replace:true})}}
  useEffect(()=>{setMobile(false);setProfileOpen(false)},[loc.pathname])
  useEffect(()=>{const keydown=(event:KeyboardEvent)=>{if(event.key==='Escape'){setMobile(false);setProfileOpen(false)}};const pointer=(event:MouseEvent)=>{if(!profile.current?.contains(event.target as Node))setProfileOpen(false)};addEventListener('keydown',keydown);addEventListener('mousedown',pointer);return()=>{removeEventListener('keydown',keydown);removeEventListener('mousedown',pointer)}},[])

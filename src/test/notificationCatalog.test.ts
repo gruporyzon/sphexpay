@@ -5,7 +5,7 @@ describe('catálogo de notificações comerciais',()=>{
  it('mantém os títulos e destinos oficiais',()=>{
   expect(notificationTitles.sale_approved).toBe('Venda aprovada!')
   expect(notificationTitles.payment_refused).toBe('Pagamento recusado!')
-  expect(notificationRoutes.withdrawal_sent).toBe('/app/saques')
+  expect(notificationRoutes.withdrawal_sent).toBe('/app/financeiro/saques')
  })
 
  it('formata comissão em BRL, USD e EUR sem converter valores',()=>{

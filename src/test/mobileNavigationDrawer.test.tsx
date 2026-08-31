@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { render,screen } from '@testing-library/react'
+import { render,screen,within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter,Route,Routes } from 'react-router-dom'
 import { describe,expect,it,vi } from 'vitest'
@@ -65,5 +65,14 @@ describe('drawer autenticado mobile',()=>{
   expect(css).toMatch(/\.internal-sidebar\{[\s\S]*?z-index:80!important;[\s\S]*?width:min\(88vw,320px\)!important;[\s\S]*?transform:translate3d\(-105%,0,0\);[\s\S]*?transition:transform 200ms ease/)
   expect(css).toContain('.internal-sidebar.mobile-open{transform:translate3d(0,0,0)}')
   expect(css).toMatch(/\.app-menu-backdrop\{position:fixed;z-index:75;/)
+ })
+
+ it('exibe somente Financeiro no drawer principal, sem Saques independente',async()=>{
+  const user=userEvent.setup()
+  const view=renderLayout()
+  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
+  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
+  expect(within(drawer).getByRole('link',{name:'Financeiro'})).toBeVisible()
+  expect(within(drawer).queryByRole('link',{name:'Saques'})).not.toBeInTheDocument()
  })
 })

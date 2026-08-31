@@ -21,7 +21,7 @@ export const notificationTitles:Record<CommerceNotificationType,string>={
  payment_refused:'Pagamento recusado!'
 }
 export const notificationRoutes:Record<CommerceNotificationType,string>={
- sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/transacoes',pix_approved:'/app/transacoes',pix_paid:'/app/transacoes',credit_card_approved:'/app/transacoes',credit_card_refused:'/app/transacoes',boleto_generated:'/app/transacoes',boleto_paid:'/app/transacoes',subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',withdrawal_requested:'/app/saques',withdrawal_sent:'/app/saques',withdrawal_completed:'/app/saques',payment_refused:'/app/transacoes'
+ sale_approved:'/app/vendas',sale_pending:'/app/vendas',pix_generated:'/app/transacoes',pix_approved:'/app/transacoes',pix_paid:'/app/transacoes',credit_card_approved:'/app/transacoes',credit_card_refused:'/app/transacoes',boleto_generated:'/app/transacoes',boleto_paid:'/app/transacoes',subscription_approved:'/app/assinaturas',subscription_renewed:'/app/assinaturas',refund_done:'/app/transacoes',chargeback_received:'/app/transacoes',withdrawal_requested:'/app/financeiro/saques',withdrawal_sent:'/app/financeiro/saques',withdrawal_completed:'/app/financeiro/saques',payment_refused:'/app/transacoes'
 }
 export function formatCommission(value:number|null|undefined,currency:Sale['currency']='BRL'){
  if(value===null||value===undefined||!Number.isFinite(value))return'Sua comissão: —'
