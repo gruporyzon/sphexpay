@@ -6,11 +6,10 @@ import { CheckoutPage,LinksPage } from './pages/Operations'
 import Settings from './pages/Settings'
 import NotificationsPage from './pages/Notifications'
 import DemoAwareAwards from './pages/DemoAwards'
-import LiveReports from './pages/LiveReports'
+import ReportsModule from './pages/LiveReports'
 import FinancialHub,{ FinancialOverview } from './pages/FinancialHub'
 import WithdrawalsSection from './pages/Withdrawals'
 import { EditableSubscriptions } from './pages/EditableRecords'
-import DemoAwareCustomers from './pages/DemoCustomers'
 import LiveSales from './pages/LiveSales'
 import LandingPage from './pages/public/LandingPage'
 import LegalPage from './pages/public/LegalPage'
@@ -55,7 +54,7 @@ function SystemChrome(){
  return null
 }
 
-const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['clientes',<DemoAwareCustomers/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<LiveReports/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['transacoes',<LiveSales transactions/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><SystemChrome/><Routes>
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}

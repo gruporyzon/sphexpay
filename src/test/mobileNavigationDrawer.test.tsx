@@ -75,4 +75,13 @@ describe('drawer autenticado mobile',()=>{
   expect(within(drawer).getByRole('link',{name:'Financeiro'})).toBeVisible()
   expect(within(drawer).queryByRole('link',{name:'Saques'})).not.toBeInTheDocument()
  })
+
+ it('exibe somente Relatórios no drawer principal, sem Clientes independente',async()=>{
+  const user=userEvent.setup()
+  const view=renderLayout()
+  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
+  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
+  expect(within(drawer).getByRole('link',{name:'Relatórios'})).toBeVisible()
+  expect(within(drawer).queryByRole('link',{name:'Clientes'})).not.toBeInTheDocument()
+ })
 })
