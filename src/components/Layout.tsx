@@ -1,6 +1,6 @@
 import { useEffect,useRef,useState } from 'react'
 import { NavLink,Outlet,useLocation,useNavigate } from 'react-router-dom'
-import { Bell,Crown,FileBarChart,Landmark,LayoutDashboard,LogOut,Menu,MessageCircle,Moon,Package,PanelLeftClose,PanelLeftOpen,PlugZap,RadioTower,RefreshCcw,Settings,ShoppingBag,Store,Sun,Trophy,X,type LucideIcon } from 'lucide-react'
+import { Bell,Crown,FileBarChart,Landmark,LayoutDashboard,LogOut,Menu,MessageCircle,Moon,Package,PanelLeftClose,PanelLeftOpen,PlugZap,RadioTower,RefreshCcw,Settings,ShoppingBag,Store,Sun,Trophy,UserRoundCheck,X,type LucideIcon } from 'lucide-react'
 import { cn } from '../lib/utils'
 import { useDemoStore } from '../store/useDemoStore'
 import { NotificationBell } from './notifications/NotificationBell'
@@ -16,7 +16,7 @@ const groups:readonly NavGroup[]=[
  {label:'Visão geral',items:[['Dashboard','/app',LayoutDashboard],['Vendas ao Vivo','/app/vendas-ao-vivo',RadioTower]]},
  {label:'Operação',items:[['Vendas','/app/vendas',ShoppingBag],['Produtos','/app/produtos',Package],['Vitrine','/app/vitrine',Store],['Assinaturas','/app/assinaturas',RefreshCcw]]},
  {label:'Pagamentos',items:[['Financeiro','/app/financeiro',Landmark],['Integrações','/app/integracoes',PlugZap]]},
- {label:'Crescimento',items:[['Social','/app/social',MessageCircle],['Premiações','/app/premiacoes',Trophy],['Relatórios','/app/relatorios',FileBarChart],['Notificações','/app/notificacoes',Bell],['Configurações','/app/configuracoes',Settings]]},
+ {label:'Crescimento',items:[['Social','/app/social',MessageCircle],['Afiliados','/app/afiliados',UserRoundCheck],['Premiações','/app/premiacoes',Trophy],['Relatórios','/app/relatorios',FileBarChart],['Notificações','/app/notificacoes',Bell],['Configurações','/app/configuracoes',Settings]]},
 ] as const
 const items=groups.flatMap(group=>group.items)
 
