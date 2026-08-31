@@ -1,4 +1,4 @@
-import {act,fireEvent,render,screen,waitFor} from '@testing-library/react'
+import {act,render,screen,waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {readFileSync} from 'node:fs'
 import {resolve} from 'node:path'
@@ -30,14 +30,10 @@ describe('módulo de Afiliados',()=>{
 
  it('distingue estado vazio de erro e permite tentar novamente',async()=>{
   mocks.list.mockRejectedValueOnce(new Error('network')).mockResolvedValueOnce(result())
-  render(<AffiliatesPage/>);expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível carregar os afiliados.');await userEvent.click(screen.getByRole('button',{name:'Tentar novamente'}));expect(await screen.findByText('Nenhum afiliado encontrado')).toBeVisible();expect(screen.getByText('0 afiliados')).toBeVisible()
+  render(<AffiliatesPage/>);expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível carregar os afiliados.');await userEvent.click(screen.getByRole('button',{name:'Tentar novamente'}));expect(await screen.findByText('Nenhum afiliado encontrado')).toBeVisible();expect(screen.getByText('0 afiliados')).toBeVisible();expect(screen.getByRole('table')).toContainElement(screen.getByText('Nenhum afiliado encontrado'))
  })
 
- it('faz busca com debounce e aplica filtros de status, produto e período',async()=>{
-  render(<AffiliatesPage/>);await screen.findByText('1 afiliado');const user=userEvent.setup();await user.type(screen.getByPlaceholderText('Nome, email, ID ou produto'),'Ana');await waitFor(()=>expect(mocks.list).toHaveBeenLastCalledWith(expect.objectContaining({query:'Ana'}),1,20),{timeout:1000})
-  await user.click(screen.getByRole('button',{name:/Filtros/}));await user.selectOptions(screen.getByLabelText('Filtrar por status'),'active');await waitFor(()=>expect(mocks.list).toHaveBeenLastCalledWith(expect.objectContaining({status:'active'}),1,20))
-  await user.selectOptions(screen.getByLabelText('Filtrar por produto'),'product-1');fireEvent.change(screen.getByLabelText('Data inicial'),{target:{value:'2026-08-01'}});fireEvent.change(screen.getByLabelText('Data final'),{target:{value:'2026-08-31'}});await waitFor(()=>expect(mocks.list).toHaveBeenLastCalledWith(expect.objectContaining({productId:'product-1',from:'2026-08-01',to:'2026-08-31'}),1,20))
- })
+ it('mantém a composição minimalista e deixa busca/filtros fora da superfície principal',async()=>{render(<AffiliatesPage/>);expect(await screen.findByText('1 afiliado')).toBeVisible();expect(screen.getByRole('table')).toBeInTheDocument();expect(screen.queryByPlaceholderText('Nome, email, ID ou produto')).not.toBeInTheDocument();expect(screen.queryByRole('button',{name:/Filtros/})).not.toBeInTheDocument();expect(screen.getByRole('button',{name:'Exportar'})).toBeInTheDocument()})
 
  it('pagina no servidor e abre detalhes sem métricas inventadas',async()=>{
   mocks.list.mockResolvedValue(result([affiliate],21));render(<AffiliatesPage/>);await screen.findByText('21 afiliados');const user=userEvent.setup();await user.click(screen.getByRole('button',{name:'Próxima página'}));await waitFor(()=>expect(mocks.list).toHaveBeenLastCalledWith(expect.any(Object),2,20));await user.click(screen.getByRole('button',{name:'Detalhes'}));const dialog=screen.getByRole('dialog',{name:'Ana Martins'});expect(dialog).toHaveTextContent('Informações');expect(dialog).toHaveTextContent('Produtos e comissão');expect(dialog).toHaveTextContent(/R\$\s50,00/);expect(dialog).not.toHaveTextContent('Taxa de conversão');await user.keyboard('{Escape}');expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
