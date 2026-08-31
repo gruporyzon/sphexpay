@@ -3,6 +3,7 @@ import { BrowserRouter,Navigate,Route,Routes,useLocation } from 'react-router-do
 import { Layout } from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import { CheckoutPage,LinksPage } from './pages/Operations'
+import ProductsHub from './pages/ProductsHub'
 import Settings from './pages/Settings'
 import NotificationsPage from './pages/Notifications'
 import DemoAwareAwards from './pages/DemoAwards'
@@ -54,7 +55,7 @@ function SystemChrome(){
  return null
 }
 
-const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['vendas/:transactionId',<LiveSales/>],['transacoes/*',<NavigateTransactionsAlias/>],['produtos',<Deferred><ProductsV2Page/></Deferred>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['checkout',<CheckoutPage/>],['links',<LinksPage/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['vendas/:transactionId',<LiveSales/>],['transacoes/*',<NavigateTransactionsAlias/>],['produtos',<ProductsHub><Deferred><ProductsV2Page/></Deferred></ProductsHub>],['produtos/checkout',<ProductsHub><CheckoutPage/></ProductsHub>],['produtos/checkout/:checkoutId',<ProductsHub><CheckoutPage/></ProductsHub>],['produtos/links',<ProductsHub><LinksPage/></ProductsHub>],['produtos/links/:linkId',<ProductsHub><LinksPage/></ProductsHub>],['checkout/*',<NavigateOperationsAlias destination="checkout"/>],['links/*',<NavigateOperationsAlias destination="links"/>],['links-de-pagamento/*',<NavigateOperationsAlias destination="links"/>],['vitrine',<Showcase/>],['assinaturas',<EditableSubscriptions/>],['integracoes',<Integrations/>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><SystemChrome/><Routes>
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}
@@ -77,4 +78,5 @@ function NavigateProductAlias(){const path=window.location.pathname.replace('/da
 function NavigateMembersAlias(){const path=window.location.pathname.replace('/dashboard/members','/app/members');return <Navigate to={path} replace/>}
 function NavigateSocialAlias(){const path=window.location.pathname.replace('/dashboard/social','/app/social');return <Navigate to={path} replace/>}
 function NavigateTransactionsAlias(){const location=useLocation(),suffix=location.pathname.replace(/^\/app\/transacoes/,'');return <Navigate to={`/app/vendas${suffix}${location.search}`} replace/>}
+function NavigateOperationsAlias({destination}:{destination:'checkout'|'links'}){const location=useLocation(),suffix=location.pathname.replace(/^\/app\/(?:checkout|links-de-pagamento|links)/,'');return <Navigate to={`/app/produtos/${destination}${suffix}${location.search}`} replace/>}
 function Deferred({children}:{children:React.ReactNode}){return <Suspense fallback={<Loading/>}>{children}</Suspense>}

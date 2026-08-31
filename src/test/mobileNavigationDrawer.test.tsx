@@ -93,4 +93,14 @@ describe('drawer autenticado mobile',()=>{
   expect(within(drawer).getByRole('link',{name:'Vendas'})).toBeVisible()
   expect(within(drawer).queryByRole('link',{name:'Transações'})).not.toBeInTheDocument()
  })
+
+ it('exibe somente Produtos no drawer principal, sem Checkout ou Links',async()=>{
+  const user=userEvent.setup()
+  const view=renderLayout()
+  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
+  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
+  expect(within(drawer).getByRole('link',{name:'Produtos'})).toBeVisible()
+  expect(within(drawer).queryByRole('link',{name:'Checkout'})).not.toBeInTheDocument()
+  expect(within(drawer).queryByRole('link',{name:'Links de pagamento'})).not.toBeInTheDocument()
+ })
 })
