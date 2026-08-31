@@ -2,8 +2,10 @@
   "id":"/","name":"SphexPay — Gateway","short_name":"Sphex","description":"Gateway e painel financeiro SphexPay","start_url":"/","scope":"/","display":"standalone","background_color":"#090909","theme_color":"#090909","orientation":"any",
   "categories":["finance","business","productivity"],"lang":"pt-BR","dir":"ltr","prefer_related_applications":false,
   "icons":[
-    {"src":"/icons/sphexpay-app-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
-    {"src":"/icons/sphexpay-app-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {"src":"/icons/sphexpay-home-192-v2.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"/icons/sphexpay-home-512-v2.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"/icons/sphexpay-maskable-192-v2.png","sizes":"192x192","type":"image/png","purpose":"maskable"},
+    {"src":"/icons/sphexpay-maskable-512-v2.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
   ],
-  "shortcuts":[{"name":"Visão geral","url":"/app","icons":[{"src":"/icons/sphexpay-app-192.png","sizes":"192x192","type":"image/png"}]},{"name":"Vendas","url":"/app/vendas","icons":[{"src":"/icons/sphexpay-app-192.png","sizes":"192x192","type":"image/png"}]}]
+  "shortcuts":[{"name":"Visão geral","url":"/app","icons":[{"src":"/icons/sphexpay-home-192-v2.png","sizes":"192x192","type":"image/png"}]},{"name":"Vendas","url":"/app/vendas","icons":[{"src":"/icons/sphexpay-home-192-v2.png","sizes":"192x192","type":"image/png"}]}]
 }

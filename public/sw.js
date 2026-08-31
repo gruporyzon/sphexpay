@@ -1,5 +1,5 @@
-const CACHE='sphexpay-static-v14'
-const STATIC=['/offline.html','/manifest.webmanifest','/icons/sphexpay-app-192.png','/brand/sphex-symbol-white.png']
+const CACHE='sphexpay-static-v15'
+const STATIC=['/offline.html','/manifest.webmanifest','/icons/sphexpay-home-192-v2.png','/brand/sphex-symbol-white.png']
 
 self.addEventListener('install',event=>{
  self.skipWaiting()
