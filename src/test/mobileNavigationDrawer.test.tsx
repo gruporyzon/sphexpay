@@ -11,6 +11,7 @@ vi.mock('../hooks/useNotificationAudio',()=>({useNotificationAudio:()=>undefined
 vi.mock('../components/notifications/NotificationBell',()=>({NotificationBell:()=>null}))
 vi.mock('../components/common/SearchInput',()=>({SearchInput:()=>null}))
 vi.mock('../components/profile/AvatarUploader',()=>({AvatarUploader:()=>null}))
+vi.mock('../components/profile/ProfileMenu',()=>({ProfileMenu:()=>null}))
 vi.mock('../components/branding/SphexPayLogo',()=>({SphexPayLogo:()=> <span>SphexPay</span>}))
 vi.mock('../components/ui',()=>({Dropdown:()=>null}))
 

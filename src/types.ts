@@ -1,6 +1,7 @@
 export type SaleStatus = 'Aprovado' | 'Pendente' | 'Recusado' | 'Reembolsado' | 'Em análise'
 export type PaymentMethod = 'Pix' | 'Cartão de crédito' | 'Boleto' | 'Assinatura'
 export type Theme = 'light' | 'dark'
+export type ThemePreference = Theme | 'system'
 export type PeriodPreset = 'today'|'yesterday'|'7d'|'30d'|'month'|'lastMonth'|'custom'
 export interface PeriodFilter { preset:PeriodPreset; from?:string; to?:string }
 export interface ShippingAddress { recipient:string; postalCode:string; street:string; number:string; complement:string; district:string; city:string; state:string; country:string; phone:string; reference:string }
@@ -27,4 +28,4 @@ export interface NotificationPreferences { internal:boolean; device:boolean; sal
 export interface AssistantPreferences { microphone:boolean; readAloud:boolean; voice:string; voiceGender:'female'|'male'|'auto'; language:string; speechRate:number; pitch:number; volume:number; interruptOnSend:boolean; autoSendVoice:boolean }
 export interface SalesPreferences { automaticUpdates:boolean; updateFrequency:number; saleSound:boolean; showNotifications:boolean; recentCount:number }
 export interface AppPreferences { notifications:NotificationPreferences; assistant:AssistantPreferences; sales:SalesPreferences }
-export interface DemoState { storageVersion:number; revenue:number; available:number; pending:number; goal:number; period:PeriodFilter; dashboardScenario?:DashboardScenario; sales:Sale[]; products:Product[]; customers:Customer[]; subscriptions:Subscription[]; chart:ChartPoint[]; achievements:Achievement[]; withdrawals:Withdrawal[]; notifications:AppNotification[]; preferences:AppPreferences; liveSales:boolean; theme:Theme }
+export interface DemoState { storageVersion:number; revenue:number; available:number; pending:number; goal:number; period:PeriodFilter; dashboardScenario?:DashboardScenario; sales:Sale[]; products:Product[]; customers:Customer[]; subscriptions:Subscription[]; chart:ChartPoint[]; achievements:Achievement[]; withdrawals:Withdrawal[]; notifications:AppNotification[]; preferences:AppPreferences; liveSales:boolean; theme:Theme; themePreference:ThemePreference }

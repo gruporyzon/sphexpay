@@ -3,7 +3,7 @@ import { revenueAwards } from '../config/revenueAwards'
 
 const d=(days:number,h=12)=>new Date(Date.now()-days*86400000+h*3600000).toISOString()
 export const initialData:DemoState={
- storageVersion:3,revenue:284750,available:124820.40,pending:38920.80,goal:350000,period:{preset:'30d'},liveSales:true,theme:'light',
+ storageVersion:4,revenue:284750,available:124820.40,pending:38920.80,goal:350000,period:{preset:'30d'},liveSales:true,theme:'light',themePreference:'light',
  notifications:[
   {id:'NTF-18',kind:'security',category:'Segurança',title:'Aviso de segurança',description:'Revise os dispositivos com acesso autorizado à sua conta.',createdAt:d(0,11),read:false,detailPath:'/configuracoes'},
   {id:'NTF-17',kind:'goal',category:'Sistema',title:'Meta de faturamento alcançada',description:'A meta configurada para o período foi alcançada.',createdAt:d(0,10),read:false,detailPath:'/'},

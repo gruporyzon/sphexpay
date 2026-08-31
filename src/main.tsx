@@ -3,6 +3,8 @@ import { notificationService } from './services/notificationService'
 import { pwaInstallService } from './services/pwaInstallService'
 import { AuthProvider } from './providers/AuthProvider'
 import { syncSystemChrome } from './lib/systemChrome'
+const themeState=useDemoStore.getState()
+themeState.setTheme(themeState.themePreference)
 const initialTheme=useDemoStore.getState().theme
 document.documentElement.dataset.theme=initialTheme
 syncSystemChrome(window.location.pathname,initialTheme)
