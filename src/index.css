@@ -3291,6 +3291,10 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 @media(max-width:1023px){.internal-app-shell .internal-sidebar{--sidebar-item-height:46px;--sidebar-item-gap:2px}.internal-app-shell .internal-sidebar .competition-sidebar-slot{padding-inline:12px}.internal-app-shell .internal-sidebar .sidebar-navigation{padding-inline:12px}.internal-app-shell .internal-sidebar .sidebar-link,.internal-app-shell .internal-sidebar .competition-sidebar-item{padding-inline:12px;font-size:12px}}
 
 /* Official horizontal Sphex symbol: transparent, monochrome and theme-aware. */
+.internal-app-shell{--internal-brand-color:#111}
+:root[data-theme=dark] .internal-app-shell{--internal-brand-color:#f5f5f5}
+.internal-app-shell .sphexpay-theme-mark{display:block;width:25px;height:36px;flex:0 0 auto;color:var(--internal-brand-color);background-color:currentColor;-webkit-mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat}
+.internal-app-shell .internal-topbar .header-brand .sphexpay-theme-mark{width:22px;height:32px}
 .sphexpay-brand img{
  height:auto;
  aspect-ratio:1717/744;
