@@ -4,10 +4,10 @@ import { beforeEach,describe,expect,it,vi } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import Dashboard from '../pages/Dashboard'
 
-const state=vi.hoisted(()=>({admin:{allowed:false,loading:false,error:''}}))
+const state=vi.hoisted(()=>({admin:{allowed:false,loading:false,error:''},refresh:vi.fn()}))
 vi.mock('../hooks/useAuth',()=>({useAuth:()=>({user:{id:'user-1'}})}))
 vi.mock('../hooks/useDashboardAdmin',()=>({useDashboardAdmin:()=>state.admin}))
-vi.mock('../hooks/useLiveSales',()=>({useLiveSales:()=>({sales:[],previous:[],loading:false,error:'',realtime:'live',updatedAt:'',refresh:vi.fn()})}))
+vi.mock('../hooks/useLiveSales',()=>({useLiveSales:()=>({sales:[],previous:[],loading:false,error:'',realtime:'live',updatedAt:'',refresh:state.refresh})}))
 vi.mock('../hooks/useScenarioPlanner',()=>({useScenarioPlanner:()=>({scenario:{todayRevenueCents:0,todayApprovedSales:0,averageTicketCents:0,approvalRate:.9,refundRate:0,chargebackRate:0,dailyGrowthRate:0,weekdayFactors:[1,1,1,1,1,1,1],hourlyDistribution:Array(24).fill(1/24),seed:1,currency:'BRL'},save:vi.fn(),loading:false,error:''})}))
 vi.mock('../services/dashboardService',()=>({dashboardService:{loadRates:vi.fn(async()=>[]),saveRates:vi.fn(async()=>undefined)}}))
 vi.mock('../components/dashboard/OverviewHeroCarousel',()=>({OverviewHeroCarousel:()=>null}))
@@ -15,7 +15,8 @@ vi.mock('../components/dashboard/NextAwardCard',()=>({NextAwardCard:()=>null}))
 
 const renderDashboard=()=>render(<MemoryRouter><Dashboard/></MemoryRouter>)
 describe('autorização administrativa do Dashboard',()=>{
- beforeEach(()=>{state.admin={allowed:false,loading:false,error:''};Object.defineProperty(window,'innerWidth',{configurable:true,value:1024})})
+ beforeEach(()=>{state.admin={allowed:false,loading:false,error:''};state.refresh.mockReset();Object.defineProperty(window,'innerWidth',{configurable:true,value:1024})})
+ it('mantém a atualização manual no cabeçalho e remove status do bloco de filtros',async()=>{const user=userEvent.setup(),view=renderDashboard(),refresh=screen.getByRole('button',{name:'Atualizar dashboard'});expect(view.container.querySelector('.page-title')).toContainElement(refresh);expect(view.container.querySelector('.dashboard-filter-bar')).not.toContainElement(refresh);expect(view.container.querySelector('.dashboard-filter-bar .dashboard-realtime')).not.toBeInTheDocument();await user.click(refresh);expect(state.refresh).toHaveBeenCalledTimes(1)})
  it('mostra o editor para administrador validado',()=>{state.admin={allowed:true,loading:false,error:''};renderDashboard();expect(screen.getByRole('button',{name:'Editar planejamento'})).toBeInTheDocument()})
  it('mostra o editor de layout somente para administrador validado',()=>{state.admin={allowed:true,loading:false,error:''};renderDashboard();expect(screen.getByRole('button',{name:'Editar layout'})).toBeInTheDocument()})
  it('oculta os editores para usuário comum',()=>{renderDashboard();expect(screen.queryByRole('button',{name:'Editar planejamento'})).not.toBeInTheDocument();expect(screen.queryByRole('button',{name:'Editar layout'})).not.toBeInTheDocument()})

@@ -2008,6 +2008,19 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .internal-app-shell .sidebar-link svg,
 .internal-app-shell .competition-sidebar-item svg{width:18px;height:18px}
 .internal-app-shell .internal-topbar .icon-btn svg{width:18px;height:18px}
+
+/* Dashboard refresh belongs to the page heading; filters contain filters only. */
+.dashboard-page>.page-title{align-items:flex-start;gap:16px}
+.dashboard-page>.page-title>div:first-child{min-width:0;flex:1}
+.dashboard-page>.page-title>.dashboard-header-actions{flex:0 0 auto;align-self:flex-start;min-width:0;min-height:48px;justify-content:flex-end;gap:8px}
+.dashboard-page>.page-title .dashboard-refresh-button{width:46px;min-width:46px;height:46px;min-height:46px;padding:0;border:1px solid var(--internal-border-default);border-radius:12px;background:var(--internal-surface-2);color:var(--internal-text-primary);box-shadow:none}
+.dashboard-page>.page-title .dashboard-refresh-button:hover{border-color:var(--internal-border-strong);background:var(--internal-surface-hover)}
+.dashboard-page>.page-title .dashboard-refresh-button:focus-visible{outline:2px solid color-mix(in srgb,var(--internal-accent) 60%,transparent);outline-offset:2px}
+.dashboard-page>.page-title .dashboard-refresh-button:disabled{cursor:wait;opacity:.65}
+.dashboard-page>.page-title .dashboard-refresh-button svg{width:19px;height:19px;stroke-width:1.8}
+.dashboard-page>.dashboard-filter-bar{min-height:0;padding:8px 9px}
+.dashboard-page>.dashboard-filter-bar .dashboard-filter-actions:empty{display:none}
+@media(max-width:700px){.dashboard-page>.page-title{align-items:flex-start;gap:10px}.dashboard-page>.page-title>.dashboard-header-actions{width:auto;min-height:44px;flex:0 0 auto}.dashboard-page>.page-title .dashboard-refresh-button{width:44px;min-width:44px;height:44px;min-height:44px;border-radius:11px}.dashboard-page>.page-title p{max-width:none}.dashboard-page>.dashboard-filter-bar{gap:8px}}
 .internal-app-shell .sidebar-link:hover svg,
 .internal-app-shell .sidebar-link:focus-visible svg,
 .internal-app-shell .competition-sidebar-item:hover svg{stroke-width:1.8}
