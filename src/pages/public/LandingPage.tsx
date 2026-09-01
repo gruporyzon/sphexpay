@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Activity,ArrowRight,BarChart3,Bell,ChevronDown,Globe2,Layers3,LockKeyhole,Radio,Search,Settings,Trophy,Zap } from 'lucide-react'
+import { Activity,ArrowRight,BarChart3,Bell,ChevronDown,Globe2,Layers3,LockKeyhole,Radio,Search,Trophy,Zap } from 'lucide-react'
 import { PublicHeader } from '../../components/landing/PublicHeader'
 import { PublicPhoneExperience } from '../../components/landing/PublicPhoneExperience'
 import { PublicInteractiveGlobe } from '../../components/landing/PublicInteractiveGlobe'
@@ -18,11 +18,11 @@ const capabilityLabels=['Dashboard','Vendas ao vivo','Transações','Produtos','
 function HeroDashboard(){return <div className="hero-product-stage" aria-label="Cenário ilustrativo do Dashboard SphexPay">
  <div className="hero-product-aura"/><div className="hero-browser">
   <header className="hero-browser-chrome"><div className="hero-browser-controls"><i/><i/><i/></div><button aria-label="Voltar"/><button aria-label="Avançar"/><div className="hero-address"><span>app.sphex.app</span><small>Cenário demonstrativo</small></div><Search/><Bell/></header>
-  <div className="hero-browser-body"><aside className="hero-dashboard-sidebar"><SphexPayLogo/><nav aria-label="Navegação demonstrativa"><a className="active"><Activity/> <span>Visão geral</span></a><a><BarChart3/> <span>Vendas</span></a><a><Layers3/> <span>Produtos</span></a><a><Settings/> <span>Configurações</span></a></nav><div className="hero-sidebar-profile"><i>SR</i><span>Sphex demo</span></div></aside><main>
-   <div className="hero-dashboard-head"><div><small>VISÃO DA OPERAÇÃO</small><b>Dashboard</b><span>Uma leitura clara para cada decisão.</span></div><div className="hero-dashboard-actions"><button>Últimos 30 dias <ChevronDown/></button><button aria-label="Pesquisar"><Search/></button></div></div>
+  <div className="hero-browser-body"><aside className="hero-dashboard-sidebar"><SphexPayLogo/><nav aria-label="Navegação demonstrativa"><a className="active"><Activity/> <span>Dashboard</span></a><a><BarChart3/> <span>Vendas</span></a><a><Layers3/> <span>Produtos</span></a><a><BarChart3/> <span>Financeiro</span></a></nav><div className="hero-sidebar-profile"><i>SR</i><span>Sphex demo</span></div></aside><main>
+   <div className="hero-dashboard-head"><div><small>PAINEL FINANCEIRO</small><b>Dashboard</b><span>Resultados financeiros persistidos e planejamento administrativo isolado.</span></div><div className="hero-dashboard-actions"><button>30 dias <ChevronDown/></button><button aria-label="Pesquisar"><Search/></button></div></div>
    <PublicDashboardDemo className="hero-live-dashboard"/>
   </main></div>
- </div><div className="hero-float-notification hero-float-sale"><i><ArrowRight/></i><span><b>Nova venda aprovada</b><small>Pix · agora</small></span><strong>+ R$ 284,90</strong></div><div className="hero-float-notification hero-float-goal"><i><Activity/></i><span><b>Meta diária atingida</b><small>Operação em ritmo</small></span></div>
+ </div>
  </div>}
 
 export default function LandingPage(){
