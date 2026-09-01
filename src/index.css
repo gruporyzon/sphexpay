@@ -3335,6 +3335,66 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .profile-menu :is(button,a):focus-visible,.profile-menu-trigger:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 @keyframes profile-menu-in{from{opacity:0;transform:translateY(-5px) scale(.985)}}
 @media(max-width:767px){.profile-menu-trigger{width:38px;min-width:38px;height:42px;padding:3px;border:0}.profile-menu-trigger>span,.profile-menu-trigger>svg{display:none}.profile-menu-trigger>.profile-photo{width:34px;height:34px;flex-basis:34px}.profile-menu{position:fixed;top:calc(60px + var(--safe-top));right:max(8px,var(--safe-right));left:max(8px,var(--safe-left));width:auto;max-height:calc(100dvh - 72px - var(--safe-top) - var(--safe-bottom));overflow-y:auto;border-radius:16px}.profile-appearance-submenu{display:none}}
+
+/* Desktop dashboard spotlights — premium final cascade; mobile and tablet remain unchanged. */
+@media(min-width:1024px){
+ .dashboard-page>.spx-operation-hero{height:clamp(246px,20vw,292px);min-height:246px;margin-bottom:22px;border-color:rgba(255,255,255,.12);border-radius:24px;box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 30px 75px rgba(5,6,8,.24),0 8px 22px rgba(5,6,8,.14);transition:box-shadow 280ms ease,transform 280ms ease}
+ .dashboard-page>.spx-operation-hero:hover{box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 36px 86px rgba(5,6,8,.27),0 10px 26px rgba(5,6,8,.16);transform:translateY(-2px)}
+ .dashboard-page .spx-operation-hero:before{right:8%;left:8%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.42) 38%,rgba(255,126,68,.58) 58%,transparent)}
+ .dashboard-page .spx-operation-hero:after{content:'';position:absolute;z-index:3;right:-8%;bottom:-64%;width:48%;height:150%;border:1px solid rgba(255,255,255,.055);border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.035),transparent 62%);box-shadow:0 0 0 38px rgba(255,255,255,.018),0 0 0 76px rgba(255,255,255,.012);pointer-events:none}
+ .dashboard-page .spx-operation-hero .overview-track{transition:transform 620ms cubic-bezier(.2,.78,.2,1)}
+ .dashboard-page .spx-operation-hero .overview-slide{grid-template-columns:minmax(430px,1.08fr) minmax(350px,.92fr);align-items:center;gap:clamp(30px,4vw,68px);padding:30px clamp(42px,5vw,74px) 34px}
+ .dashboard-page .spx-operation-hero .overview-slide:after{opacity:.42;background-size:34px 34px,34px 34px,102px 102px}
+ .dashboard-page .spx-operation-hero .overview-copy{max-width:650px;padding-left:2px}
+ .dashboard-page .spx-operation-hero .overview-copy:before{top:-16px;width:44px;background:linear-gradient(90deg,var(--spx-accent),rgba(255,255,255,.3),transparent)}
+ .dashboard-page .spx-operation-hero .overview-copy>span{gap:10px;font-size:9px;letter-spacing:.19em}
+ .dashboard-page .spx-operation-hero .overview-copy h2{max-width:650px;margin-top:11px;font-size:clamp(31px,2.6vw,42px);font-weight:660;line-height:.99;letter-spacing:-.052em}
+ .dashboard-page .spx-operation-hero .overview-copy p{max-width:570px;margin-top:12px;font-size:11px;line-height:1.58}
+ .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta){min-height:42px;margin-top:17px;padding:0 17px;border-radius:12px;font-size:9px;letter-spacing:.015em;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px rgba(0,0,0,.18);transition:transform 200ms ease,border-color 200ms ease,background 200ms ease,box-shadow 200ms ease}
+ .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta):hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 17px 34px rgba(0,0,0,.24)}
+ .dashboard-page .spx-operation-hero .overview-copy :is(button,.overview-cta) svg{width:14px;height:14px}
+ .dashboard-page .operation-core{justify-self:center;width:440px;height:240px;transform:scale(.86);transform-origin:center}
+ .dashboard-page .spx-operation-hero .overview-slide.gateway .operation-core{filter:drop-shadow(0 24px 34px var(--hero-depth))}
+ .dashboard-page .spx-operation-hero .overview-slide.gateway .operation-core:before{inset:2% -2% -3% 14%;box-shadow:inset 0 0 48px rgba(255,255,255,.035),0 0 60px rgba(255,255,255,.025)}
+ .dashboard-page .spx-operation-hero .overview-slide.gateway :is(.operation-node,.operation-performance,.operation-integrity){box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 18px 38px var(--hero-depth);transition:transform 260ms ease,border-color 260ms ease}
+ .dashboard-page .spx-operation-hero:hover .node-processing{transform:translate3d(2px,-3px,0)}
+ .dashboard-page .spx-operation-hero:hover .node-network{transform:translate3d(3px,2px,0)}
+ .dashboard-page .spx-operation-hero:hover .operation-performance{transform:translate3d(-3px,2px,0)}
+ .dashboard-page .spx-operation-hero .iphone-art,.dashboard-page .spx-operation-hero .overview-slide.competition .iphone-art{justify-self:center;width:min(390px,100%);height:240px;transform:scale(.94);transform-origin:center}
+ .dashboard-page .spx-operation-hero .competition-product-image{max-height:232px;transition:transform 360ms cubic-bezier(.2,.8,.2,1),filter 360ms ease}
+ .dashboard-page .spx-operation-hero .iphone-art:hover .competition-product-image{transform:translateY(-5px) scale(1.018)}
+ .dashboard-page .spx-operation-hero .prize-seal{left:12%;bottom:6%;width:78px;height:78px}
+ .dashboard-page .spx-operation-hero .overview-controls{right:22px;bottom:18px;gap:10px}
+ .dashboard-page .spx-operation-hero .overview-controls>button{width:38px;height:38px;border-radius:12px;background:rgba(12,13,15,.64);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 10px 24px rgba(0,0,0,.17);backdrop-filter:blur(14px);transition:transform 180ms ease,border-color 180ms ease,background 180ms ease,color 180ms ease}
+ .dashboard-page .spx-operation-hero .overview-controls>button:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.27);background:rgba(255,255,255,.105);color:#fff}
+ .dashboard-page .spx-operation-hero .overview-controls>div{gap:5px;padding:5px 8px;border:1px solid rgba(255,255,255,.075);border-radius:999px;background:rgba(10,11,13,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(12px)}
+ .dashboard-page .spx-operation-hero .overview-controls>div button{width:16px;height:12px}.dashboard-page .spx-operation-hero .overview-controls>div button.active{width:38px}
+
+ .dashboard-page>.next-award-card,.dashboard-page>.next-award-complete{isolation:isolate;grid-template-columns:minmax(190px,.72fr) minmax(0,2.2fr) 48px;gap:clamp(28px,4vw,62px);min-height:184px;margin-bottom:24px;padding:26px clamp(36px,5vw,72px);overflow:hidden;border:1px solid rgba(0,0,0,.075);border-radius:22px;background:radial-gradient(circle at 12% 50%,rgba(0,0,0,.055),transparent 23%),linear-gradient(112deg,#f8f8f9,#fff 56%,#f2f3f4);box-shadow:inset 0 1px 0 #fff,0 22px 56px rgba(15,16,18,.09);transition:transform 260ms ease,border-color 260ms ease,box-shadow 260ms ease}
+ .dashboard-page>.next-award-card:hover,.dashboard-page>.next-award-complete:hover{transform:translateY(-3px);border-color:rgba(0,0,0,.12);box-shadow:inset 0 1px 0 #fff,0 30px 68px rgba(15,16,18,.13)}
+ .dashboard-page>.next-award-card:before,.dashboard-page>.next-award-complete:before{content:'';position:absolute;z-index:0;inset:0;background-image:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.025) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(90deg,#000,transparent 68%);pointer-events:none}
+ .dashboard-page>.next-award-card:after,.dashboard-page>.next-award-complete:after{display:block;content:'';position:absolute;z-index:0;top:-40%;bottom:-40%;left:-22%;width:18%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.68),transparent);transform:skewX(-18deg);animation:dashboard-award-sheen 9s ease-in-out infinite;pointer-events:none}
+ .dashboard-page .next-award-plaque{z-index:1;width:100%;height:132px;filter:drop-shadow(0 18px 22px rgba(0,0,0,.16));transition:transform 320ms cubic-bezier(.2,.8,.2,1),filter 320ms ease}
+ .dashboard-page .next-award-plaque .official-award-plaque,.dashboard-page .next-award-card.next-award-complete .official-award-plaque{width:min(210px,100%);height:148px}
+ .dashboard-page .next-award-card:hover .next-award-plaque{transform:translateY(-5px) scale(1.035);filter:drop-shadow(0 23px 28px rgba(0,0,0,.2))}
+ .dashboard-page .next-award-copy{z-index:2}.dashboard-page .next-award-copy>span{font-size:8px;font-weight:820;letter-spacing:.2em}.dashboard-page .next-award-copy h2{margin-top:6px;font-size:clamp(21px,1.8vw,27px);font-weight:680;letter-spacing:-.045em}.dashboard-page .next-award-copy p{margin-top:5px;font-size:10px;line-height:1.5}
+ .dashboard-page .next-award-progress{height:7px;margin-top:17px;padding:1px;border:1px solid rgba(0,0,0,.055);border-radius:999px;background:rgba(0,0,0,.055);box-shadow:inset 0 1px 2px rgba(0,0,0,.055)}
+ .dashboard-page .next-award-progress i{height:100%;border-radius:999px;background:linear-gradient(90deg,#222,#707070 62%,#111);box-shadow:0 0 0 1px rgba(255,255,255,.24) inset,0 4px 12px rgba(0,0,0,.16)}
+ .dashboard-page .next-award-values{margin-top:8px;font-size:8px}.dashboard-page .next-award-values strong{font-size:9px;font-variant-numeric:tabular-nums}
+ .dashboard-page .next-award-card>a{z-index:3;width:44px;height:44px;border-color:rgba(0,0,0,.1);border-radius:14px;background:rgba(255,255,255,.68);box-shadow:inset 0 1px 0 #fff,0 10px 24px rgba(0,0,0,.08);backdrop-filter:blur(12px);transition:transform 200ms ease,border-color 200ms ease,box-shadow 200ms ease}
+ .dashboard-page .next-award-card>a:hover{transform:translateX(3px) scale(1.04);border-color:rgba(0,0,0,.22);color:#111;box-shadow:inset 0 1px 0 #fff,0 14px 30px rgba(0,0,0,.12)}
+
+ :root[data-theme=dark] .dashboard-page>.next-award-card,:root[data-theme=dark] .dashboard-page>.next-award-complete{border-color:rgba(255,255,255,.08);background:radial-gradient(circle at 12% 50%,rgba(255,255,255,.06),transparent 24%),linear-gradient(112deg,#111215,#090a0c 58%,#121315);box-shadow:inset 0 1px 0 rgba(255,255,255,.055),0 26px 62px rgba(0,0,0,.3)}
+ :root[data-theme=dark] .dashboard-page>.next-award-card:hover,:root[data-theme=dark] .dashboard-page>.next-award-complete:hover{border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.075),0 34px 76px rgba(0,0,0,.4)}
+ :root[data-theme=dark] .dashboard-page>.next-award-card:before,:root[data-theme=dark] .dashboard-page>.next-award-complete:before{background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px)}
+ :root[data-theme=dark] .dashboard-page>.next-award-card:after,:root[data-theme=dark] .dashboard-page>.next-award-complete:after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.075),transparent)}
+ :root[data-theme=dark] .dashboard-page .next-award-progress{border-color:rgba(255,255,255,.055);background:rgba(255,255,255,.065);box-shadow:inset 0 1px 2px rgba(0,0,0,.3)}
+ :root[data-theme=dark] .dashboard-page .next-award-progress i{background:linear-gradient(90deg,#777,#f1f1f1 65%,#999);box-shadow:0 0 12px rgba(255,255,255,.12)}
+ :root[data-theme=dark] .dashboard-page .next-award-card>a{border-color:rgba(255,255,255,.1);background:rgba(255,255,255,.055);box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 28px rgba(0,0,0,.2)}
+ :root[data-theme=dark] .dashboard-page .next-award-card>a:hover{border-color:rgba(255,255,255,.24);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 16px 34px rgba(0,0,0,.28)}
+}
+@keyframes dashboard-award-sheen{0%,68%{transform:translateX(0) skewX(-18deg);opacity:0}74%{opacity:1}88%,100%{transform:translateX(760%) skewX(-18deg);opacity:0}}
+@media(prefers-reduced-motion:reduce){.dashboard-page>.next-award-card:after,.dashboard-page>.next-award-complete:after{animation:none!important}.dashboard-page>.spx-operation-hero,.dashboard-page>.next-award-card,.dashboard-page>.next-award-complete{transition:none!important}}
 @media(prefers-reduced-motion:reduce){.profile-menu{animation:none}.profile-menu-trigger,.profile-menu-trigger>svg,.profile-menu-section>button,.profile-appearance-panel>button{transition:none}}
 .sphexpay-brand img{
  height:auto;
