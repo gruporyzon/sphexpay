@@ -1,9 +1,15 @@
 import {useEffect,useRef,useState} from 'react'
 
-const pathFor=(rawCenter:number,velocity=0)=>{const center=Math.max(50,Math.min(450,rawCenter)),stretch=Math.min(8,Math.abs(velocity)*1.4),left=center-32-stretch,right=center+32+stretch,lean=Math.max(-7,Math.min(7,velocity));return `M 8 60 H ${left-8} C ${left-2} 60 ${left+3} 57 ${left+8} 48 C ${left+16} 32 ${center-22+lean} 19 ${center+lean} 19 C ${center+22+lean} 19 ${right-16} 32 ${right-8} 48 C ${right-3} 57 ${right+2} 60 ${right+8} 60 H 492`}
+const pathFor=(rawCenter:number,velocity=0)=>{
+ const center=Math.max(50,Math.min(450,rawCenter))
+ const stretch=Math.min(10,Math.abs(velocity)*1.6)
+ const lean=Math.max(-6,Math.min(6,velocity))
+ const left=center-42-stretch,right=center+42+stretch
+ return `M ${left+12} 8 C ${left+3} 9 ${left} 18 ${left} 30 L ${left} 47 C ${left} 61 ${left+10} 69 ${left+25} 70 L ${right-25} 70 C ${right-10} 69 ${right} 61 ${right} 47 L ${right} 30 C ${right} 18 ${right-3} 9 ${right-12} 8 C ${center+18+lean} 4 ${center-18+lean} 4 ${left+12} 8 Z`
+}
 
 export function MobileDockIndicator({index}:{index:number}){
  const target=50+index*100,[path,setPath]=useState(()=>pathFor(target)),position=useRef(target),velocity=useRef(0),frame=useRef(0)
  useEffect(()=>{cancelAnimationFrame(frame.current);let last=performance.now();const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduced){position.current=target;velocity.current=0;setPath(pathFor(target));return}const tick=(now:number)=>{const dt=Math.min(.032,(now-last)/1000);last=now;const force=(target-position.current)*360,damping=velocity.current*31;velocity.current+=(force-damping)*dt;position.current+=velocity.current*dt;setPath(pathFor(position.current,velocity.current/100));if(Math.abs(target-position.current)>.06||Math.abs(velocity.current)>.08)frame.current=requestAnimationFrame(tick);else{position.current=target;velocity.current=0;setPath(pathFor(target))}};frame.current=requestAnimationFrame(tick);return()=>cancelAnimationFrame(frame.current)},[target])
- return <svg className="mobile-dock-indicator" viewBox="0 0 500 78" preserveAspectRatio="none" aria-hidden="true"><path d={path}/></svg>
+ return <svg className="mobile-dock-indicator" viewBox="0 0 500 78" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mobile-dock-active-surface" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="currentColor" stopOpacity=".15"/><stop offset="1" stopColor="currentColor" stopOpacity=".055"/></linearGradient></defs><path d={path}/></svg>
 }
