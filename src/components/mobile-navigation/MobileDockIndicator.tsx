@@ -4,8 +4,8 @@ const pathFor=(rawCenter:number,velocity=0)=>{
  const center=Math.max(50,Math.min(450,rawCenter))
  const stretch=Math.min(10,Math.abs(velocity)*1.6)
  const lean=Math.max(-6,Math.min(6,velocity))
- const left=center-42-stretch,right=center+42+stretch
- return `M ${left+12} 8 C ${left+3} 9 ${left} 18 ${left} 30 L ${left} 47 C ${left} 61 ${left+10} 69 ${left+25} 70 L ${right-25} 70 C ${right-10} 69 ${right} 61 ${right} 47 L ${right} 30 C ${right} 18 ${right-3} 9 ${right-12} 8 C ${center+18+lean} 4 ${center-18+lean} 4 ${left+12} 8 Z`
+ const left=center-43-stretch,right=center+43+stretch
+ return `M ${left+24} 73 C ${left+9} 71 ${left+4} 63 ${left+10} 53 C ${left+15} 44 ${left+17} 30 ${left+28} 21 C ${left+38} 12 ${center-23+lean} 9 ${center+lean} 9 C ${center+23+lean} 9 ${right-38} 12 ${right-28} 21 C ${right-17} 30 ${right-15} 44 ${right-10} 53 C ${right-4} 63 ${right-9} 71 ${right-24} 73 Z`
 }
 
 export function MobileDockIndicator({index}:{index:number}){
