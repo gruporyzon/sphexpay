@@ -1,9 +1,9 @@
 import {describe,expect,it} from 'vitest'
 import fs from 'node:fs'
 
-const app=fs.readFileSync('src/App.tsx','utf8'),layout=fs.readFileSync('src/components/Layout.tsx','utf8'),service=fs.readFileSync('src/features/social/socialService.ts','utf8'),page=fs.readFileSync('src/features/social/SocialPage.tsx','utf8'),socialCss=fs.readFileSync('src/features/social/social.css','utf8'),sql=fs.readFileSync('supabase/migrations/20260812180000_social_v1.sql','utf8')
+const app=fs.readFileSync('src/App.tsx','utf8'),navigation=fs.readFileSync('src/config/navigation.ts','utf8'),service=fs.readFileSync('src/features/social/socialService.ts','utf8'),page=fs.readFileSync('src/features/social/SocialPage.tsx','utf8'),socialCss=fs.readFileSync('src/features/social/social.css','utf8'),sql=fs.readFileSync('supabase/migrations/20260812180000_social_v1.sql','utf8')
 describe('Sphex Social V1',()=>{
- it('registra todas as rotas e aliases sem links mortos',()=>{for(const route of ['social','social/explore','social/notifications','social/messages','social/saved','social/ranking','social/post/:id','social/:username','social/tag/:tag'])expect(app).toContain(`path="${route}"`);expect(app).toContain('/dashboard/social/*');expect(layout).toContain("['Social','/app/social'")})
+ it('registra todas as rotas e aliases sem links mortos',()=>{for(const route of ['social','social/explore','social/notifications','social/messages','social/saved','social/ranking','social/post/:id','social/:username','social/tag/:tag'])expect(app).toContain(`path="${route}"`);expect(app).toContain('/dashboard/social/*');expect(navigation).toContain("id:'social',label:'Social',path:'/app/social'")})
  it('é carregado sob demanda',()=>expect(app).toContain("lazy(()=>import('./features/social/SocialPage'))"))
  it('trata texto como React text e links externos com proteção',()=>{expect(page).not.toContain('dangerouslySetInnerHTML');expect(page).toContain('rel="noopener noreferrer"');expect(page).toContain("/^https?:\\/\\//i")})
  it('envia mídia somente pela função server-side e usa caminhos definidos pelo usuário autenticado',()=>{expect(service).toContain("['image/jpeg','image/png','image/webp']");expect(service).toContain('file.size>10*1024*1024');expect(service).toContain("functions.invoke('social-media-upload'");expect(sql).toContain("split_part(name,'/',1)=auth.uid()::text")})

@@ -16,10 +16,10 @@ describe('módulo de Afiliados',()=>{
  beforeEach(()=>{mocks.list.mockReset().mockResolvedValue(result([affiliate]));mocks.products.mockReset().mockResolvedValue([{id:'product-1',name:'Método Premium'}]);mocks.all.mockReset().mockResolvedValue([affiliate]);Object.defineProperty(window,'innerWidth',{configurable:true,value:1280})})
 
  it('está protegido pela rota atual e aparece em Crescimento na sidebar',()=>{
-  const app=readFileSync(resolve(process.cwd(),'src/App.tsx'),'utf8'),layout=readFileSync(resolve(process.cwd(),'src/components/Layout.tsx'),'utf8')
+  const app=readFileSync(resolve(process.cwd(),'src/App.tsx'),'utf8'),navigation=readFileSync(resolve(process.cwd(),'src/config/navigation.ts'),'utf8')
   expect(app).toContain("['afiliados',<Deferred><AffiliatesPage/></Deferred>]")
   expect(app.indexOf('{modules.map',app.indexOf('<Route element={<ProtectedRoute/>}>'))).toBeGreaterThan(app.indexOf('<Route element={<ProtectedRoute/>}>'))
-  expect(layout).toContain("['Afiliados','/app/afiliados',UserRoundCheck]")
+  expect(navigation).toContain("id:'affiliates',label:'Afiliados',path:'/app/afiliados',icon:UserRoundCheck")
  })
 
  it('mostra skeleton antes da query e depois dados reais, contador e comissões',async()=>{

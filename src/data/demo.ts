@@ -3,7 +3,7 @@ import { revenueAwards } from '../config/revenueAwards'
 
 const d=(days:number,h=12)=>new Date(Date.now()-days*86400000+h*3600000).toISOString()
 export const initialData:DemoState={
- storageVersion:4,revenue:284750,available:124820.40,pending:38920.80,goal:350000,period:{preset:'30d'},liveSales:true,theme:'light',themePreference:'light',
+ storageVersion:5,revenue:284750,available:124820.40,pending:38920.80,goal:350000,period:{preset:'30d'},liveSales:true,theme:'light',themePreference:'light',
  notifications:[
   {id:'NTF-18',kind:'security',category:'Segurança',title:'Aviso de segurança',description:'Revise os dispositivos com acesso autorizado à sua conta.',createdAt:d(0,11),read:false,detailPath:'/configuracoes'},
   {id:'NTF-17',kind:'goal',category:'Sistema',title:'Meta de faturamento alcançada',description:'A meta configurada para o período foi alcançada.',createdAt:d(0,10),read:false,detailPath:'/'},
@@ -14,7 +14,8 @@ export const initialData:DemoState={
  preferences:{
   notifications:{internal:false,device:false,sales:true,withdrawals:true,subscriptions:true,security:true,achievements:true,sound:false,vibration:false,frequency:'realtime',groupSimilar:true,muteRepeated:true,priorityApproved:true,priorityPix:true,priorityCard:true,saleApproved:true,pixGenerated:true,cardApproved:true,subscriptionEvents:true,withdrawalEvents:true,soundVolume:.35,soundStyle:'signal',quietHours:false,quietFrom:'22:00',quietTo:'07:00',doNotDisturb:false,importantOnly:false},
   assistant:{microphone:true,readAloud:true,voice:'',voiceGender:'female',language:'pt-BR',speechRate:.96,pitch:1.04,volume:1,interruptOnSend:true,autoSendVoice:false},
-  sales:{automaticUpdates:true,updateFrequency:18,saleSound:false,showNotifications:false,recentCount:7}
+  sales:{automaticUpdates:true,updateFrequency:18,saleSound:false,showNotifications:false,recentCount:7},
+  mobileNavigation:{opacity:82}
  },
  sales:[
   {id:'SPX-84291',customer:'Marina Costa',email:'marina@example.local',product:'Scale Pro',amount:1297,currency:'BRL',method:'Pix',status:'Aprovado',date:d(0,8),country:'Brasil',fee:25.94},
