@@ -15,7 +15,7 @@ export const initialData:DemoState={
   notifications:{internal:false,device:false,sales:true,withdrawals:true,subscriptions:true,security:true,achievements:true,sound:false,vibration:false,frequency:'realtime',groupSimilar:true,muteRepeated:true,priorityApproved:true,priorityPix:true,priorityCard:true,saleApproved:true,pixGenerated:true,cardApproved:true,subscriptionEvents:true,withdrawalEvents:true,soundVolume:.35,soundStyle:'signal',quietHours:false,quietFrom:'22:00',quietTo:'07:00',doNotDisturb:false,importantOnly:false},
   assistant:{microphone:true,readAloud:true,voice:'',voiceGender:'female',language:'pt-BR',speechRate:.96,pitch:1.04,volume:1,interruptOnSend:true,autoSendVoice:false},
   sales:{automaticUpdates:true,updateFrequency:18,saleSound:false,showNotifications:false,recentCount:7},
-  mobileNavigation:{opacity:82}
+  mobileNavigation:{opacity:72}
  },
  sales:[
   {id:'SPX-84291',customer:'Marina Costa',email:'marina@example.local',product:'Scale Pro',amount:1297,currency:'BRL',method:'Pix',status:'Aprovado',date:d(0,8),country:'Brasil',fee:25.94},

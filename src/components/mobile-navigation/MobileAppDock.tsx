@@ -6,6 +6,7 @@ import {useDemoStore} from '../../store/useDemoStore'
 import {MobileDockIndicator} from './MobileDockIndicator'
 import {MobileMoreSheet} from './MobileMoreSheet'
 import './mobile-navigation.css'
+import {mobileDockVisualStyle} from '../../lib/mobileDockVisual'
 
 export function MobileAppDock(){
  const location=useLocation(),navigate=useNavigate(),[more,setMore]=useState(false),[scrolling,setScrolling]=useState(false),[mobile,setMobile]=useState(()=>matchMedia('(max-width: 767px)').matches),opacity=useDemoStore(state=>state.preferences.mobileNavigation.opacity),index=mobileNavigationIndex(location.pathname),scrollFrame=useRef(0),scrollEnd=useRef<number|undefined>(undefined),scrollingRef=useRef(false),close=useCallback(()=>setMore(false),[])
@@ -28,5 +29,5 @@ export function MobileAppDock(){
  useEffect(()=>{const viewport=window.visualViewport;if(!viewport)return;const update=()=>{document.documentElement.toggleAttribute('data-mobile-keyboard',window.innerHeight-viewport.height>150)};viewport.addEventListener('resize',update);update();return()=>{viewport.removeEventListener('resize',update);document.documentElement.removeAttribute('data-mobile-keyboard')}},[])
  const select=(path:string)=>{navigator.vibrate?.(8);navigate(path)}
  if(!mobile)return null
- return <><nav className={`mobile-app-dock${scrolling&&!more?' is-scrolling':''}`} aria-label="Navegação principal mobile" style={{'--mobile-dock-opacity':`${opacity}%`} as React.CSSProperties}><MobileDockIndicator index={index}/><div className="mobile-dock-items">{primaryMobileNavigation.map((item,itemIndex)=><button key={item.id} aria-label={item.label} aria-current={index===itemIndex?'page':undefined} className={index===itemIndex?'active':''} onClick={()=>select(item.path)}><item.icon/><span>{item.label}</span></button>)}<button aria-label="Mais módulos" aria-haspopup="dialog" aria-expanded={more} aria-current={index===4?'page':undefined} className={index===4||more?'active':''} onClick={()=>{navigator.vibrate?.(8);setMore(true)}}><Grid2X2/><span>Mais</span></button></div></nav><MobileMoreSheet open={more} onClose={close}/></>
+ return <><nav className={`mobile-app-dock${scrolling&&!more?' is-scrolling':''}`} aria-label="Navegação principal mobile" style={mobileDockVisualStyle(opacity) as React.CSSProperties}><MobileDockIndicator index={index}/><div className="mobile-dock-items">{primaryMobileNavigation.map((item,itemIndex)=><button key={item.id} aria-label={item.label} aria-current={index===itemIndex?'page':undefined} className={index===itemIndex?'active':''} onClick={()=>select(item.path)}><item.icon/><span>{item.label}</span></button>)}<button aria-label="Mais módulos" aria-haspopup="dialog" aria-expanded={more} aria-current={index===4?'page':undefined} className={index===4||more?'active':''} onClick={()=>{navigator.vibrate?.(8);setMore(true)}}><Grid2X2/><span>Mais</span></button></div></nav><MobileMoreSheet open={more} onClose={close}/></>
 }
