@@ -52,7 +52,7 @@ export async function ensureConnectedAccount(database,user,stripe=getStripe()){
  const existing=await findConnection(database,user.id)
  if(existing)return existing
  const idempotencyKey=`sphex-connect-${createHash('sha256').update(user.id).digest('hex')}`
- const account=await stripe.accounts.create({type:'express',email:user.email||undefined,capabilities:{transfers:{requested:true}},metadata:{sphex_user_id:user.id}},{idempotencyKey})
+ const account=await stripe.accounts.create({email:user.email||undefined,controller:{fees:{payer:'application'},losses:{payments:'application'},stripe_dashboard:{type:'express'}},capabilities:{transfers:{requested:true}},metadata:{sphex_user_id:user.id}},{idempotencyKey})
  const record=connectionRecord(user.id,account)
  const {data,error}=await database.from(table).upsert(record,{onConflict:'user_id'}).select(fields).single()
  if(error||!data)throw new ConnectError('CONNECT_STORAGE_ERROR',503,'A conta foi criada, mas não foi possível concluir o vínculo. Tente novamente.')

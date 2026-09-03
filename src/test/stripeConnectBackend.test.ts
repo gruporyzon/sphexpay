@@ -33,14 +33,17 @@ describe('fundação Stripe Connect',()=>{
   expect(result).toEqual(connection);expect(stripe.accounts.create).not.toHaveBeenCalled()
  })
 
- it('cria Express com transfers e uma chave idempotente por usuário',async()=>{
+ it('cria conta com controller Express, transfers e uma chave idempotente por usuário',async()=>{
   const created={id:'acct_new123',type:'express',details_submitted:false,charges_enabled:false,payouts_enabled:false,requirements:{currently_due:[],eventually_due:[]}}
   const maybeSingle=vi.fn(async()=>({data:null,error:null})),selectExisting={eq:vi.fn(()=>({maybeSingle}))}
   const single=vi.fn(async()=>({data:{...connection,stripe_account_id:'acct_new123'},error:null})),selectSaved=vi.fn(()=>({single})),upsert=vi.fn(()=>({select:selectSaved}))
   const database={from:vi.fn().mockReturnValueOnce({select:vi.fn(()=>selectExisting)}).mockReturnValueOnce({upsert})}
-  const stripe={accounts:{create:vi.fn(async()=>created)}}
+  const stripe={accounts:{create:vi.fn(async(_params:unknown,_options:unknown)=>created)}}
   await ensureConnectedAccount(database,{id:'user-1',email:'seller@example.test'},stripe)
-  expect(stripe.accounts.create).toHaveBeenCalledWith(expect.objectContaining({type:'express',capabilities:{transfers:{requested:true}}}),expect.objectContaining({idempotencyKey:expect.stringMatching(/^sphex-connect-/)}))
+  const [params,options]=stripe.accounts.create.mock.calls[0]
+  expect(params).not.toHaveProperty('type')
+  expect(params).toEqual(expect.objectContaining({controller:{fees:{payer:'application'},losses:{payments:'application'},stripe_dashboard:{type:'express'}},capabilities:{transfers:{requested:true}}}))
+  expect(options).toEqual(expect.objectContaining({idempotencyKey:expect.stringMatching(/^sphex-connect-/)}))
   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id'})
  })
 
