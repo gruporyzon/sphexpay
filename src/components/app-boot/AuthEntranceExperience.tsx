@@ -2,7 +2,7 @@ import { useCallback,useEffect,useRef,useState,type PropsWithChildren } from 're
 import { consumeAuthEntrance,shouldPlayAuthEntrance } from '../../lib/authEntranceState'
 import { BatSwarmScene } from './BatSwarmScene'
 
-export const AUTH_ENTRANCE_TIMING={mobile:{min:5600,max:6800,exit:360},desktop:{min:5500,max:6700,exit:360},reduced:{min:650,max:1200,exit:180}} as const
+export const AUTH_ENTRANCE_TIMING={mobile:{min:3600,max:4500,exit:260},desktop:{min:3500,max:4400,exit:260},reduced:{min:650,max:1200,exit:180}} as const
 type EntrancePhase='entering'|'leaving'|'removed'
 
 function timingForDevice(){

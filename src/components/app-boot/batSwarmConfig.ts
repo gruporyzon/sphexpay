@@ -1,5 +1,5 @@
-export const BAT_QUALITY_COUNTS={low:36,medium:62,high:92} as const
-export const BAT_SCENE_DURATION=5400
+export const BAT_QUALITY_COUNTS={low:32,medium:52,high:72} as const
+export const BAT_SCENE_DURATION=3300
 export type BatQuality=keyof typeof BAT_QUALITY_COUNTS
 
 export const BAT_WING_FRAME_PATHS=[
