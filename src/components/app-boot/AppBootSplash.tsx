@@ -1,10 +1,9 @@
-import { useEffect,useRef,useState,type PropsWithChildren } from 'react'
-import { SphexPayLogo } from '../branding/SphexPayLogo'
+import { useCallback,useEffect,useRef,useState,type PropsWithChildren } from 'react'
 import { useAuth } from '../../hooks/useAuth'
-import { BatSwarmLayer } from './BatSwarmLayer'
+import { BatSwarmScene } from './BatSwarmScene'
 
 export const APP_BOOT_SESSION_KEY='sphexpay.appBootPlayed'
-export const APP_BOOT_TIMING={mobile:{min:1050,max:1280,exit:280},desktop:{min:650,max:950,exit:220},reduced:{min:160,max:360,exit:140}} as const
+export const APP_BOOT_TIMING={mobile:{min:2050,max:2300,exit:300},desktop:{min:1900,max:2200,exit:280},reduced:{min:240,max:600,exit:180}} as const
 
 type BootPhase='entering'|'leaving'|'removed'
 
@@ -27,9 +26,12 @@ export function AppBootSplash({children,appReady}:PropsWithChildren<{appReady:bo
  const [documentReady,setDocumentReady]=useState(()=>document.readyState!=='loading')
  const [logoReady,setLogoReady]=useState(false)
  const [renderReady,setRenderReady]=useState(false)
+ const [sceneFailed,setSceneFailed]=useState(false)
  const startedAt=useRef(performance.now())
  const timing=useRef(timingForDevice())
  const originalThemeColor=useRef(document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.content??'#000000')
+ const reducedMotion=timing.current===APP_BOOT_TIMING.reduced
+ const handleSceneFailure=useCallback(()=>setSceneFailed(true),[])
 
  useEffect(()=>{
   const meta=document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
@@ -52,7 +54,7 @@ export function AppBootSplash({children,appReady}:PropsWithChildren<{appReady:bo
   let active=true
   const image=new Image()
   const ready=()=>{if(active)setLogoReady(true)}
-  image.onload=ready;image.onerror=ready;image.src='/brand/LOGO.PNG'
+  image.onload=ready;image.onerror=ready;image.src='/brand/sphex-symbol-mask.png'
   if(image.complete)ready();else void image.decode?.().then(ready,ready)
   return()=>{active=false;image.onload=null;image.onerror=null}
  },[playsBoot])
@@ -94,11 +96,10 @@ export function AppBootSplash({children,appReady}:PropsWithChildren<{appReady:bo
   <div className="app-boot-content" inert={active?true:undefined}>{children}</div>
   {active&&<div className={`app-boot-splash ${phase}`} role="status" aria-label="Abrindo SphexPay" aria-live="polite">
    <div className="app-boot-depth" aria-hidden="true"><i/><i/><i/><i/><i/></div>
-   <div className="app-boot-origin" aria-hidden="true"><i/></div>
-   <BatSwarmLayer/>
-   <div className="app-boot-brand">
+   <BatSwarmScene reducedMotion={reducedMotion} onFailure={handleSceneFailure}/>
+   <div className={`app-boot-brand ${sceneFailed?'scene-fallback':''}`}>
     <span className="app-boot-glow" aria-hidden="true"/>
-    <SphexPayLogo className="app-boot-logo" priority size={92}/>
+    <img className="app-boot-logo" src="/brand/sphex-symbol-mask.png" alt="" width="1077" height="1562" draggable="false"/>
     <strong>SPHEX PAY</strong>
     <span className="app-boot-pulse" aria-hidden="true"><i/></span>
    </div>

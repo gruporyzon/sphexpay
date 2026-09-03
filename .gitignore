@@ -7,6 +7,7 @@ dist
 .env.*
 !.env.example
 .runtime
+reference-assets/
 
 .env
 .env.local
