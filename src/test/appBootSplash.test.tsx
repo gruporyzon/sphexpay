@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest'
 import { APP_BOOT_SESSION_KEY,APP_BOOT_TIMING,AppBootSplash } from '../components/app-boot/AppBootSplash'
+import { BAT_SWARM_COUNT } from '../components/app-boot/BatSwarmLayer'
 
 describe('abertura premium do app',()=>{
  beforeEach(()=>{sessionStorage.clear();vi.useFakeTimers()})
@@ -30,9 +31,20 @@ describe('abertura premium do app',()=>{
  })
 
  it('define tempos curtos e um modo de movimento reduzido',()=>{
-  expect(APP_BOOT_TIMING.mobile).toEqual({min:720,max:1800,exit:360})
+  expect(APP_BOOT_TIMING.mobile).toEqual({min:1050,max:1280,exit:280})
+  expect(APP_BOOT_TIMING.mobile.max+APP_BOOT_TIMING.mobile.exit).toBeLessThanOrEqual(1600)
   expect(APP_BOOT_TIMING.desktop.max).toBeLessThan(APP_BOOT_TIMING.mobile.max)
   expect(APP_BOOT_TIMING.reduced.max).toBeLessThan(APP_BOOT_TIMING.desktop.max)
+ })
+
+ it('renderiza uma revoada vetorial controlada em tres planos',()=>{
+  render(<AppBootSplash appReady><main>Interface real</main></AppBootSplash>)
+  expect(BAT_SWARM_COUNT).toBe(26)
+  expect(document.querySelectorAll('.app-boot-bat')).toHaveLength(26)
+  expect(document.querySelectorAll('.bat-back')).toHaveLength(9)
+  expect(document.querySelectorAll('.bat-middle')).toHaveLength(12)
+  expect(document.querySelectorAll('.bat-front')).toHaveLength(5)
+  expect(document.querySelectorAll('.app-boot-bat svg')).toHaveLength(26)
  })
 
  it('cobre viewport dinamico, safe area, movimento reduzido e fundo pre-React',()=>{
@@ -42,6 +54,8 @@ describe('abertura premium do app',()=>{
   expect(css).toContain('env(safe-area-inset-bottom)')
   expect(css).toContain('@media(orientation:landscape)')
   expect(css).toContain('@media(prefers-reduced-motion:reduce)')
+  expect(css).toContain('.app-boot-origin')
+  expect(css).toContain('.app-boot-swarm')
   expect(html).toContain('class="app-boot-pending"')
   expect(html).toContain('background:#050505!important')
  })

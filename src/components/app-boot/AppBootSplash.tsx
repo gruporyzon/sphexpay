@@ -1,9 +1,10 @@
 import { useEffect,useRef,useState,type PropsWithChildren } from 'react'
 import { SphexPayLogo } from '../branding/SphexPayLogo'
 import { useAuth } from '../../hooks/useAuth'
+import { BatSwarmLayer } from './BatSwarmLayer'
 
 export const APP_BOOT_SESSION_KEY='sphexpay.appBootPlayed'
-export const APP_BOOT_TIMING={mobile:{min:720,max:1800,exit:360},desktop:{min:320,max:900,exit:240},reduced:{min:80,max:420,exit:120}} as const
+export const APP_BOOT_TIMING={mobile:{min:1050,max:1280,exit:280},desktop:{min:650,max:950,exit:220},reduced:{min:160,max:360,exit:140}} as const
 
 type BootPhase='entering'|'leaving'|'removed'
 
@@ -93,6 +94,8 @@ export function AppBootSplash({children,appReady}:PropsWithChildren<{appReady:bo
   <div className="app-boot-content" inert={active?true:undefined}>{children}</div>
   {active&&<div className={`app-boot-splash ${phase}`} role="status" aria-label="Abrindo SphexPay" aria-live="polite">
    <div className="app-boot-depth" aria-hidden="true"><i/><i/><i/><i/><i/></div>
+   <div className="app-boot-origin" aria-hidden="true"><i/></div>
+   <BatSwarmLayer/>
    <div className="app-boot-brand">
     <span className="app-boot-glow" aria-hidden="true"/>
     <SphexPayLogo className="app-boot-logo" priority size={92}/>
