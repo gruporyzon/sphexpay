@@ -9,8 +9,12 @@ const functionFiles=(directory:string):string[]=>readdirSync(directory).flatMap(
 
 describe('limite de funções da Vercel Hobby',()=>{
  it('mantém no máximo 12 handlers públicos dentro de api',()=>{
-  const files=functionFiles(join(process.cwd(),'api'))
-  expect(files).toHaveLength(9)
+ const files=functionFiles(join(process.cwd(),'api'))
+  expect(files.map(path=>path.replace(`${process.cwd()}/`,''))).toEqual(expect.arrayContaining([
+   'api/stripe/connect/account.js',
+   'api/stripe/connect/onboarding.js',
+   'api/stripe/connect/status.js'
+  ]))
   expect(files.length).toBeLessThanOrEqual(12)
  })
 
