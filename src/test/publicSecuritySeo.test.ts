@@ -28,7 +28,7 @@ describe('segurança, SEO e responsividade pública',()=>{
  })
  it('usa direção pública clara e composição própria de celular e notificações',()=>{
   expect(landing).toContain('landing landing-v2')
-  expect(landing).toContain('<PublicPhoneExperience/>')
+  expect(landing).toContain('<PublicOperationalExperience/>')
   expect(css).toContain('Public landing v2 — original light editorial direction for SphexPay.')
   expect(css).toContain('background:var(--pv2-paper)')
   expect(css).toContain('.public-phone-stage')
