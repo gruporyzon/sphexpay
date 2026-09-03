@@ -52,7 +52,7 @@ export async function ensureConnectedAccount(database,user,stripe=getStripe()){
  const existing=await findConnection(database,user.id)
  if(existing)return existing
  const idempotencyKey=`sphex-connect-${createHash('sha256').update(user.id).digest('hex')}`
- const account=await stripe.accounts.create({email:user.email||undefined,controller:{fees:{payer:'application'},losses:{payments:'application'},stripe_dashboard:{type:'express'}},capabilities:{transfers:{requested:true}},metadata:{sphex_user_id:user.id}},{idempotencyKey})
+ const account=await stripe.v2.core.accounts.create({contact_email:user.email||undefined,identity:{country:'br'},dashboard:'express',configuration:{recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:user.id}},{idempotencyKey})
  const record=connectionRecord(user.id,account)
  const {data,error}=await database.from(table).upsert(record,{onConflict:'user_id'}).select(fields).single()
  if(error||!data)throw new ConnectError('CONNECT_STORAGE_ERROR',503,'A conta foi criada, mas não foi possível concluir o vínculo. Tente novamente.')
@@ -74,5 +74,5 @@ const configuredAppUrl=()=>{
 }
 export async function createOnboardingLink(connection,stripe=getStripe()){
  const origin=configuredAppUrl()
- try{return await stripe.accountLinks.create({account:connection.stripe_account_id,type:'account_onboarding',refresh_url:`${origin}/app/financeiro/stripe/refresh`,return_url:`${origin}/app/financeiro/stripe/return`,collection_options:{fields:'eventually_due'}})}catch{throw new ConnectError('ONBOARDING_LINK_FAILED',502,'Não foi possível abrir a configuração da Stripe agora.')}
+ try{return await stripe.v2.core.accountLinks.create({account:connection.stripe_account_id,use_case:{type:'account_onboarding',account_onboarding:{configurations:['recipient'],refresh_url:`${origin}/app/financeiro/stripe/refresh`,return_url:`${origin}/app/financeiro/stripe/return`,collection_options:{fields:'eventually_due'}}}})}catch{throw new ConnectError('ONBOARDING_LINK_FAILED',502,'Não foi possível abrir a configuração da Stripe agora.')}
 }

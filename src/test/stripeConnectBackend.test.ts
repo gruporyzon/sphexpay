@@ -4,7 +4,7 @@ vi.mock('@supabase/supabase-js',()=>({createClient:createClientMock}))
 // @ts-expect-error Serverless JavaScript is tested outside the frontend bundle.
 import accountHandler from '../../api/stripe/connect/account.js'
 // @ts-expect-error Server-side JavaScript is tested outside the frontend bundle.
-import {authenticate,createOnboardingLink,ensureConnectedAccount,safeStatus} from '../../server/stripe/connect.js'
+import {authenticate,createOnboardingLink,ensureConnectedAccount,fail,retrieveAndSync,safeStatus} from '../../server/stripe/connect.js'
 
 type Result={statusCode:number;body:Record<string,unknown>|null}
 const response=()=>{const result:Result={statusCode:200,body:null};return{result,status(code:number){result.statusCode=code;return this},json(body:Record<string,unknown>){result.body=body;return this}}}
@@ -28,30 +28,45 @@ describe('fundação Stripe Connect',()=>{
 
  it('reutiliza a conta existente e não cria duplicata',async()=>{
   const maybeSingle=vi.fn(async()=>({data:connection,error:null})),query={eq:vi.fn(()=>({maybeSingle}))}
-  const database={from:vi.fn(()=>({select:vi.fn(()=>query)}))},stripe={accounts:{create:vi.fn()}}
+  const create=vi.fn(),database={from:vi.fn(()=>({select:vi.fn(()=>query)}))},stripe={v2:{core:{accounts:{create}}}}
   const result=await ensureConnectedAccount(database,{id:'user-1',email:'seller@example.test'},stripe)
-  expect(result).toEqual(connection);expect(stripe.accounts.create).not.toHaveBeenCalled()
+  expect(result).toEqual(connection);expect(create).not.toHaveBeenCalled()
  })
 
- it('cria conta com controller Express, transfers e uma chave idempotente por usuário',async()=>{
-  const created={id:'acct_new123',type:'express',details_submitted:false,charges_enabled:false,payouts_enabled:false,requirements:{currently_due:[],eventually_due:[]}}
+ it('cria Account v2 recipient brasileira e salva o id com idempotência',async()=>{
+  const created={id:'acct_new123',object:'v2.core.account'}
   const maybeSingle=vi.fn(async()=>({data:null,error:null})),selectExisting={eq:vi.fn(()=>({maybeSingle}))}
   const single=vi.fn(async()=>({data:{...connection,stripe_account_id:'acct_new123'},error:null})),selectSaved=vi.fn(()=>({single})),upsert=vi.fn(()=>({select:selectSaved}))
   const database={from:vi.fn().mockReturnValueOnce({select:vi.fn(()=>selectExisting)}).mockReturnValueOnce({upsert})}
-  const stripe={accounts:{create:vi.fn(async(_params:unknown,_options:unknown)=>created)}}
+  const create=vi.fn(async(_params:unknown,_options:unknown)=>created),legacyCreate=vi.fn()
+  const stripe={v2:{core:{accounts:{create}}},accounts:{create:legacyCreate}}
   await ensureConnectedAccount(database,{id:'user-1',email:'seller@example.test'},stripe)
-  const [params,options]=stripe.accounts.create.mock.calls[0]
-  expect(params).not.toHaveProperty('type')
-  expect(params).toEqual(expect.objectContaining({controller:{fees:{payer:'application'},losses:{payments:'application'},stripe_dashboard:{type:'express'}},capabilities:{transfers:{requested:true}}}))
+  const [params,options]=create.mock.calls[0]
+  expect(legacyCreate).not.toHaveBeenCalled()
+  expect(params).toEqual({contact_email:'seller@example.test',identity:{country:'br'},dashboard:'express',configuration:{recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:'user-1'}})
   expect(options).toEqual(expect.objectContaining({idempotencyKey:expect.stringMatching(/^sphex-connect-/)}))
   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id'})
  })
 
- it('usa APP_URL confiável nos retornos e gera account_onboarding',async()=>{
+ it('usa APP_URL confiável e gera Account Link v2 para recipient onboarding',async()=>{
   vi.stubEnv('APP_URL','https://sphexpay.example')
   const create=vi.fn(async input=>({url:'https://connect.stripe.test/link',...input}))
-  await createOnboardingLink(connection,{accountLinks:{create}})
-  expect(create).toHaveBeenCalledWith({account:'acct_test123',type:'account_onboarding',refresh_url:'https://sphexpay.example/app/financeiro/stripe/refresh',return_url:'https://sphexpay.example/app/financeiro/stripe/return',collection_options:{fields:'eventually_due'}})
+  await createOnboardingLink(connection,{v2:{core:{accountLinks:{create}}}})
+  expect(create).toHaveBeenCalledWith({account:'acct_test123',use_case:{type:'account_onboarding',account_onboarding:{configurations:['recipient'],refresh_url:'https://sphexpay.example/app/financeiro/stripe/refresh',return_url:'https://sphexpay.example/app/financeiro/stripe/return',collection_options:{fields:'eventually_due'}}}})
+ })
+
+ it('mantém a leitura de status v1 compatível e sincroniza o Supabase',async()=>{
+  const account={id:'acct_test123',type:'none',details_submitted:true,charges_enabled:false,payouts_enabled:true,requirements:{currently_due:['external_account'],eventually_due:[]}}
+  const single=vi.fn(async()=>({data:{...connection,stripe_details_submitted:true,stripe_payouts_enabled:true,stripe_requirements_currently_due:['external_account']},error:null}))
+  const update=vi.fn(()=>({eq:vi.fn(()=>({eq:vi.fn(()=>({select:vi.fn(()=>({single}))}))}))}))
+  const retrieve=vi.fn(async()=>account),database={from:vi.fn(()=>({update}))}
+  await retrieveAndSync(database,'user-1',connection,{accounts:{retrieve}})
+  expect(retrieve).toHaveBeenCalledWith('acct_test123');expect(update).toHaveBeenCalled()
+ })
+
+ it('trata erro Stripe sem expor detalhes sensíveis',()=>{
+  const output=response();fail(output,Object.assign(new Error('sensitive Stripe detail'),{requestId:'req_secret'}))
+  expect(output.result).toEqual({statusCode:502,body:{success:false,code:'CONNECT_UNAVAILABLE',message:'Não foi possível acessar a configuração de pagamentos agora.'}})
  })
 
  it('expõe apenas o contrato seguro de status',()=>{
