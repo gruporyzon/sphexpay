@@ -1,5 +1,5 @@
 import { useEffect,useRef } from 'react'
-import { BAT_QUALITY_COUNTS,getBatQuality } from './batSwarmConfig'
+import { BAT_QUALITY_COUNTS,getBatQuality,sampleTargetPixels } from './batSwarmConfig'
 
 type Particle={
  x:number;y:number;vx:number;vy:number;depth:number;scale:number;rotation:number;wingPhase:number;variant:number
@@ -7,7 +7,7 @@ type Particle={
 }
 
 const MASK_SOURCE='/brand/sphex-symbol-mask.png'
-const SCENE_DURATION=2200
+const SCENE_DURATION=1900
 
 const clamp=(value:number,min:number,max:number)=>Math.max(min,Math.min(max,value))
 const smooth=(from:number,to:number,value:number)=>{const x=clamp((value-from)/(to-from),0,1);return x*x*(3-2*x)}
@@ -32,11 +32,12 @@ function sampleMask(image:HTMLImageElement,count:number,random:()=>number){
  context.clearRect(0,0,canvas.width,canvas.height)
  const ratio=Math.min(154/image.width,232/image.height),width=image.width*ratio,height=image.height*ratio
  context.drawImage(image,(canvas.width-width)/2,(canvas.height-height)/2,width,height)
- const pixels=context.getImageData(0,0,canvas.width,canvas.height).data
- const candidates:Array<[number,number]>=[]
- for(let y=8;y<canvas.height-8;y+=3)for(let x=8;x<canvas.width-8;x+=3)if(pixels[(y*canvas.width+x)*4+3]>72)candidates.push([(x-canvas.width/2)/154,(y-canvas.height/2)/232])
- const points:Array<[number,number]>=[]
- while(points.length<count&&candidates.length){const index=Math.floor(random()*candidates.length);points.push(candidates.splice(index,1)[0])}
+ return sampleTargetPixels(context.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height,count,random)
+}
+
+function assignNearestTargets(points:Array<[number,number]>,particles:Particle[],width:number,height:number){
+ const available=[...points],markWidth=clamp(width*.37,132,190),markHeight=markWidth*1.45
+ for(const particle of particles.filter(item=>item.targeted)){let nearest=0,distance=Infinity;for(let index=0;index<available.length;index++){const target=available[index],dx=particle.x-(width*.5+target[0]*markWidth),dy=particle.y-(height*.47+target[1]*markHeight),next=dx*dx+dy*dy;if(next<distance){distance=next;nearest=index}}const [target]=available.splice(nearest,1);points[particle.targetIndex]=target;if(!available.length)break}
  return points
 }
 
@@ -44,7 +45,7 @@ function drawBat(context:CanvasRenderingContext2D,particle:Particle,time:number,
  const flap=Math.sin(time*(.0105+particle.variant*.0018)+particle.wingPhase)
  const wing=clamp(.54+flap*.32,.2,.92),size=particle.scale
  context.save();context.translate(particle.x,particle.y);context.rotate(particle.rotation);context.scale(size,size)
- context.globalAlpha=alpha;context.fillStyle=particle.depth<.7?'#471719':particle.depth>1.5?'#090506':'#160809';context.filter=particle.depth<.7?'blur(.45px)':particle.depth>1.5?'blur(.7px)':'none'
+ context.globalAlpha=alpha;context.fillStyle='#fff';context.filter=particle.depth<.7?'blur(.45px)':particle.depth>1.5?'blur(.7px)':'none'
  context.beginPath();context.moveTo(0,-.12)
  context.bezierCurveTo(-.55,-wing,-1.12,-.78,-1.65,-.42)
  context.lineTo(-1.28,-.08);context.lineTo(-1.72,.12);context.lineTo(-1.04,.28)
@@ -74,12 +75,12 @@ export function BatSwarmScene({reducedMotion=false,onFailure}:{reducedMotion?:bo
   }
   resize();window.addEventListener('resize',resize,{passive:true})
   const image=new Image()
-  image.onload=()=>{if(!disposed)targets=sampleMask(image,Math.ceil(particles.length*.78),random)}
+  image.onload=()=>{if(!disposed)targets=assignNearestTargets(sampleMask(image,Math.ceil(particles.length*.78),random),particles,width,height)}
   image.onerror=()=>onFailure?.();image.src=MASK_SOURCE
   const started=performance.now();let previousFrame=started
   const render=(now:number)=>{
    if(disposed)return
-   const elapsed=now-started,dt=clamp(now-previousFrame,8,34),progress=clamp(elapsed/SCENE_DURATION,0,1),attraction=smooth(.34,.76,progress),lock=smooth(.7,.9,progress);previousFrame=now
+   const elapsed=now-started,dt=clamp(now-previousFrame,8,34),progress=clamp(elapsed/SCENE_DURATION,0,1),attraction=clamp(smooth(.25,.5,progress)*.12+smooth(.48,.76,progress)*.88,0,1),lock=smooth(.74,.92,progress);previousFrame=now
    context.setTransform(dpr,0,0,dpr,0,0);context.clearRect(0,0,width,height)
    const markWidth=clamp(width*.37,132,190),markHeight=markWidth*1.45,centerX=width*.5,centerY=height*.47
    for(let index=0;index<particles.length;index++){
@@ -101,7 +102,8 @@ export function BatSwarmScene({reducedMotion=false,onFailure}:{reducedMotion?:bo
     particle.x+=particle.vx*dt;particle.y+=particle.vy*dt
     particle.rotation=Math.atan2(particle.vy,particle.vx)+Math.sin(elapsed*.004+particle.wingPhase)*.15
     const enter=smooth(particle.spawnAt,particle.spawnAt+170,elapsed),exit=particle.targeted?1:1-smooth(.72,.96,progress)
-    particle.opacity=enter*exit*(particle.depth<.7?.42:.92)*(1-lock*(particle.targeted?.3:0))
+    const depthAlpha=particle.depth<.7?.32:particle.depth>1.5?.96:.66,arrivalJitter=.88+(particle.wingPhase/Math.PI/2)*.08
+    particle.opacity=enter*exit*depthAlpha*(1-smooth(.9,1,progress)*arrivalJitter*(particle.targeted?1:0))
     drawBat(context,particle,elapsed,particle.opacity)
    }
    context.filter='none'

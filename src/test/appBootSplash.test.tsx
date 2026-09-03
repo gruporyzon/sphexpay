@@ -2,93 +2,21 @@ import { act,render,screen } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest'
-import { APP_BOOT_SESSION_KEY,APP_BOOT_TIMING,AppBootSplash } from '../components/app-boot/AppBootSplash'
+import { AUTH_ENTRANCE_TIMING,AuthEntranceExperience } from '../components/app-boot/AuthEntranceExperience'
 import { BatSwarmScene } from '../components/app-boot/BatSwarmScene'
-import { BAT_QUALITY_COUNTS,getBatQuality } from '../components/app-boot/batSwarmConfig'
+import { BAT_QUALITY_COUNTS,getBatQuality,sampleTargetPixels } from '../components/app-boot/batSwarmConfig'
+import { AUTH_ENTRANCE_PENDING_KEY,AUTH_ENTRANCE_PLAYED_KEY,clearAuthEntranceState,markAuthEntrancePending } from '../lib/authEntranceState'
 
-describe('abertura premium do app',()=>{
+describe('entrada autenticada premium',()=>{
  beforeEach(()=>{sessionStorage.clear();vi.useFakeTimers();vi.mocked(window.matchMedia).mockImplementation(query=>({matches:false,media:query,onchange:null,addListener:vi.fn(),removeListener:vi.fn(),addEventListener:vi.fn(),removeEventListener:vi.fn(),dispatchEvent:vi.fn()}))})
  afterEach(()=>{vi.useRealTimers();vi.restoreAllMocks()})
-
- it('mantem a interface montada e remove a splash no limite de seguranca',()=>{
-  render(<AppBootSplash appReady={false}><main>Interface real</main></AppBootSplash>)
-  expect(screen.getByText('Interface real')).toBeInTheDocument()
-  expect(screen.getByRole('status',{name:'Abrindo SphexPay'})).toBeInTheDocument()
-  expect(screen.getByText('Interface real').parentElement).toHaveAttribute('inert')
-  act(()=>vi.advanceTimersByTime(APP_BOOT_TIMING.desktop.max+20))
-  expect(screen.getByRole('status',{name:'Abrindo SphexPay'})).toHaveClass('leaving')
-  act(()=>vi.advanceTimersByTime(APP_BOOT_TIMING.desktop.exit+20))
-  expect(screen.queryByRole('status',{name:'Abrindo SphexPay'})).not.toBeInTheDocument()
-  expect(screen.getByText('Interface real').parentElement).not.toHaveAttribute('inert')
- })
-
- it('registra a execucao na sessao e nao repete no mesmo boot',()=>{
-  const first=render(<AppBootSplash appReady><main>Primeiro</main></AppBootSplash>)
-  expect(sessionStorage.getItem(APP_BOOT_SESSION_KEY)).toBe('true')
-  first.unmount()
-  render(<AppBootSplash appReady><main>Segundo</main></AppBootSplash>)
-  expect(screen.queryByRole('status',{name:'Abrindo SphexPay'})).not.toBeInTheDocument()
-  expect(screen.getByText('Segundo')).toBeVisible()
- })
-
- it('define tempos curtos e um modo de movimento reduzido',()=>{
-  expect(APP_BOOT_TIMING.mobile).toEqual({min:2050,max:2300,exit:300})
-  expect(APP_BOOT_TIMING.mobile.max+APP_BOOT_TIMING.mobile.exit).toBeLessThanOrEqual(2600)
-  expect(APP_BOOT_TIMING.desktop.max).toBeLessThan(APP_BOOT_TIMING.mobile.max)
-  expect(APP_BOOT_TIMING.reduced.max).toBeLessThan(APP_BOOT_TIMING.desktop.max)
- })
-
- it('renderiza a revoada em um unico canvas com densidade adaptativa',()=>{
-  render(<AppBootSplash appReady><main>Interface real</main></AppBootSplash>)
-  expect(document.querySelectorAll('canvas.app-boot-swarm')).toHaveLength(1)
-  expect(BAT_QUALITY_COUNTS).toEqual({low:48,medium:76,high:108})
-  expect(getBatQuality({width:320,dpr:3,cores:4})).toBe('low')
-  expect(getBatQuality({width:390,dpr:2,cores:8})).toBe('medium')
-  expect(getBatQuality({width:1440,dpr:2,cores:12})).toBe('high')
- })
-
- it('desativa a cena intensa quando o usuario prefere movimento reduzido',()=>{
-  vi.mocked(window.matchMedia).mockImplementation(query=>({matches:query.includes('prefers-reduced-motion'),media:query,onchange:null,addListener:vi.fn(),removeListener:vi.fn(),addEventListener:vi.fn(),removeEventListener:vi.fn(),dispatchEvent:vi.fn()}))
-  const raf=vi.spyOn(window,'requestAnimationFrame')
-  render(<AppBootSplash appReady><main>Interface real</main></AppBootSplash>)
-  expect(document.querySelector('.app-boot-logo')).toBeInTheDocument()
-  expect(raf).toHaveBeenCalledTimes(1)
-  act(()=>vi.advanceTimersByTime(APP_BOOT_TIMING.reduced.max+20))
-  act(()=>vi.advanceTimersByTime(APP_BOOT_TIMING.reduced.exit+20))
-  expect(screen.queryByRole('status',{name:'Abrindo SphexPay'})).not.toBeInTheDocument()
- })
-
- it('limpa frame e resize ao desmontar o canvas',()=>{
-  const context={setTransform:vi.fn(),clearRect:vi.fn(),save:vi.fn(),restore:vi.fn(),translate:vi.fn(),rotate:vi.fn(),scale:vi.fn(),beginPath:vi.fn(),moveTo:vi.fn(),bezierCurveTo:vi.fn(),lineTo:vi.fn(),quadraticCurveTo:vi.fn(),closePath:vi.fn(),fill:vi.fn(),globalAlpha:1,fillStyle:''}
-  vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(context as never)
-  const remove=vi.spyOn(window,'removeEventListener'),cancel=vi.spyOn(window,'cancelAnimationFrame')
-  const view=render(<BatSwarmScene/>);act(()=>window.dispatchEvent(new Event('resize')));view.unmount()
-  expect(context.setTransform).toHaveBeenCalled()
-  expect(remove).toHaveBeenCalledWith('resize',expect.any(Function))
-  expect(cancel).toHaveBeenCalled()
-  expect(context.clearRect).toHaveBeenCalled()
- })
-
- it('mantem fallback e timeout mesmo quando canvas falha',async()=>{
-  vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(null)
-  render(<AppBootSplash appReady={false}><main>Interface preservada</main></AppBootSplash>)
-  await act(async()=>{await Promise.resolve()})
-  expect(document.querySelector('.scene-fallback')).toBeInTheDocument()
-  act(()=>vi.advanceTimersByTime(APP_BOOT_TIMING.desktop.max+20))
-  act(()=>vi.advanceTimersByTime(APP_BOOT_TIMING.desktop.exit+20))
-  expect(screen.queryByRole('status',{name:'Abrindo SphexPay'})).not.toBeInTheDocument()
-  expect(screen.getByText('Interface preservada')).toBeVisible()
- })
-
- it('cobre viewport dinamico, safe area, movimento reduzido e fundo pre-React',()=>{
-  const css=readFileSync(resolve(process.cwd(),'src/components/app-boot/app-boot-splash.css'),'utf8')
-  const html=readFileSync(resolve(process.cwd(),'index.html'),'utf8')
-  expect(css).toContain('height:100dvh')
-  expect(css).toContain('env(safe-area-inset-bottom)')
-  expect(css).toContain('@media(orientation:landscape)')
-  expect(css).toContain('@media(prefers-reduced-motion:reduce)')
-  expect(css).toContain('.app-boot-swarm')
-  expect(html).toContain('class="app-boot-pending"')
-  expect(html).toContain('background:#050505!important')
- })
+ it('nao aparece antes de um login confirmado',()=>{render(<AuthEntranceExperience><main>Login ou landing</main></AuthEntranceExperience>);expect(screen.queryByRole('status')).not.toBeInTheDocument();expect(screen.getByText('Login ou landing')).toBeVisible()})
+ it('aparece depois do login valido e preserva o app montado atras',()=>{markAuthEntrancePending();render(<AuthEntranceExperience appReady><main>Dashboard</main></AuthEntranceExperience>);expect(screen.getByRole('status',{name:'Preparando sua operação'})).toBeInTheDocument();expect(screen.getByText('Dashboard').parentElement).toHaveAttribute('inert');expect(sessionStorage.getItem(AUTH_ENTRANCE_PLAYED_KEY)).toBe('true');expect(sessionStorage.getItem(AUTH_ENTRANCE_PENDING_KEY)).toBeNull()})
+ it('encerra no timeout e nao repete durante a sessao autenticada',()=>{markAuthEntrancePending();const first=render(<AuthEntranceExperience appReady={false}><main>Primeiro</main></AuthEntranceExperience>);act(()=>vi.advanceTimersByTime(AUTH_ENTRANCE_TIMING.desktop.max+20));expect(screen.getByRole('status')).toHaveClass('leaving');act(()=>vi.advanceTimersByTime(AUTH_ENTRANCE_TIMING.desktop.exit+20));expect(screen.queryByRole('status')).not.toBeInTheDocument();first.unmount();render(<AuthEntranceExperience><main>Segundo</main></AuthEntranceExperience>);expect(screen.queryByRole('status')).not.toBeInTheDocument()})
+ it('logout limpa flags e permite uma entrada futura',()=>{markAuthEntrancePending();sessionStorage.setItem(AUTH_ENTRANCE_PLAYED_KEY,'true');clearAuthEntranceState();expect(sessionStorage.getItem(AUTH_ENTRANCE_PENDING_KEY)).toBeNull();expect(sessionStorage.getItem(AUTH_ENTRANCE_PLAYED_KEY)).toBeNull()})
+ it('usa canvas unico, densidade adaptativa e target map com espaço negativo',()=>{markAuthEntrancePending();render(<AuthEntranceExperience><main>Dashboard</main></AuthEntranceExperience>);expect(document.querySelectorAll('canvas.app-boot-swarm')).toHaveLength(1);expect(BAT_QUALITY_COUNTS).toEqual({low:48,medium:76,high:108});expect(getBatQuality({width:320,dpr:3,cores:4})).toBe('low');expect(getBatQuality({width:390,dpr:2,cores:8})).toBe('medium');expect(getBatQuality({width:1440,dpr:2,cores:12})).toBe('high');const pixels=new Uint8ClampedArray(24*24*4);for(let y=3;y<21;y++)for(let x=3;x<21;x++)if(!(x>8&&x<15&&y>8&&y<18))pixels[(y*24+x)*4+3]=255;const targets=sampleTargetPixels(pixels,24,24,20,()=>.31);expect(targets.length).toBeGreaterThan(8);expect(targets.every(([x,y])=>!(Math.abs(x)<.2&&y>-.15&&y<.35))).toBe(true)})
+ it('remove a revoada no reduced motion',()=>{vi.mocked(window.matchMedia).mockImplementation(query=>({matches:query.includes('prefers-reduced-motion'),media:query,onchange:null,addListener:vi.fn(),removeListener:vi.fn(),addEventListener:vi.fn(),removeEventListener:vi.fn(),dispatchEvent:vi.fn()}));const raf=vi.spyOn(window,'requestAnimationFrame');markAuthEntrancePending();render(<AuthEntranceExperience><main>Dashboard</main></AuthEntranceExperience>);expect(document.querySelector('.app-boot-logo')).toBeInTheDocument();expect(raf).toHaveBeenCalledTimes(1)})
+ it('limpa RAF, canvas e listener de resize',()=>{const context={setTransform:vi.fn(),clearRect:vi.fn(),save:vi.fn(),restore:vi.fn(),translate:vi.fn(),rotate:vi.fn(),scale:vi.fn(),beginPath:vi.fn(),moveTo:vi.fn(),bezierCurveTo:vi.fn(),lineTo:vi.fn(),quadraticCurveTo:vi.fn(),closePath:vi.fn(),fill:vi.fn(),globalAlpha:1,fillStyle:'',filter:''};vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(context as never);const remove=vi.spyOn(window,'removeEventListener'),cancel=vi.spyOn(window,'cancelAnimationFrame');const view=render(<BatSwarmScene/>);act(()=>window.dispatchEvent(new Event('resize')));view.unmount();expect(remove).toHaveBeenCalledWith('resize',expect.any(Function));expect(cancel).toHaveBeenCalled();expect(context.clearRect).toHaveBeenCalled()})
+ it('usa fallback sem bloquear a finalizacao',async()=>{vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(null);markAuthEntrancePending();render(<AuthEntranceExperience appReady={false}><main>Dashboard preservado</main></AuthEntranceExperience>);await act(async()=>{await Promise.resolve()});expect(document.querySelector('.scene-fallback')).toBeInTheDocument();act(()=>vi.advanceTimersByTime(AUTH_ENTRANCE_TIMING.desktop.max+20));act(()=>vi.advanceTimersByTime(AUTH_ENTRANCE_TIMING.desktop.exit+20));expect(screen.getByText('Dashboard preservado')).toBeVisible()})
+ it('mantem paleta monocromatica e fundo pre-React preto',()=>{const css=readFileSync(resolve(process.cwd(),'src/components/app-boot/app-boot-splash.css'),'utf8'),scene=readFileSync(resolve(process.cwd(),'src/components/app-boot/BatSwarmScene.tsx'),'utf8'),html=readFileSync(resolve(process.cwd(),'index.html'),'utf8');expect(css).toContain('background:#000');expect(css).not.toMatch(/#[0-9a-f]{6}/i);expect(scene).toContain("fillStyle='#fff'");expect(scene).not.toMatch(/#[0-9a-f]{6}/i);expect(html).toContain('background:#000');expect(html).not.toContain('app-boot-pending')})
 })

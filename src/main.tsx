@@ -2,7 +2,6 @@ import { StrictMode } from 'react'; import { createRoot } from 'react-dom/client
 import { notificationService } from './services/notificationService'
 import { pwaInstallService } from './services/pwaInstallService'
 import { AuthProvider } from './providers/AuthProvider'
-import { AppBootGate } from './components/app-boot/AppBootSplash'
 import { syncSystemChrome } from './lib/systemChrome'
 const themeState=useDemoStore.getState()
 themeState.setTheme(themeState.themePreference)
@@ -11,4 +10,4 @@ document.documentElement.dataset.theme=initialTheme
 syncSystemChrome(window.location.pathname,initialTheme)
 pwaInstallService.initialize()
 void notificationService.registerWorker()
-createRoot(document.getElementById('root')!).render(<StrictMode><AuthProvider><AppBootGate><App/></AppBootGate></AuthProvider></StrictMode>)
+createRoot(document.getElementById('root')!).render(<StrictMode><AuthProvider><App/></AuthProvider></StrictMode>)
