@@ -41,7 +41,7 @@ export function PublicHeader(){
  const close=()=>setOpen(false)
  return <header ref={headerRef} className={`public-header public-header-redesign public-header-hero ${scrolled?'scrolled':''}`}>
   <div className="public-header-inner">
-   <Link to="/" className="public-logo" aria-label="Sphex — página inicial"><SphexPayLogo showName shortName priority/></Link>
+   <Link to="/" className="public-logo" aria-label="Sphex — página inicial"><SphexPayLogo showName shortName priority adaptiveTheme/></Link>
    <nav id="public-navigation" className={open?'open':''} aria-label="Navegação principal">{navigation.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined} onClick={()=>{setActive(id);close()}}>{label}</a>)}<button className="public-search" type="button" aria-label="Buscar na página"><Search/></button><div className="public-mobile-actions"><Link to="/entrar" onClick={close}>Entrar</Link><Link className="public-primary" to={destination} onClick={close}>{user?'Acessar painel':'Criar conta'}</Link></div></nav>
    <div className="public-actions"><Link to="/entrar">Entrar</Link><Link className="public-primary" to={destination}>{user?'Acessar painel':'Criar conta'}</Link></div>
    <button ref={menuRef} className="public-menu" onClick={()=>setOpen(value=>!value)} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="public-navigation">{open?<X/>:<Menu/>}</button>

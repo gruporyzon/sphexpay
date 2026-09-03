@@ -1193,3 +1193,41 @@
 :root:not([data-theme=dark]) .landing-redesign .landing-hero .hero-metrics dt{color:var(--landing-hero-text);text-shadow:none}
 :root:not([data-theme=dark]) .landing-redesign .landing-hero .hero-metrics dd{color:var(--landing-hero-label)}
 @media(max-width:600px){:root:not([data-theme=dark]) .landing-redesign .public-header,:root:not([data-theme=dark]) .landing-redesign .public-header.scrolled{border-bottom-color:var(--line)!important;background:rgba(255,255,255,.94)!important;color:var(--text)!important}}
+
+/* Public header palette: intentionally neutral and isolated from the product accent. */
+:root:not([data-theme=dark]) .landing-redesign .public-header{
+ --landing-header-bg:rgba(255,255,255,.94);
+ --landing-header-text:#171717;
+ --landing-header-muted:#626267;
+ --landing-header-active:#000;
+ --landing-header-border:rgba(0,0,0,.1);
+ --landing-header-hover:#f3f3f3;
+ --landing-header-primary:#111;
+ --landing-header-primary-hover:#000;
+ --landing-header-primary-text:#fff;
+}
+:root[data-theme=dark] .landing-redesign .public-header{
+ --landing-header-bg:rgba(8,8,9,.92);
+ --landing-header-text:#f5f5f5;
+ --landing-header-muted:#a2a2a7;
+ --landing-header-active:#fff;
+ --landing-header-border:rgba(255,255,255,.14);
+ --landing-header-hover:#18181a;
+ --landing-header-primary:#fff;
+ --landing-header-primary-hover:#f2f2f2;
+ --landing-header-primary-text:#111;
+}
+.landing-redesign .public-header,.landing-redesign .public-header.scrolled{border-bottom-color:var(--landing-header-border)!important;background:var(--landing-header-bg)!important;color:var(--landing-header-text)!important}
+.landing-redesign .public-header .sphexpay-theme-mark{display:block;width:29px;height:29px;flex:0 0 29px;background:currentColor;-webkit-mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat}
+.landing-redesign .public-header .public-logo,.landing-redesign .public-header .public-logo .sphexpay-wordmark{color:var(--landing-header-text)!important}
+.landing-redesign .public-header nav>a{color:var(--landing-header-muted)!important}
+.landing-redesign .public-header nav>a::after{background:var(--landing-header-active)!important}
+.landing-redesign .public-header nav>a:hover,.landing-redesign .public-header nav>a[aria-current=location]{color:var(--landing-header-active)!important}
+.landing-redesign .public-header :is(.public-search,.public-menu){border-color:var(--landing-header-border);background:transparent;color:var(--landing-header-muted)}
+.landing-redesign .public-header :is(.public-search,.public-menu):hover{background:var(--landing-header-hover);color:var(--landing-header-active)}
+.landing-redesign .public-header :is(a,button):focus-visible{outline:2px solid var(--landing-header-active);outline-offset:3px}
+.landing-redesign .public-header .public-actions>a:first-child,.landing-redesign .public-header .public-mobile-actions>a:first-child{border-color:var(--landing-header-border)!important;background:transparent!important;color:var(--landing-header-text)!important;box-shadow:none!important}
+.landing-redesign .public-header .public-actions>a:first-child:hover,.landing-redesign .public-header .public-mobile-actions>a:first-child:hover{border-color:var(--landing-header-border)!important;background:var(--landing-header-hover)!important;color:var(--landing-header-active)!important}
+.landing-redesign .public-header .public-actions .public-primary,.landing-redesign .public-header .public-mobile-actions .public-primary{border-color:var(--landing-header-primary)!important;background:var(--landing-header-primary)!important;box-shadow:none!important;color:var(--landing-header-primary-text)!important}
+.landing-redesign .public-header .public-actions .public-primary:hover,.landing-redesign .public-header .public-mobile-actions .public-primary:hover{border-color:var(--landing-header-primary-hover)!important;background:var(--landing-header-primary-hover)!important;box-shadow:none!important;color:var(--landing-header-primary-text)!important}
+@media(max-width:900px){.landing-redesign .public-header nav{border-color:var(--landing-header-border)!important;background:var(--landing-header-bg)!important}.landing-redesign .public-header nav>a:hover,.landing-redesign .public-header nav>a[aria-current=location]{background:var(--landing-header-hover)!important;color:var(--landing-header-active)!important}.landing-redesign .public-header .public-search{border-top-color:var(--landing-header-border)!important}.landing-redesign .public-header .public-mobile-actions{border-top-color:var(--landing-header-border)!important}}
