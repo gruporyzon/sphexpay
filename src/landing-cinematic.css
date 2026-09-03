@@ -1130,3 +1130,7 @@
 .landing-redesign .landing-hero-copy{margin-inline:auto}
 @media(max-width:900px){.landing-redesign .landing-hero{padding-bottom:clamp(64px,10vw,96px)}}
 @media(max-width:600px){.landing-redesign .landing-hero{padding-bottom:56px}.landing-redesign .hero-metrics{margin-bottom:0}}
+
+/* Headline longo: preserva a quebra editorial no desktop e adapta-se naturalmente no mobile. */
+.landing-redesign .landing-hero h1{max-width:min(920px,100%);text-wrap:balance}
+.landing-redesign .landing-hero h1>span{white-space:normal}
