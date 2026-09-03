@@ -1,116 +1,41 @@
 import { useEffect,useRef } from 'react'
-import { BAT_QUALITY_COUNTS,getBatQuality,sampleTargetPixels } from './batSwarmConfig'
+import { BAT_QUALITY_COUNTS,BAT_SCENE_DURATION,BAT_WING_FRAME_PATHS,getBatQuality,getBatWingFrame,sampleTargetPixels } from './batSwarmConfig'
 
-type Particle={
- x:number;y:number;vx:number;vy:number;depth:number;scale:number;rotation:number;wingPhase:number;variant:number
- spawnAt:number;targeted:boolean;targetIndex:number;opacity:number
-}
+type Particle={x:number;y:number;vx:number;vy:number;depth:number;scale:number;rotation:number;rotationOffset:number;wingPhase:number;wingSpeed:number;wingSpan:number;bodyScale:number;aspectRatio:number;spawnAt:number;targeted:boolean;targetIndex:number;opacity:number;wanderSeed:number;arrival:number}
 
 const MASK_SOURCE='/brand/sphex-symbol-mask.png'
-const SCENE_DURATION=1900
-
 const clamp=(value:number,min:number,max:number)=>Math.max(min,Math.min(max,value))
 const smooth=(from:number,to:number,value:number)=>{const x=clamp((value-from)/(to-from),0,1);return x*x*(3-2*x)}
-
 function seededRandom(seed=0x5f3759df){return()=>{seed=Math.imul(seed^seed>>>15,1|seed);seed^=seed+Math.imul(seed^seed>>>7,61|seed);return((seed^seed>>>14)>>>0)/4294967296}}
 
-function makeParticles(count:number,width:number,height:number,random:()=>number):Particle[]{
- return Array.from({length:count},(_,index)=>{
-  const depth=index<count*.27?.45:index<count*.9?1:1.75
-  const edge=index%4,margin=width*.14
-  const x=edge===0?-margin:edge===1?width+margin:random()*width
-  const y=edge===2?height+margin:edge===3?height*(.72+random()*.32):height*(.08+random()*.74)
-  const angle=Math.atan2(height*.48-y,width*.5-x)+(random()-.5)*1.25
-  const speed=(.035+random()*.055)*(1+depth*.22)
-  return{x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,depth,scale:(3.2+random()*4.8)*depth,rotation:angle,wingPhase:random()*Math.PI*2,variant:index%3,spawnAt:170+random()*620,targeted:index<count*.78,targetIndex:index,opacity:0}
- })
-}
+function makeParticles(count:number,width:number,height:number,random:()=>number):Particle[]{return Array.from({length:count},(_,index)=>{
+ const layer=index<count*.34?0:index<count*.9?1:2,depth=layer===0?.42+random()*.2:layer===1?.85+random()*.35:1.55+random()*.42
+ const edge=index%5,margin=width*(layer===2?.22:.12),x=edge===0?-margin:edge===1?width+margin:edge===4?width*(.38+random()*.24):random()*width
+ const y=edge===2?height+margin:edge===3?height*(.8+random()*.25):edge===4?height*(.4+random()*.2):height*(.05+random()*.76)
+ const centerAngle=Math.atan2(height*.47-y,width*.5-x),arcBias=(random()-.5)*1.55,speed=(layer===0?.025:layer===1?.046:.078)*(1+random()*.8)
+ return{x,y,vx:Math.cos(centerAngle+arcBias)*speed,vy:Math.sin(centerAngle+arcBias)*speed,depth,scale:(.115+random()*.065)*depth,rotation:centerAngle,rotationOffset:(random()-.5)*.22,wingPhase:random()*4,wingSpeed:.0075+random()*.0065,wingSpan:.88+random()*.25,bodyScale:.86+random()*.25,aspectRatio:.86+random()*.22,spawnAt:500+random()*2450,targeted:index<count*.82,targetIndex:index,opacity:0,wanderSeed:random()*Math.PI*2,arrival:.92+random()*.075}
+})}
 
-function sampleMask(image:HTMLImageElement,count:number,random:()=>number){
- const canvas=document.createElement('canvas');canvas.width=180;canvas.height=260
- const context=canvas.getContext('2d',{willReadFrequently:true});if(!context)return[] as Array<[number,number]>
- context.clearRect(0,0,canvas.width,canvas.height)
- const ratio=Math.min(154/image.width,232/image.height),width=image.width*ratio,height=image.height*ratio
- context.drawImage(image,(canvas.width-width)/2,(canvas.height-height)/2,width,height)
- return sampleTargetPixels(context.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height,count,random)
-}
+function sampleMask(image:HTMLImageElement,count:number,random:()=>number){const canvas=document.createElement('canvas');canvas.width=210;canvas.height=300;const context=canvas.getContext('2d',{willReadFrequently:true});if(!context)return[] as Array<[number,number]>;const ratio=Math.min(178/image.width,266/image.height),width=image.width*ratio,height=image.height*ratio;context.clearRect(0,0,canvas.width,canvas.height);context.drawImage(image,(canvas.width-width)/2,(canvas.height-height)/2,width,height);return sampleTargetPixels(context.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height,count,random)}
 
-function assignNearestTargets(points:Array<[number,number]>,particles:Particle[],width:number,height:number){
- const available=[...points],markWidth=clamp(width*.37,132,190),markHeight=markWidth*1.45
- for(const particle of particles.filter(item=>item.targeted)){let nearest=0,distance=Infinity;for(let index=0;index<available.length;index++){const target=available[index],dx=particle.x-(width*.5+target[0]*markWidth),dy=particle.y-(height*.47+target[1]*markHeight),next=dx*dx+dy*dy;if(next<distance){distance=next;nearest=index}}const [target]=available.splice(nearest,1);points[particle.targetIndex]=target;if(!available.length)break}
- return points
-}
+function assignNearestTargets(points:Array<[number,number]>,particles:Particle[],width:number,height:number){const available=[...points],assigned:Array<[number,number]>=[],markWidth=clamp(width*.39,138,202),markHeight=markWidth*1.45;for(const particle of particles.filter(item=>item.targeted)){let nearest=0,distance=Infinity;for(let index=0;index<available.length;index++){const [px,py]=available[index],dx=particle.x-(width*.5+px*markWidth),dy=particle.y-(height*.46+py*markHeight),next=dx*dx+dy*dy;if(next<distance){distance=next;nearest=index}}const target=available.splice(nearest,1)[0];if(!target)break;assigned[particle.targetIndex]=target}return assigned}
 
-function drawBat(context:CanvasRenderingContext2D,particle:Particle,time:number,alpha:number){
- const flap=Math.sin(time*(.0105+particle.variant*.0018)+particle.wingPhase)
- const wing=clamp(.54+flap*.32,.2,.92),size=particle.scale
- context.save();context.translate(particle.x,particle.y);context.rotate(particle.rotation);context.scale(size,size)
- context.globalAlpha=alpha;context.fillStyle='#fff';context.filter=particle.depth<.7?'blur(.45px)':particle.depth>1.5?'blur(.7px)':'none'
- context.beginPath();context.moveTo(0,-.12)
- context.bezierCurveTo(-.55,-wing,-1.12,-.78,-1.65,-.42)
- context.lineTo(-1.28,-.08);context.lineTo(-1.72,.12);context.lineTo(-1.04,.28)
- context.quadraticCurveTo(-.52,.62,-.12,.35);context.lineTo(0,.86)
- context.lineTo(.12,.35);context.quadraticCurveTo(.52,.62,1.04,.28)
- context.lineTo(1.72,.12);context.lineTo(1.28,-.08)
- context.lineTo(1.65,-.42);context.bezierCurveTo(1.12,-.78,.55,-wing,0,-.12)
- context.closePath();context.fill();context.restore()
-}
+function makeBatFrames(){if(typeof Path2D==='undefined')return null;return BAT_WING_FRAME_PATHS.map(path=>new Path2D(path))}
 
-export function BatSwarmScene({reducedMotion=false,onFailure}:{reducedMotion?:boolean;onFailure?:()=>void}){
- const canvasRef=useRef<HTMLCanvasElement>(null)
- useEffect(()=>{
-  if(reducedMotion)return
-  const canvas=canvasRef.current,context=canvas?.getContext('2d')
-  if(!canvas||!context){onFailure?.();return}
-  let disposed=false,frame=0,width=0,height=0,dpr=1,particles:Particle[]=[],targets:Array<[number,number]>=[]
-  const random=seededRandom(),cores=navigator.hardwareConcurrency||4
-  const resize=()=>{
-   const previousWidth=width,previousHeight=height;width=window.innerWidth;height=window.innerHeight
-   const quality=getBatQuality({width,dpr:window.devicePixelRatio||1,cores})
-   dpr=Math.min(window.devicePixelRatio||1,quality==='high'?2:1.5)
-   canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.width=`${width}px`;canvas.style.height=`${height}px`
-   context.setTransform(dpr,0,0,dpr,0,0)
-   if(!particles.length)particles=makeParticles(BAT_QUALITY_COUNTS[quality],width,height,random)
-   else if(previousWidth&&previousHeight)for(const particle of particles){particle.x*=width/previousWidth;particle.y*=height/previousHeight}
-  }
-  resize();window.addEventListener('resize',resize,{passive:true})
-  const image=new Image()
-  image.onload=()=>{if(!disposed)targets=assignNearestTargets(sampleMask(image,Math.ceil(particles.length*.78),random),particles,width,height)}
-  image.onerror=()=>onFailure?.();image.src=MASK_SOURCE
-  const started=performance.now();let previousFrame=started
-  const render=(now:number)=>{
-   if(disposed)return
-   const elapsed=now-started,dt=clamp(now-previousFrame,8,34),progress=clamp(elapsed/SCENE_DURATION,0,1),attraction=clamp(smooth(.25,.5,progress)*.12+smooth(.48,.76,progress)*.88,0,1),lock=smooth(.74,.92,progress);previousFrame=now
-   context.setTransform(dpr,0,0,dpr,0,0);context.clearRect(0,0,width,height)
-   const markWidth=clamp(width*.37,132,190),markHeight=markWidth*1.45,centerX=width*.5,centerY=height*.47
-   for(let index=0;index<particles.length;index++){
-    const particle=particles[index]
-    if(elapsed<particle.spawnAt)continue
-    const noise=Math.sin(elapsed*.0018+particle.wingPhase)*.0018
-    if(particle.targeted&&targets.length){
-     const target=targets[particle.targetIndex%targets.length],tx=centerX+target[0]*markWidth,ty=centerY+target[1]*markHeight
-     const pull=.00035+attraction*.0065+lock*.012
-     particle.vx+=(tx-particle.x)*pull;particle.vy+=(ty-particle.y)*pull
-     const damping=.965-attraction*.08;particle.vx*=damping;particle.vy*=damping
-     if(lock>.72){particle.x+=(tx-particle.x)*(.035+lock*.13);particle.y+=(ty-particle.y)*(.035+lock*.13)}
-    }else{
-     const orbit=Math.atan2(particle.y-centerY,particle.x-centerX)+Math.PI/2
-     particle.vx+=Math.cos(orbit)*noise;particle.vy+=Math.sin(orbit)*noise
-    }
-    const neighbor=particles[index?index-1:particles.length-1],rx=particle.x-neighbor.x,ry=particle.y-neighbor.y,distanceSquared=rx*rx+ry*ry
-    if(distanceSquared>1&&distanceSquared<484){const repel=(1-lock)*.006/distanceSquared;particle.vx+=rx*repel;particle.vy+=ry*repel}
-    particle.x+=particle.vx*dt;particle.y+=particle.vy*dt
-    particle.rotation=Math.atan2(particle.vy,particle.vx)+Math.sin(elapsed*.004+particle.wingPhase)*.15
-    const enter=smooth(particle.spawnAt,particle.spawnAt+170,elapsed),exit=particle.targeted?1:1-smooth(.72,.96,progress)
-    const depthAlpha=particle.depth<.7?.32:particle.depth>1.5?.96:.66,arrivalJitter=.88+(particle.wingPhase/Math.PI/2)*.08
-    particle.opacity=enter*exit*depthAlpha*(1-smooth(.9,1,progress)*arrivalJitter*(particle.targeted?1:0))
-    drawBat(context,particle,elapsed,particle.opacity)
-   }
-   context.filter='none'
-   if(elapsed<SCENE_DURATION*1.04)frame=requestAnimationFrame(render)
-  }
-  frame=requestAnimationFrame(render)
-  return()=>{disposed=true;cancelAnimationFrame(frame);window.removeEventListener('resize',resize);image.onload=null;image.onerror=null;context.clearRect(0,0,width,height)}
- },[onFailure,reducedMotion])
- return <canvas className="app-boot-swarm" ref={canvasRef} aria-hidden="true"/>
-}
+function drawBat(context:CanvasRenderingContext2D,frames:Path2D[],particle:Particle,formation:number){const frame=frames[getBatWingFrame(particle.wingPhase)],size=particle.scale;context.save();context.translate(particle.x,particle.y);context.rotate(particle.rotation+particle.rotationOffset);context.scale(size*particle.wingSpan,size*particle.aspectRatio*particle.bodyScale);context.globalAlpha=particle.opacity;context.fillStyle='#fff';context.filter=particle.depth<.68?'blur(.5px)':particle.depth>1.5?'blur(1px)':'none';context.fill(frame);if(formation>.78&&particle.targeted){context.globalAlpha*=smooth(.78,.94,formation)*.18;context.fill(frame)}context.restore()}
+
+export function BatSwarmScene({reducedMotion=false,onFailure}:{reducedMotion?:boolean;onFailure?:()=>void}){const canvasRef=useRef<HTMLCanvasElement>(null);useEffect(()=>{
+ if(reducedMotion)return
+ const canvas=canvasRef.current,context=canvas?.getContext('2d'),frames=makeBatFrames();if(!canvas||!context||!frames){onFailure?.();return}
+ let disposed=false,frame=0,width=0,height=0,dpr=1,particles:Particle[]=[],targets:Array<[number,number]>=[];const random=seededRandom(),cores=navigator.hardwareConcurrency||4
+ const resize=()=>{const previousWidth=width,previousHeight=height;width=window.innerWidth;height=window.innerHeight;const quality=getBatQuality({width,dpr:window.devicePixelRatio||1,cores});dpr=Math.min(window.devicePixelRatio||1,quality==='high'?2:1.5);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.width=`${width}px`;canvas.style.height=`${height}px`;context.setTransform(dpr,0,0,dpr,0,0);if(!particles.length)particles=makeParticles(BAT_QUALITY_COUNTS[quality],width,height,random);else if(previousWidth&&previousHeight)for(const particle of particles){particle.x*=width/previousWidth;particle.y*=height/previousHeight}}
+ resize();window.addEventListener('resize',resize,{passive:true});const image=new Image();image.onload=()=>{if(!disposed)targets=assignNearestTargets(sampleMask(image,Math.ceil(particles.length*.82),random),particles,width,height)};image.onerror=()=>onFailure?.();image.src=MASK_SOURCE
+ const started=performance.now();let previousFrame=started
+ const render=(now:number)=>{if(disposed)return;const elapsed=now-started,dt=clamp(now-previousFrame,8,34),progress=clamp(elapsed/BAT_SCENE_DURATION,0,1),convergence=smooth(.54,.82,progress),lock=smooth(.76,.94,progress),formation=smooth(.57,.94,progress);previousFrame=now;context.setTransform(dpr,0,0,dpr,0,0);context.clearRect(0,0,width,height);const markWidth=clamp(width*.39,138,202),markHeight=markWidth*1.45,centerX=width*.5,centerY=height*.46
+  for(let index=0;index<particles.length;index++){const particle=particles[index];if(elapsed<particle.spawnAt)continue;const phaseNoise=elapsed*.00115+particle.wanderSeed,wander=(1-convergence)*(.0014+particle.depth*.0005);particle.vx+=Math.cos(phaseNoise*1.13)*wander*dt;particle.vy+=Math.sin(phaseNoise*.87)*wander*dt
+   if(particle.targeted&&targets[particle.targetIndex]){const [px,py]=targets[particle.targetIndex],tx=centerX+px*markWidth,ty=centerY+py*markHeight,dx=tx-particle.x,dy=ty-particle.y,distance=Math.hypot(dx,dy)||1,tangent=(1-lock)*convergence*.0016,curve=particle.targetIndex%2?-1:1;particle.vx+=(-dy/distance)*tangent*curve*dt;particle.vy+=(dx/distance)*tangent*curve*dt;const pull=(.000008+convergence*.000075+lock*.00019)*dt;particle.vx+=dx*pull;particle.vy+=dy*pull;const damping=Math.pow(.994-convergence*.018-lock*.025,dt/16);particle.vx*=damping;particle.vy*=damping;if(lock>.35){const settle=(.015+lock*.095)*particle.arrival;particle.x+=dx*settle;particle.y+=dy*settle}}
+   else{const orbit=Math.atan2(particle.y-centerY,particle.x-centerX)+Math.PI/2;particle.vx+=Math.cos(orbit)*(1-convergence)*.00042*dt;particle.vy+=Math.sin(orbit)*(1-convergence)*.00042*dt}
+   const neighbor=particles[index?index-1:particles.length-1],rx=particle.x-neighbor.x,ry=particle.y-neighbor.y,distanceSquared=rx*rx+ry*ry;if(distanceSquared>1&&distanceSquared<900){const repel=(1-lock)*.03/distanceSquared;particle.vx+=rx*repel;particle.vy+=ry*repel}particle.x+=particle.vx*dt;particle.y+=particle.vy*dt;particle.rotation=Math.atan2(particle.vy,particle.vx)+Math.sin(phaseNoise*2.1)*.13*(1-lock);particle.wingPhase+=dt*particle.wingSpeed*(1-lock*.72)
+   const enter=smooth(particle.spawnAt,particle.spawnAt+260,elapsed),freeExit=1-smooth(.75,.96,progress),targetDissolve=1-smooth(.91,1,progress),depthAlpha=particle.depth<.68?.32:particle.depth>1.5?.96:.66;particle.opacity=enter*depthAlpha*(particle.targeted?targetDissolve:freeExit);drawBat(context,frames,particle,formation)}context.filter='none';if(elapsed<BAT_SCENE_DURATION+120)frame=requestAnimationFrame(render)}
+ frame=requestAnimationFrame(render);return()=>{disposed=true;cancelAnimationFrame(frame);window.removeEventListener('resize',resize);image.onload=null;image.onerror=null;context.clearRect(0,0,width,height)}
+ },[onFailure,reducedMotion]);return <canvas className="app-boot-swarm" ref={canvasRef} aria-hidden="true"/>}
