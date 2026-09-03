@@ -99,12 +99,11 @@ describe('entrada pública SphexPay',()=>{
   expect(container.querySelector('.public-map-countries')).toHaveAttribute('d',expect.stringMatching(/^M/))
   expect(container.querySelector('.live-public-visual')).not.toBeInTheDocument()
  })
- it.each([320,360,375,390,393,412,414,430])('mantém hero e mockup sem overflow no viewport mobile de %i px',width=>{
+ it.each([320,360,375,390,393,412,414,430])('mantém hero compacto e sem mockup no viewport mobile de %i px',width=>{
   Object.defineProperty(window,'innerWidth',{configurable:true,value:width})
-  const {container}=renderLanding(),hero=container.querySelector('.landing-hero') as HTMLElement,mockup=container.querySelector('.landing-hero-visual') as HTMLElement
-  expect(hero).toBeInTheDocument();expect(mockup).toBeInTheDocument()
+  const {container}=renderLanding(),hero=container.querySelector('.landing-hero') as HTMLElement
+  expect(hero).toBeInTheDocument();expect(container.querySelector('.landing-hero-visual')).not.toBeInTheDocument();expect(container.querySelector('.hero-browser')).not.toBeInTheDocument()
   expect(hero.scrollWidth).toBeLessThanOrEqual(hero.clientWidth)
-  expect(mockup.scrollWidth).toBeLessThanOrEqual(mockup.clientWidth)
   expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth)
  })
  it('expande FAQ com estado aria e conteúdo associado',async()=>{

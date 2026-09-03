@@ -89,11 +89,11 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(css).toContain('@media(prefers-reduced-motion:reduce)')
   expect(css).toContain('overflow-x:clip')
  })
- it('mantém o hero e o mockup contidos abaixo de 768px sem alterar o breakpoint desktop',()=>{
+ it('mantém o hero público compacto sem preview de dashboard',()=>{
   const finalHero=css.slice(css.indexOf('/* Premium compact hero — final public cascade. */'),css.indexOf('/* Editorial product story. */'))
   const mobileRule=finalHero.slice(finalHero.lastIndexOf('@media(max-width:767px)'))
   expect(mobileRule).toContain('grid-template-columns:minmax(0,1fr)')
-  expect(mobileRule).toMatch(/\.landing-hero-visual\{[\s\S]*width:100%;[\s\S]*max-width:100%;[\s\S]*min-width:0;[\s\S]*transform:none/)
+  expect(readFileSync(resolve(process.cwd(),'src/pages/public/LandingPage.tsx'),'utf8')).not.toContain('landing-hero-visual')
   expect(mobileRule).toContain('.public-phone-stage{width:100%;max-width:410px')
   expect(mobileRule).toContain('.phone-float-sale{top:61px;left:0}')
   expect(mobileRule).toContain('.phone-float-pix{right:0')

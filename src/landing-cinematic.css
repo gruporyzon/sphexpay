@@ -1124,3 +1124,9 @@
 .landing-redesign .landing-hero .hero-browser{transform:perspective(1600px) rotateX(1deg) rotateY(-1deg);animation:landing-hero-browser-float 8s ease-in-out infinite}
 @keyframes landing-hero-browser-float{0%,100%{translate:0 0}50%{translate:0 -3px}}
 @media(prefers-reduced-motion:reduce){.landing-redesign .landing-hero .hero-browser{transform:none;animation:none}}
+
+/* O hero público termina nas métricas; o preview de dashboard foi removido estruturalmente. */
+.landing-redesign .landing-hero{min-height:0;padding-bottom:clamp(72px,8vw,112px)}
+.landing-redesign .landing-hero-copy{margin-inline:auto}
+@media(max-width:900px){.landing-redesign .landing-hero{padding-bottom:clamp(64px,10vw,96px)}}
+@media(max-width:600px){.landing-redesign .landing-hero{padding-bottom:56px}.landing-redesign .hero-metrics{margin-bottom:0}}

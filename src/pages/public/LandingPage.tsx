@@ -1,11 +1,10 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Activity,ArrowRight,BarChart3,Bell,ChevronDown,Globe2,Layers3,LockKeyhole,Radio,Search,Trophy,Zap } from 'lucide-react'
+import { ArrowRight,BarChart3,Bell,Globe2,Layers3,LockKeyhole,Radio,Trophy,Zap } from 'lucide-react'
 import { PublicHeader } from '../../components/landing/PublicHeader'
 import { PublicPhoneExperience } from '../../components/landing/PublicPhoneExperience'
 import { PublicInteractiveGlobe } from '../../components/landing/PublicInteractiveGlobe'
 import { PublicCheckoutShowcase } from '../../components/landing/PublicCheckoutShowcase'
-import { PublicDashboardDemo } from '../../components/landing/PublicDashboardDemo'
 import { PublicFaq } from '../../components/landing/PublicFaq'
 import { PublicVisualShowcase } from '../../components/landing/PublicVisualShowcase'
 import { SphexPayLogo } from '../../components/branding/SphexPayLogo'
@@ -14,16 +13,6 @@ import { useAuth } from '../../hooks/useAuth'
 import { useLandingMotion } from '../../hooks/useLandingMotion'
 
 const capabilityLabels=['Dashboard','Vendas ao vivo','Transações','Produtos','Clientes','Financeiro','Notificações','Premiações']
-
-function HeroDashboard(){return <div className="hero-product-stage" aria-label="Cenário ilustrativo do Dashboard SphexPay">
- <div className="hero-product-aura"/><div className="hero-browser">
-  <header className="hero-browser-chrome"><div className="hero-browser-controls"><i/><i/><i/></div><button aria-label="Voltar"/><button aria-label="Avançar"/><div className="hero-address"><span>app.sphex.app</span><small>Cenário demonstrativo</small></div><Search/><Bell/></header>
-  <div className="hero-browser-body"><aside className="hero-dashboard-sidebar"><SphexPayLogo/><nav aria-label="Navegação demonstrativa"><a className="active"><Activity/> <span>Dashboard</span></a><a><BarChart3/> <span>Vendas</span></a><a><Layers3/> <span>Produtos</span></a><a><BarChart3/> <span>Financeiro</span></a></nav><div className="hero-sidebar-profile"><i>SR</i><span>Sphex demo</span></div></aside><main>
-   <div className="hero-dashboard-head"><div><small>PAINEL FINANCEIRO</small><b>Dashboard</b><span>Resultados financeiros persistidos e planejamento administrativo isolado.</span></div><div className="hero-dashboard-actions"><button>30 dias <ChevronDown/></button><button aria-label="Pesquisar"><Search/></button></div></div>
-   <PublicDashboardDemo className="hero-live-dashboard"/>
-  </main></div>
- </div>
- </div>}
 
 export default function LandingPage(){
  const {user}=useAuth(),accountDestination=user?(user.user_metadata?.onboarding_complete?'/app':'/onboarding'):'/criar-conta'
@@ -36,7 +25,6 @@ export default function LandingPage(){
   <main id="public-content">
    <section className="landing-hero" aria-labelledby="landing-title" data-scroll-progress><div className="hero-grid"/>
     <div className="landing-hero-copy"><h1 id="landing-title"><span data-motion data-motion-delay="1">Você sempre no topo</span><span data-motion data-motion-delay="2">Sem limites</span></h1><p data-motion data-motion-delay="3">Pagamentos globais e saque rápido.</p><div className="landing-hero-actions" data-motion data-motion-delay="4"><Link className="public-primary" to={accountDestination}>Comece a vender <ArrowRight/></Link><a href="#experiencia">Ver como funciona</a></div><dl className="hero-metrics" aria-label="Indicadores da plataforma">{[['6.99%','por transação'],['150+','países'],['3 dias','para saque']].map(([value,label],index)=><div data-motion data-motion-delay={String(index+5)} key={value}><dt>{value}</dt><dd>{label}</dd></div>)}</dl></div>
-    <div className="landing-hero-visual" data-motion data-motion-kind="mockup"><HeroDashboard/></div>
    </section>
    <section className="landing-trust" id="experiencia" data-motion aria-label="Áreas da plataforma"><span>UMA EXPERIÊNCIA CONECTADA À SUA OPERAÇÃO</span><div>{capabilityLabels.map(item=><b key={item}>{item}</b>)}</div></section>
 
