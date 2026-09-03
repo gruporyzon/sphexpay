@@ -1,6 +1,7 @@
 export const BAT_QUALITY_COUNTS={low:32,medium:52,high:72} as const
 export const BAT_SCENE_DURATION=3300
 export type BatQuality=keyof typeof BAT_QUALITY_COUNTS
+export function getLogoWidth(width:number){return width<=900?Math.max(88,Math.min(128,width*.24)):Math.max(110,Math.min(160,width*.1))}
 
 export const BAT_WING_FRAME_PATHS=[
  'M0-3 C-2-7-5-8-8-6 L-12-10-18-9-24-4 L-31-8-39-6-45-1 L-37 1-42 7-32 6-27 13-18 8-13 15-6 7-3 13 0 18 3 13 6 7 13 15 18 8 27 13 32 6 42 7 37 1 45-1 39-6 31-8 24-4 18-9 12-10 8-6 5-8 2-7 0-3 Z M-3-5 C-3-9-1-11 0-11 1-11 3-9 3-5 Z',
