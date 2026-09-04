@@ -4,14 +4,14 @@ vi.mock('@supabase/supabase-js',()=>({createClient:createClientMock}))
 // @ts-expect-error Serverless JavaScript is tested outside the frontend bundle.
 import accountHandler from '../../api/stripe/connect/account.js'
 // @ts-expect-error Server-side JavaScript is tested outside the frontend bundle.
-import {authenticate,createOnboardingLink,ensureConnectedAccount,fail,retrieveAndSync,safeStatus} from '../../server/stripe/connect.js'
+import {authenticate,connectionRecord,createOnboardingLink,ensureConnectedAccount,fail,retrieveAndSync,safeStatus} from '../../server/stripe/connect.js'
 
 type Result={statusCode:number;body:Record<string,unknown>|null}
 const response=()=>{const result:Result={statusCode:200,body:null};return{result,status(code:number){result.statusCode=code;return this},json(body:Record<string,unknown>){result.body=body;return this}}}
 const connection={user_id:'user-1',stripe_account_id:'acct_test123',stripe_account_type:'express',stripe_onboarding_status:'pending',stripe_details_submitted:false,stripe_charges_enabled:false,stripe_payouts_enabled:false,stripe_requirements_currently_due:[],stripe_requirements_eventually_due:[]}
 
 describe('fundação Stripe Connect',()=>{
- beforeEach(()=>{vi.spyOn(console,'error').mockImplementation(()=>{})})
+ beforeEach(()=>{vi.spyOn(console,'error').mockImplementation(()=>{});vi.spyOn(console,'info').mockImplementation(()=>{})})
  afterEach(()=>{vi.unstubAllEnvs();vi.clearAllMocks();vi.restoreAllMocks()})
 
  it('recusa criação de conta sem autenticação',async()=>{
@@ -50,6 +50,18 @@ describe('fundação Stripe Connect',()=>{
   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id'})
  })
 
+ it('persiste account.id literalmente e mantém todas as demais colunas',()=>{
+  vi.useFakeTimers();vi.setSystemTime(new Date('2026-09-04T12:00:00.000Z'))
+  try{
+   const account={id:'acct_fixture',object:'v2.core.account',account_id:'acct_alternative',metadata:{stripe_account_id:'acct_metadata'}}
+   const first=connectionRecord('user-1',account)
+   const suppliedId='acct_fixture_with_underscores'
+   const second=connectionRecord('user-1',{...account,id:suppliedId})
+   expect(first).toEqual({...connection,stripe_account_id:account.id,updated_at:'2026-09-04T12:00:00.000Z'})
+   expect(second).toEqual({...first,stripe_account_id:suppliedId})
+  }finally{vi.useRealTimers()}
+ })
+
  it('mantém a mesma chave de idempotência ao repetir após falha no Supabase',async()=>{
   const maybeSingle=vi.fn(async()=>({data:null,error:null}))
   const single=vi.fn().mockResolvedValueOnce({data:null,error:{message:'storage unavailable'}}).mockResolvedValueOnce({data:connection,error:null})
@@ -63,6 +75,68 @@ describe('fundação Stripe Connect',()=>{
   expect(create.mock.calls[1]).toEqual(create.mock.calls[0])
   expect(create.mock.calls[1][1]).toEqual({idempotencyKey:expect.stringMatching(/^sphex-connect-[a-f0-9]{64}$/)})
   expect(upsert).toHaveBeenLastCalledWith(expect.objectContaining({user_id:user.id,stripe_account_id:connection.stripe_account_id}),{onConflict:'user_id'})
+ })
+
+ describe('diagnóstico temporário do formato de account.id',()=>{
+  const attempt=(id:unknown,error:unknown=null)=>{
+   const account={id,object:'v2.core.account',contact_email:'private@example.test',metadata:{sphex_user_id:'user-1'}}
+   const saved={...connection,stripe_account_id:id}
+   const single=vi.fn(async()=>({data:error?null:saved,error}))
+   const upsert=vi.fn(()=>({select:()=>({single})}))
+   const database={from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:null,error:null})})}),upsert})}
+   const create=vi.fn(async()=>account)
+   return{run:()=>ensureConnectedAccount(database,{id:'user-1'}, {v2:{core:{accounts:{create}}}}),upsert,saved}
+  }
+
+  it.each([
+   ['acct_ABC123',11,'acct_',true,1,true,true,false,false],
+   ['acct_A_B',8,'acct_',true,2,true,false,false,false],
+   ['acct_A B',8,'acct_',true,1,false,false,true,true],
+   ['acct_A-B',8,'acct_',true,1,false,false,false,true],
+   ['private@example.test',20,null,false,0,false,false,false,true],
+   ['',0,null,false,0,false,false,false,false],
+   ['acct_',5,null,true,1,true,false,false,false]
+  ])('registra somente características permitidas e preserva a persistência: %#',async(id,length,prefix,startsWithAcct,underscoreCount,onlySafeCharacters,matchesCurrentConstraint,containsWhitespace,containsUnexpectedCharacters)=>{
+   const {run,upsert,saved}=attempt(id)
+   await expect(run()).resolves.toEqual(saved)
+   expect(console.info).toHaveBeenCalledExactlyOnceWith('[Stripe Connect][Account ID diagnostic]',{
+    type:'string',length,prefix,startsWithAcct,underscoreCount,onlySafeCharacters,matchesCurrentConstraint,containsWhitespace,containsUnexpectedCharacters
+   })
+   expect(vi.mocked(console.info).mock.invocationCallOrder[0]).toBeLessThan(upsert.mock.invocationCallOrder[0])
+   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_account_id:id}),{onConflict:'user_id'})
+   expect(console.error).not.toHaveBeenCalled()
+  })
+
+  it.each([undefined,null,123,{privateValue:'never serialize this object'},['private array']])('não serializa nem converte valores não string: %#',async id=>{
+   const {run}=attempt(id)
+   await run()
+   expect(console.info).toHaveBeenCalledExactlyOnceWith('[Stripe Connect][Account ID diagnostic]',{
+    type:typeof id,length:null,prefix:null,startsWithAcct:null,underscoreCount:null,onlySafeCharacters:null,matchesCurrentConstraint:null,containsWhitespace:null,containsUnexpectedCharacters:null
+   })
+  })
+
+  it('não expõe ID completo ou dados pessoais em nenhum dos dois logs na falha',async()=>{
+   const id='acct_private_fixture_123',email='private@example.test'
+   const {run,upsert}=attempt(id,{code:'23514',message:'new row for relation "stripe_connected_accounts" violates check constraint "stripe_connected_accounts_account_id_format"',details:`Failing row contains (${id}, ${email}, user-1).`,hint:'Authorization: Bearer synthetic-private-token'})
+   const caught=await run().catch((error:unknown)=>error)
+   const output=response();fail(output,caught)
+   expect(output.result).toEqual({statusCode:503,body:{success:false,code:'CONNECT_STORAGE_ERROR',message:'A conta foi criada, mas não foi possível concluir o vínculo. Tente novamente.'}})
+   expect(console.info).toHaveBeenCalledTimes(1)
+   expect(console.error).toHaveBeenCalledExactlyOnceWith('[Stripe Connect][Supabase persistence]',{
+    code:'23514',message:'new row for relation "stripe_connected_accounts" violates check constraint "stripe_connected_accounts_account_id_format"',details:'[REDACTED]',hint:'[REDACTED]'
+   })
+   const logs=JSON.stringify([vi.mocked(console.info).mock.calls,vi.mocked(console.error).mock.calls])
+   for(const forbidden of [id,email,'user-1','Authorization','synthetic-private-token'])expect(logs).not.toContain(forbidden)
+   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_account_id:id}),{onConflict:'user_id'})
+  })
+
+  it.each([null,{code:'23514'}])('uma falha no logger não altera o resultado funcional: %#',async error=>{
+   vi.mocked(console.info).mockImplementation(()=>{throw new Error('logger unavailable')})
+   const {run,saved,upsert}=attempt('acct_fixture',error)
+   if(error)await expect(run()).rejects.toMatchObject({code:'CONNECT_STORAGE_ERROR',status:503})
+   else await expect(run()).resolves.toEqual(saved)
+   expect(upsert).toHaveBeenCalledTimes(1)
+  })
  })
 
  describe('diagnóstico seguro da persistência',()=>{

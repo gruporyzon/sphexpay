@@ -74,12 +74,31 @@ const logPersistenceError=error=>{
   })
  }catch{/* Diagnostics must not interfere with persistence error handling. */}
 }
+// Temporary shape-only diagnostic: never log the ID or coerce non-string values.
+const logAccountIdDiagnostic=id=>{
+ try{
+  const isString=typeof id==='string'
+  const startsWithAcct=isString?id.startsWith('acct_'):null
+  console.info('[Stripe Connect][Account ID diagnostic]',{
+   type:typeof id,
+   length:isString?id.length:null,
+   prefix:startsWithAcct&&id.length>5?'acct_':null,
+   startsWithAcct,
+   underscoreCount:isString?(id.match(/_/g)||[]).length:null,
+   onlySafeCharacters:isString?/^[A-Za-z0-9_]+$/.test(id):null,
+   matchesCurrentConstraint:isString?/^acct_[A-Za-z0-9]+$/.test(id):null,
+   containsWhitespace:isString?/\s/.test(id):null,
+   containsUnexpectedCharacters:isString?/[^A-Za-z0-9_]/.test(id):null
+  })
+ }catch{/* Diagnostics must not interfere with persistence. */}
+}
 export async function ensureConnectedAccount(database,user,stripe=getStripe()){
  const existing=await findConnection(database,user.id)
  if(existing)return existing
  const idempotencyKey=`sphex-connect-${createHash('sha256').update(user.id).digest('hex')}`
  const account=await stripe.v2.core.accounts.create({contact_email:user.email||undefined,identity:{country:'br'},dashboard:'express',configuration:{merchant:{capabilities:{card_payments:{requested:true}}},recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:user.id}},{idempotencyKey})
  const record=connectionRecord(user.id,account)
+ logAccountIdDiagnostic(account.id)
  const {data,error}=await database.from(table).upsert(record,{onConflict:'user_id'}).select(fields).single()
  if(error)logPersistenceError(error)
  if(error||!data)throw new ConnectError('CONNECT_STORAGE_ERROR',503,'A conta foi criada, mas não foi possível concluir o vínculo. Tente novamente.')
