@@ -48,6 +48,32 @@ export const safeStatus=record=>record?{
  payoutsEnabled:Boolean(record.stripe_payouts_enabled),onboardingStatus:record.stripe_onboarding_status,
  requirements:{currentlyDue:record.stripe_requirements_currently_due||[],eventuallyDue:record.stripe_requirements_eventually_due||[]}
 }:{connected:false,detailsSubmitted:false,chargesEnabled:false,payoutsEnabled:false,onboardingStatus:'not_connected',requirements:{currentlyDue:[],eventuallyDue:[]}}
+// Only known database diagnostics may pass through; arbitrary text can contain PII.
+const persistenceColumns=['user_id','stripe_account_id','stripe_account_type','stripe_onboarding_status','stripe_details_submitted','stripe_charges_enabled','stripe_payouts_enabled','stripe_requirements_currently_due','stripe_requirements_eventually_due','created_at','updated_at','id']
+const persistenceConstraints=['user_id_key','stripe_account_id_key','account_id_format','stripe_account_type_check','stripe_onboarding_status_check','user_id_fkey','pkey'].map(suffix=>`${table}_${suffix}`)
+const safePersistenceMessages=new Set([
+ `permission denied for table ${table}`,
+ `new row violates row-level security policy for table "${table}"`,
+ `relation "public.${table}" does not exist`,
+ `Could not find the table 'public.${table}' in the schema cache`,
+ ...persistenceColumns.map(column=>`null value in column "${column}" of relation "${table}" violates not-null constraint`),
+ ...persistenceConstraints.flatMap(constraint=>[
+  `duplicate key value violates unique constraint "${constraint}"`,
+  `new row for relation "${table}" violates check constraint "${constraint}"`,
+  `insert or update on table "${table}" violates foreign key constraint "${constraint}"`
+ ])
+])
+const logPersistenceError=error=>{
+ // Never serialize the error or free-form details (e.g. PostgreSQL's failing row).
+ // Logging failures must not change the existing error returned to the frontend.
+ try{
+  const safeText=value=>value==null?null:typeof value==='string'&&safePersistenceMessages.has(value)?value:'[REDACTED]'
+  console.error('[Stripe Connect][Supabase persistence]',{
+   code:typeof error.code==='string'&&/^(?:[0-9]{2}[A-Z0-9]{3}|PGRST[0-9]{3})$/.test(error.code)?error.code:null,
+   message:safeText(error.message),details:safeText(error.details),hint:safeText(error.hint)
+  })
+ }catch{/* Diagnostics must not interfere with persistence error handling. */}
+}
 export async function ensureConnectedAccount(database,user,stripe=getStripe()){
  const existing=await findConnection(database,user.id)
  if(existing)return existing
@@ -55,6 +81,7 @@ export async function ensureConnectedAccount(database,user,stripe=getStripe()){
  const account=await stripe.v2.core.accounts.create({contact_email:user.email||undefined,identity:{country:'br'},dashboard:'express',configuration:{merchant:{capabilities:{card_payments:{requested:true}}},recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:user.id}},{idempotencyKey})
  const record=connectionRecord(user.id,account)
  const {data,error}=await database.from(table).upsert(record,{onConflict:'user_id'}).select(fields).single()
+ if(error)logPersistenceError(error)
  if(error||!data)throw new ConnectError('CONNECT_STORAGE_ERROR',503,'A conta foi criada, mas não foi possível concluir o vínculo. Tente novamente.')
  return data
 }
