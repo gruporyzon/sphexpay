@@ -42,6 +42,10 @@ export const authMessage=(error:unknown)=>{
  if(message.includes('user banned'))return'Esta conta está temporariamente indisponível. Entre em contato com o suporte.'
  if(message.includes('rate')||message.includes('too many')||message.includes('over_email_send_rate_limit'))return'Muitas tentativas foram realizadas. Aguarde alguns minutos.'
  if(message.includes('expired')||message.includes('otp_expired'))return'O link expirou. Solicite um novo e tente novamente.'
+ if(code==='mfa_verification_failed'||message.includes('invalid totp')||message.includes('invalid code')||message.includes('mfa_verification_failed'))return'Código de verificação inválido. Confira o app autenticador e tente novamente.'
+ if(message.includes('totp')&&message.includes('expired'))return'O código expirou. Gere um novo no app autenticador.'
+ if(code==='mfa_factor_name_conflict'||message.includes('factor_name_conflict'))return'Já existe um fator de autenticação com este nome.'
+ if(message.includes('aal2')||message.includes('assurance'))return'É necessário concluir a verificação em duas etapas para continuar.'
  if(message.includes('timeout')||message.includes('fetch')||message.includes('network'))return'Não foi possível conectar. Verifique sua internet e tente novamente.'
  return'Não foi possível concluir a autenticação. Tente novamente.'
 }
@@ -62,4 +66,46 @@ export const authService={
  updatePassword:(password:string)=>timed(client().auth.updateUser({password})),
  updateMetadata:(data:Record<string,unknown>)=>timed(client().auth.updateUser({data})),
  resendConfirmation:(email:string)=>timed(client().auth.resend({type:'signup',email,options:{emailRedirectTo:callback()}}))
+}
+
+export type AssuranceLevel={currentLevel:string|null;nextLevel:string|null}
+
+// Camada fina sobre supabase.auth.mfa — TOTP nativo do Supabase, sem função serverless.
+export const mfaService={
+ async assuranceLevel():Promise<AssuranceLevel>{
+  try{
+   const {data,error}=await client().auth.mfa.getAuthenticatorAssuranceLevel()
+   if(error||!data)return{currentLevel:null,nextLevel:null}
+   return{currentLevel:data.currentLevel??null,nextLevel:data.nextLevel??null}
+  }catch{return{currentLevel:null,nextLevel:null}}
+ },
+ async listFactors(){
+  const {data,error}=await client().auth.mfa.listFactors()
+  if(error)throw error
+  return{all:data?.all??[],totp:data?.totp??[]}
+ },
+ verifiedTotpFactor(factors:{id:string;status:string;factor_type:string}[]){
+  return factors.find(factor=>factor.factor_type==='totp'&&factor.status==='verified')
+ },
+ async enroll(){
+  const {data,error}=await timed(client().auth.mfa.enroll({factorType:'totp'}))
+  if(error)throw error
+  return data
+ },
+ async challengeAndVerify(factorId:string,code:string){
+  const {data,error}=await timed(client().auth.mfa.challengeAndVerify({factorId,code:code.trim()}))
+  if(error)throw error
+  return data
+ },
+ async unenroll(factorId:string){
+  const {data,error}=await timed(client().auth.mfa.unenroll({factorId}))
+  if(error)throw error
+  return data
+ }
+}
+
+// Registro best-effort de evento de segurança do próprio usuário (RPC record_security_event).
+export async function recordSecurityEvent(eventType:string,metadata:Record<string,unknown>={}){
+ try{await client().rpc('record_security_event',{p_event_type:eventType,p_metadata:metadata})}
+ catch{/* auditoria não deve bloquear a ação do usuário */}
 }

@@ -1181,7 +1181,8 @@
  background-image:linear-gradient(var(--landing-hero-grid) 1px,transparent 1px),linear-gradient(90deg,var(--landing-hero-grid) 1px,transparent 1px);
  opacity:.5;
 }
-:root:not([data-theme=dark]) .landing-redesign .landing-hero h1{color:var(--landing-hero-text)!important;text-shadow:0 2px 30px rgba(0,0,0,.025)}
+:root:not([data-theme=dark]) .landing-redesign .landing-hero h1,
+:root:not([data-theme=dark]) .landing-redesign .landing-hero h1>span{color:var(--landing-hero-text)!important;text-shadow:0 2px 30px rgba(0,0,0,.025)}
 :root:not([data-theme=dark]) .landing-redesign .landing-hero-copy>p{color:var(--landing-hero-muted)!important}
 :root:not([data-theme=dark]) .landing-redesign .landing-hero .public-primary{border-color:var(--landing-hero-primary)!important;background:var(--landing-hero-primary)!important;box-shadow:0 10px 28px rgba(0,0,0,.12)!important;color:#fff!important}
 :root:not([data-theme=dark]) .landing-redesign .landing-hero .public-primary:hover{border-color:var(--landing-hero-primary-hover)!important;background:var(--landing-hero-primary-hover)!important;box-shadow:0 14px 32px rgba(0,0,0,.16)!important}

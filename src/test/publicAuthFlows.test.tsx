@@ -17,6 +17,8 @@ vi.mock('../hooks/useAuth',()=>({useAuth:()=>mocks.auth}))
 vi.mock('../services/authService',()=>({
  setSessionPersistence:vi.fn(),
  authMessage:()=> 'Não foi possível concluir a autenticação. Tente novamente.',
+ recordSecurityEvent:vi.fn(),
+ mfaService:{assuranceLevel:vi.fn(async()=>({currentLevel:'aal1',nextLevel:'aal1'})),listFactors:vi.fn(async()=>({all:[],totp:[]})),verifiedTotpFactor:()=>undefined,challengeAndVerify:vi.fn()},
  authService:{signIn:mocks.signIn,signUp:mocks.signUp,resetPassword:mocks.resetPassword,resendConfirmation:mocks.resendConfirmation,signInWithOAuth:vi.fn()}
 }))
 vi.mock('../lib/supabase',()=>({supabaseUnavailableMessage:'A autenticação ainda não foi configurada para este ambiente.',oauthAvailability:{google:false,apple:false},authConfiguration:{configured:true,google:false,apple:false,isDevelopment:false}}))

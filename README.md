@@ -12,6 +12,10 @@ npm run dev
 
 Abra `http://127.0.0.1:4173`.
 
+## Segurança
+
+As camadas de segurança da plataforma (autenticação e MFA, backend serverless, RLS, webhook, auditoria) e a avaliação de prontidão PCI-DSS estão em `docs/SECURITY.md`, `docs/DATA-CLASSIFICATION.md` e `docs/PCI-DSS-SAQ-A.md`.
+
 ## Aviso
 
 Todos os clientes, contas, vendas, saldos e transações são fictícios e persistidos somente no `localStorage` do navegador. Não existe processamento bancário, custódia, liquidação ou conexão com APIs financeiras reais nesta versão.
