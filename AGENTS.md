@@ -26,3 +26,5 @@ Checklist completo e atualizável em `docs/SECURITY-SETUP.md`. Resumo do que ain
 - [ ] Copiar `SECURITY_AUDIT_IP_SALT` do `.env` para as variáveis de ambiente da Vercel.
 - [ ] `PAYMENT_WEBHOOK_SECRET` só quando integrar um parceiro processador real (fica vazio até lá).
 - [ ] Antes de produção: promover CSP de Report-Only para enforcing em `vercel.json`.
+- [ ] Definir ao menos um usuário `admin` (`app_metadata.role='admin'` — ver `supabase/promote_dashboard_admin.sql`) para operar a fila de verificação (KYC) em `/app/verificacao`.
+- [ ] KYC: aplicar a migration `20260908130000_kyc_onboarding_v1.sql` e publicar as Edge Functions `kyc-document-upload` e `kyc-review` (`supabase functions deploy kyc-document-upload kyc-review`). Definir política de retenção dos documentos antes de produção.

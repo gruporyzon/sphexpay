@@ -105,13 +105,38 @@ Append-only. `authenticated` lê só as próprias linhas; escrita apenas por `se
 Nunca armazena PAN, CVV, PII do comprador nem IP em claro (apenas `sha256(salt + ip)`).
 
 Eventos registrados: `mfa.enrolled`, `mfa.unenrolled`, `mfa.challenge_succeeded`,
-`mfa.challenge_failed`, `webhook.accepted`, `webhook.rejected`.
+`mfa.challenge_failed`, `webhook.accepted`, `webhook.rejected`, `kyc.submitted`,
+`kyc.document_reviewed`, `kyc.profile_reviewed`.
 
 RPC `record_security_event(p_event_type, p_metadata)` — usada pelo frontend para eventos do
 próprio usuário. Retenção: 400 dias via `prune_security_audit_log()` — agendar com pg_cron ou
 rotina externa (passo operacional, não incluído nas migrations).
 
-## 9. Inventário de segredos
+## 9. Módulo de verificação (KYC — documentos do merchant)
+
+Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
+
+- **Tabelas:** `public.kyc_profiles` (1 por merchant) e `public.kyc_documents` (metadados;
+  o binário nunca fica em tabela). RLS habilitada e forçada; `anon` sem acesso.
+- **Bucket privado `kyc-documents`** (`public = false`, mime `image/jpeg|image/png|application/pdf`,
+  limite 10 MB). Policies em `storage.objects`: dono lê/escreve apenas a própria pasta
+  (`<user_id>/...`); admin lê tudo. Sem leitura pública.
+- **Upload:** Edge Function `kyc-document-upload` — valida tamanho, mime declarado, extensão e a
+  **assinatura real dos bytes** (validador embutido na função) antes de gravar com
+  `service_role`. Recusa arquivo cujo conteúdo não corresponde ao formato.
+- **Transição de status:** o merchant só chega a `pending` pela RPC `public.kyc_submit()`
+  (`SECURITY DEFINER`, valida campos e documentos obrigatórios). Um trigger
+  (`kyc_profiles_guard`) impede o cliente de definir `approved`/`rejected`/`needs_more_info`
+  ou de alterar colunas de análise.
+- **Análise:** Edge Function `kyc-review` (ações `list` / `detail` / `review`) — exige
+  usuário autenticado com `app_metadata.role === 'admin'`. Endpoint único porque o plano
+  Vercel Hobby limita as funções em `api/`. A leitura dos arquivos pelo analista é sempre
+  por **URL assinada de 300 s** gerada com `service_role`; o binário não passa pelo backend.
+- **Auditoria:** `kyc.submitted`, `kyc.document_reviewed`, `kyc.profile_reviewed` em
+  `security_audit_log`.
+- Classificação dos dados: ver `docs/DATA-CLASSIFICATION.md`.
+
+## 10. Inventário de segredos
 
 | Segredo | Onde vive | Acesso | Rotação |
 | --- | --- | --- | --- |
@@ -135,7 +160,7 @@ chave publicável do Supabase.
 4. Após confirmar que os webhooks chegam assinados com o novo segredo, remover
    `PAYMENT_WEBHOOK_SECRET_PREVIOUS`. Deploy.
 
-## 10. Resposta a incidentes (mínimo)
+## 11. Resposta a incidentes (mínimo)
 
 1. Rotacionar o segredo comprometido (ver inventário).
 2. Revogar sessões pelo painel do Supabase (Authentication › Users) e/ou forçar re-login.
@@ -144,7 +169,7 @@ chave publicável do Supabase.
 4. Consultar `security_audit_log` e os logs da Vercel para escopo temporal.
 5. Comunicar as partes afetadas conforme a LGPD, se houver dado pessoal envolvido.
 
-## 11. Dependências
+## 12. Dependências
 
 Rodar `npm audit` a cada release. Vulnerabilidades altas/críticas com correção não-breaking
 devem ser aplicadas antes do deploy. Registrar exceções aqui com justificativa e prazo.
@@ -155,7 +180,7 @@ do range 7.x (não-breaking). O aviso `react-router` (GHSA-qwww-vcr4-c8h2) afeta
 **RSC Mode**, que esta aplicação não usa (SPA Vite com `BrowserRouter`). Ação: aplicar
 `npm audit fix` na próxima janela de manutenção e revalidar `npm run test`/`build`.
 
-## 12. Verificação
+## 13. Verificação
 
 Ver a seção "Verificação" do plano de segurança e os testes:
 `src/test/securityHeaders.test.ts`, `src/test/webhookSecurity.test.ts`,

@@ -21,6 +21,8 @@ nenhuma camada da SphexPay — e não deve haver.
 | Fila de eventos financeiros | Interno | `financial_event_outbox` | RLS (SELECT dono); processamento `service_role` |
 | Assinaturas Web Push (endpoint + chaves p256dh/auth) | Confidencial | `push_subscriptions` | RLS restrita a colunas; escrita `service_role`; endpoint também guardado como hash |
 | Conta Stripe Connect do vendedor (`acct_…` + flags de status) | Interno | `stripe_connected_accounts` | RLS (SELECT dono); escrita `service_role`. NÃO guarda chaves nem dados bancários — só o id da conta e flags |
+| Cadastro/KYC do merchant (nome legal, CPF/CNPJ, nascimento, telefone, endereço, status) | Confidencial | `kyc_profiles` | RLS por `user_id` (SELECT/INSERT/UPDATE de dados); transição para `pending` só via RPC `kyc_submit()`; aprovação/reprovação só admin ou `service_role`. Leitura adicional por admin (`is_dashboard_admin()`) |
+| Documentos de identificação do merchant (imagens/PDF de RG/CNH, comprovante de endereço, contrato social) | Restrito | Bucket privado `kyc-documents` + metadados em `kyc_documents` | Bucket `public=false`; policy em `storage.objects` restringe à pasta `<user_id>/`; upload validado (magic bytes) pela Edge Function `kyc-document-upload` com `service_role`. Analista lê só via **URL assinada de 300 s** gerada no servidor. Retenção: definir política formal antes de produção |
 | Trilha de auditoria de segurança | Confidencial | `security_audit_log` | Append-only; leitura só das próprias linhas; escrita `service_role` |
 | Segredos de servidor (service role, VAPID, webhook, OpenAI) | Restrito | Env da Vercel (server) | Apenas backend; ver `SECURITY.md` §9 |
 | Fator TOTP / secret de MFA | Restrito | Supabase Auth | Gerenciado pelo Supabase; nunca trafega pelo nosso backend |
@@ -44,6 +46,10 @@ API ou formulário), o dado deve ser **rejeitado e não persistido**. O validado
 - Quando os dados bancários do vendedor deixarem de ser demonstrativos, mover de `localStorage`
   para uma tabela com RLS por `user_id` e guardar apenas os últimos dígitos + referência
   opaca; nunca a conta completa.
+- KYC: coletar apenas o mínimo necessário para compliance (identidade, endereço, dados da
+  empresa se PJ). Nesta versão não há OCR nem envio dos documentos a serviço externo — a
+  análise é humana. Reter os arquivos só enquanto houver base legal; definir política de
+  expurgo antes de produção.
 
 ## Retenção
 

@@ -51,6 +51,7 @@ const CheckoutPreviewPage=lazy(()=>import('./features/products/CheckoutStudio').
 const SocialPage=lazy(()=>import('./features/social/SocialPage'))
 const AffiliatesPage=lazy(()=>import('./features/affiliates/AffiliatesPage'))
 const SubscriptionsPage=lazy(()=>import('./features/subscriptions/SubscriptionsPage'))
+const KycPage=lazy(()=>import('./features/kyc/KycPage'))
 
 function SystemChrome(){
  const {pathname}=useLocation(),theme=useDemoStore(state=>state.theme)
@@ -58,7 +59,7 @@ function SystemChrome(){
  return null
 }
 
-const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['vendas/:transactionId',<LiveSales/>],['transacoes/*',<NavigateTransactionsAlias/>],['produtos',<ProductsHub><Deferred><ProductsV2Page/></Deferred></ProductsHub>],['produtos/checkout',<ProductsHub><CheckoutPage/></ProductsHub>],['produtos/checkout/:checkoutId',<ProductsHub><CheckoutPage/></ProductsHub>],['produtos/links',<ProductsHub><LinksPage/></ProductsHub>],['produtos/links/:linkId',<ProductsHub><LinksPage/></ProductsHub>],['checkout/*',<NavigateOperationsAlias destination="checkout"/>],['links/*',<NavigateOperationsAlias destination="links"/>],['links-de-pagamento/*',<NavigateOperationsAlias destination="links"/>],['vitrine',<Showcase/>],['assinaturas',<Deferred><SubscriptionsPage/></Deferred>],['integracoes',<Integrations/>],['afiliados',<Deferred><AffiliatesPage/></Deferred>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
+const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fallback={<Loading/>}><LiveSalesWorld/></Suspense>],['vendas',<LiveSales/>],['vendas/:transactionId',<LiveSales/>],['transacoes/*',<NavigateTransactionsAlias/>],['produtos',<ProductsHub><Deferred><ProductsV2Page/></Deferred></ProductsHub>],['produtos/checkout',<ProductsHub><CheckoutPage/></ProductsHub>],['produtos/checkout/:checkoutId',<ProductsHub><CheckoutPage/></ProductsHub>],['produtos/links',<ProductsHub><LinksPage/></ProductsHub>],['produtos/links/:linkId',<ProductsHub><LinksPage/></ProductsHub>],['checkout/*',<NavigateOperationsAlias destination="checkout"/>],['links/*',<NavigateOperationsAlias destination="links"/>],['links-de-pagamento/*',<NavigateOperationsAlias destination="links"/>],['vitrine',<Showcase/>],['assinaturas',<Deferred><SubscriptionsPage/></Deferred>],['integracoes',<Integrations/>],['verificacao',<Deferred><KycPage/></Deferred>],['afiliados',<Deferred><AffiliatesPage/></Deferred>],['premiacoes',<DemoAwareAwards/>],['relatorios',<ReportsModule/>],['relatorios/clientes',<ReportsModule/>],['clientes/*',<Navigate to="/app/relatorios/clientes" replace/>],['notificacoes',<NotificationsPage/>],['configuracoes',<Settings/>]] as const
 export default function App(){return <BrowserRouter><SystemChrome/><Routes>
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}

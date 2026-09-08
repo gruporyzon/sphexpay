@@ -95,6 +95,14 @@ enabled = true
 enabled = true
 verify_jwt = false
 
+[functions.kyc-document-upload]
+enabled = true
+verify_jwt = false
+
+[functions.kyc-review]
+enabled = true
+verify_jwt = false
+
 [studio]
 enabled = false
 # Port to use for Supabase Studio.
