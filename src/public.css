@@ -708,3 +708,13 @@ html{scroll-padding-top:calc(var(--public-header-height) + var(--public-anchor-g
 .auth-shell .auth-mfa-hint svg{width:16px;flex:0 0 auto;color:var(--auth-text)}
 .auth-shell .auth-secondary{margin-top:2px;border:0;background:transparent;color:var(--auth-muted);font-size:9px;font-weight:650;text-align:center;cursor:pointer}
 .auth-shell .auth-secondary:hover{color:var(--auth-text)}
+
+/* Prefixo de pais (bandeira + DDI) nos campos de telefone. */
+.field-control .field-cc{display:flex;align-items:center;gap:7px;padding-right:9px;border-right:1px solid #d8d8d5;color:#555;font-size:13px;font-weight:650;white-space:nowrap}
+.field-control .field-cc svg{width:22px!important;height:15px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+:root[data-theme=dark] .auth-shell .field-control .field-cc{border-color:rgba(255,255,255,.14);color:#bbb}
+.onboarding-phone{display:flex;align-items:center;gap:9px;height:47px;padding:0 13px;border:1px solid #ffffff12;border-radius:10px;background:#1b1b1e}
+.onboarding-phone:focus-within{border-color:#f15a24;box-shadow:0 0 0 4px #f15a2410}
+.onboarding-phone .field-cc{display:flex;align-items:center;gap:7px;padding-right:9px;border-right:1px solid #ffffff1f;color:#ffffffa8;font-size:13px;font-weight:650;white-space:nowrap}
+.onboarding-phone .field-cc svg{width:22px;height:15px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+.onboarding-phone input{flex:1;min-width:0;height:100%;border:0!important;border-radius:0;outline:0;background:transparent!important;box-shadow:none!important;color:#fff;font-size:16px;padding:0!important}

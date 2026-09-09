@@ -1,17 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   AlertTriangle, CheckCircle2, ClipboardCheck, FileText, Loader2, ShieldCheck, Upload, UserCog,
 } from 'lucide-react'
 import { Badge, Button, Card, Empty, Loading, Modal, StateMessage } from '../../components/ui'
+import { MaskedField, PhoneField, TextField } from '../../components/forms'
 import { useAuth } from '../../hooks/useAuth'
 import { useDashboardAdmin } from '../../hooks/useDashboardAdmin'
+import { maskCEP, maskCpfCnpj, maskPhoneBR, maskUF, onlyDigits } from '../../lib/masks'
+import { lookupCep } from '../../lib/viacep'
 import { kycService } from './kycService'
 import {
   DOC_LABELS, DOC_STATUS_LABELS, REQUIRED_DOCS, STATUS_LABELS, STATUS_TONE,
   type KycDocType, type KycDocument, type KycOverview, type KycPersonType, type KycProfile,
   type KycProfileInput, type KycSubmissionSummary,
 } from './types'
-import { KYC_UPLOAD_ACCEPT, canSubmit, isValidTaxId, missingRequiredDocs, onlyDigits } from './validation'
+import { KYC_UPLOAD_ACCEPT, canSubmit, isValidTaxId, missingRequiredDocs } from './validation'
 import './kyc.css'
 
 const dateTime = (value: string | null) =>
@@ -25,9 +29,14 @@ const emptyInput: KycProfileInput = {
 const toInput = (profile: KycProfile | null): KycProfileInput =>
   profile
     ? {
-      personType: profile.personType, legalName: profile.legalName, taxId: profile.taxId,
+      personType: profile.personType, legalName: profile.legalName, taxId: maskCpfCnpj(profile.taxId),
       companyName: profile.companyName, tradeName: profile.tradeName, birthDate: profile.birthDate,
-      phone: profile.phone, address: { ...profile.address },
+      phone: maskPhoneBR(profile.phone),
+      address: {
+        ...profile.address,
+        ...(profile.address.state ? { state: maskUF(profile.address.state) } : {}),
+        ...(profile.address.zip ? { zip: maskCEP(profile.address.zip) } : {}),
+      },
     }
     : emptyInput
 
@@ -106,6 +115,43 @@ function MerchantKyc({ userId }: { userId?: string }) {
   const setAddress = (key: keyof KycProfileInput['address'], value: string) =>
     setInput(current => ({ ...current, address: { ...current.address, [key]: value } }))
 
+  const [cepStatus, setCepStatus] = useState<'idle' | 'loading' | 'notfound' | 'error'>('idle')
+  const cepLookup = useRef<AbortController | null>(null)
+
+  const runCepLookup = useCallback(async (digits: string) => {
+    cepLookup.current?.abort()
+    const controller = new AbortController()
+    cepLookup.current = controller
+    setCepStatus('loading')
+    try {
+      const found = await lookupCep(digits, controller.signal)
+      if (controller.signal.aborted) return
+      if (!found) { setCepStatus('notfound'); return }
+      setCepStatus('idle')
+      setInput(current => ({
+        ...current,
+        address: {
+          ...current.address,
+          street: found.street || current.address.street,
+          district: found.district || current.address.district,
+          city: found.city || current.address.city,
+          state: found.state || current.address.state,
+        },
+      }))
+    } catch {
+      if (!controller.signal.aborted) setCepStatus('error')
+    }
+  }, [])
+
+  const onZipChange = (value: string) => {
+    setAddress('zip', value)
+    const digits = onlyDigits(value)
+    if (digits.length === 8) void runCepLookup(digits)
+    else setCepStatus('idle')
+  }
+
+  useEffect(() => () => cepLookup.current?.abort(), [])
+
   const saveProfile = async () => {
     if (!userId) return
     if (!input.legalName.trim()) { setFeedback({ tone: 'error', text: 'Informe o nome completo ou a razão social.' }); return }
@@ -152,20 +198,20 @@ function MerchantKyc({ userId }: { userId?: string }) {
         </div>
 
         <div className="kyc-grid">
-          <Field label={input.personType === 'company' ? 'Razão social' : 'Nome completo'} value={input.legalName}
+          <TextField label={input.personType === 'company' ? 'Razão social' : 'Nome completo'} value={input.legalName}
             disabled={locked} onChange={value => set('legalName', value)} />
-          <Field label={input.personType === 'company' ? 'CNPJ' : 'CPF'} value={input.taxId} inputMode="numeric"
-            disabled={locked} onChange={value => set('taxId', onlyDigits(value))}
-            placeholder={input.personType === 'company' ? '00000000000000' : '00000000000'} />
+          <MaskedField label={input.personType === 'company' ? 'CNPJ' : 'CPF'} value={input.taxId}
+            mask={input.personType === 'company' ? 'cnpj' : 'cpf'}
+            disabled={locked} onChange={value => set('taxId', value)} />
           {input.personType === 'company' ? (
             <>
-              <Field label="Nome fantasia" value={input.tradeName} disabled={locked} onChange={value => set('tradeName', value)} />
-              <Field label="Telefone" value={input.phone} disabled={locked} onChange={value => set('phone', value)} />
+              <TextField label="Nome fantasia" value={input.tradeName} disabled={locked} onChange={value => set('tradeName', value)} />
+              <PhoneField label="Telefone" value={input.phone} disabled={locked} onChange={value => set('phone', value)} />
             </>
           ) : (
             <>
-              <Field label="Data de nascimento" type="date" value={input.birthDate} disabled={locked} onChange={value => set('birthDate', value)} />
-              <Field label="Telefone" value={input.phone} disabled={locked} onChange={value => set('phone', value)} />
+              <TextField label="Data de nascimento" type="date" value={input.birthDate} disabled={locked} onChange={value => set('birthDate', value)} />
+              <PhoneField label="Telefone" value={input.phone} disabled={locked} onChange={value => set('phone', value)} />
             </>
           )}
         </div>
@@ -173,14 +219,19 @@ function MerchantKyc({ userId }: { userId?: string }) {
         <fieldset className="kyc-fieldset" disabled={locked}>
           <legend>Endereço</legend>
           <div className="kyc-grid">
-            <Field label="Logradouro" value={input.address.street || ''} onChange={value => setAddress('street', value)} />
-            <Field label="Número" value={input.address.number || ''} onChange={value => setAddress('number', value)} />
-            <Field label="Complemento" value={input.address.complement || ''} onChange={value => setAddress('complement', value)} />
-            <Field label="Bairro" value={input.address.district || ''} onChange={value => setAddress('district', value)} />
-            <Field label="Cidade" value={input.address.city || ''} onChange={value => setAddress('city', value)} />
-            <Field label="UF" value={input.address.state || ''} onChange={value => setAddress('state', value.toUpperCase().slice(0, 2))} />
-            <Field label="CEP" value={input.address.zip || ''} inputMode="numeric" onChange={value => setAddress('zip', onlyDigits(value).slice(0, 8))} />
+            <MaskedField label="CEP" mask="cep" value={input.address.zip || ''} onChange={onZipChange}
+              autoComplete="postal-code"
+              invalid={cepStatus === 'notfound'}
+              hint={cepStatus === 'notfound' ? 'CEP não encontrado — preencha o endereço manualmente.' : undefined} />
+            <TextField label="Número" value={input.address.number || ''} inputMode="numeric" onChange={value => setAddress('number', value)} />
+            <TextField label="Logradouro" value={input.address.street || ''} onChange={value => setAddress('street', value)} />
+            <TextField label="Complemento" value={input.address.complement || ''} onChange={value => setAddress('complement', value)} />
+            <TextField label="Bairro" value={input.address.district || ''} onChange={value => setAddress('district', value)} />
+            <TextField label="Cidade" value={input.address.city || ''} onChange={value => setAddress('city', value)} />
+            <MaskedField label="UF" mask="uf" value={input.address.state || ''} onChange={value => setAddress('state', value)} />
           </div>
+          {cepStatus === 'loading' && <p className="kyc-cep-status">Buscando endereço pelo CEP…</p>}
+          {cepStatus === 'error' && <p className="kyc-cep-status is-warn">Não foi possível consultar o CEP agora. Preencha o endereço manualmente.</p>}
         </fieldset>
 
         {!locked && (
@@ -204,7 +255,7 @@ function MerchantKyc({ userId }: { userId?: string }) {
         </div>
       </Card>
 
-      {feedback && <StateMessage tone={feedback.tone} title={feedback.tone === 'error' ? 'Atenção' : 'Tudo certo'}>{feedback.text}</StateMessage>}
+      {feedback && <FeedbackModal tone={feedback.tone} text={feedback.text} onClose={() => setFeedback(null)} />}
 
       {!locked && (
         <Card className="kyc-submit-bar">
@@ -251,6 +302,26 @@ function StatusPanel({ profile }: { profile: KycProfile | null }) {
   )
 }
 
+function FeedbackModal({ tone, text, onClose }: { tone: 'error' | 'success'; text: string; onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    const timer = tone === 'success' ? window.setTimeout(onClose, 2400) : undefined
+    return () => { window.removeEventListener('keydown', onKey); if (timer) window.clearTimeout(timer) }
+  }, [tone, onClose])
+
+  return createPortal(
+    <div className="modal-backdrop kyc-feedback-backdrop" onMouseDown={onClose}>
+      <div className={`kyc-feedback is-${tone}`} role="alertdialog" aria-modal="true" onMouseDown={event => event.stopPropagation()}>
+        <span className="kyc-feedback-icon">{tone === 'error' ? <AlertTriangle size={20} /> : <CheckCircle2 size={20} />}</span>
+        <p>{text}</p>
+        <Button variant="primary" onClick={onClose} autoFocus>Entendi</Button>
+      </div>
+    </div>,
+    document.body,
+  )
+}
+
 function PersonTypeToggle({ value, onChange, disabled }: { value: KycPersonType; onChange: (value: KycPersonType) => void; disabled?: boolean }) {
   return (
     <div className="kyc-person-toggle" role="group" aria-label="Tipo de pessoa">
@@ -260,19 +331,6 @@ function PersonTypeToggle({ value, onChange, disabled }: { value: KycPersonType;
         </button>
       ))}
     </div>
-  )
-}
-
-function Field({ label, value, onChange, type = 'text', disabled, placeholder, inputMode }: {
-  label: string; value: string; onChange: (value: string) => void; type?: string; disabled?: boolean
-  placeholder?: string; inputMode?: 'numeric' | 'text'
-}) {
-  return (
-    <label className="kyc-field">
-      <span>{label}</span>
-      <input type={type} value={value} disabled={disabled} placeholder={placeholder} inputMode={inputMode}
-        onChange={event => onChange(event.target.value)} />
-    </label>
   )
 }
 
@@ -399,7 +457,7 @@ function AdminReview() {
               <tbody>
                 {items.map(item => (
                   <tr key={item.userId}>
-                    <td><b>{item.legalName || item.companyName || 'Sem nome'}</b><small>{item.taxId || '—'}</small></td>
+                    <td><b>{item.legalName || item.companyName || 'Sem nome'}</b><small>{item.taxId ? maskCpfCnpj(item.taxId) : '—'}</small></td>
                     <td>{item.personType === 'company' ? 'PJ' : 'PF'}</td>
                     <td>{item.documents.approved}/{item.documents.total} aprovados</td>
                     <td>{dateTime(item.submittedAt)}</td>
@@ -458,10 +516,10 @@ function ReviewModal({ userId, onClose, onReviewed }: { userId: string; onClose:
             <dl className="kyc-review-facts">
               <div><dt>Nome / Razão social</dt><dd>{profile.legalName || '—'}</dd></div>
               <div><dt>Tipo</dt><dd>{profile.personType === 'company' ? 'Pessoa jurídica' : 'Pessoa física'}</dd></div>
-              <div><dt>{profile.personType === 'company' ? 'CNPJ' : 'CPF'}</dt><dd>{profile.taxId || '—'}</dd></div>
+              <div><dt>{profile.personType === 'company' ? 'CNPJ' : 'CPF'}</dt><dd>{profile.taxId ? maskCpfCnpj(profile.taxId) : '—'}</dd></div>
               {profile.personType === 'company' && <div><dt>Nome fantasia</dt><dd>{profile.tradeName || '—'}</dd></div>}
               {profile.personType === 'individual' && <div><dt>Nascimento</dt><dd>{profile.birthDate || '—'}</dd></div>}
-              <div><dt>Telefone</dt><dd>{profile.phone || '—'}</dd></div>
+              <div><dt>Telefone</dt><dd>{profile.phone ? maskPhoneBR(profile.phone) : '—'}</dd></div>
               <div><dt>Endereço</dt><dd>{[profile.address.street, profile.address.number, profile.address.city, profile.address.state].filter(Boolean).join(', ') || '—'}</dd></div>
               <div><dt>Enviado</dt><dd>{dateTime(profile.submittedAt)}</dd></div>
             </dl>

@@ -1,0 +1,54 @@
+/* Campos de formulário reutilizáveis (cadastro/KYC). Usam os tokens do tema,
+   então funcionam nos modos claro e escuro sem ajustes. */
+
+.spx-field { display: grid; gap: 6px; }
+.spx-field > span { color: var(--muted); font-size: 10px; font-weight: 700; }
+
+.spx-field-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--panel-2);
+  transition: border-color .15s, box-shadow .15s;
+}
+.spx-field-box:focus-within { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-glow); }
+.spx-field-box.is-invalid { border-color: var(--danger); }
+.spx-field-box.is-disabled { opacity: .6; }
+
+.spx-field-box input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+.spx-field-box input::placeholder { color: var(--muted-2); }
+.spx-field-box input:disabled { cursor: not-allowed; }
+
+.spx-field-adorn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.spx-field-flag {
+  width: 20px;
+  height: 14px;
+  border-radius: 2px;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .12);
+}
+.spx-field-divider { width: 1px; align-self: stretch; margin: 8px 0; background: var(--line); }
+
+.spx-field-hint { color: var(--danger); font-size: 10px; }

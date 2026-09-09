@@ -44,7 +44,8 @@ pagamento, USB; microfone só `self` para o assistente de voz).
 A **CSP** está publicada em `Content-Security-Policy-Report-Only` para validação. Depois de
 confirmar que não há violações legítimas no app rodando (Vite/Tailwind/Supabase/Recharts),
 promover para `Content-Security-Policy` (enforcing) e ajustar `connect-src` com a URL exata do
-projeto Supabase.
+projeto Supabase. `connect-src` também libera `https://viacep.com.br` (consulta de CEP no
+cadastro/KYC — só leitura de endereço público, sem dado sensível).
 
 Rotas `/api/*` recebem ainda `Cache-Control: no-store` e `X-Robots-Tag: noindex`.
 
