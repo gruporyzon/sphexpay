@@ -40,11 +40,12 @@ export function assertConnectionMode(connection){
  if(!connection||connection.stripe_mode!==getStripeMode())throw new ConnectError('CONNECT_MODE_MISMATCH',409,'A conta não pertence ao modo Stripe configurado.')
 }
 const onboardingStatus=account=>{
- const due=account.requirements?.currently_due||[]
- if(account.charges_enabled&&account.payouts_enabled)return'enabled'
- if(account.details_submitted&&due.length)return'requirements_due'
- if(account.details_submitted)return'in_review'
- return'pending'
+ // Canonical database contract. Never copy a Stripe status string or metadata.
+ const requirements=account.requirements||{}
+ if(requirements.currently_due?.length||requirements.past_due?.length)return'requirements_due'
+ if(!account.details_submitted)return'pending'
+ if(account.charges_enabled&&account.payouts_enabled&&!requirements.disabled_reason&&!requirements.pending_verification?.length)return'enabled'
+ return'in_review'
 }
 export const connectionRecord=(userId,account)=>({
  stripe_mode:getStripeMode(),user_id:userId,stripe_account_id:account.id,stripe_account_type:account.type||'express',stripe_capabilities:account.capabilities||{},
@@ -110,6 +111,20 @@ const logAccountIdDiagnostic=id=>{
   })
  }catch{/* Diagnostics must not interfere with persistence. */}
 }
+// Temporary pre-PATCH diagnostic from the exact record sent to Supabase.
+// Only derived literals, booleans and counts; never serialize Account or IDs.
+const logStatusDiagnostic=record=>{
+ try{
+  console.info('[Stripe Connect][Status diagnostic]',{
+   stage:'persist_status',mode:record.stripe_mode,
+   derived_onboarding_status:record.stripe_onboarding_status,
+   details_submitted:record.stripe_details_submitted,
+   charges_enabled:record.stripe_charges_enabled,
+   payouts_enabled:record.stripe_payouts_enabled,
+   currently_due_count:record.stripe_requirements_currently_due.length
+  })
+ }catch{/* Diagnostics must not interfere with persistence. */}
+}
 export async function ensureConnectedAccount(database,user,stripe=getStripe()){
  const existing=await findConnection(database,user.id)
  if(existing){
@@ -144,6 +159,7 @@ export async function retrieveAndSync(database,userId,connection,stripe=getStrip
  // Accounts v2 can appear as type `none` through v1. Status refreshes must
  // preserve the local Express setup instead of violating its database constraint.
  const record={...connectionRecord(userId,account),stripe_account_type:connection.stripe_account_type}
+ logStatusDiagnostic(record)
  try{
   const {data,error,status}=await database.from(table).update(record).eq('user_id',userId).eq('stripe_mode',getStripeMode()).eq('stripe_account_id',connection.stripe_account_id).select(fields).single()
   if(error||!data){

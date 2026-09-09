@@ -39,8 +39,8 @@ describe('diagnóstico de CHECKs com payload real de persistência Connect',()=>
  it.each(['none','standard','custom','merchant','recipient'])('reproduz 23514 no tipo %s mesmo com account ID válido',async type=>{
   await expect(persist(connectionRecord(userId,{...account,type}))).rejects.toMatchObject({code:'23514',constraint:'stripe_connected_accounts_stripe_account_type_check'})
  })
- it('distingue falha de status de falha de tipo ou ID',async()=>{
-  await expect(persist({...connectionRecord(userId,account),stripe_onboarding_status:'active'})).rejects.toMatchObject({code:'23514',constraint:'stripe_connected_accounts_stripe_onboarding_status_check'})
+ it.each(['complete','completed','active','enabled_pending','onboarding_complete','restricted','disabled','pending_review'])('rejeita status fora do contrato: %s',async status=>{
+  await expect(persist({...connectionRecord(userId,account),stripe_onboarding_status:status})).rejects.toMatchObject({code:'23514',constraint:'stripe_connected_accounts_stripe_onboarding_status_check'})
  })
  it('preserva as constraints de ID e exclusividade entre usuários',async()=>{
   await expect(persist({...connectionRecord(userId,account),stripe_account_id:'invalid'})).rejects.toMatchObject({code:'23514',constraint:'stripe_connected_accounts_account_id_format'})
@@ -48,4 +48,22 @@ describe('diagnóstico de CHECKs com payload real de persistência Connect',()=>
   await db.query('insert into auth.users values ($1)',[other])
   await expect(persist(connectionRecord(other,account))).rejects.toMatchObject({code:'23505',constraint:'stripe_connected_accounts_stripe_account_id_key'})
  })
+})
+
+it('mapeamento retorna exatamente quatro estados em todas as 128 combinações de flags e impedimentos',()=>{
+ const states=new Set<string>()
+ for(let mask=0;mask<128;mask++){
+  const details=Boolean(mask&1),charges=Boolean(mask&2),payouts=Boolean(mask&4),current=Boolean(mask&8),past=Boolean(mask&16),disabled=Boolean(mask&32),verification=Boolean(mask&64)
+  const record=connectionRecord(userId,{...account,details_submitted:details,charges_enabled:charges,payouts_enabled:payouts,
+   stripe_onboarding_status:'completed',status:'active',metadata:{stripe_onboarding_status:'restricted'},
+   requirements:{currently_due:current?['external_account']:[],past_due:past?['external_account']:[],disabled_reason:disabled?'under_review':null,pending_verification:verification?['individual.verification.document']:[]}})
+  const status=record.stripe_onboarding_status
+  states.add(status)
+  expect(['pending','in_review','requirements_due','enabled']).toContain(status)
+  if(current||past)expect(status).toBe('requirements_due')
+  if(status==='enabled')expect([details,charges,payouts,!current,!past,!disabled,!verification]).toEqual(Array(7).fill(true))
+  if(status==='pending')expect([details,current,past]).toEqual([false,false,false])
+  if(status==='in_review')expect([details,current,past]).toEqual([true,false,false])
+ }
+ expect([...states].sort()).toEqual(['enabled','in_review','pending','requirements_due'])
 })

@@ -24,6 +24,7 @@ afterAll(async()=>{await db?.close()})
 beforeEach(async()=>{
  vi.stubEnv('SUPABASE_URL','https://project.supabase.co');vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY','synthetic-service-key');vi.stubEnv('STRIPE_SECRET_KEY','sk_test_fixture')
  vi.spyOn(console,'error').mockImplementation(()=>{})
+ vi.spyOn(console,'info').mockImplementation(()=>{})
  patchError=null;throwPatch=false;emptyPatch=false;patches=[];stages=[]
  await db.exec('delete from public.stripe_connected_accounts')
  for(const [user,mode,id] of [[owner,'legacy','acct_legacy'],[owner,'test','acct_test'],[owner,'live','acct_live'],[other,'test','acct_other']]){
@@ -110,4 +111,48 @@ it('configuração Stripe ausente é 500 e nunca faz PATCH',async()=>{
  vi.stubEnv('STRIPE_SECRET_KEY','')
  expect(await run()).toMatchObject({statusCode:500,body:{code:'STRIPE_NOT_CONFIGURED'}})
  expect(patches).toHaveLength(0)
+})
+
+const statusCases=[
+ {name:'pending sem cadastro enviado',details:false,charges:false,payouts:false,current:[],past:[],expected:'pending'},
+ {name:'in_review após envio sem habilitação',details:true,charges:false,payouts:false,current:[],past:[],expected:'in_review'},
+ {name:'enabled com todos os flags e sem impedimento',details:true,charges:true,payouts:true,current:[],past:[],expected:'enabled'},
+ {name:'requirements_due com cadastro enviado',details:true,charges:false,payouts:false,current:['external_account'],past:[],expected:'requirements_due'},
+ {name:'requirements_due antes do envio',details:false,charges:false,payouts:false,current:['external_account'],past:[],expected:'requirements_due'},
+ {name:'requirements_due prevalece sobre flags habilitados',details:true,charges:true,payouts:true,current:['external_account'],past:[],expected:'requirements_due'},
+ {name:'requirements_due considera somente past_due',details:true,charges:true,payouts:true,current:[],past:['external_account'],expected:'requirements_due'},
+ {name:'pending sem envio mesmo com flags habilitados',details:false,charges:true,payouts:true,current:[],past:[],expected:'pending'},
+ {name:'in_review com disabled_reason',details:true,charges:true,payouts:true,current:[],past:[],reason:'under_review',expected:'in_review'},
+ {name:'in_review com verificação pendente',details:true,charges:true,payouts:true,current:[],past:[],verification:['individual.verification.document'],expected:'in_review'}
+]
+it.each(statusCases)('PATCH canônico: $name',async scenario=>{
+ const capabilities={card_payments:'active',transfers:'pending'},eventually=['business_profile.url']
+ mocks.retrieve.mockResolvedValue({id:'acct_test',type:'none',details_submitted:scenario.details,charges_enabled:scenario.charges,payouts_enabled:scenario.payouts,
+  capabilities,requirements:{currently_due:scenario.current,past_due:scenario.past,eventually_due:eventually,disabled_reason:scenario.reason,pending_verification:scenario.verification},
+  email:'private@example.test',metadata:{sphex_user_id:owner,stripe_onboarding_status:'completed'}})
+ const out=await run()
+ expect(out).toMatchObject({statusCode:200,body:{onboardingStatus:scenario.expected,detailsSubmitted:scenario.details,chargesEnabled:scenario.charges,payoutsEnabled:scenario.payouts}})
+ const expected={stripe_onboarding_status:scenario.expected,stripe_details_submitted:scenario.details,stripe_charges_enabled:scenario.charges,stripe_payouts_enabled:scenario.payouts,
+  stripe_requirements_currently_due:scenario.current,stripe_requirements_eventually_due:eventually,stripe_capabilities:capabilities}
+ expect(patches[0].body).toMatchObject(expected)
+ expect((await db.query('select * from stripe_connected_accounts where user_id=$1 and stripe_mode=$2',[owner,'test'])).rows[0]).toMatchObject(expected)
+ expect(console.info).toHaveBeenCalledExactlyOnceWith('[Stripe Connect][Status diagnostic]',{
+  stage:'persist_status',mode:'test',derived_onboarding_status:scenario.expected,
+  details_submitted:scenario.details,charges_enabled:scenario.charges,payouts_enabled:scenario.payouts,currently_due_count:scenario.current.length
+ })
+})
+it('diagnóstico antecede PATCH rejeitado e não inclui PII',async()=>{
+ patchError={code:'23514',message:'new row for relation "stripe_connected_accounts" violates check constraint "stripe_connected_accounts_stripe_onboarding_status_check"'}
+ vi.mocked(console.info).mockImplementation(()=>{expect(patches).toHaveLength(0)})
+ expect(await run()).toMatchObject({statusCode:500,body:{code:'CONNECT_STORAGE_ERROR'}})
+ expect(console.info).toHaveBeenCalledExactlyOnceWith('[Stripe Connect][Status diagnostic]',{
+  stage:'persist_status',mode:'test',derived_onboarding_status:'enabled',details_submitted:true,charges_enabled:true,payouts_enabled:true,currently_due_count:0
+ })
+ const logs=JSON.stringify(vi.mocked(console.info).mock.calls)
+ for(const value of ['acct_test',owner,'synthetic-service-key','synthetic-session'])expect(logs).not.toContain(value)
+})
+it('falha do logger não impede persistir o status',async()=>{
+ vi.mocked(console.info).mockImplementation(()=>{throw new Error('logger unavailable')})
+ expect(await run()).toMatchObject({statusCode:200,body:{onboardingStatus:'enabled'}})
+ expect(patches).toHaveLength(1)
 })
