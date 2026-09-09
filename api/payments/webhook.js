@@ -1,3 +1,6 @@
+import {stripeWebhookHandler} from '../../server/stripe/webhook.js'
+import {serverDatabase,fail,parseJsonBody,ConnectError} from '../../server/stripe/connect.js'
+import {createCheckout,loadOffer,validateCheckoutId} from '../../server/stripe/payments.js'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import { serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
@@ -46,6 +49,26 @@ const reject = async (response, status, code, { request, provider = '', detail }
 }
 
 export default async function handler(request, response) {
+ const parsedUrl=new URL(request.url||'/api/payments/webhook','https://localhost'),path=parsedUrl.pathname
+ const action=parsedUrl.searchParams.get('stripeAction')||request.query?.stripeAction
+ if(action==='webhook'||path==='/api/stripe/webhook'||request.headers['stripe-signature'])return stripeWebhookHandler(request,response,serverDatabase)
+ if(action==='checkout'||path==='/api/stripe/checkout'){
+  response.setHeader('Cache-Control','no-store')
+  try{
+   const database=serverDatabase()
+   if(request.method==='GET'){
+    const checkoutId=parsedUrl.searchParams.get('checkoutId')||request.query?.checkoutId
+    validateCheckoutId(checkoutId)
+    const {p,o}=await loadOffer(database,checkoutId)
+    return response.status(200).json({productName:p.name,amountCents:o.price_cents,currency:o.currency})
+   }
+   if(request.method!=='POST')return response.status(405).json({code:'METHOD_NOT_ALLOWED'})
+   let body
+   try{body=await readRawBody(request)}catch(error){if(error?.code==='PAYLOAD_TOO_LARGE')throw new ConnectError('PAYLOAD_TOO_LARGE',413,'Corpo da requisição excede o limite.');throw new ConnectError('INVALID_JSON',400,'Envie um corpo JSON válido.')}
+   const input=parseJsonBody({body})
+   return response.status(200).json({success:true,...await createCheckout(database,input)})
+  }catch(error){return fail(response,error)}
+ }
   if (request.method !== 'POST') return response.status(405).json({ success: false, code: 'METHOD_NOT_ALLOWED' })
 
   const secrets = [clean(process.env.PAYMENT_WEBHOOK_SECRET), clean(process.env.PAYMENT_WEBHOOK_SECRET_PREVIOUS)].filter(Boolean)
@@ -86,6 +109,8 @@ export default async function handler(request, response) {
   } catch {
     return reject(response, 400, 'INVALID_PAYMENT_EVENT', { request })
   }
+
+  if (clean(input?.provider).toLowerCase() === 'stripe') return reject(response, 400, 'USE_OFFICIAL_STRIPE_WEBHOOK', { request })
 
   const client = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
   try {

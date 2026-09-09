@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/api/stripe/webhook", "destination": "/api/payments/webhook?stripeAction=webhook" },
+    { "source": "/api/stripe/checkout", "destination": "/api/payments/webhook?stripeAction=checkout" },
     { "source": "/((?!api/|assets/|branding/|favicon/|icons/|manifest.webmanifest|robots.txt|sitemap.xml|sw.js|offline.html).*)", "destination": "/index.html" }
   ],
   "headers": [

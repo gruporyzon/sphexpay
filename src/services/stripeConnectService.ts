@@ -1,7 +1,7 @@
 import {supabase} from '../lib/supabase'
 
 export type StripeOnboardingStatus='not_connected'|'pending'|'in_review'|'requirements_due'|'enabled'
-export type StripeConnectStatus={connected:boolean;accountId?:string;detailsSubmitted:boolean;chargesEnabled:boolean;payoutsEnabled:boolean;onboardingStatus:StripeOnboardingStatus;requirements:{currentlyDue:string[];eventuallyDue:string[]}}
+export type StripeConnectStatus={mode:'test'|'live';onboardingComplete:boolean;connected:boolean;accountId?:string;detailsSubmitted:boolean;chargesEnabled:boolean;payoutsEnabled:boolean;onboardingStatus:StripeOnboardingStatus;requirements:{currentlyDue:string[];eventuallyDue:string[]}}
 
 const authenticatedFetch=async(path:string,init?:RequestInit)=>{
  if(!supabase)throw new Error('A autenticação não está disponível neste ambiente.')
@@ -14,6 +14,7 @@ const authenticatedFetch=async(path:string,init?:RequestInit)=>{
 }
 
 export const stripeConnectService={
+ configureProductPayments:(productId:string,enabled:boolean)=>authenticatedFetch('/api/stripe/connect/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId,enabled})}) as Promise<{enabled:boolean}>,
  status:()=>authenticatedFetch('/api/stripe/connect/status') as Promise<StripeConnectStatus>,
  createAccount:()=>authenticatedFetch('/api/stripe/connect/account',{method:'POST'}) as Promise<StripeConnectStatus>,
  onboarding:()=>authenticatedFetch('/api/stripe/connect/onboarding',{method:'POST'}) as Promise<{url:string}>

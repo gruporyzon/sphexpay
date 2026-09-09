@@ -8,10 +8,10 @@ import {authenticate,connectionRecord,createOnboardingLink,ensureConnectedAccoun
 
 type Result={statusCode:number;body:Record<string,unknown>|null}
 const response=()=>{const result:Result={statusCode:200,body:null};return{result,status(code:number){result.statusCode=code;return this},json(body:Record<string,unknown>){result.body=body;return this}}}
-const connection={user_id:'user-1',stripe_account_id:'acct_test123',stripe_account_type:'express',stripe_onboarding_status:'pending',stripe_details_submitted:false,stripe_charges_enabled:false,stripe_payouts_enabled:false,stripe_requirements_currently_due:[],stripe_requirements_eventually_due:[]}
+const connection={stripe_mode:'test',stripe_capabilities:{},user_id:'user-1',stripe_account_id:'acct_test123',stripe_account_type:'express',stripe_onboarding_status:'pending',stripe_details_submitted:false,stripe_charges_enabled:false,stripe_payouts_enabled:false,stripe_requirements_currently_due:[],stripe_requirements_eventually_due:[]}
 
 describe('fundação Stripe Connect',()=>{
- beforeEach(()=>{vi.spyOn(console,'error').mockImplementation(()=>{});vi.spyOn(console,'info').mockImplementation(()=>{})})
+ beforeEach(()=>{vi.stubEnv('STRIPE_SECRET_KEY','sk_test_fixture');vi.spyOn(console,'error').mockImplementation(()=>{});vi.spyOn(console,'info').mockImplementation(()=>{})})
  afterEach(()=>{vi.unstubAllEnvs();vi.clearAllMocks();vi.restoreAllMocks()})
 
  it('recusa criação de conta sem autenticação',async()=>{
@@ -28,17 +28,17 @@ describe('fundação Stripe Connect',()=>{
  })
 
  it('reutiliza a conta existente e não cria duplicata',async()=>{
-  const maybeSingle=vi.fn(async()=>({data:connection,error:null})),query={eq:vi.fn(()=>({maybeSingle}))}
-  const create=vi.fn(),database={from:vi.fn(()=>({select:vi.fn(()=>query)}))},stripe={v2:{core:{accounts:{create}}}}
+  const maybeSingle=vi.fn(async()=>({data:connection,error:null})),query={eq:vi.fn(()=>({eq:()=>({maybeSingle}),maybeSingle}))}
+  const create=vi.fn(),database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:vi.fn(()=>({select:vi.fn(()=>query)}))},stripe={v2:{core:{accounts:{create}}}}
   const result=await ensureConnectedAccount(database,{id:'user-1',email:'seller@example.test'},stripe)
   expect(result).toEqual(connection);expect(create).not.toHaveBeenCalled()
  })
 
  it('cria Account v2 com merchant e recipient brasileiros e salva o id com idempotência',async()=>{
   const created={id:'acct_new123',object:'v2.core.account'}
-  const maybeSingle=vi.fn(async()=>({data:null,error:null})),selectExisting={eq:vi.fn(()=>({maybeSingle}))}
+  const maybeSingle=vi.fn(async()=>({data:null,error:null})),selectExisting={eq:vi.fn(()=>({eq:()=>({maybeSingle}),maybeSingle}))}
   const single=vi.fn(async()=>({data:{...connection,stripe_account_id:'acct_new123'},error:null})),selectSaved=vi.fn(()=>({single})),upsert=vi.fn(()=>({select:selectSaved}))
-  const database={from:vi.fn().mockReturnValueOnce({select:vi.fn(()=>selectExisting)}).mockReturnValueOnce({upsert})}
+  const database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:vi.fn().mockReturnValueOnce({select:vi.fn(()=>selectExisting)}).mockReturnValueOnce({upsert})}
   const create=vi.fn<(params:unknown,options:unknown)=>Promise<typeof created>>().mockResolvedValue(created),legacyCreate=vi.fn()
   const stripe={v2:{core:{accounts:{create}}},accounts:{create:legacyCreate}}
   await ensureConnectedAccount(database,{id:'user-1',email:'seller@example.test'},stripe)
@@ -47,7 +47,7 @@ describe('fundação Stripe Connect',()=>{
   expect(legacyCreate).not.toHaveBeenCalled()
   expect(params).toEqual({contact_email:'seller@example.test',identity:{country:'br'},dashboard:'express',configuration:{merchant:{capabilities:{card_payments:{requested:true}}},recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:'user-1'}})
   expect(options).toEqual(expect.objectContaining({idempotencyKey:expect.stringMatching(/^sphex-connect-/)}))
-  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id'})
+  expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id,stripe_mode'})
  })
 
  it('persiste account.id literalmente e mantém todas as demais colunas',()=>{
@@ -66,7 +66,7 @@ describe('fundação Stripe Connect',()=>{
   const maybeSingle=vi.fn(async()=>({data:null,error:null}))
   const single=vi.fn().mockResolvedValueOnce({data:null,error:{message:'storage unavailable'}}).mockResolvedValueOnce({data:connection,error:null})
   const upsert=vi.fn(()=>({select:vi.fn(()=>({single}))}))
-  const database={from:vi.fn(()=>({select:vi.fn(()=>({eq:vi.fn(()=>({maybeSingle}))})),upsert}))}
+  const database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:vi.fn(()=>({select:vi.fn(()=>({eq:vi.fn(()=>({eq:()=>({maybeSingle}),maybeSingle}))})),upsert}))}
   const create=vi.fn<(params:unknown,options:unknown)=>Promise<{id:string;object:string}>>().mockResolvedValue({id:connection.stripe_account_id,object:'v2.core.account'})
   const stripe={v2:{core:{accounts:{create}}}},user={id:'user-1',email:'seller@example.test'}
   await expect(ensureConnectedAccount(database,user,stripe)).rejects.toMatchObject({code:'CONNECT_STORAGE_ERROR'})
@@ -74,7 +74,7 @@ describe('fundação Stripe Connect',()=>{
   expect(create).toHaveBeenCalledTimes(2)
   expect(create.mock.calls[1]).toEqual(create.mock.calls[0])
   expect(create.mock.calls[1][1]).toEqual({idempotencyKey:expect.stringMatching(/^sphex-connect-[a-f0-9]{64}$/)})
-  expect(upsert).toHaveBeenLastCalledWith(expect.objectContaining({user_id:user.id,stripe_account_id:connection.stripe_account_id}),{onConflict:'user_id'})
+  expect(upsert).toHaveBeenLastCalledWith(expect.objectContaining({user_id:user.id,stripe_account_id:connection.stripe_account_id}),{onConflict:'user_id,stripe_mode'})
  })
 
  describe('diagnóstico temporário do formato de account.id',()=>{
@@ -83,7 +83,7 @@ describe('fundação Stripe Connect',()=>{
    const saved={...connection,stripe_account_id:id}
    const single=vi.fn(async()=>({data:error?null:saved,error}))
    const upsert=vi.fn(()=>({select:()=>({single})}))
-   const database={from:()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:null,error:null})})}),upsert})}
+   const database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:()=>({select:()=>({eq:()=>({eq:()=>({maybeSingle:async()=>({data:null,error:null})})})}),upsert})}
    const create=vi.fn(async()=>account)
    return{run:()=>ensureConnectedAccount(database,{id:'user-1'}, {v2:{core:{accounts:{create}}}}),upsert,saved}
   }
@@ -103,7 +103,7 @@ describe('fundação Stripe Connect',()=>{
     type:'string',length,prefix,startsWithAcct,underscoreCount,onlySafeCharacters,matchesCurrentConstraint,containsWhitespace,containsUnexpectedCharacters
    })
    expect(vi.mocked(console.info).mock.invocationCallOrder[0]).toBeLessThan(upsert.mock.invocationCallOrder[0])
-   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_account_id:id}),{onConflict:'user_id'})
+   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_account_id:id}),{onConflict:'user_id,stripe_mode'})
    expect(console.error).not.toHaveBeenCalled()
   })
 
@@ -127,7 +127,7 @@ describe('fundação Stripe Connect',()=>{
    })
    const logs=JSON.stringify([vi.mocked(console.info).mock.calls,vi.mocked(console.error).mock.calls])
    for(const forbidden of [id,email,'user-1','Authorization','synthetic-private-token'])expect(logs).not.toContain(forbidden)
-   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_account_id:id}),{onConflict:'user_id'})
+   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_account_id:id}),{onConflict:'user_id,stripe_mode'})
   })
 
   it.each([null,{code:'23514'}])('uma falha no logger não altera o resultado funcional: %#',async error=>{
@@ -143,7 +143,7 @@ describe('fundação Stripe Connect',()=>{
   const attempt=(error:unknown,data:unknown=null)=>{
    const single=vi.fn(async()=>({data,error}))
    const upsert=vi.fn(()=>({select:vi.fn(()=>({single}))}))
-   const database={from:vi.fn(()=>({select:()=>({eq:()=>({maybeSingle:async()=>({data:null,error:null})})}),upsert}))}
+   const database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:vi.fn(()=>({select:()=>({eq:()=>({eq:()=>({maybeSingle:async()=>({data:null,error:null})})})}),upsert}))}
    const create=vi.fn(async()=>({id:'acct_new123',object:'v2.core.account'}))
    return{run:()=>ensureConnectedAccount(database,{id:'user-1'},{v2:{core:{accounts:{create}}}}),create,upsert,single}
   }
@@ -161,7 +161,7 @@ describe('fundação Stripe Connect',()=>{
    const output=response();fail(output,caught)
    expect(output.result).toEqual({statusCode:503,body:{success:false,code:'CONNECT_STORAGE_ERROR',message:'A conta foi criada, mas não foi possível concluir o vínculo. Tente novamente.'}})
    expect(create).toHaveBeenCalledTimes(1)
-   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id'})
+   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id,stripe_mode'})
    expect(single).toHaveBeenCalledTimes(1)
   })
 
@@ -200,20 +200,26 @@ describe('fundação Stripe Connect',()=>{
   })
  })
 
- it('usa APP_URL confiável e gera Account Link v2 para recipient onboarding',async()=>{
+ it('usa APP_URL confiável e coleta requisitos de merchant e recipient no onboarding v2',async()=>{
   vi.stubEnv('APP_URL','https://sphexpay.example')
   const create=vi.fn(async input=>({url:'https://connect.stripe.test/link',...input}))
   await createOnboardingLink(connection,{v2:{core:{accountLinks:{create}}}})
-  expect(create).toHaveBeenCalledWith({account:'acct_test123',use_case:{type:'account_onboarding',account_onboarding:{configurations:['recipient'],refresh_url:'https://sphexpay.example/app/financeiro/stripe/refresh',return_url:'https://sphexpay.example/app/financeiro/stripe/return',collection_options:{fields:'eventually_due'}}}})
+  expect(create).toHaveBeenCalledWith({account:'acct_test123',use_case:{type:'account_onboarding',account_onboarding:{configurations:['merchant','recipient'],refresh_url:'https://sphexpay.example/app/financeiro/stripe/refresh',return_url:'https://sphexpay.example/app/financeiro/stripe/return',collection_options:{fields:'eventually_due'}}}})
  })
 
  it('mantém a leitura de status v1 compatível e sincroniza o Supabase',async()=>{
   const account={id:'acct_test123',type:'none',details_submitted:true,charges_enabled:false,payouts_enabled:true,requirements:{currently_due:['external_account'],eventually_due:[]}}
   const single=vi.fn(async()=>({data:{...connection,stripe_details_submitted:true,stripe_payouts_enabled:true,stripe_requirements_currently_due:['external_account']},error:null}))
   const update=vi.fn(()=>({eq:vi.fn(()=>({eq:vi.fn(()=>({select:vi.fn(()=>({single}))}))}))}))
-  const retrieve=vi.fn(async()=>account),database={from:vi.fn(()=>({update}))}
+  const retrieve=vi.fn(async()=>account),database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:vi.fn(()=>({update}))}
   await retrieveAndSync(database,'user-1',connection,{accounts:{retrieve}})
-  expect(retrieve).toHaveBeenCalledWith('acct_test123');expect(update).toHaveBeenCalled()
+  expect(retrieve).toHaveBeenCalledWith('acct_test123')
+  // The real database rejects `none`; a successful mocked write alone misses this regression.
+  expect(update).toHaveBeenCalledWith(expect.objectContaining({
+   user_id:'user-1',stripe_account_id:'acct_test123',stripe_account_type:'express',
+   stripe_details_submitted:true,stripe_charges_enabled:false,stripe_payouts_enabled:true,
+   stripe_onboarding_status:'requirements_due',stripe_requirements_currently_due:['external_account']
+  }))
  })
 
  it('trata erro Stripe sem expor detalhes sensíveis',()=>{
@@ -222,6 +228,6 @@ describe('fundação Stripe Connect',()=>{
  })
 
  it('expõe apenas o contrato seguro de status',()=>{
-  expect(safeStatus(connection)).toEqual({connected:true,accountId:'acct_test123',detailsSubmitted:false,chargesEnabled:false,payoutsEnabled:false,onboardingStatus:'pending',requirements:{currentlyDue:[],eventuallyDue:[]}})
+  expect(safeStatus(connection)).toEqual({mode:'test',onboardingComplete:false,connected:true,accountId:'acct_test123',detailsSubmitted:false,chargesEnabled:false,payoutsEnabled:false,onboardingStatus:'pending',requirements:{currentlyDue:[],eventuallyDue:[]}})
  })
 })
