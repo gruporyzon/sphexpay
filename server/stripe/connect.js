@@ -30,9 +30,9 @@ export async function authenticate(request,database){
  if(error||!user)throw new ConnectError('UNAUTHORIZED',401,'Sua sessão expirou. Entre novamente.')
  return user
 }
-export async function findConnection(database,userId){
- const {data,error}=await database.from(table).select(fields).eq('user_id',userId).eq('stripe_mode',getStripeMode()).maybeSingle()
- if(error){logPersistenceError(error,'find_connection');const failure=new ConnectError('CONNECT_STORAGE_ERROR',503,'Não foi possível consultar sua configuração de pagamentos.');Object.defineProperty(failure,'cause',{value:error});throw failure}
+export async function findConnection(database,userId,diagnostics){
+ const {data,error,status}=await database.from(table).select(fields).eq('user_id',userId).eq('stripe_mode',getStripeMode()).maybeSingle()
+ if(error){logPersistenceError(error,diagnostics?'GET':'find_connection',diagnostics?{stage:'find_connection',status}:undefined);const failure=new ConnectError('CONNECT_STORAGE_ERROR',503,'Não foi possível consultar sua configuração de pagamentos.');Object.defineProperty(failure,'cause',{value:error});throw failure}
  if(data)assertConnectionMode(data)
  return data
 }
@@ -63,13 +63,15 @@ export const safeStatus=record=>{
 }:{mode:getStripeMode(),onboardingComplete:false,connected:false,detailsSubmitted:false,chargesEnabled:false,payoutsEnabled:false,onboardingStatus:'not_connected',requirements:{currentlyDue:[],eventuallyDue:[]}}
 }
 // Only known database diagnostics may pass through; arbitrary text can contain PII.
-const persistenceColumns=['stripe_mode','user_id','stripe_account_id','stripe_account_type','stripe_onboarding_status','stripe_details_submitted','stripe_charges_enabled','stripe_payouts_enabled','stripe_requirements_currently_due','stripe_requirements_eventually_due','created_at','updated_at','id']
+const persistenceColumns=fields.split(',').concat('id')
 const persistenceConstraints=['user_mode_key','stripe_mode_check','user_id_key','stripe_account_id_key','account_id_format','stripe_account_type_check','stripe_onboarding_status_check','user_id_fkey','pkey'].map(suffix=>`${table}_${suffix}`)
 const safePersistenceMessages=new Set([
  `permission denied for table ${table}`,
  `new row violates row-level security policy for table "${table}"`,
  `relation "public.${table}" does not exist`,
  `Could not find the table 'public.${table}' in the schema cache`,
+ 'CONNECT_IDENTITY_IMMUTABLE',
+ ...persistenceColumns.map(column=>`Could not find the '${column}' column of '${table}' in the schema cache`),
  ...persistenceColumns.map(column=>`null value in column "${column}" of relation "${table}" violates not-null constraint`),
  ...persistenceConstraints.flatMap(constraint=>[
   `duplicate key value violates unique constraint "${constraint}"`,
@@ -77,13 +79,14 @@ const safePersistenceMessages=new Set([
   `insert or update on table "${table}" violates foreign key constraint "${constraint}"`
  ])
 ])
-const logPersistenceError=(error,operation)=>{
+const logPersistenceError=(error,operation,context)=>{
  // Never serialize the error or free-form details (e.g. PostgreSQL's failing row).
  // Logging failures must not change the existing error returned to the frontend.
  try{
   const safeText=value=>value==null?null:typeof value==='string'&&safePersistenceMessages.has(value)?value:'[REDACTED]'
   console.error('[Stripe Connect][Supabase persistence]',{
    ...(operation?{operation}:{}),
+   ...(context?{stage:context.stage,mode:getStripeMode(),status:Number.isInteger(context.status)&&context.status>=100&&context.status<=599?context.status:null}:{}),
    code:typeof error.code==='string'&&/^(?:[0-9]{2}[A-Z0-9]{3}|PGRST[0-9]{3})$/.test(error.code)?error.code:null,
    message:safeText(error.message),details:safeText(error.details),hint:safeText(error.hint)
   })
@@ -131,15 +134,28 @@ export async function retrieveAndSync(database,userId,connection,stripe=getStrip
  assertConnectionMode(connection)
  if(connection.user_id!==userId)throw new ConnectError('CONNECT_OWNERSHIP_MISMATCH',403,'Conta de pagamentos incompatível com o usuário.')
  let account
- try{account=await stripe.accounts.retrieve(connection.stripe_account_id)}catch{throw new ConnectError('STRIPE_ACCOUNT_UNAVAILABLE',502,'Não foi possível consultar sua conta de pagamentos agora.')}
+ try{account=await stripe.accounts.retrieve(connection.stripe_account_id)}catch(error){
+  const temporary=['StripeConnectionError','StripeRateLimitError','StripeAPIError'].includes(error?.type)||error?.statusCode===429||error?.statusCode>=500
+  const internal=['StripeAuthenticationError','StripePermissionError','StripeInvalidRequestError'].includes(error?.type)||[400,401,403].includes(error?.statusCode)
+  throw new ConnectError(temporary?'STRIPE_ACCOUNT_UNAVAILABLE':internal?'STRIPE_CONFIGURATION_ERROR':'STRIPE_ACCOUNT_ERROR',temporary?503:internal?500:502,'Não foi possível consultar sua conta de pagamentos agora.')
+ }
  if(connection.user_id!==userId||account.id!==connection.stripe_account_id||(account.metadata?.sphex_user_id&&account.metadata.sphex_user_id!==userId))throw new ConnectError('CONNECT_OWNERSHIP_MISMATCH',403,'Conta de pagamentos incompatível com o usuário.')
  if(account.deleted)throw new ConnectError('STRIPE_ACCOUNT_UNAVAILABLE',502,'Sua conta de pagamentos não está disponível.')
  // Accounts v2 can appear as type `none` through v1. Status refreshes must
  // preserve the local Express setup instead of violating its database constraint.
  const record={...connectionRecord(userId,account),stripe_account_type:connection.stripe_account_type}
- const {data,error}=await database.from(table).update(record).eq('user_id',userId).eq('stripe_account_id',connection.stripe_account_id).select(fields).single()
- if(error||!data)throw new ConnectError('CONNECT_STORAGE_ERROR',503,'Não foi possível atualizar o status da sua conta de pagamentos.')
- return data
+ try{
+  const {data,error,status}=await database.from(table).update(record).eq('user_id',userId).eq('stripe_mode',getStripeMode()).eq('stripe_account_id',connection.stripe_account_id).select(fields).single()
+  if(error||!data){
+   logPersistenceError(error||{code:'PGRST116',message:'No status row returned'},'PATCH',{stage:'persist_status',status})
+   throw new ConnectError('CONNECT_STORAGE_ERROR',500,'Não foi possível atualizar o status da sua conta de pagamentos.')
+  }
+  return data
+ }catch(error){
+  if(error instanceof ConnectError)throw error
+  logPersistenceError(error||{},'PATCH',{stage:'persist_status',status:error?.status})
+  throw new ConnectError('CONNECT_STORAGE_ERROR',500,'Não foi possível atualizar o status da sua conta de pagamentos.')
+ }
 }
 export const configuredAppUrl=()=>{
  const candidate=[process.env.APP_URL,process.env.VERCEL_PROJECT_PRODUCTION_URL&&`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,process.env.VERCEL_URL&&`https://${process.env.VERCEL_URL}`].find(Boolean)
