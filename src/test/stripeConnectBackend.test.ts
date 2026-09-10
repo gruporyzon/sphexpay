@@ -210,7 +210,8 @@ describe('fundação Stripe Connect',()=>{
  it('mantém a leitura de status v1 compatível e sincroniza o Supabase',async()=>{
   const account={id:'acct_test123',type:'none',details_submitted:true,charges_enabled:false,payouts_enabled:true,requirements:{currently_due:['external_account'],eventually_due:[]}}
   const single=vi.fn(async()=>({data:{...connection,stripe_details_submitted:true,stripe_payouts_enabled:true,stripe_requirements_currently_due:['external_account']},error:null}))
-  const update=vi.fn(()=>({eq:vi.fn(()=>({eq:vi.fn(()=>({select:vi.fn(()=>({single}))}))}))}))
+  const query:any={eq:vi.fn(()=>query),select:vi.fn(()=>({single}))}
+  const update=vi.fn(()=>query)
   const retrieve=vi.fn(async()=>account),database={rpc:vi.fn(async(_name:string,args:any)=>({data:args.p_parameters,error:null})),from:vi.fn(()=>({update}))}
   await retrieveAndSync(database,'user-1',connection,{accounts:{retrieve}})
   expect(retrieve).toHaveBeenCalledWith('acct_test123')
