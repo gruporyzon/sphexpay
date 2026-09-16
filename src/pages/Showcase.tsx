@@ -1,27 +1,130 @@
-import { ArrowUpRight,Check,ChevronDown,Filter,Search,ShoppingBag,Sparkles,Star,Users,X } from 'lucide-react'
-import { useMemo,useState } from 'react'
-import { Card,PageTitle } from '../components/ui'
+import { ArrowRight, Check, CheckCircle2, ImageIcon, LockKeyhole, Package, Plus, RefreshCw, Search, Store, TrendingUp, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { money } from '../lib/utils'
+import { supabase } from '../lib/supabase'
+import { getProductShowcaseEligibility, SHOWCASE_TARGET_CENTS, type ShowcaseProduct, type ShowcaseStatus } from '../features/showcase/showcaseEligibility'
+import { showcaseError, showcaseService } from '../features/showcase/showcaseService'
+import '../features/showcase/showcase.css'
 
-type ShowcaseProduct={id:string;name:string;creator:string;category:string;type:string;price:number;commission:number;sales:number;accent:string;description:string;featured?:boolean}
-const products:ShowcaseProduct[]=[
- {id:'ia-academy',name:'IA Academy',creator:'@futurelab',category:'Educação',type:'Curso',price:497,commission:45,sales:1280,accent:'#f15a24',description:'Formação prática para criar fluxos inteligentes e escalar operações com inteligência artificial.',featured:true},
- {id:'tok-shop',name:'Tok Shop BR',creator:'@tokcommerce',category:'E-commerce',type:'Software',price:89,commission:35,sales:942,accent:'#111827',description:'Ferramentas para organizar catálogo, afiliados e conversões em uma única operação.'},
- {id:'flow-automate',name:'Flow Automate',creator:'@flowstack',category:'Automação',type:'SaaS',price:149,commission:40,sales:731,accent:'#334155',description:'Automação visual para conectar processos, dados e times sem fricção.'},
- {id:'marketing-elite',name:'Marketing Elite',creator:'@mktclub',category:'Marketing',type:'Comunidade',price:297,commission:50,sales:608,accent:'#c2410c',description:'Playbooks, aulas e encontros para transformar aquisição em crescimento previsível.'},
- {id:'fin-prime',name:'Fin Prime',creator:'@finprime',category:'Finanças',type:'Curso',price:397,commission:38,sales:486,accent:'#166534',description:'Educação financeira aplicada para negócios digitais e criadores independentes.'},
- {id:'store-builder',name:'Store Builder',creator:'@buildfast',category:'E-commerce',type:'Software',price:249,commission:30,sales:391,accent:'#7c3aed',description:'Construa vitrines digitais rápidas, elegantes e prontas para vender.'},
- {id:'creator-pro',name:'Creator Pro',creator:'@studioalpha',category:'Marketing',type:'Mentoria',price:697,commission:55,sales:274,accent:'#be185d',description:'Mentoria avançada para posicionamento, conteúdo e monetização.'},
- {id:'data-pulse',name:'Data Pulse',creator:'@metricflow',category:'Automação',type:'SaaS',price:119,commission:42,sales:216,accent:'#0369a1',description:'Painéis enxutos para encontrar oportunidades nos seus dados de conversão.'},
-]
-const affiliateKey='sphexpay_showcase_affiliations'
-const readAffiliations=()=>{try{return JSON.parse(localStorage.getItem(affiliateKey)||'[]') as string[]}catch{return[]}}
-export default function Showcase(){const [query,setQuery]=useState(''),[category,setCategory]=useState('Todas'),[type,setType]=useState('Todos'),[sort,setSort]=useState('hot'),[selected,setSelected]=useState<ShowcaseProduct|null>(null),[affiliations,setAffiliations]=useState<string[]>(readAffiliations)
- const categories=['Todas',...new Set(products.map(item=>item.category))],types=['Todos',...new Set(products.map(item=>item.type))]
- const visible=useMemo(()=>products.filter(item=>(category==='Todas'||item.category===category)&&(type==='Todos'||item.type===type)&&`${item.name} ${item.creator} ${item.category}`.toLowerCase().includes(query.toLowerCase())).sort((a,b)=>sort==='commission'?b.commission-a.commission:sort==='price'?a.price-b.price:sort==='recent'?b.id.localeCompare(a.id):b.sales-a.sales),[query,category,type,sort])
- const requestAffiliate=(id:string)=>{setAffiliations(current=>{const next=current.includes(id)?current:[...current,id];localStorage.setItem(affiliateKey,JSON.stringify(next));return next});setSelected(current=>current?{...current}:null)}
- return <div className="page-enter showcase-page"><PageTitle title="Vitrine" subtitle="Descubra produtos, encontre novas oportunidades e amplie sua operação como afiliado."/><section className="showcase-hero"><div><span className="section-eyebrow"><Sparkles size={14}/> ECOSSISTEMA SPHEXPAY</span><h2>Produtos que combinam com a sua audiência.</h2><p>Explore ofertas selecionadas, veja o potencial de cada produto e solicite sua afiliação em poucos passos.</p></div><div className="showcase-hero-stat"><ShoppingBag/><b>{products.length}</b><span>ofertas disponíveis</span></div></section>
- <Card className="showcase-toolbar internal-filter-bar"><label className="showcase-search"><Search size={17}/><input aria-label="Buscar produtos da vitrine" placeholder="Buscar produto, criador ou categoria" value={query} onChange={event=>setQuery(event.target.value)}/>{query&&<button aria-label="Limpar busca" onClick={()=>setQuery('')}><X size={14}/></button>}</label><div className="showcase-filters"> <label className="internal-filter-select"><Filter className="internal-filter-icon" size={14}/><select className="internal-filter-value" aria-label="Filtrar por categoria" value={category} onChange={event=>setCategory(event.target.value)}>{categories.map(value=><option key={value}>{value}</option>)}</select><ChevronDown className="internal-filter-chevron" size={13}/></label><label className="internal-filter-select"><select className="internal-filter-value" aria-label="Filtrar por tipo" value={type} onChange={event=>setType(event.target.value)}>{types.map(value=><option key={value}>{value}</option>)}</select><ChevronDown className="internal-filter-chevron" size={13}/></label><label className="internal-filter-select"><span>Ordenar</span><select className="internal-filter-value" aria-label="Ordenar vitrine" value={sort} onChange={event=>setSort(event.target.value)}><option value="hot">Mais quentes</option><option value="recent">Mais recentes</option><option value="commission">Maior comissão</option><option value="price">Menor preço</option></select><ChevronDown className="internal-filter-chevron" size={13}/></label></div></Card>
- <div className="showcase-grid">{visible.map(product=><article className={`showcase-product ${product.featured?'featured':''}`} key={product.id} onClick={()=>setSelected(product)}><div className="showcase-cover" style={{background:`linear-gradient(135deg,${product.accent},#08090d)`}}><span>{product.category}</span><b>{product.name.split(' ').map(part=>part[0]).join('').slice(0,3)}</b><i/></div><div className="showcase-product-copy"><div className="showcase-product-title"><div><h3>{product.name}</h3><small>{product.creator}</small></div><ArrowUpRight size={16}/></div><p>{product.description}</p><div className="showcase-product-meta"><span><Users size={13}/>{product.sales.toLocaleString('pt-BR')} vendas</span><span className="showcase-commission">{product.commission}% comissão</span></div><div className="showcase-product-footer"><strong>{money(product.price)}</strong><button className="btn btn-primary" onClick={event=>{event.stopPropagation();setSelected(product)}}>Ver detalhes</button></div></div></article>)}{!visible.length&&<Card className="showcase-empty"><Search/><h3>Nenhum produto encontrado</h3><p>Tente ajustar sua busca ou os filtros.</p></Card>}</div>
- {selected&&<div className="showcase-modal-backdrop" onMouseDown={()=>setSelected(null)}><section className="showcase-detail" role="dialog" aria-modal="true" aria-label={`Detalhes de ${selected.name}`} onMouseDown={event=>event.stopPropagation()}><button className="btn btn-ghost showcase-close" aria-label="Fechar detalhes" onClick={()=>setSelected(null)}><X/></button><div className="showcase-detail-cover" style={{background:`linear-gradient(135deg,${selected.accent},#08090d)`}}><span>{selected.category}</span><b>{selected.name}</b><small>{selected.creator}</small></div><div className="showcase-detail-body"><div className="showcase-detail-heading"><div><span className="section-eyebrow"><Star size={13}/> OFERTA EM DESTAQUE</span><h2>{selected.name}</h2><p>{selected.creator} · {selected.type}</p></div><div><strong>{selected.commission}%</strong><small>comissão</small></div></div><p className="showcase-detail-description">{selected.description}</p><dl className="showcase-detail-stats"><div><dt>Preço</dt><dd>{money(selected.price)}</dd></div><div><dt>Você recebe até</dt><dd>{money(selected.price*selected.commission/100)}</dd></div><div><dt>Vendas</dt><dd>{selected.sales.toLocaleString('pt-BR')}</dd></div></dl><div className="showcase-detail-actions">{affiliations.includes(selected.id)?<span className="showcase-requested"><Check size={16}/> Afiliação solicitada</span>:<button className="btn btn-primary" onClick={()=>requestAffiliate(selected.id)}>Solicitar afiliação</button>}<button className="btn" onClick={()=>setSelected(null)}>Fechar</button></div></div></section></div>}
- </div>}
+const labels: Record<ShowcaseStatus, string> = { locked: 'Bloqueado', eligible: 'Elegível', published: 'Publicado' }
+const filters = ['all', 'published', 'eligible', 'locked'] as const
+const filterLabels = { all: 'Todos', published: 'Publicados', eligible: 'Elegíveis', locked: 'Bloqueados' }
+
+function ProductImage({ product }: { product: ShowcaseProduct }) {
+ const [failed, setFailed] = useState(false)
+ return <div className="vitrine-image">{product.imageUrl && !failed
+  ? <img src={product.imageUrl} alt="" loading="lazy" onError={() => setFailed(true)} />
+  : <ImageIcon aria-hidden="true" />}</div>
+}
+
+function ProductCard({ product, busy, onPublish, published = false }: {
+ product: ShowcaseProduct; busy: string | null; onPublish: (product: ShowcaseProduct, publish: boolean) => void; published?: boolean
+}) {
+ const eligibility = getProductShowcaseEligibility(product.grossSalesCents, product.publishedAt)
+ const isPublished = product.status === 'published'
+ const hasPublication = Boolean(product.publishedAt)
+ const working = busy === product.id
+ return <article className={`vitrine-card is-${product.status}`} aria-label={product.name}>
+  <div className="vitrine-card-top"><ProductImage key={product.imageUrl} product={product} /><span className={`vitrine-badge is-${product.status}`}>
+   {isPublished ? <Check size={12} /> : eligibility.eligible ? <CheckCircle2 size={12} /> : <LockKeyhole size={12} />}{labels[product.status]}</span></div>
+  <div className="vitrine-card-copy"><span className="vitrine-category">{product.category}</span><h3>{product.name}</h3>
+   {!published && <div className="vitrine-progress-block">
+    <div className="vitrine-progress-label"><strong>{money(product.grossSalesCents / 100)}</strong><span>de {money(SHOWCASE_TARGET_CENTS / 100)}</span></div>
+    <progress aria-label={`Progresso de ${product.name}`} value={eligibility.progress} max={100} />
+    <p>{eligibility.eligible ? 'Meta alcançada. Seu produto conquistou este espaço.' : `Faltam ${money(eligibility.remainingCents / 100)} para liberar este produto na vitrine.`}</p>
+   </div>}
+   {published && <p className="vitrine-published-note"><CheckCircle2 size={15} /> Publicado na sua vitrine</p>}
+   <button type="button" className={`vitrine-button ${hasPublication ? 'is-secondary' : 'is-primary'}`} disabled={busy !== null || (!eligibility.eligible && !hasPublication)}
+    aria-busy={working} onClick={() => onPublish(product, !hasPublication)}>
+    {working ? <RefreshCw size={16} /> : hasPublication ? <X size={16} /> : eligibility.eligible ? <Plus size={16} /> : <LockKeyhole size={16} />}
+    {working ? 'Salvando...' : hasPublication ? 'Remover da vitrine' : 'Adicionar à vitrine'}
+   </button>
+  </div>
+ </article>
+}
+
+function PlayerShowcase({ userId }: { userId: string }) {
+ const [products, setProducts] = useState<ShowcaseProduct[]>([])
+ const [loading, setLoading] = useState(true)
+ const [error, setError] = useState('')
+ const [notice, setNotice] = useState('')
+ const [busy, setBusy] = useState<string | null>(null)
+ const [filter, setFilter] = useState<(typeof filters)[number]>('all')
+ const [query, setQuery] = useState('')
+ const management = useRef<HTMLElement>(null)
+ const mounted = useRef(false), request = useRef(0), saving = useRef(false)
+ const refresh = useCallback(async () => {
+  const version = ++request.current
+  setLoading(true)
+  try {
+   const rows = await showcaseService.list()
+   if (mounted.current && version === request.current) { setProducts(rows); setError('') }
+  } catch (reason) {
+   if (mounted.current && version === request.current) setError(showcaseError(reason))
+  } finally {
+   if (mounted.current && version === request.current) setLoading(false)
+  }
+ }, [])
+ useEffect(() => {
+  mounted.current = true
+  void refresh()
+  const update = () => { if (!saving.current) void refresh() }
+  const channel = supabase?.channel(`showcase-${userId}`)
+   .on('postgres_changes', { event: '*', schema: 'public', table: 'payment_transactions', filter: `user_id=eq.${userId}` }, update)
+   .on('postgres_changes', { event: '*', schema: 'public', table: 'products', filter: `seller_id=eq.${userId}` }, update).subscribe()
+  window.addEventListener('focus', update)
+  return () => { mounted.current = false; window.removeEventListener('focus', update); if (channel) void supabase?.removeChannel(channel) }
+ }, [refresh, userId])
+ const publish = async (product: ShowcaseProduct, value: boolean) => {
+  if (saving.current) return
+  saving.current = true; setBusy(product.id); setNotice(''); setError('')
+  ++request.current
+  try {
+   await showcaseService.setPublished(product.id, value)
+   if (!mounted.current) return
+   const rows = await showcaseService.list()
+   if (!mounted.current) return
+   setProducts(rows)
+   setNotice(value ? `${product.name} foi adicionado à vitrine.` : `${product.name} foi removido da vitrine.`)
+  } catch (reason) {
+   if (mounted.current) setError(showcaseError(reason))
+  } finally {
+   saving.current = false
+   if (mounted.current) { setBusy(null); setLoading(false) }
+  }
+ }
+ const counts = useMemo(() => products.reduce((result, product) => { result[product.status]++; return result }, { published: 0, eligible: 0, locked: 0 }), [products])
+ const published = products.filter(product => product.status === 'published')
+ const visible = products.filter(product => (filter === 'all' || product.status === filter) && `${product.name} ${product.category}`.toLocaleLowerCase('pt-BR').includes(query.trim().toLocaleLowerCase('pt-BR')))
+ const seeEligible = () => { setFilter('eligible'); setQuery(''); management.current?.scrollIntoView({ block: 'start' }); management.current?.focus({ preventScroll: true }) }
+ return <div className="vitrine-page">
+  <header className="vitrine-heading"><div><span className="vitrine-eyebrow">CRESCIMENTO QUE GANHA VISIBILIDADE</span><h1>Vitrine</h1></div><button type="button" className="vitrine-button is-secondary" onClick={() => void refresh()} disabled={loading || busy !== null}><RefreshCw size={15} />{loading ? 'Atualizando...' : 'Atualizar'}</button></header>
+  <section className="vitrine-hero" aria-labelledby="vitrine-hero-title"><div className="vitrine-hero-copy"><span className="vitrine-hero-label"><Store size={16} /> SEU PRÓXIMO ESPAÇO</span><h2 id="vitrine-hero-title">Resultados abrem portas.<br /><span>Seu produto merece ser visto.</span></h2><p>Conquiste {money(1000)} em vendas aprovadas por produto e escolha o que vai para a sua vitrine.</p><div className="vitrine-rule"><TrendingUp size={16} /><span>Vendas reais. Conquistas por produto.</span></div></div>
+   <dl className="vitrine-summary">{(['published', 'eligible', 'locked'] as const).map(status => <div key={status}><dt>{filterLabels[status]}</dt><dd>{loading || error ? '—' : counts[status].toString().padStart(2, '0')}</dd></div>)}</dl>
+  </section>
+  {notice && <div className="vitrine-toast" role="status"><CheckCircle2 size={18} /><span>{notice}</span><button type="button" aria-label="Fechar confirmação" onClick={() => setNotice('')}><X size={16} /></button></div>}
+  {error ? <div className="vitrine-error" role="alert"><strong>Não foi possível carregar a vitrine</strong><p>{error}</p><button className="vitrine-button is-secondary" disabled={loading || busy !== null} onClick={() => void refresh()}>Tentar novamente</button></div>
+   : loading && !products.length ? <div className="vitrine-loading" role="status"><Store size={28} /><p>Carregando seus produtos e suas conquistas...</p></div>
+   : <>
+    <section className="vitrine-section" aria-labelledby="vitrine-published-title"><div className="vitrine-section-heading"><div><span className="vitrine-eyebrow">01 / SUA SELEÇÃO</span><h2 id="vitrine-published-title">Vitrine publicada</h2></div><span className="vitrine-count">{counts.published} {counts.published === 1 ? 'produto' : 'produtos'}</span></div>
+     {published.length ? <div className="vitrine-grid">{published.map(product => <ProductCard key={product.id} product={product} busy={busy} onPublish={publish} published />)}</div>
+      : <div className="vitrine-empty"><div className="vitrine-empty-symbol" aria-hidden="true"><Store size={32} /><span><LockKeyhole size={13} /></span></div><span className="vitrine-eyebrow">UM NOVO PALCO PARA SUAS CONQUISTAS</span><h3>Sua vitrine ainda está vazia</h3><p>Quando seus produtos alcançarem R$ 1.000,00 em vendas, você poderá publicá-los aqui para ganhar mais visibilidade.</p><div className="vitrine-empty-actions"><button className="vitrine-button is-primary" onClick={seeEligible}>Ver meus produtos elegíveis <ArrowRight size={15} /></button><Link className="vitrine-button is-secondary" to="/app/produtos">Ir para produtos</Link></div><small>Você decide o que publicar. Nada entra automaticamente.</small></div>}
+    </section>
+    <section className="vitrine-section" ref={management} tabIndex={-1} aria-labelledby="vitrine-management-title"><div className="vitrine-section-heading"><div><span className="vitrine-eyebrow">02 / ACOMPANHE SUA EVOLUÇÃO</span><h2 id="vitrine-management-title">Meus produtos para vitrine</h2><p>Cada produto tem sua própria meta. Confira o progresso e libere o próximo.</p></div></div>
+     <div className="vitrine-toolbar"><div className="vitrine-filters" role="group" aria-label="Filtrar produtos por status">{filters.map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}>{filterLabels[value]}<span>{value === 'all' ? products.length : counts[value]}</span></button>)}</div><label className="vitrine-search"><Search size={16} /><input aria-label="Buscar meus produtos" placeholder="Buscar produto ou categoria" value={query} onChange={event => setQuery(event.target.value)} /></label></div>
+     {visible.length ? <div className="vitrine-grid" aria-busy={loading}>{visible.map(product => <ProductCard key={product.id} product={product} busy={busy} onPublish={publish} />)}</div>
+      : <div className="vitrine-no-results"><Package size={28} /><h3>{products.length ? 'Nenhum produto neste filtro' : 'Sua próxima conquista começa com um produto'}</h3><p>{products.length ? 'Experimente outro status ou ajuste sua busca.' : 'Cadastre seus produtos e acompanhe aqui o caminho até a vitrine.'}</p>{products.length ? <button className="vitrine-button is-secondary" onClick={() => { setFilter('all'); setQuery('') }}>Ver todos os produtos</button> : <Link className="vitrine-button is-primary" to="/app/produtos">Ir para produtos <ArrowRight size={15} /></Link>}</div>}
+     <p className="vitrine-footnote">Consideramos vendas aprovadas em reais, após descontos e antes das taxas. Reembolsos e chargebacks não contam. A visibilidade depende de manter a meta de R$ 1.000,00.</p>
+    </section>
+   </>}
+ </div>
+}
+
+export default function Showcase() {
+ const { user, loading } = useAuth()
+ if (loading) return <div className="vitrine-loading" role="status">Validando acesso...</div>
+ if (!user) return <div className="vitrine-error" role="alert">Entre na sua conta para acessar a vitrine.</div>
+ return <PlayerShowcase key={user.id} userId={user.id} />
+}
