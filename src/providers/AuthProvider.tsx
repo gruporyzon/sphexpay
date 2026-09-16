@@ -3,7 +3,6 @@ import type { Session } from '@supabase/supabase-js'
 import { isSupabaseClientAvailable,supabase } from '../lib/supabase'
 import { authService,clearSessionPersistence,mfaService,shouldEndTemporarySession } from '../services/authService'
 import { AuthContext,type AuthContextValue } from './authContext'
-import { clearAuthEntranceState } from '../lib/authEntranceState'
 
 const emptyAssurance={current:null,next:null}
 
@@ -57,7 +56,7 @@ export function AuthProvider({children}:PropsWithChildren){
   aal,
   mfaRequired:aal.next==='aal2'&&aal.current!=='aal2',
   refreshAssurance,
-  signOut:async()=>{try{await authService.signOut()}finally{clearAuthEntranceState();setSession(null);setAal(emptyAssurance)}}
+  signOut:async()=>{try{await authService.signOut()}finally{setSession(null);setAal(emptyAssurance)}}
  }),[session,loading,aal,refreshAssurance])
 
  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

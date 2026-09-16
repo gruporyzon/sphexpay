@@ -9,7 +9,6 @@ import { TwoFactorChallenge } from '../../components/auth/TwoFactorChallenge'
 import { supabaseUnavailableMessage } from '../../lib/supabase'
 import { authMessage,authService,mfaService,setSessionPersistence } from '../../services/authService'
 import { useAuth } from '../../hooks/useAuth'
-import { markAuthEntrancePending } from '../../lib/authEntranceState'
 
 export default function LoginPage(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[remember,setRemember]=useState(true),[error,setError]=useState(''),[loading,setLoading]=useState(false)
@@ -22,7 +21,7 @@ export default function LoginPage(){
   return onboarded&&desired?.startsWith('/app')?desired:onboarded?'/app':'/onboarding'
  }
 
- const goToApp=(destination:string)=>{markAuthEntrancePending();navigate(destination,{replace:true})}
+ const goToApp=(destination:string)=>{navigate(destination,{replace:true})}
 
  const submit=async(event:FormEvent)=>{
   event.preventDefault()

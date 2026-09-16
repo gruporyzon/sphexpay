@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'; import { createRoot } from 'react-dom/client'; import './index.css'; import './public.css'; import './landing-cinematic.css'; import './components/app-boot/app-boot-splash.css'; import App from './App'; import { useDemoStore } from './store/useDemoStore'
+import { StrictMode } from 'react'; import { createRoot } from 'react-dom/client'; import './index.css'; import './public.css'; import './landing-cinematic.css'; import App from './App'; import { useDemoStore } from './store/useDemoStore'
 import { notificationService } from './services/notificationService'
 import { pwaInstallService } from './services/pwaInstallService'
 import { AuthProvider } from './providers/AuthProvider'
