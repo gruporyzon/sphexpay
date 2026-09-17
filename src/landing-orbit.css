@@ -1,0 +1,192 @@
+/* Scoped enhancement: the existing copy, navigation and account flows stay intact. */
+.landing-redesign .landing-hero.landing-hero-orbit {
+  isolation: isolate;
+  overflow: hidden;
+  padding-bottom: clamp(180px, 20vw, 300px);
+}
+
+.landing-hero-orbit .hero-orbit-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  contain: paint;
+}
+
+.hero-orbit-halo {
+  position: absolute;
+  inset: 24% -15% -55%;
+  background: radial-gradient(ellipse at 50% 60%, #ff6b2838, transparent 58%);
+  animation: spx-orbit-awaken 2.4s ease-out both;
+}
+
+.hero-orbit-system {
+  position: absolute;
+  left: 50%;
+  bottom: -100px;
+  width: min(1120px, 130vw);
+  aspect-ratio: 2.5;
+  transform: translateX(-50%) translate3d(calc(var(--hero-pointer-x, 0px) * 3), calc(var(--hero-pointer-y, 0px) * 3), 0);
+  transition: transform 450ms ease-out;
+}
+
+.hero-orbit-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #f4773c66;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 0 #ffc39a80, 0 -6px 32px #ff6b281c;
+  animation: spx-orbit-arrive 2.6s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+.hero-orbit-ring::after {
+  content: '';
+  position: absolute;
+  top: 14%;
+  left: 14%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffc394;
+  box-shadow: 0 0 12px #ff9c58, 0 0 30px #ff6b28;
+}
+
+.hero-orbit-ring-outer { rotate: -12deg; }
+.hero-orbit-ring-middle { inset: 12% 7%; rotate: 14deg; animation-delay: 140ms; }
+.hero-orbit-ring-middle::after { top: 69%; left: 94%; }
+.hero-orbit-ring-inner { inset: 24% 17%; rotate: -7deg; animation-delay: 280ms; }
+.hero-orbit-ring-inner::after { top: 1%; left: 42%; }
+
+.hero-orbit-core {
+  position: absolute;
+  inset: 40% 29% -35%;
+  border-radius: 50% 50% 0 0;
+  border-top: 1px solid #ffc197;
+  background: radial-gradient(ellipse at 50% 0, #f15a2438, transparent 65%), var(--page-bg, #080808);
+  box-shadow: 0 -5px 22px #ff6b2855, 0 -20px 90px #ff6b2824;
+  animation: spx-orbit-awaken 2.8s ease-out both;
+}
+
+.hero-orbit-horizon {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 90px;
+  background: linear-gradient(transparent, var(--page-bg, #080808));
+}
+
+.landing-redesign .landing-hero-orbit h1 {
+  font-size: clamp(42px, 5.8vw, 82px);
+  line-height: 1.06;
+}
+
+.landing-redesign .landing-hero-orbit h1 > span { white-space: normal; }
+
+.landing-redesign .landing-hero-orbit .public-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-hero-orbit .public-primary::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background: linear-gradient(110deg, transparent 35%, #ffffff40 50%, transparent 65%);
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.landing-hero-orbit .public-primary:is(:hover, :focus-visible)::after {
+  animation: spx-orbit-sheen 700ms ease-out;
+}
+
+@keyframes spx-orbit-arrive {
+  from { opacity: 0; transform: translateY(90px) scale(.82); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes spx-orbit-awaken {
+  from { opacity: 0; transform: translateY(35px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spx-orbit-sheen { to { transform: translateX(100%); } }
+
+/* Gallery light sits above the artwork, never above its interaction layer. */
+.landing-redesign .spx-visual-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(125deg, #ffb98a1c, transparent 40%, transparent 65%, #f15a241a);
+  box-shadow: inset 0 0 0 1px #f15a2460, inset 0 1px 0 #ffd1b480;
+  opacity: 0;
+  transition: opacity 350ms ease;
+}
+
+.landing-redesign .spx-visual-card:focus-within::after {
+  opacity: 1;
+}
+
+.landing-redesign .spx-visual-card:focus-visible,
+.landing-redesign .spx-commerce-tabs button:focus-visible,
+.landing-redesign .spx-visual-controls button:focus-visible {
+  outline: 2px solid #f15a24;
+  outline-offset: -3px;
+}
+
+.landing-redesign .spx-visual-controls button svg {
+  transition: transform 250ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .landing-redesign .spx-visual-card:hover::after {
+    opacity: 1;
+  }
+
+  .landing-redesign .spx-visual-card .spx-visual-media {
+    transition: transform 650ms cubic-bezier(.16, 1, .3, 1);
+  }
+
+  .landing-redesign .spx-visual-card:hover .spx-visual-media {
+    transform: scale(1.035);
+  }
+
+  .landing-redesign .spx-visual-controls button:first-child:hover svg {
+    transform: translateX(-3px);
+  }
+
+  .landing-redesign .spx-visual-controls button:last-child:hover svg {
+    transform: translateX(3px);
+  }
+
+  .landing-redesign .spx-commerce-tabs button:not([aria-selected=true]):hover {
+    box-shadow: inset 0 0 0 1px #f15a2460;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-orbit-system { transform: translateX(-50%); bottom: -40px; }
+}
+
+@media (max-width: 600px) {
+  .landing-redesign .landing-hero.landing-hero-orbit { padding-bottom: 155px; }
+  .landing-redesign .landing-hero-orbit h1 { font-size: clamp(38px, 10.8vw, 60px); }
+  .hero-orbit-system { width: 155vw; bottom: -20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-redesign .spx-visual-card::after,
+  .landing-redesign .spx-visual-controls button svg {
+    transition: none;
+  }
+  .landing-hero-orbit .hero-orbit-scene *,
+  .landing-hero-orbit .public-primary::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .hero-orbit-system { transform: translateX(-50%); }
+}

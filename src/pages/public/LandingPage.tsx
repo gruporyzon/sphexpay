@@ -11,6 +11,7 @@ import { SphexPayLogo } from '../../components/branding/SphexPayLogo'
 import { revenueAwards } from '../../config/revenueAwards'
 import { useAuth } from '../../hooks/useAuth'
 import { useLandingMotion } from '../../hooks/useLandingMotion'
+import '../../landing-orbit.css'
 
 const capabilityLabels=['Dashboard','Vendas ao vivo','Transações','Produtos','Clientes','Financeiro','Notificações','Premiações']
 
@@ -23,7 +24,17 @@ export default function LandingPage(){
  return <div className="landing landing-v2 landing-redesign" id="top">
   <a className="public-skip" href="#public-content">Ir para o conteúdo</a><PublicHeader/>
   <main id="public-content">
-   <section className="landing-hero" aria-labelledby="landing-title" data-scroll-progress><div className="hero-grid"/>
+   <section className="landing-hero landing-hero-orbit" aria-labelledby="landing-title" data-scroll-progress><div className="hero-grid" aria-hidden="true"/>
+    <div className="hero-orbit-scene" aria-hidden="true">
+     <div className="hero-orbit-halo"/>
+     <div className="hero-orbit-system">
+      <div className="hero-orbit-ring hero-orbit-ring-outer"/>
+      <div className="hero-orbit-ring hero-orbit-ring-middle"/>
+      <div className="hero-orbit-ring hero-orbit-ring-inner"/>
+      <div className="hero-orbit-core"/>
+     </div>
+     <div className="hero-orbit-horizon"/>
+    </div>
     <div className="landing-hero-copy"><h1 id="landing-title"><span data-motion data-motion-delay="1">Enquanto uns dormem,</span><span data-motion data-motion-delay="2">seu dinheiro atravessa o mundo.</span></h1><p data-motion data-motion-delay="3">Pagamentos globais e saque rápido.</p><div className="landing-hero-actions" data-motion data-motion-delay="4"><Link className="public-primary" to={accountDestination}>Comece a vender <ArrowRight/></Link><a className="landing-hero-secondary" href="#experiencia">Ver como funciona</a></div><dl className="hero-metrics" aria-label="Indicadores da plataforma">{[['6.99%','por transação'],['150+','países'],['3 dias','para saque']].map(([value,label],index)=><div data-motion data-motion-delay={String(index+5)} key={value}><dt>{value}</dt><dd>{label}</dd></div>)}</dl></div>
    </section>
    <section className="landing-trust" id="experiencia" data-motion aria-label="Áreas da plataforma"><span>UMA EXPERIÊNCIA CONECTADA À SUA OPERAÇÃO</span><div>{capabilityLabels.map(item=><b key={item}>{item}</b>)}</div></section>
