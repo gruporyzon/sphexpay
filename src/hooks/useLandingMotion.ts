@@ -10,7 +10,7 @@ export function useLandingMotion(){
   if(!root)return
   const motionQuery=window.matchMedia?.('(prefers-reduced-motion: reduce)')
   const desktopQuery=window.matchMedia?.('(min-width: 901px) and (hover: hover)')
-  const reduced=motionQuery?.matches??false
+  let reduced=motionQuery?.matches??false
   const motionElements=new Set<HTMLElement>()
   const progressElements=new Set<HTMLElement>()
   const hero=root.querySelector<HTMLElement>('.landing-hero')
@@ -18,6 +18,9 @@ export function useLandingMotion(){
   let revealFrame=0
   let pointerX=0
   let pointerY=0
+  let depthTarget:HTMLElement|null=null
+  let depthX=0
+  let depthY=0
 
   const reveal=(element:HTMLElement)=>{element.dataset.motionState='visible'}
   const observer=reduced||typeof IntersectionObserver==='undefined'?null:new IntersectionObserver(entries=>{
@@ -42,6 +45,7 @@ export function useLandingMotion(){
 
   const updateMotion=()=>{
    frame=0
+   if(reduced)return
    const viewport=Math.max(window.innerHeight,1)
    progressElements.forEach(element=>{
     const rect=element.getBoundingClientRect()
@@ -54,16 +58,42 @@ export function useLandingMotion(){
    hero?.style.setProperty('--hero-pointer-x',`${(pointerX*5).toFixed(2)}px`)
    hero?.style.setProperty('--hero-pointer-y',`${(pointerY*3).toFixed(2)}px`)
    hero?.style.setProperty('--hero-glow-x',`${(pointerX*-5).toFixed(2)}px`)
+   depthTarget?.style.setProperty('--depth-x',depthX.toFixed(3))
+   depthTarget?.style.setProperty('--depth-y',depthY.toFixed(3))
   }
   const schedule=()=>{if(!frame)frame=requestAnimationFrame(updateMotion)}
   const handlePointerMove=(event:PointerEvent)=>{
-   if(!hero||!desktopQuery?.matches)return
+   if(reduced||!hero||!desktopQuery?.matches)return
    const rect=hero.getBoundingClientRect()
    pointerX=clamp((event.clientX-rect.left)/Math.max(rect.width,1))*2-1
    pointerY=clamp((event.clientY-rect.top)/Math.max(rect.height,1))*2-1
    schedule()
   }
   const resetPointer=()=>{pointerX=0;pointerY=0;schedule()}
+  const resetDepth=()=>{
+   depthTarget?.style.removeProperty('--depth-x');depthTarget?.style.removeProperty('--depth-y')
+   depthTarget=null;depthX=0;depthY=0
+  }
+  const handleDepth=(event:PointerEvent)=>{
+   if(reduced||!desktopQuery?.matches||event.pointerType==='touch')return
+   const target=event.target instanceof Element?event.target.closest<HTMLElement>('[data-depth]'):null
+   if(target!==depthTarget){resetDepth();depthTarget=target}
+   if(!target)return
+   const rect=target.getBoundingClientRect()
+   depthX=clamp((event.clientX-rect.left)/Math.max(rect.width,1))*2-1
+   depthY=clamp((event.clientY-rect.top)/Math.max(rect.height,1))*2-1
+   schedule()
+  }
+  const syncMotionPreference=()=>{
+   reduced=motionQuery?.matches??false
+   if(reduced){
+    cancelAnimationFrame(frame);frame=0;resetDepth()
+    motionElements.forEach(element=>{reveal(element);observer?.unobserve(element)})
+    progressElements.forEach(element=>{element.style.setProperty('--scroll-progress','1');element.style.setProperty('--scroll-shift','0')})
+    pointerX=0;pointerY=0
+    hero?.style.setProperty('--hero-pointer-x','0px');hero?.style.setProperty('--hero-pointer-y','0px')
+   }else schedule()
+  }
 
   register(root)
   if(!reduced&&observer){
@@ -74,15 +104,19 @@ export function useLandingMotion(){
   }
   const mutation=new MutationObserver(records=>records.forEach(record=>record.addedNodes.forEach(node=>{if(node instanceof HTMLElement)register(node)})))
   mutation.observe(root,{childList:true,subtree:true})
-  if(!reduced){
-   addEventListener('scroll',schedule,{passive:true});addEventListener('resize',schedule,{passive:true})
-   hero?.addEventListener('pointermove',handlePointerMove,{passive:true});hero?.addEventListener('pointerleave',resetPointer);schedule()
-  }else progressElements.forEach(element=>{element.style.setProperty('--scroll-progress','1');element.style.setProperty('--scroll-shift','0')})
+  const scheduleIfEnabled=()=>{if(!reduced)schedule()}
+  addEventListener('scroll',scheduleIfEnabled,{passive:true});addEventListener('resize',scheduleIfEnabled,{passive:true})
+  hero?.addEventListener('pointermove',handlePointerMove,{passive:true});hero?.addEventListener('pointerleave',resetPointer)
+  root.addEventListener('pointermove',handleDepth,{passive:true});root.addEventListener('pointerleave',resetDepth)
+  motionQuery?.addEventListener?.('change',syncMotionPreference)
+  syncMotionPreference()
 
   return()=>{
    observer?.disconnect();mutation.disconnect();cancelAnimationFrame(frame);cancelAnimationFrame(revealFrame)
-   removeEventListener('scroll',schedule);removeEventListener('resize',schedule)
+   removeEventListener('scroll',scheduleIfEnabled);removeEventListener('resize',scheduleIfEnabled)
    hero?.removeEventListener('pointermove',handlePointerMove);hero?.removeEventListener('pointerleave',resetPointer)
+   root.removeEventListener('pointermove',handleDepth);root.removeEventListener('pointerleave',resetDepth)
+   motionQuery?.removeEventListener?.('change',syncMotionPreference);resetDepth()
   }
  },[])
 }

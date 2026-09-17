@@ -114,6 +114,63 @@
 @keyframes spx-orbit-sheen { to { transform: translateX(100%); } }
 
 /* Gallery light sits above the artwork, never above its interaction layer. */
+.landing-redesign {
+  --motion-ease-polished: cubic-bezier(.16, 1, .3, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-redesign [data-motion][data-motion-state="visible"] {
+    transition-timing-function: var(--motion-ease-polished);
+    transition-duration: 850ms;
+  }
+
+  .landing-redesign .spx-device-presentation[data-motion-state="visible"] .spx-device-chart-line {
+    stroke-dasharray: 1;
+    animation: spx-chart-reveal 1.8s 350ms var(--motion-ease-polished) both;
+  }
+
+  .landing-redesign .spx-device-presentation[data-motion-state="visible"] .spx-device-glass {
+    animation: spx-glass-reveal 2.2s 500ms ease-out both;
+  }
+
+  .landing-redesign .spx-commerce-panel-content {
+    animation: spx-panel-enter 600ms var(--motion-ease-polished) both;
+  }
+}
+
+@keyframes spx-chart-reveal {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes spx-glass-reveal {
+  from { opacity: 0; transform: translateX(-30%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes spx-panel-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .landing-redesign .official-reward-track article img {
+    transition: transform 600ms var(--motion-ease-polished), filter 600ms ease;
+  }
+  .landing-redesign .official-reward-track article:hover img {
+    transform: translateY(-9px) rotate(-2deg) scale(1.035);
+    filter: drop-shadow(0 16px 12px #f15a2426);
+  }
+  .landing-redesign .spx-mobile-benefits article,
+  .landing-redesign .spx-global-metrics article {
+    transition: transform 450ms var(--motion-ease-polished);
+  }
+  .landing-redesign .spx-mobile-benefits article:hover,
+  .landing-redesign .spx-global-metrics article:hover { transform: translateY(-4px); }
+  .landing-redesign .public-primary svg { transition: transform 300ms var(--motion-ease-polished); }
+  .landing-redesign .public-primary:hover svg { transform: translateX(3px); }
+}
+
 .landing-redesign .spx-visual-card::after {
   content: '';
   position: absolute;

@@ -1,0 +1,133 @@
+/* A CSS-built device keeps the interface crisp at every pixel density. */
+.landing-redesign .spx-device-stage {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 620px;
+  margin: 0;
+  padding: 45px 0 48px;
+  display: grid;
+  place-items: center;
+  perspective: 1400px;
+}
+.spx-device-aura {
+  position: absolute;
+  inset: 8% -10%;
+  pointer-events: none;
+  background: radial-gradient(ellipse, #f15a242a, transparent 65%);
+}
+.spx-device-orbit {
+  position: absolute;
+  inset: 24% -5%;
+  border: 1px solid #f15a242b;
+  border-radius: 50%;
+  transform: rotate(-28deg);
+  pointer-events: none;
+}
+.spx-device-presentation { width: min(310px, 76%); position: relative; z-index: 2; }
+.spx-device-shell {
+  position: relative;
+  padding: 5px;
+  border-radius: 49px;
+  background: linear-gradient(110deg, #7c7d81, #efefed 17%, #85878a 35%, #d7d7d4 60%, #525359 84%, #cacac7);
+  box-shadow: inset 0 0 0 1px #f9f9f7, inset 0 0 0 3px #3a3a3e, 10px 15px 0 -7px #3c3c40, 18px 32px 44px #0003, 0 65px 75px -35px #0006;
+  transform: rotate(-5deg) rotateY(-10deg) rotateX(4deg);
+  transition: transform 600ms cubic-bezier(.16, 1, .3, 1);
+}
+.spx-device-screen {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 78 / 163.4;
+  border: 6px solid #080809;
+  border-radius: 45px;
+  background: #101114;
+  color: #f5f5f7;
+  --device-muted: #9b9ba5;
+  --device-line: #ffffff12;
+  --device-card: #1a1b20;
+  font-family: inherit;
+}
+.spx-device-status { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 10px; height: 43px; font-size: 10px; }
+.spx-device-status span { display: flex; gap: 4px; }
+.spx-device-status svg { width: 12px; height: 12px; }
+.spx-device-island { position: absolute; top: 10px; left: 50%; translate: -50% 0; width: 84px; height: 25px; border-radius: 20px; background: #000; box-shadow: inset 0 1px 2px #ffffff0c; }
+.spx-device-island i { position: absolute; right: 10px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #35485c, #08101e 45%, #15151c 60%); }
+.spx-device-key { position: absolute; width: 3px; border-radius: 3px; background: linear-gradient(#c4c4c6, #6d6d70, #bdbdbf); box-shadow: inset 1px 0 #fff7; }
+.spx-device-key-action { top: 85px; left: -2px; height: 24px; }
+.spx-device-key-volume { top: 127px; left: -2px; height: 70px; }
+.spx-device-key-power { top: 148px; right: -3px; height: 50px; }
+.spx-device-app { padding: 8px 17px 22px; }
+.spx-device-app > header { display: flex; justify-content: space-between; align-items: center; }
+.spx-device-app .sphexpay-brand { gap: 6px; }
+.spx-device-app .sphexpay-brand img { width: 23px; height: 23px; object-fit: contain; }
+.spx-device-app .sphexpay-wordmark { font-size: 15px; color: inherit; }
+.spx-device-avatar { display: grid; place-items: center; width: 26px; height: 26px; background: var(--device-card); border: 1px solid var(--device-line); border-radius: 50%; font-size: 8px; }
+.spx-device-greeting { margin-top: 20px; }
+.spx-device-greeting > small { color: #ef8b60; font-size: 6px; letter-spacing: .15em; }
+.spx-device-greeting h3 { margin: 7px 0 5px; font-size: 16px; font-weight: 550; letter-spacing: -.04em; }
+.spx-device-greeting > span { font-size: 8px; color: var(--device-muted); }
+.spx-device-balance { margin-top: 19px; padding: 17px; border: 1px solid #f15a2440; border-radius: 17px; background: radial-gradient(ellipse at 100% 0, #f15a2426, transparent 80%), var(--device-card); }
+.spx-device-balance > span { display: flex; align-items: center; justify-content: space-between; color: var(--device-muted); font-size: 8px; }
+.spx-device-balance svg { width: 12px; height: 12px; }
+.spx-device-balance strong { display: block; margin: 10px 0; font-size: 27px; font-weight: 550; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.spx-device-balance small { display: flex; align-items: center; gap: 4px; color: #ea956e; font-size: 7px; }
+.spx-device-chart { margin-top: 18px; }
+.spx-device-chart header { display: flex; justify-content: space-between; align-items: center; font-size: 9px; }
+.spx-device-chart header small { font-size: 7px; color: var(--device-muted); }
+.spx-device-chart svg { display: block; width: 100%; height: 85px; margin-top: 8px; overflow: visible; }
+.spx-device-chart-area { fill: #f15a2418; }
+.spx-device-chart-line { fill: none; stroke: #f47b43; stroke-width: 2; stroke-linecap: round; }
+.spx-device-chart > div { display: flex; justify-content: space-between; color: var(--device-muted); font-size: 6px; }
+.spx-device-stats { display: grid; grid-template-columns: 1fr 1fr; margin-top: 15px; gap: 9px; }
+.spx-device-stats > div { padding: 10px; border: 1px solid var(--device-line); border-radius: 10px; background: var(--device-card); }
+.spx-device-stats small { display: block; color: var(--device-muted); font-size: 7px; }
+.spx-device-stats b { display: block; margin-top: 3px; font-size: 15px; font-weight: 550; }
+.spx-device-event { display: flex; align-items: center; gap: 7px; margin-top: 14px; padding: 10px 0; border-block: 1px solid var(--device-line); }
+.spx-device-event > i { display: grid; place-items: center; width: 23px; height: 23px; border-radius: 50%; background: #1cb87a18; color: #46bb8a; }
+.spx-device-event svg { width: 11px; height: 11px; }
+.spx-device-event b { display: block; font-size: 8px; font-weight: 550; }
+.spx-device-event small { display: block; margin-top: 3px; font-size: 6px; color: var(--device-muted); }
+.spx-device-event strong { margin-left: auto; font-size: 8px; font-weight: 550; }
+.spx-device-dock { display: flex; justify-content: space-around; margin-top: 13px; font-size: 6px; color: var(--device-muted); }
+.spx-device-dock span { display: grid; justify-items: center; gap: 4px; }
+.spx-device-dock span:first-child { color: #f47b43; }
+.spx-device-dock svg { width: 14px; height: 14px; }
+.spx-device-home { position: absolute; bottom: 7px; left: 33%; width: 34%; height: 3px; border-radius: 4px; background: currentColor; opacity: .75; }
+.spx-device-glass { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(115deg, #ffffff0c 2%, transparent 27%, transparent 64%, #ffffff03 65%, transparent 84%); box-shadow: inset 0 0 0 1px #ffffff0d; }
+.spx-device-note { position: absolute; z-index: 3; display: flex; align-items: center; gap: 9px; max-width: 220px; padding: 14px; border: 1px solid var(--border, #ffffff20); border-radius: 17px; background: var(--surface, #141416); color: var(--text-primary); box-shadow: 0 16px 40px #0002; }
+.spx-device-note > i { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px; color: #f4773c; background: #f15a2415; }
+.spx-device-note svg { width: 15px; height: 15px; }
+.spx-device-note > svg { width: 12px; color: #f4773c; }
+.spx-device-note small { display: block; font-size: 7px; color: var(--text-secondary); }
+.spx-device-note b { display: block; margin-top: 4px; font-size: 10px; font-weight: 600; }
+.spx-device-note-sale { left: -2%; top: 27%; }
+.spx-device-note-secure { right: -2%; bottom: 18%; }
+.spx-device-stage figcaption { position: absolute; bottom: 0; font-size: 9px; color: var(--text-secondary); text-align: center; }
+:root:not([data-theme=dark]) .spx-device-screen { background: #fafafa; color: #18181b; --device-muted: #74747d; --device-line: #0000000c; --device-card: #fff; }
+@media (min-width: 901px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .spx-device-shell { transform: rotate(-5deg) rotateY(calc(-10deg + var(--depth-x, 0) * 6deg)) rotateX(calc(4deg - var(--depth-y, 0) * 4deg)) translateY(calc(var(--scroll-shift, 0) * -15px)); }
+}
+@media (max-width: 600px) {
+  .landing-redesign .spx-device-stage { padding-bottom: 106px; }
+  .spx-device-presentation { width: min(290px, 85%); }
+  .spx-device-shell { transform: rotate(-3deg); }
+  .spx-device-note { padding: 10px; max-width: 190px; }
+  .spx-device-note-sale { top: auto; bottom: 91px; left: 0; }
+  .spx-device-note-secure { bottom: 30px; right: 0; }
+  .spx-device-note-secure small { display: none; }
+  .spx-device-stage figcaption { font-size: 8px; }
+  .spx-device-orbit { inset-inline: 0; }
+  .spx-device-aura { inset-inline: 0; }
+}
+@media (max-width: 600px) {
+  .spx-device-app { padding: 6px 13px 18px; }
+  .spx-device-greeting { margin-top: 14px; }
+  .spx-device-balance { margin-top: 12px; padding: 12px; }
+  .spx-device-chart { margin-top: 12px; }
+  .spx-device-chart svg { height: 65px; }
+  .spx-device-stats { margin-top: 10px; }
+  .spx-device-event { margin-top: 9px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spx-device-shell { transform: none; transition: none; }
+}
