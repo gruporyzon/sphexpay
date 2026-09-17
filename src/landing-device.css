@@ -46,6 +46,8 @@
   --device-line: #ffffff12;
   --device-card: #1a1b20;
   font-family: inherit;
+  font-size: 12px;
+  line-height: 1.35;
 }
 .spx-device-status { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 10px; height: 43px; font-size: 10px; }
 .spx-device-status span { display: flex; gap: 4px; }
@@ -63,9 +65,9 @@
 .spx-device-app .sphexpay-wordmark { font-size: 15px; color: inherit; }
 .spx-device-avatar { display: grid; place-items: center; width: 26px; height: 26px; background: var(--device-card); border: 1px solid var(--device-line); border-radius: 50%; font-size: 8px; }
 .spx-device-greeting { margin-top: 20px; }
-.spx-device-greeting > small { color: #ef8b60; font-size: 6px; letter-spacing: .15em; }
+.spx-device-greeting > small { display: block; color: #ef8b60; font-size: 6px; letter-spacing: .15em; }
 .spx-device-greeting h3 { margin: 7px 0 5px; font-size: 16px; font-weight: 550; letter-spacing: -.04em; }
-.spx-device-greeting > span { font-size: 8px; color: var(--device-muted); }
+.spx-device-greeting > span { display: block; font-size: 8px; color: var(--device-muted); }
 .spx-device-balance { margin-top: 19px; padding: 17px; border: 1px solid #f15a2440; border-radius: 17px; background: radial-gradient(ellipse at 100% 0, #f15a2426, transparent 80%), var(--device-card); }
 .spx-device-balance > span { display: flex; align-items: center; justify-content: space-between; color: var(--device-muted); font-size: 8px; }
 .spx-device-balance svg { width: 12px; height: 12px; }
@@ -109,7 +111,7 @@
 }
 @media (max-width: 600px) {
   .landing-redesign .spx-device-stage { padding-bottom: 106px; }
-  .spx-device-presentation { width: min(290px, 85%); }
+  .spx-device-presentation { width: min(290px, 95%); }
   .spx-device-shell { transform: rotate(-3deg); }
   .spx-device-note { padding: 10px; max-width: 190px; }
   .spx-device-note-sale { top: auto; bottom: 91px; left: 0; }
