@@ -10,7 +10,7 @@ vi.mock('../hooks/useAuth', () => ({ useAuth: () => ({ user: auth.user }) }))
 
 afterEach(() => { cleanup(); auth.user = null })
 
-describe('abertura orbital da página pública', () => {
+describe('página pública de referência', () => {
   it('preserva seleção e navegação por teclado das abas de checkout', async () => {
     const user = userEvent.setup()
     render(<MemoryRouter><LandingPage /></MemoryRouter>)
@@ -37,12 +37,9 @@ describe('abertura orbital da página pública', () => {
     expect(scrollTo).toHaveBeenCalledTimes(2)
   })
 
-  it('mantém efeitos decorativos fora da navegação acessível', () => {
-    const { container } = render(<MemoryRouter><LandingPage /></MemoryRouter>)
-    const scene = container.querySelector('.hero-orbit-scene')!
-    expect(scene).toHaveAttribute('aria-hidden', 'true')
-    expect(scene.querySelectorAll('.hero-orbit-ring')).toHaveLength(3)
-    expect(scene.querySelectorAll('a, button, input, [tabindex]')).toHaveLength(0)
+  it('identifica a prévia como demonstração e mantém um título principal', () => {
+    render(<MemoryRouter><LandingPage /></MemoryRouter>)
+    expect(screen.getByRole('region', { name: 'Prévia demonstrativa do dashboard SphexPay' })).toBeInTheDocument()
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
   })
 
@@ -53,7 +50,7 @@ describe('abertura orbital da página pública', () => {
   ] as const)('preserva o destino do CTA para a sessão %j', (user, destination) => {
     auth.user = user
     render(<MemoryRouter><LandingPage /></MemoryRouter>)
-    const hero = screen.getByRole('region', { name: /Enquanto uns dormem/ })
+    const hero = screen.getByRole('region', { name: /Você sempre no topo/ })
     expect(within(hero).getByRole('link', { name: 'Comece a vender' })).toHaveAttribute('href', destination)
     expect(within(hero).getByRole('link', { name: 'Ver como funciona' })).toHaveAttribute('href', '#experiencia')
   })

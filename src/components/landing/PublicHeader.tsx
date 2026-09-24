@@ -11,6 +11,7 @@ const navigation=[
 
 export function PublicHeader(){
  const [open,setOpen]=useState(false),[scrolled,setScrolled]=useState(false),[active,setActive]=useState('')
+ const searchRef=useRef<HTMLDialogElement>(null),[query,setQuery]=useState('')
  const headerRef=useRef<HTMLElement>(null),menuRef=useRef<HTMLButtonElement>(null),wasOpen=useRef(false)
  const {user}=useAuth(),destination=user?(user.user_metadata?.onboarding_complete?'/app':'/onboarding'):'/criar-conta'
  useEffect(()=>{
@@ -42,9 +43,10 @@ export function PublicHeader(){
  return <header ref={headerRef} className={`public-header public-header-redesign public-header-hero ${scrolled?'scrolled':''}`}>
   <div className="public-header-inner">
    <Link to="/" className="public-logo" aria-label="Sphex — página inicial"><SphexPayLogo showName shortName priority adaptiveTheme/></Link>
-   <nav id="public-navigation" className={open?'open':''} aria-label="Navegação principal">{navigation.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined} onClick={()=>{setActive(id);close()}}>{label}</a>)}<button className="public-search" type="button" aria-label="Buscar na página"><Search/></button><div className="public-mobile-actions"><Link to="/entrar" onClick={close}>Entrar</Link><Link className="public-primary" to={destination} onClick={close}>{user?'Acessar painel':'Criar conta'}</Link></div></nav>
+   <nav id="public-navigation" className={open?'open':''} aria-label="Navegação principal">{navigation.map(([id,label])=><a key={id} href={`#${id}`} aria-current={active===id?'location':undefined} onClick={()=>{setActive(id);close()}}>{label}</a>)}<button className="public-search" type="button" aria-label="Buscar na página" onClick={()=>{setOpen(false);setQuery('');searchRef.current?.showModal()}}><Search/></button><div className="public-mobile-actions"><Link to="/entrar" onClick={close}>Entrar</Link><Link className="public-primary" to={destination} onClick={close}>{user?'Acessar painel':'Criar conta'}</Link></div></nav>
    <div className="public-actions"><Link to="/entrar">Entrar</Link><Link className="public-primary" to={destination}>{user?'Acessar painel':'Criar conta'}</Link></div>
    <button ref={menuRef} className="public-menu" onClick={()=>setOpen(value=>!value)} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="public-navigation">{open?<X/>:<Menu/>}</button>
   </div>
+  <dialog ref={searchRef} className="ref-search-dialog" aria-label="Buscar na página" onClick={event=>{if(event.target===event.currentTarget)searchRef.current?.close()}}><div><h2>Explore a SphexPay</h2><button type="button" aria-label="Fechar busca" onClick={()=>searchRef.current?.close()}><X/></button></div><label htmlFor="public-search-input">O que você procura?</label><input id="public-search-input" type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Buscar na página"/><nav aria-label="Resultados da busca">{navigation.filter(([,label])=>label.toLocaleLowerCase().includes(query.toLocaleLowerCase())).map(([id,label])=><a key={id} href={`#${id}`} onClick={()=>searchRef.current?.close()}>{label}</a>)}{!navigation.some(([,label])=>label.toLocaleLowerCase().includes(query.toLocaleLowerCase()))&&<p>Nenhuma seção encontrada.</p>}</nav></dialog>
  </header>
 }

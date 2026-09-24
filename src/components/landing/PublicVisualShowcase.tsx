@@ -1,7 +1,9 @@
 import { useEffect,useRef,useState,type KeyboardEvent } from 'react'
-import { ArrowUpRight,ChevronLeft,ChevronRight,Globe2,Link2,Radio,Smartphone } from 'lucide-react'
+import { ArrowUpRight,ChevronLeft,ChevronRight,Globe2,Link2,Radio,Smartphone,X } from 'lucide-react'
 
 type ShowcaseCard={id:string;tag:string;title:string;copy:string;kind:'checkout'|'global'|'dashboard'|'live'|'alerts'|'links'}
+
+const photos=['intelligence','global','productivity','product','team','experience']
 
 const cards:ShowcaseCard[]=[
  {id:'checkout',tag:'CHECKOUT',title:'Checkout sem fricção.',copy:'Uma jornada clara para cada decisão de compra.',kind:'checkout'},
@@ -33,18 +35,21 @@ function scrollShowcaseCard(viewport:HTMLDivElement|null,index:number,behavior:S
 }
 
 export function PublicVisualShowcase(){
+ const dialog=useRef<HTMLDialogElement>(null),[detail,setDetail]=useState<ShowcaseCard|null>(null)
+ const show=(card:ShowcaseCard)=>{setDetail(card);dialog.current?.showModal()}
  const viewport=useRef<HTMLDivElement>(null),[active,setActive]=useState(0),[paused,setPaused]=useState(false),[reduced,setReduced]=useState(()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches)
  const sync=()=>{const node=viewport.current;if(!node)return;const cardsIn=node.querySelectorAll<HTMLElement>('[data-showcase-card]');if(!cardsIn.length)return;const center=node.scrollLeft+node.clientWidth/2;let closest=0,delta=Infinity;cardsIn.forEach((card,index)=>{const cardCenter=card.offsetLeft+card.offsetWidth/2,distance=Math.abs(center-cardCenter);if(distance<delta){delta=distance;closest=index}});setActive(closest)}
  useEffect(()=>{if(typeof matchMedia!=='function')return;const media=matchMedia('(prefers-reduced-motion: reduce)'),update=()=>setReduced(media.matches);media.addEventListener?.('change',update);return()=>media.removeEventListener?.('change',update)},[])
- useEffect(()=>{const node=viewport.current;if(!node||reduced||paused)return;const timer=window.setInterval(()=>{const next=(active+1)%cards.length;scrollShowcaseCard(node,next,'smooth')},6500);return()=>clearInterval(timer)},[active,paused,reduced])
+ useEffect(()=>{const node=viewport.current;if(!node||reduced||paused||detail)return;const timer=window.setInterval(()=>{const next=(active+1)%cards.length;scrollShowcaseCard(node,next,'smooth')},6500);return()=>clearInterval(timer)},[active,paused,reduced,detail])
  const select=(index:number)=>{const next=(index+cards.length)%cards.length;setActive(next);scrollShowcaseCard(viewport.current,next,reduced?'auto':'smooth')}
  const onKeyDown=(event:KeyboardEvent<HTMLDivElement>)=>{if(event.key==='ArrowRight'){event.preventDefault();select(active+1)}else if(event.key==='ArrowLeft'){event.preventDefault();select(active-1)}else if(event.key==='Home'){event.preventDefault();select(0)}else if(event.key==='End'){event.preventDefault();select(cards.length-1)}}
  return <section className="spx-visual-showcase" id="integracoes" aria-labelledby="spx-visual-title" onMouseEnter={()=>setPaused(true)} onMouseLeave={()=>setPaused(false)} onFocusCapture={()=>setPaused(true)} onBlurCapture={()=>setPaused(false)}>
-  <div className="spx-visual-heading"><span data-motion>EXPERIÊNCIA SPHEXPAY</span><h2 id="spx-visual-title"><span data-motion data-motion-delay="1">Veja sua operação</span><span className="spx-visual-accent" data-motion data-motion-delay="2">em movimento.</span></h2><i className="spx-visual-rule" data-motion data-motion-delay="3"/><p data-motion data-motion-delay="3">Uma leitura visual dos pontos que mantêm sua operação conectada, clara e pronta para o próximo passo.</p></div>
+  <div className="spx-visual-heading"><h2 id="spx-visual-title" data-motion>Veja com seus olhos.</h2><i className="spx-visual-rule" data-motion/></div>
   <div className="spx-visual-viewport" ref={viewport} role="region" aria-label="Showcase visual da plataforma SphexPay" tabIndex={0} onScroll={sync} onKeyDown={onKeyDown}>
-   <div className="spx-visual-track">{cards.map((card,index)=><article className={`spx-visual-card is-${card.kind}${active===index?' is-active':''}`} data-showcase-card={card.id} tabIndex={0} aria-label={`${card.tag}: ${card.title}`} key={card.id}><div className="spx-visual-media"><CardVisual kind={card.kind}/><div className="spx-visual-vignette"/></div><div className="spx-visual-card-copy"><span>{card.tag}</span><h3>{card.title}</h3><p>{card.copy}</p></div></article>)}</div>
+   <div className="spx-visual-track">{cards.map((card,index)=><article className={`spx-visual-card is-${card.kind}${active===index?' is-active':''}`} data-showcase-card={card.id} tabIndex={0} role="button" onClick={()=>show(card)} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();show(card)}}} aria-label={`${card.tag}: ${card.title}`} key={card.id}><div className="spx-visual-media"><img src={`/landing-reference/gallery-${photos[index]}.webp`} alt="" loading="lazy" width="600" height="800"/><div className="spx-visual-vignette"/></div><div className="spx-visual-card-copy"><span>{card.tag}</span><h3>{card.title}</h3><p>{card.copy}</p></div></article>)}</div>
   </div>
   <div className="spx-visual-controls"><button type="button" aria-label="Showcase anterior" onClick={()=>select(active-1)}><ChevronLeft/></button><div className="spx-visual-progress" aria-label={`Progresso: ${active+1} de ${cards.length}`}><span style={{width:`${((active+1)/cards.length)*100}%`}}/></div><button type="button" aria-label="Próximo showcase" onClick={()=>select(active+1)}><ChevronRight/></button></div>
   <div className="spx-visual-dots" role="tablist" aria-label="Selecionar showcase">{cards.map((card,index)=><button type="button" role="tab" aria-selected={active===index} aria-label={`Mostrar ${card.title}`} onClick={()=>select(index)} key={card.id}><span/></button>)}</div>
+  <dialog ref={dialog} className="ref-detail-dialog" aria-label="Detalhes da plataforma" onClose={()=>setDetail(null)} onClick={event=>{if(event.target===event.currentTarget)dialog.current?.close()}}><button className="ref-dialog-close" type="button" aria-label="Fechar detalhes" onClick={()=>dialog.current?.close()}><X/></button>{detail&&<><span>{detail.tag}</span><h2>{detail.title}</h2><p>{detail.copy}</p><CardVisual kind={detail.kind}/></>}</dialog>
  </section>
 }
