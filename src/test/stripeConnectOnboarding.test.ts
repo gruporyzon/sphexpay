@@ -59,10 +59,34 @@ describe('endpoint de onboarding v2 com persistência confirmada',()=>{
   expect(f.database.rpc).toHaveBeenCalledWith('reserve_stripe_account_for_mode',expect.objectContaining({p_mode:'test'}))
   expect(f.upsert).toHaveBeenCalledWith(expect.objectContaining({stripe_mode:'test'}),{onConflict:'user_id,stripe_mode'})
  })
+ it('conta full solicita somente o onboarding merchant',async()=>{
+  const f=fixture({...record,stripe_account_type:'full'}),out=response();await handler(request,out)
+  expect(out.statusCode).toBe(200)
+  expect(f.createLink).toHaveBeenCalledWith(expect.objectContaining({use_case:{type:'account_onboarding',account_onboarding:expect.objectContaining({configurations:['merchant']})}}))
+ })
+ it('reserva Live anterior é bloqueada sem trocar a chave ou criar outra conta',async()=>{
+  vi.stubEnv('STRIPE_SECRET_KEY','sk_live_fixture')
+  const f=fixture(null),out=response()
+  f.database.rpc.mockResolvedValue({data:{dashboard:'express'} as any,error:null})
+  await handler(request,out)
+  expect(out).toMatchObject({statusCode:503,body:{code:'CONNECT_RECONCILIATION_REQUIRED'}})
+  expect(f.createAccount).not.toHaveBeenCalled();expect(f.createLink).not.toHaveBeenCalled()
+ })
  it.each([null,undefined,'','cus_other','acct_','acct_bad-id'])('bloqueia referência persistida inválida: %s',async id=>{
   const f=fixture({...record,stripe_account_id:id}),out=response();await handler(request,out)
   expect(out).toMatchObject({statusCode:500,body:{code:'CONNECT_ACCOUNT_INVALID'}})
   expect(f.createAccount).not.toHaveBeenCalled();expect(f.createLink).not.toHaveBeenCalled()
+ })
+ it.each(['code','raw'])('explica o bloqueio de ativação da plataforma com erro Stripe em %s',async location=>{
+  const f=fixture(null),out=response()
+  const failure={type:'StripeInvalidRequestError',statusCode:400,requestId:'req_activation123',message:'private details',...(location==='code'?{code:'account_create_activation_required'}:{raw:{code:'account_create_activation_required'}})}
+  f.createAccount.mockRejectedValue(failure)
+  await handler(request,out)
+  expect(out).toMatchObject({statusCode:503,body:{success:false,code:'STRIPE_PLATFORM_ACTIVATION_REQUIRED'}})
+  expect(out.body.message).toContain('Stripe Connect')
+  expect(JSON.stringify(out.body)).not.toContain('private details')
+  expect(f.createAccount).toHaveBeenCalledTimes(1)
+  expect(f.createLink).not.toHaveBeenCalled();expect(f.upsert).not.toHaveBeenCalled()
  })
  it.each(['http://localhost:3000','https://localhost','https://127.0.0.1','https://[::1]'])('bloqueia localhost em produção: %s',async origin=>{
   vi.stubEnv('VERCEL_ENV','production');vi.stubEnv('APP_URL',origin)

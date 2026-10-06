@@ -1,5 +1,43 @@
 > Atualização: a persistência e o fluxo atuais são separados por modo. Consulte [Stripe Connect Test/Live](stripe-connect-test-live.md), incluindo a migration `20260909010000_stripe_connect_modes.sql`. Descrições de vínculo único/ausência de criação no onboarding abaixo são históricas.
 
+## Incidente Live de 06/10/2026 — ativação da plataforma
+
+A tentativa após confirmar a ativação da conta principal retornou HTTP 400 em
+`POST /v2/core/accounts`, código `account_create_activation_required`, request
+`req_v2SApmtMThLj00HiS`. O perfil Connect no Dashboard informa explicitamente
+**Onboarding incompleto**. A conta principal tem pagamentos/repasses ativos e
+nenhum requisito pendente; isso não comprova a liberação da plataforma Connect.
+Não existe conta conectada Live criada ou vinculada para o vendedor dessa tentativa.
+
+O backend agora traduz essa rejeição para HTTP 503,
+`STRIPE_PLATFORM_ACTIVATION_REQUIRED`, com orientação específica sobre ativação
+do Connect. A criação é diagnosticada sem expor contato, segredo ou erro bruto.
+O onboarding preserva o mesmo código/status; não tenta criar links ou persistir
+uma conta após a rejeição. Reservas, parâmetros e idempotência permanecem intactos.
+Não foi trocada a chave de idempotência por hipótese de cache.
+
+A confirmação de integração no Dashboard estava selecionada para cobrança na
+plataforma; o checkout implementa cobranças diretas na conta de cada vendedor.
+Foi selecionado o fluxo de cobrança direta na configuração, sujeito à revisão
+final do responsável e ao Acordo de Plataforma Connect. Aceites legais ou
+financeiros não foram realizados pelo agente.
+
+Novas contas usam `dashboard: full`, configuração merchant e tarifas/perdas da
+Stripe. Contas Express já vinculadas são preservadas. Links full pedem apenas
+merchant. Reservas Live anteriores são bloqueadas até reconciliação explícita;
+a operação full tem uma chave idempotente estável distinta. A tentativa recusada
+foi reconciliada somente após confirmar a inexistência de contas Live na Stripe
+e no banco, preservando parâmetros originais no histórico privado da reserva.
+O prazo original da reserva não é renovado. A migration
+`20261006204000_stripe_direct_merchant_profile.sql` mantém RLS e permite os dois
+perfis no contrato local.
+
+Validação: 217 testes de Connect em dez arquivos, TypeScript, lint e build passaram.
+O checkout real permanece bloqueado até concluir o onboarding da plataforma,
+verificar a conta conectada Live e liberar explicitamente o processamento.
+
+Referência oficial: https://docs.stripe.com/api/v2/core/accounts/create
+
 # Diagnóstico de onboarding Stripe Connect — 2026-09-08
 
 ## Investigação específica de 502/503 — estado local atual

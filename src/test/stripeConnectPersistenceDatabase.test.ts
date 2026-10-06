@@ -17,6 +17,7 @@ beforeAll(async()=>{
  const payments=readFileSync('supabase/migrations/20260904120000_stripe_payments.sql','utf8')
  await db.exec(payments.slice(0,payments.indexOf('create table public.stripe_checkout_orders')))
  await db.exec(readFileSync('supabase/migrations/20260909010000_stripe_connect_modes.sql','utf8'))
+ await db.exec(readFileSync('supabase/migrations/20261006204000_stripe_direct_merchant_profile.sql','utf8'))
  await db.query('insert into auth.users values ($1)',[userId])
 },30000)
 afterAll(async()=>{await db?.close();vi.unstubAllEnvs()})
@@ -26,6 +27,13 @@ const persist=(record:Record<string,unknown>)=>{
  return db.query(`insert into stripe_connected_accounts (${columns.join(',')}) values (${columns.map((_,index)=>`$${index+1}`).join(',')}) on conflict (user_id,stripe_mode) do update set updated_at=excluded.updated_at returning *`,Object.values(record))
 }
 describe('diagnóstico de CHECKs com payload real de persistência Connect',()=>{
+ it('aceita o perfil completo em Live preservando o Express do outro modo',async()=>{
+  const record={...connectionRecord(userId,{...account,id:'acct_full123',dashboard:'full'}),stripe_mode:'live'}
+  expect(record.stripe_account_type).toBe('full')
+  expect((await persist(record)).rows[0]).toMatchObject({stripe_mode:'live',stripe_account_type:'full'})
+  const allowed=await db.query<{allowed:boolean}>("select has_table_privilege('authenticated','stripe_account_requests','update') as allowed")
+  expect(allowed.rows[0].allowed).toBe(false)
+ })
  it('aceita o payload atual de uma Account v2 com merchant e recipient sem type',async()=>{
   const record=connectionRecord(userId,account)
   expect(record).toMatchObject({stripe_account_type:'express',stripe_onboarding_status:'pending',stripe_capabilities:{},stripe_details_submitted:false,stripe_charges_enabled:false,stripe_payouts_enabled:false})

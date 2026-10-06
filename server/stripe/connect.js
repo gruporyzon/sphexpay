@@ -48,7 +48,7 @@ const onboardingStatus=account=>{
  return'in_review'
 }
 export const connectionRecord=(userId,account)=>({
- stripe_mode:getStripeMode(),user_id:userId,stripe_account_id:account.id,stripe_account_type:account.type||'express',stripe_capabilities:account.capabilities||{},
+ stripe_mode:getStripeMode(),user_id:userId,stripe_account_id:account.id,stripe_account_type:account.type||(account.dashboard==='full'?'full':'express'),stripe_capabilities:account.capabilities||{},
  stripe_onboarding_status:onboardingStatus(account),stripe_details_submitted:Boolean(account.details_submitted),
  stripe_charges_enabled:Boolean(account.charges_enabled),stripe_payouts_enabled:Boolean(account.payouts_enabled),
  stripe_requirements_currently_due:account.requirements?.currently_due||[],
@@ -131,13 +131,26 @@ export async function ensureConnectedAccount(database,user,stripe=getStripe()){
   if(existing.user_id!==user.id)throw new ConnectError('CONNECT_OWNERSHIP_MISMATCH',403,'Conta de pagamentos incompatível com o usuário.')
   return existing
  }
- const idempotencyKey=`sphex-connect-${createHash('sha256').update(`${getStripeMode()}:${user.id}`).digest('hex')}`
- const parameters={contact_email:user.email||undefined,identity:{country:'br'},dashboard:'express',configuration:{merchant:{capabilities:{card_payments:{requested:true}}},recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:user.id}}
+ const parameters={contact_email:user.email||undefined,identity:{country:'br'},dashboard:'full',configuration:{merchant:{capabilities:{card_payments:{requested:true}}}},defaults:{responsibilities:{fees_collector:'stripe',losses_collector:'stripe'}},metadata:{sphex_user_id:user.id}}
  // Persist the exact request before Stripe; never retry beyond its retention window.
  const {data:reservation,error:reservationError}=await database.rpc('reserve_stripe_account_for_mode',{p_user_id:user.id,p_mode:getStripeMode(),p_parameters:parameters})
  if(reservationError?.message==='CONNECT_LEGACY_CLASSIFICATION_REQUIRED')throw new ConnectError('CONNECT_LEGACY_CLASSIFICATION_REQUIRED',409,'Existe um vínculo anterior que precisa ser classificado antes de criar uma conta Live. Contate o suporte.')
  if(reservationError||!reservation)throw new ConnectError('CONNECT_RECONCILIATION_REQUIRED',503,'Não foi possível reservar a conta com segurança. Verifique a configuração ou reconcilie a tentativa anterior.')
- const account=await stripe.v2.core.accounts.create(reservation,{idempotencyKey})
+ const full=reservation.dashboard==='full'&&reservation.defaults?.responsibilities?.fees_collector==='stripe'&&reservation.defaults?.responsibilities?.losses_collector==='stripe'&&reservation.configuration?.merchant&&!reservation.configuration?.recipient
+ if(getStripeMode()==='live'&&!full)throw new ConnectError('CONNECT_RECONCILIATION_REQUIRED',503,'Uma tentativa anterior precisa ser reconciliada antes de ativar os recebimentos. Contate o responsável pela plataforma.')
+ // The full profile is a distinct creation operation. Old reservations cannot
+ // enter it without explicit reconciliation; legacy Test operations retain their key.
+ const idempotencyKey=`sphex-connect-${createHash('sha256').update(`${getStripeMode()}:${user.id}${full?':merchant-full-v1':''}`).digest('hex')}`
+ let account
+ try{account=await stripe.v2.core.accounts.create(reservation,{idempotencyKey})}catch(error){
+  logOnboardingError(error,'v2.core.accounts.create')
+  if((error?.code??error?.raw?.code)==='account_create_activation_required'){
+   const failure=new ConnectError('STRIPE_PLATFORM_ACTIVATION_REQUIRED',503,'A Stripe ainda não liberou a plataforma SphexPay para criar contas de recebimentos. O responsável pela plataforma precisa concluir a ativação do Stripe Connect ou solicitar a liberação ao suporte da Stripe.')
+   Object.defineProperty(failure,'cause',{value:error})
+   throw failure
+  }
+  throw error
+ }
  const record=connectionRecord(user.id,account)
  logAccountIdDiagnostic(account.id)
  const {data,error}=await database.from(table).upsert(record,{onConflict:'user_id,stripe_mode'}).select(fields).single()
@@ -183,7 +196,7 @@ export async function createOnboardingLink(connection,stripe=getStripe()){
  assertConnectionMode(connection)
  const origin=configuredAppUrl()
  try{
-  const link=await stripe.v2.core.accountLinks.create({account:connection.stripe_account_id,use_case:{type:'account_onboarding',account_onboarding:{configurations:['merchant','recipient'],refresh_url:`${origin}/app/financeiro/stripe/refresh`,return_url:`${origin}/app/financeiro/stripe/return`,collection_options:{fields:'eventually_due'}}}})
+  const link=await stripe.v2.core.accountLinks.create({account:connection.stripe_account_id,use_case:{type:'account_onboarding',account_onboarding:{configurations:connection.stripe_account_type==='full'?['merchant']:['merchant','recipient'],refresh_url:`${origin}/app/financeiro/stripe/refresh`,return_url:`${origin}/app/financeiro/stripe/return`,collection_options:{fields:'eventually_due'}}}})
   let url
   try{url=typeof link?.url==='string'?new URL(link.url):null}catch{/* Invalid Stripe response handled below. */}
   if(!url||url.protocol!=='https:'||url.username||url.password)throw Object.assign(new Error('Stripe returned an invalid onboarding URL.'),{type:'StripeResponseError',code:'invalid_onboarding_url',requestId:link?.lastResponse?.requestId})

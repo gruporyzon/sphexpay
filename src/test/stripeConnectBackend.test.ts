@@ -34,7 +34,7 @@ describe('fundação Stripe Connect',()=>{
   expect(result).toEqual(connection);expect(create).not.toHaveBeenCalled()
  })
 
- it('cria Account v2 com merchant e recipient brasileiros e salva o id com idempotência',async()=>{
+ it('cria merchant brasileiro com dashboard completo e salva o id com idempotência',async()=>{
   const created={id:'acct_new123',object:'v2.core.account'}
   const maybeSingle=vi.fn(async()=>({data:null,error:null})),selectExisting={eq:vi.fn(()=>({eq:()=>({maybeSingle}),maybeSingle}))}
   const single=vi.fn(async()=>({data:{...connection,stripe_account_id:'acct_new123'},error:null})),selectSaved=vi.fn(()=>({single})),upsert=vi.fn(()=>({select:selectSaved}))
@@ -45,7 +45,7 @@ describe('fundação Stripe Connect',()=>{
   expect(create).toHaveBeenCalledTimes(1)
   const [params,options]=create.mock.calls[0]
   expect(legacyCreate).not.toHaveBeenCalled()
-  expect(params).toEqual({contact_email:'seller@example.test',identity:{country:'br'},dashboard:'express',configuration:{merchant:{capabilities:{card_payments:{requested:true}}},recipient:{capabilities:{stripe_balance:{stripe_transfers:{requested:true}}}}},defaults:{responsibilities:{fees_collector:'application',losses_collector:'application'}},metadata:{sphex_user_id:'user-1'}})
+  expect(params).toEqual({contact_email:'seller@example.test',identity:{country:'br'},dashboard:'full',configuration:{merchant:{capabilities:{card_payments:{requested:true}}}},defaults:{responsibilities:{fees_collector:'stripe',losses_collector:'stripe'}},metadata:{sphex_user_id:'user-1'}})
   expect(options).toEqual(expect.objectContaining({idempotencyKey:expect.stringMatching(/^sphex-connect-/)}))
   expect(upsert).toHaveBeenCalledWith(expect.objectContaining({user_id:'user-1',stripe_account_id:'acct_new123'}),{onConflict:'user_id,stripe_mode'})
  })

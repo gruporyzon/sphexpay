@@ -26,6 +26,7 @@ const safeContext=context=>({
 })
 export function onboardingFailureStatus(error){
  const source=error?.cause||error,code=source?.code,type=source?.type,status=source?.statusCode
+ if(error?.code==='STRIPE_PLATFORM_ACTIVATION_REQUIRED')return 503
  if(['SERVER_NOT_CONFIGURED','APP_URL_NOT_CONFIGURED','CONNECT_ACCOUNT_INVALID','STRIPE_NOT_CONFIGURED'].includes(error?.code))return 500
  if(error?.code==='CONNECT_STORAGE_ERROR'&&/^(?:42|23|PGRST20)/.test(code||''))return 500
  if(['resource_missing','not_found'].includes(code)||status===404)return 409

@@ -4,8 +4,10 @@ Este documento descreve as camadas de segurança do "nosso lado" da SphexPay.
 
 > Atualização de 06/10/2026: o checkout público usa a API oficial Stripe Connect e
 > Payment Element em iframe hospedado pela Stripe. PAN/CVV nunca passam pela SphexPay.
-> A configuração verificada está em TEST, sem recebimento de dinheiro real. LIVE exige
-> chaves do mesmo modo, conta Connect habilitada, webhook oficial e liberação explícita.
+> O fluxo foi validado em TEST. As credenciais e o webhook de produção agora são LIVE,
+> mas o processamento real permanece bloqueado (`STRIPE_LIVE_PAYMENTS_ENABLED=false`).
+> Falta concluir o onboarding da plataforma Connect e habilitar a conta do vendedor.
+> Novas contas são merchants com dashboard completo e responsabilidade da Stripe.
 > Saldos demonstrativos não comprovam liquidação. Este documento cobre nosso backend e banco.
 
 ## 1. Camadas
