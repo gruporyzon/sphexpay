@@ -1,6 +1,6 @@
 import {stripeWebhookHandler} from '../../server/stripe/webhook.js'
 import {serverDatabase,fail,parseJsonBody,ConnectError} from '../../server/stripe/connect.js'
-import {createCheckout,loadOffer,validateCheckoutId} from '../../server/stripe/payments.js'
+import {createCheckout,checkoutPaymentAvailability,validateCheckoutId} from '../../server/stripe/payments.js'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import { serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
@@ -59,8 +59,7 @@ export default async function handler(request, response) {
    if(request.method==='GET'){
     const checkoutId=parsedUrl.searchParams.get('checkoutId')||request.query?.checkoutId
     validateCheckoutId(checkoutId)
-    const {p,o}=await loadOffer(database,checkoutId)
-    return response.status(200).json({productName:p.name,amountCents:o.price_cents,currency:o.currency})
+    return response.status(200).json(await checkoutPaymentAvailability(database,checkoutId))
    }
    if(request.method!=='POST')return response.status(405).json({code:'METHOD_NOT_ALLOWED'})
    let body

@@ -175,7 +175,7 @@ Referências: [webhooks Connect](https://docs.stripe.com/connect/webhooks), [ass
 
 ## Limites explícitos
 
-A implementação inicial aceita cartão, pagamento único, uma parcela e um vendedor. Assinaturas, Pix, boleto, cupons, order bumps, splits e fulfillment automático não são executados por esta rota. O Studio conserva seus drafts e previews; a página de pagamento usa a oferta da versão publicada e encaminha ao Checkout hospedado, sem reproduzir todos os blocos visuais do Studio.
+A implementação inicial aceita cartão, pagamento único, uma parcela e um vendedor. Assinaturas, Pix, boleto, cupons, order bumps, splits e fulfillment automático não são executados por esta rota. O Studio conserva seus drafts e previews; a página pública usa a oferta e o visual da versão publicada, incluindo banners em imagem/vídeo, cores, conteúdo e identificação por etapas; a etapa de cartão continua no Checkout hospedado da Stripe. Mídias de divulgação ficam no bucket público checkout-media (imagem até 5 MB, vídeo até 25 MB), com upload limitado ao vendedor proprietário do checkout e sem sobrescrever URLs de versões publicadas.
 
 O Financeiro legado ainda tem saldo/extrato demonstrativos em `useDemoStore`; eles não são saldos Stripe nem constituem conciliação bancária. Esta etapa integra vendas ao ledger canônico usado pelos serviços de vendas, preservando esses módulos existentes. Reembolsos parciais estão persistidos, mas a apresentação agregada antiga não desconta automaticamente a parcela reembolsada. O outbox não é prova de push entregue. Nenhuma dessas telas deve ser usada como comprovação de saldo sacável Stripe.
 

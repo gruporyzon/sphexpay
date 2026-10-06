@@ -2,7 +2,7 @@ import {Readable} from 'node:stream'
 import Stripe from 'stripe'
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
-import {configureProductPayments,createCheckout,feeConfiguration,validateCheckoutInput} from '../../server/stripe/payments.js'
+import {checkoutPaymentAvailability,configureProductPayments,createCheckout,feeConfiguration,validateCheckoutInput} from '../../server/stripe/payments.js'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
 import {processStripeEvent,stripeWebhookHandler} from '../../server/stripe/webhook.js'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
@@ -37,6 +37,18 @@ const event=(type='payment_intent.succeeded')=>({id:'evt_sale',type,account:'acc
 describe('pagamentos Stripe',()=>{
  beforeEach(()=>{vi.stubEnv('APP_URL','https://sphexpay.example');vi.stubEnv('STRIPE_SECRET_KEY','sk_test_fixture');vi.stubEnv('STRIPE_PLATFORM_FEE_BPS','100')})
  afterEach(()=>vi.unstubAllEnvs())
+ it('só oferece pagamento quando a conta tem capabilities de cartão ativas',async()=>{
+  const {database,tables,stripe}=fixture()
+  expect(await checkoutPaymentAvailability(database,checkoutId)).toMatchObject({paymentAvailable:false,mode:'test'})
+  tables.stripe_connected_accounts[0].stripe_capabilities={card_payments:'active'}
+  expect(await checkoutPaymentAvailability(database,checkoutId)).toMatchObject({paymentAvailable:true,amountCents:10000,currency:'BRL'})
+  expect(tables.stripe_checkout_orders).toHaveLength(0);expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
+ })
+ it('apresentação do checkout não habilita cobranças live sem autorização de produção',async()=>{
+  vi.stubEnv('STRIPE_SECRET_KEY','sk_live_fixture');vi.stubEnv('STRIPE_LIVE_PAYMENTS_ENABLED','false')
+  const {database,tables}=fixture();Object.assign(tables.stripe_connected_accounts[0],{stripe_mode:'live',stripe_capabilities:{card_payments:'active'}})
+  expect(await checkoutPaymentAvailability(database,checkoutId)).toMatchObject({paymentAvailable:false,mode:'live'})
+ })
  it.each(['amount','amountCents','currency','merchantId','stripe_account_id','stripeAccountId'])('recusa campo controlado pelo servidor: %s',field=>{
   expect(()=>validateCheckoutInput({...input(),[field]:field.includes('stripe')?'acct_other':1})).toThrow()
  })
