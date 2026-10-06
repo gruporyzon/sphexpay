@@ -60,10 +60,10 @@ export default async function handler(request, response) {
    if(request.method==='GET'){
     const checkoutId=parsedUrl.searchParams.get('checkoutId')||request.query?.checkoutId
     validateCheckoutId(checkoutId)
+    const limit=consumeRateLimit(`stripe-status:${clientIp(request)}`,{limit:90,windowMs:60000})
+    if(!limit.allowed){response.setHeader('Retry-After',String(limit.retryAfterSeconds));throw new ConnectError('PAYMENT_RATE_LIMIT',429,'Aguarde alguns segundos para consultar novamente.')}
     const sessionId=parsedUrl.searchParams.get('sessionId')||request.query?.sessionId
     if(sessionId){
-     const limit=consumeRateLimit(`stripe-status:${clientIp(request)}`,{limit:90,windowMs:60000})
-     if(!limit.allowed){response.setHeader('Retry-After',String(limit.retryAfterSeconds));throw new ConnectError('PAYMENT_RATE_LIMIT',429,'Aguarde alguns segundos para consultar novamente.')}
      return response.status(200).json(await checkoutSessionStatus(database,checkoutId,sessionId))
     }
     return response.status(200).json(await checkoutPaymentAvailability(database,checkoutId))

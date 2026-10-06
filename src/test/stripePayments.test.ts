@@ -39,10 +39,21 @@ describe('pagamentos Stripe',()=>{
  afterEach(()=>vi.unstubAllEnvs())
  it('só oferece pagamento quando a conta tem capabilities de cartão ativas',async()=>{
   const {database,tables,stripe}=fixture()
-  expect(await checkoutPaymentAvailability(database,checkoutId)).toMatchObject({paymentAvailable:false,mode:'test'})
+  expect(await checkoutPaymentAvailability(database,checkoutId,stripe)).toMatchObject({paymentAvailable:false,mode:'test'})
   tables.stripe_connected_accounts[0].stripe_capabilities={card_payments:'active'}
-  expect(await checkoutPaymentAvailability(database,checkoutId)).toMatchObject({paymentAvailable:true,amountCents:10000,currency:'BRL'})
+  expect(await checkoutPaymentAvailability(database,checkoutId,stripe)).toMatchObject({paymentAvailable:true,amountCents:10000,currency:'BRL'})
   expect(tables.stripe_checkout_orders).toHaveLength(0);expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
+ })
+ it('não oferece pagamento a partir de flags antigas quando a Stripe recusa a conta',async()=>{
+  const {database,tables,stripe}=fixture();tables.stripe_connected_accounts[0].stripe_capabilities={card_payments:'active'}
+  stripe.accounts.retrieve.mockRejectedValue({type:'StripeAuthenticationError',statusCode:401,message:'private@example.com sk_test_private',requestId:'req_fixture'})
+  const log=vi.spyOn(console,'error').mockImplementation(()=>{})
+  try{
+   expect(await checkoutPaymentAvailability(database,checkoutId,stripe)).toMatchObject({paymentAvailable:false,embeddedAvailable:false})
+   expect(log).toHaveBeenCalledWith('[Stripe Connect][Onboarding]',expect.objectContaining({operation:'accounts.retrieve',statusCode:401,message:'[REDACTED]'}))
+   expect(JSON.stringify(log.mock.calls)).not.toContain('private@example.com');expect(JSON.stringify(log.mock.calls)).not.toContain('sk_test_private')
+   expect(tables.stripe_checkout_orders).toHaveLength(0);expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
+  }finally{log.mockRestore()}
  })
  it('apresentação do checkout não habilita cobranças live sem autorização de produção',async()=>{
   vi.stubEnv('STRIPE_SECRET_KEY','sk_live_fixture');vi.stubEnv('STRIPE_LIVE_PAYMENTS_ENABLED','false')

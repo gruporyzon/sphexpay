@@ -46,14 +46,18 @@ export async function loadOffer(database,checkoutId){
  if(!p||!o||o.billing_type!=='one_time'||o.installments!==1||o.setup_fee_cents||!Number.isSafeInteger(o.price_cents)||o.price_cents<=0||o.price_cents>99999999||!['BRL','USD','EUR'].includes(o.currency)||o.currency!==p.currency)throw unavailable()
  return{c,p,o}
 }
-export async function checkoutPaymentAvailability(database,checkoutId){
+export async function checkoutPaymentAvailability(database,checkoutId,stripe){
  const {c,p,o}=await loadOffer(database,checkoutId)
  let mode='',paymentAvailable=false,embeddedAvailable=false
  try{
   mode=getStripeMode()
   feeConfiguration(o.price_cents)
   const account=await findConnection(database,c.seller_id)
-  paymentAvailable=Boolean(account?.stripe_charges_enabled&&account?.stripe_payouts_enabled&&account?.stripe_capabilities?.card_payments==='active'&&(mode!=='live'||process.env.STRIPE_LIVE_PAYMENTS_ENABLED==='true'))
+  const eligible=Boolean(account?.stripe_charges_enabled&&account?.stripe_payouts_enabled&&account?.stripe_capabilities?.card_payments==='active'&&(mode!=='live'||process.env.STRIPE_LIVE_PAYMENTS_ENABLED==='true'))
+  if(eligible){
+   const current=await retrieveAndSync(database,c.seller_id,account,stripe||getStripe())
+   paymentAvailable=Boolean(current.stripe_charges_enabled&&current.stripe_payouts_enabled&&current.stripe_capabilities?.card_payments==='active')
+  }
   embeddedAvailable=paymentAvailable&&Boolean(checkoutPublishableKey())
  }catch{/* Presentation remains available when the processor isn't configured. */}
  return{productName:p.name,amountCents:o.price_cents,currency:o.currency,mode,paymentAvailable,embeddedAvailable,paymentMessage:embeddedAvailable?'':'O vendedor ainda precisa habilitar o pagamento desta oferta.'}

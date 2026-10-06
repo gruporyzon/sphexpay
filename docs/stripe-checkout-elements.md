@@ -39,9 +39,16 @@ sessão de outro checkout, verificação de conta/modo/valor e ledger sem duplic
 Homologação no domínio público deve ser registrada separadamente; teste automatizado
 não equivale a cobrança LIVE nem certifica habilitação da conta Stripe.
 
-Validação desta alteração: 325 testes passaram em 22 arquivos Stripe/checkout/segurança;
+Validação desta alteração: 326 testes passaram em 22 arquivos Stripe/checkout/segurança;
 TypeScript, lint e build passaram; auditoria das dependências de produção sem avisos.
 A suíte geral teve 832 aprovações e 26 falhas em testes de landing/máscaras existentes,
 fora dos arquivos alterados nesta integração. Não declarar a suíte geral inteiramente verde.
 A migration foi aplicada ao projeto Supabase atual e foram conferidos RLS forçada,
 ausência de SELECT para anon/authenticated e INSERT disponível para service_role.
+
+Homologação no domínio público: a criação foi bloqueada em `accounts.retrieve`, retornando
+`STRIPE_CONFIGURATION_ERROR` antes de reservar pedido. Nenhuma cobrança foi concluída.
+Disponibilidade agora reconsulta a conta Stripe; flags antigas no banco não liberam CTA.
+Erros de consulta têm diagnóstico técnico sanitizado (tipo/código/status/request ID),
+sem chave, comprador, conta ou mensagem livre nos logs. Resolver a configuração Stripe
+antes de declarar a integração pronta para receber pagamentos.

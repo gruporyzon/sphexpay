@@ -150,6 +150,7 @@ export async function retrieveAndSync(database,userId,connection,stripe=getStrip
  if(connection.user_id!==userId)throw new ConnectError('CONNECT_OWNERSHIP_MISMATCH',403,'Conta de pagamentos incompatível com o usuário.')
  let account
  try{account=await stripe.accounts.retrieve(connection.stripe_account_id)}catch(error){
+  logOnboardingError(error,'accounts.retrieve')
   const temporary=['StripeConnectionError','StripeRateLimitError','StripeAPIError'].includes(error?.type)||error?.statusCode===429||error?.statusCode>=500
   const internal=['StripeAuthenticationError','StripePermissionError','StripeInvalidRequestError'].includes(error?.type)||[400,401,403].includes(error?.statusCode)
   throw new ConnectError(temporary?'STRIPE_ACCOUNT_UNAVAILABLE':internal?'STRIPE_CONFIGURATION_ERROR':'STRIPE_ACCOUNT_ERROR',temporary?503:internal?500:502,'Não foi possível consultar sua conta de pagamentos agora.')
