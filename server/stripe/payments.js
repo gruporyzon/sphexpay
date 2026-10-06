@@ -2,7 +2,7 @@ import {z} from 'zod'
 import {ConnectError,configuredAppUrl,findConnection,retrieveAndSync} from './connect.js'
 import {getStripe,getStripeMode} from './client.js'
 
-const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
+const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
 const unavailable=()=>new ConnectError('CHECKOUT_UNAVAILABLE',409,'Esta oferta não está disponível para pagamento.')
 export function validateCheckoutId(value){
  if(!z.uuid().safeParse(value).success)throw new ConnectError('INVALID_CHECKOUT_INPUT',400,'Informe um checkout válido.')
@@ -19,6 +19,21 @@ export function validateCheckoutInput(input){
  return result.data
 }
 const one=async query=>{const {data,error}=await query.maybeSingle();if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar o pagamento.');return data}
+export function checkoutPublishableKey(){
+ const key=(process.env.VITE_STRIPE_PUBLISHABLE_KEY||process.env.STRIPE_PUBLISHABLE_KEY||'').trim()
+ if(!key.startsWith(`pk_${getStripeMode()}_`))throw new ConnectError('STRIPE_PUBLIC_KEY_MISMATCH',503,'O formulário seguro de pagamento ainda precisa ser configurado pelo vendedor.')
+ return key
+}
+function checkoutPresentation(session,order,publishableKey){
+ if(session.status==='complete')return{completed:true,sessionId:session.id}
+ if(session.status&&session.status!=='open')throw new ConnectError('CHECKOUT_CLOSED',409,'Esta tentativa expirou. Inicie uma nova tentativa de pagamento.')
+ if((order.checkout_ui_mode||'hosted')==='elements'){
+  if(session.ui_mode!=='elements'||!session.client_secret)throw new ConnectError('CHECKOUT_UI_MISMATCH',502,'Não foi possível abrir o formulário seguro. Tente novamente.')
+  return{clientSecret:session.client_secret,sessionId:session.id,accountId:order.stripe_account_id,publishableKey,amountCents:order.amount_cents,currency:order.currency}
+ }
+ if(!session.url)throw new ConnectError('CHECKOUT_CLOSED',409,'Este pagamento já foi concluído ou expirou.')
+ return{url:session.url}
+}
 export async function loadOffer(database,checkoutId){
  const c=await one(database.from('product_checkouts').select('*').eq('id',checkoutId).eq('status','published').is('deleted_at',null))
  if(!c?.published_version_id)throw unavailable()
@@ -33,14 +48,15 @@ export async function loadOffer(database,checkoutId){
 }
 export async function checkoutPaymentAvailability(database,checkoutId){
  const {c,p,o}=await loadOffer(database,checkoutId)
- let mode='',paymentAvailable=false
+ let mode='',paymentAvailable=false,embeddedAvailable=false
  try{
   mode=getStripeMode()
   feeConfiguration(o.price_cents)
   const account=await findConnection(database,c.seller_id)
   paymentAvailable=Boolean(account?.stripe_charges_enabled&&account?.stripe_payouts_enabled&&account?.stripe_capabilities?.card_payments==='active'&&(mode!=='live'||process.env.STRIPE_LIVE_PAYMENTS_ENABLED==='true'))
+  embeddedAvailable=paymentAvailable&&Boolean(checkoutPublishableKey())
  }catch{/* Presentation remains available when the processor isn't configured. */}
- return{productName:p.name,amountCents:o.price_cents,currency:o.currency,mode,paymentAvailable,paymentMessage:paymentAvailable?'':'O vendedor ainda precisa habilitar o pagamento desta oferta.'}
+ return{productName:p.name,amountCents:o.price_cents,currency:o.currency,mode,paymentAvailable,embeddedAvailable,paymentMessage:embeddedAvailable?'':'O vendedor ainda precisa habilitar o pagamento desta oferta.'}
 }
 export async function createCheckout(database,input,stripe=getStripe()){
  const value=validateCheckoutInput(input)
@@ -52,22 +68,36 @@ export async function createCheckout(database,input,stripe=getStripe()){
  // Live charging is a deliberate, separate release decision.
  if(getStripeMode()==='live'&&process.env.STRIPE_LIVE_PAYMENTS_ENABLED!=='true')throw new ConnectError('LIVE_PAYMENTS_DISABLED',503,'Pagamentos de produção ainda não foram habilitados.')
  const {fee,rule}=feeConfiguration(o.price_cents)
- const snapshot={request_key:value.requestKey,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name}
+ const uiMode=value.uiMode||'hosted',publishableKey=uiMode==='elements'?checkoutPublishableKey():undefined
+ const snapshot={request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name}
  const {error}=await database.from('stripe_checkout_orders').upsert(snapshot,{onConflict:'request_key',ignoreDuplicates:true})
  if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível reservar o pagamento.')
  const order=await one(database.from('stripe_checkout_orders').select('*').eq('request_key',value.requestKey))
- if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id)throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
- if(order.session_id){const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:order.stripe_account_id});if(session.status!=='open'||!session.url)throw new ConnectError('CHECKOUT_CLOSED',409,'Este pagamento já foi concluído ou expirou.');return{url:session.url}}
+ if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode)throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
+ if(order.session_id){const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:order.stripe_account_id});return checkoutPresentation(session,order,publishableKey)}
  if(!order.checkout_origin||!Number.isFinite(new Date(order.created_at).getTime())||Date.now()-new Date(order.created_at).getTime()>23*3600000)throw new ConnectError('PAYMENT_RECONCILIATION_REQUIRED',409,'Esta tentativa precisa ser reconciliada antes de continuar.')
  const origin=order.checkout_origin,metadata={sphex_order_id:order.id,sphex_product_id:order.product_id,sphex_seller_id:order.seller_id}
  const session=await stripe.checkout.sessions.create({mode:'payment',payment_method_types:['card'],customer_email:order.buyer_email,client_reference_id:order.id,metadata,
   line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents,product_data:{name:order.product_name}}}],
-  payment_intent_data:{metadata,...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
-  success_url:`${origin}/pay/${order.checkout_id}?result=returned`,cancel_url:`${origin}/pay/${order.checkout_id}?result=cancelled`
+  payment_intent_data:{metadata,receipt_email:order.buyer_email,...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
+  ...(uiMode==='elements'?{ui_mode:'elements',return_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`}:{success_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${origin}/pay/${order.checkout_id}?result=cancelled`})
  },{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
  const saved=await database.from('stripe_checkout_orders').update({session_id:session.id,updated_at:new Date().toISOString()}).eq('id',order.id)
  if(saved.error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível concluir a reserva. Tente novamente.')
- return{url:session.url}
+ return checkoutPresentation(session,order,publishableKey)
+}
+
+// Read-only confirmation. A return URL alone is never proof of a payment.
+export async function checkoutSessionStatus(database,checkoutId,sessionId,stripe=getStripe()){
+ validateCheckoutId(checkoutId)
+ if(typeof sessionId!=='string'||!/^cs_(?:test_|live_)?[a-zA-Z0-9]{12,240}$/.test(sessionId))throw new ConnectError('INVALID_CHECKOUT_SESSION',400,'Sessão de pagamento inválida.')
+ const order=await one(database.from('stripe_checkout_orders').select('*').eq('checkout_id',checkoutId).eq('session_id',sessionId))
+ if(!order)throw new ConnectError('CHECKOUT_SESSION_NOT_FOUND',404,'Esta sessão não pertence ao checkout.')
+ const connection=await findConnection(database,order.seller_id)
+ if(!connection||connection.stripe_account_id!==order.stripe_account_id)throw unavailable()
+ const session=await stripe.checkout.sessions.retrieve(sessionId,{},{stripeAccount:order.stripe_account_id})
+ if(session.id!==order.session_id||session.mode!=='payment'||session.client_reference_id!==order.id||session.amount_total!==order.amount_cents||session.currency!==order.currency.toLowerCase()||Boolean(session.livemode)!==(getStripeMode()==='live'))throw new ConnectError('CHECKOUT_SESSION_MISMATCH',409,'Não foi possível verificar este pagamento.')
+ return{status:order.status==='refunded'?'refunded':session.payment_status==='paid'&&session.status==='complete'?'paid':session.status==='expired'?'expired':'pending',recorded:order.status==='approved'||order.status==='refunded'}
 }
 
 export async function configureProductPayments(database,user,input,stripe){

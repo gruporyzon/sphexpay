@@ -1,6 +1,7 @@
 import {stripeWebhookHandler} from '../../server/stripe/webhook.js'
 import {serverDatabase,fail,parseJsonBody,ConnectError} from '../../server/stripe/connect.js'
-import {createCheckout,checkoutPaymentAvailability,validateCheckoutId} from '../../server/stripe/payments.js'
+import {createCheckout,checkoutPaymentAvailability,checkoutSessionStatus,validateCheckoutId} from '../../server/stripe/payments.js'
+import {consumeRateLimit} from '../../server/security/rateLimit.js'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import { serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
@@ -59,9 +60,17 @@ export default async function handler(request, response) {
    if(request.method==='GET'){
     const checkoutId=parsedUrl.searchParams.get('checkoutId')||request.query?.checkoutId
     validateCheckoutId(checkoutId)
+    const sessionId=parsedUrl.searchParams.get('sessionId')||request.query?.sessionId
+    if(sessionId){
+     const limit=consumeRateLimit(`stripe-status:${clientIp(request)}`,{limit:90,windowMs:60000})
+     if(!limit.allowed){response.setHeader('Retry-After',String(limit.retryAfterSeconds));throw new ConnectError('PAYMENT_RATE_LIMIT',429,'Aguarde alguns segundos para consultar novamente.')}
+     return response.status(200).json(await checkoutSessionStatus(database,checkoutId,sessionId))
+    }
     return response.status(200).json(await checkoutPaymentAvailability(database,checkoutId))
    }
    if(request.method!=='POST')return response.status(405).json({code:'METHOD_NOT_ALLOWED'})
+   const limit=consumeRateLimit(`stripe-session:${clientIp(request)}`,{limit:30,windowMs:60000})
+   if(!limit.allowed){response.setHeader('Retry-After',String(limit.retryAfterSeconds));throw new ConnectError('PAYMENT_RATE_LIMIT',429,'Aguarde alguns segundos antes de tentar novamente.')}
    let body
    try{body=await readRawBody(request)}catch(error){if(error?.code==='PAYLOAD_TOO_LARGE')throw new ConnectError('PAYLOAD_TOO_LARGE',413,'Corpo da requisição excede o limite.');throw new ConnectError('INVALID_JSON',400,'Envie um corpo JSON válido.')}
    const input=parseJsonBody({body})

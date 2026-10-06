@@ -2,7 +2,7 @@ import {Readable} from 'node:stream'
 import Stripe from 'stripe'
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
-import {checkoutPaymentAvailability,configureProductPayments,createCheckout,feeConfiguration,validateCheckoutInput} from '../../server/stripe/payments.js'
+import {checkoutSessionStatus,checkoutPaymentAvailability,configureProductPayments,createCheckout,feeConfiguration,validateCheckoutInput} from '../../server/stripe/payments.js'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
 import {processStripeEvent,stripeWebhookHandler} from '../../server/stripe/webhook.js'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
@@ -30,12 +30,12 @@ function fixture(){
   return q
  })}
  const intent:any={id:'pi_sale',metadata:{sphex_order_id:order().id,sphex_seller_id:'seller',sphex_product_id:'product'},amount:10000,currency:'brl',application_fee_amount:100,status:'succeeded',livemode:false,latest_charge:{id:'ch_sale',amount_refunded:0}}
- const stripe:any={accounts:{retrieve:vi.fn(async()=>({id:'acct_seller',capabilities:{card_payments:'active'},metadata:{sphex_user_id:'seller'},charges_enabled:true,payouts_enabled:true,details_submitted:true}))},checkout:{sessions:{create:vi.fn(async()=>({id:'cs_sale',url:'https://checkout.stripe.com/test'})),retrieve:vi.fn(async()=>({id:'cs_sale',mode:'payment',client_reference_id:order().id,payment_intent:'pi_sale',status:'open',url:'https://checkout.stripe.com/test'}))}},paymentIntents:{retrieve:vi.fn(async()=>intent)}}
+ const stripe:any={accounts:{retrieve:vi.fn(async()=>({id:'acct_seller',capabilities:{card_payments:'active'},metadata:{sphex_user_id:'seller'},charges_enabled:true,payouts_enabled:true,details_submitted:true}))},checkout:{sessions:{create:vi.fn(async(args:any)=>({id:'cs_sale',status:'open',ui_mode:args.ui_mode||'hosted_page',client_secret:args.ui_mode==='elements'?'cs_test_sale_secret_fixture':null,url:args.ui_mode==='elements'?null:'https://checkout.stripe.com/test'})),retrieve:vi.fn(async()=>({id:'cs_sale',mode:'payment',client_reference_id:order().id,payment_intent:'pi_sale',status:'open',url:'https://checkout.stripe.com/test',ui_mode:tables.stripe_checkout_orders[0]?.checkout_ui_mode==='elements'?'elements':'hosted_page',client_secret:'cs_test_sale_secret_fixture',amount_total:10000,currency:'brl',livemode:false,payment_status:'unpaid'}))}},paymentIntents:{retrieve:vi.fn(async()=>intent)}}
  return{tables,database,stripe,intent}
 }
 const event=(type='payment_intent.succeeded')=>({id:'evt_sale',type,account:'acct_seller',created:1788540000,livemode:false,data:{object:{id:'pi_sale',payment_intent:'pi_sale'}}})
 describe('pagamentos Stripe',()=>{
- beforeEach(()=>{vi.stubEnv('APP_URL','https://sphexpay.example');vi.stubEnv('STRIPE_SECRET_KEY','sk_test_fixture');vi.stubEnv('STRIPE_PLATFORM_FEE_BPS','100')})
+ beforeEach(()=>{vi.stubEnv('APP_URL','https://sphexpay.example');vi.stubEnv('STRIPE_SECRET_KEY','sk_test_fixture');vi.stubEnv('STRIPE_PLATFORM_FEE_BPS','100');vi.stubEnv('VITE_STRIPE_PUBLISHABLE_KEY','pk_test_fixture')})
  afterEach(()=>vi.unstubAllEnvs())
  it('só oferece pagamento quando a conta tem capabilities de cartão ativas',async()=>{
   const {database,tables,stripe}=fixture()
@@ -69,6 +69,47 @@ describe('pagamentos Stripe',()=>{
   expect(stripe.checkout.sessions.create).toHaveBeenCalledWith(expect.objectContaining({line_items:[{quantity:1,price_data:{currency:'brl',unit_amount:10000,product_data:{name:'Produto'}}}],payment_intent_data:expect.objectContaining({application_fee_amount:100})}),{stripeAccount:'acct_seller',idempotencyKey:`sphex-checkout-${order().id}`})
   expect(tables.stripe_checkout_orders[0].session_id).toBe('cs_sale')
   await createCheckout(database,input(),stripe);expect(stripe.checkout.sessions.create).toHaveBeenCalledTimes(1)
+ })
+ it('monta Elements na conta conectada, sem redirect hospedado, e reutiliza a mesma sessão',async()=>{
+  const {database,stripe}=fixture(),value={...input(),uiMode:'elements'}
+  const result=await createCheckout(database,value,stripe)
+  expect(result).toMatchObject({clientSecret:'cs_test_sale_secret_fixture',accountId:'acct_seller',publishableKey:'pk_test_fixture',amountCents:10000,currency:'BRL'})
+  const parameters=stripe.checkout.sessions.create.mock.calls[0][0]
+  expect(parameters).toMatchObject({ui_mode:'elements',return_url:expect.stringContaining('session_id={CHECKOUT_SESSION_ID}'),payment_intent_data:{receipt_email:'buyer@example.test'}})
+  expect(parameters).not.toHaveProperty('success_url');expect(parameters).not.toHaveProperty('cancel_url')
+  await createCheckout(database,value,stripe);expect(stripe.checkout.sessions.create).toHaveBeenCalledTimes(1)
+ })
+ it('impede usar uma chave publicável de outro modo antes de reservar a cobrança',async()=>{
+  const {database,stripe,tables}=fixture();vi.stubEnv('VITE_STRIPE_PUBLISHABLE_KEY','pk_live_fixture')
+  await expect(createCheckout(database,{...input(),uiMode:'elements'},stripe)).rejects.toMatchObject({code:'STRIPE_PUBLIC_KEY_MISMATCH'})
+  expect(tables.stripe_checkout_orders).toHaveLength(0);expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
+ })
+ it('não troca o modo reservado após um timeout nem gera outra cobrança',async()=>{
+  const {database,stripe}=fixture();stripe.checkout.sessions.create.mockRejectedValueOnce(new Error('timeout'))
+  await expect(createCheckout(database,{...input(),uiMode:'elements'},stripe)).rejects.toThrow('timeout')
+  await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'IDEMPOTENCY_CONFLICT'})
+  expect(stripe.checkout.sessions.create).toHaveBeenCalledTimes(1)
+ })
+ it('uma sessão já concluída retorna para confirmação sem criar outro pagamento',async()=>{
+  const {database,stripe,tables}=fixture();tables.stripe_checkout_orders.push({...order(),session_id:'cs_sale',checkout_ui_mode:'elements'})
+  stripe.checkout.sessions.retrieve.mockResolvedValue({id:'cs_sale',status:'complete'})
+  expect(await createCheckout(database,{...input(),uiMode:'elements'},stripe)).toEqual({completed:true,sessionId:'cs_sale'})
+  expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
+ })
+ it('confirmação consulta a Stripe e distingue recebimento de registro por webhook',async()=>{
+  const {database,stripe,tables}=fixture(),sessionId='cs_test_1234567890123456';tables.stripe_checkout_orders.push({...order(),session_id:sessionId})
+  const session={id:sessionId,mode:'payment',client_reference_id:order().id,amount_total:10000,currency:'brl',livemode:false,status:'complete',payment_status:'paid'}
+  stripe.checkout.sessions.retrieve.mockResolvedValue(session)
+  expect(await checkoutSessionStatus(database,checkoutId,sessionId,stripe)).toEqual({status:'paid',recorded:false})
+  tables.stripe_checkout_orders[0].status='approved';expect(await checkoutSessionStatus(database,checkoutId,sessionId,stripe)).toEqual({status:'paid',recorded:true})
+  stripe.checkout.sessions.retrieve.mockResolvedValue({...session,amount_total:1})
+  await expect(checkoutSessionStatus(database,checkoutId,sessionId,stripe)).rejects.toMatchObject({code:'CHECKOUT_SESSION_MISMATCH'})
+ })
+ it('não revela nem consulta sessão de outro checkout ou formato inválido',async()=>{
+  const {database,stripe,tables}=fixture(),sessionId='cs_test_1234567890123456';tables.stripe_checkout_orders.push({...order(),session_id:sessionId,checkout_id:requestKey})
+  await expect(checkoutSessionStatus(database,checkoutId,sessionId,stripe)).rejects.toMatchObject({code:'CHECKOUT_SESSION_NOT_FOUND'})
+  await expect(checkoutSessionStatus(database,checkoutId,'secret',stripe)).rejects.toMatchObject({code:'INVALID_CHECKOUT_SESSION'})
+  expect(stripe.checkout.sessions.retrieve).not.toHaveBeenCalled()
  })
  it('bloqueia conta de outro merchant antes de criar cobrança',async()=>{
   const {database,stripe}=fixture();stripe.accounts.retrieve.mockResolvedValue({id:'acct_seller',metadata:{sphex_user_id:'other'},charges_enabled:true,payouts_enabled:true})

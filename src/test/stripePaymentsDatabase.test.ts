@@ -23,6 +23,7 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20260904120000_stripe_payments.sql'))
  await db.exec(read('supabase/migrations/20260909001000_stripe_checkout_integrity.sql'))
  await db.exec(read('supabase/migrations/20260909010000_stripe_connect_modes.sql'))
+ await db.exec(read('supabase/migrations/20261006025244_stripe_checkout_elements.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -38,6 +39,11 @@ beforeEach(async()=>{
 const apply=async(eventId:string,status:string,refunded=0,time='2026-09-04T12:00:00Z',account='acct_seller')=>(await db.query<{result:any}>("select apply_stripe_payment($1,$2,'payment_intent.succeeded',$3,'pi_sale','ch_sale',$4,$5,$6) as result",[order,eventId,account,status,refunded,time])).rows[0].result
 const count=async(table:string)=>(await db.query<{n:number}>(`select count(*)::int as n from ${table}`)).rows[0].n
 describe('migration Stripe executada em PostgreSQL',()=>{
+ it('preserva sessões antigas e restringe o modo do checkout reservado',async()=>{
+  expect((await db.query<{checkout_ui_mode:string}>('select checkout_ui_mode from stripe_checkout_orders')).rows[0].checkout_ui_mode).toBe('hosted')
+  await db.query("update stripe_checkout_orders set checkout_ui_mode='elements'")
+  await expect(db.query("update stripe_checkout_orders set checkout_ui_mode='arbitrary'")).rejects.toThrow()
+ })
  it('reenvios e eventos correlacionados criam uma venda e uma notificação',async()=>{
   await apply('evt_pi','approved');expect(await apply('evt_pi','approved')).toEqual({duplicate:true});await apply('evt_charge','approved');await apply('evt_checkout','approved')
   expect(await count('payment_transactions')).toBe(1);expect(await count('payment_transaction_events')).toBe(3);expect(await count('financial_event_outbox')).toBe(1)

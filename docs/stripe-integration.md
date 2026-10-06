@@ -1,5 +1,10 @@
 > Atualização: a persistência e o fluxo atuais são separados por modo. Consulte [Stripe Connect Test/Live](stripe-connect-test-live.md), incluindo a migration `20260909010000_stripe_connect_modes.sql`. Descrições de vínculo único/ausência de criação no onboarding abaixo são históricas.
 
+> Atualização de 06/10/2026: o checkout público agora usa Checkout Elements dentro da
+> página, com cartão hospedado pela Stripe. Veja [operação atual](stripe-checkout-elements.md).
+> Os relatos de ausência de deploy/chamadas remotas abaixo são históricos. A configuração
+> atual verificada continua em TEST; não há confirmação de cobranças LIVE.
+
 # Integração Stripe — auditoria e operação
 
 ## Continuação auditada em 08/09/2026

@@ -2,11 +2,11 @@
 
 Este documento descreve as camadas de segurança do "nosso lado" da SphexPay.
 
-> Aviso: a SphexPay nesta versão é um painel/gateway demonstrativo. Não há custódia,
-> liquidação, processamento bancário nem conexão com APIs financeiras reais. Quando um
-> parceiro processador for integrado, o processamento de cartão ocorre inteiramente no
-> ambiente dele (redirect/iframe hospedado). Este documento cobre autenticação, backend
-> serverless e banco de dados sob nosso controle.
+> Atualização de 06/10/2026: o checkout público usa a API oficial Stripe Connect e
+> Payment Element em iframe hospedado pela Stripe. PAN/CVV nunca passam pela SphexPay.
+> A configuração verificada está em TEST, sem recebimento de dinheiro real. LIVE exige
+> chaves do mesmo modo, conta Connect habilitada, webhook oficial e liberação explícita.
+> Saldos demonstrativos não comprovam liquidação. Este documento cobre nosso backend e banco.
 
 ## 1. Camadas
 
@@ -41,7 +41,9 @@ Aplicados a todas as rotas: `Strict-Transport-Security`, `X-Content-Type-Options
 `Cross-Origin-Opener-Policy: same-origin`, `Permissions-Policy` (nega câmera, geolocalização,
 pagamento, USB; microfone só `self` para o assistente de voz).
 
-A **CSP** está publicada em `Content-Security-Policy-Report-Only` para validação. Depois de
+A **CSP** é enforcing nas rotas públicas `/pay/*`, permitindo os domínios oficiais
+Stripe necessários aos iframes/scripts e Link. Nas demais páginas permanece
+`Content-Security-Policy-Report-Only` para validação. Depois de
 confirmar que não há violações legítimas no app rodando (Vite/Tailwind/Supabase/Recharts),
 promover para `Content-Security-Policy` (enforcing) e ajustar `connect-src` com a URL exata do
 projeto Supabase. `connect-src` também libera `https://viacep.com.br` (consulta de CEP no
@@ -67,13 +69,18 @@ Rotas `/api/*` recebem ainda `Cache-Control: no-store` e `X-Robots-Tag: noindex`
 
 `server/security/rateLimit.js` — janela deslizante em memória por chave (userId/IP).
 Limites atuais: `/api/push/send` 60/min por usuário; `/api/notifications/generate` 8/min por
-usuário.
+usuário. Checkout Stripe: criação de sessão 30/min por IP; consulta de confirmação 90/min.
 
 > Limitação: o estado é por instância da função serverless. Sob escala horizontal o limite é
 > aproximado. Produção deve migrar para um store compartilhado (Upstash Redis / Vercel KV)
 > mantendo a mesma interface.
 
 ## 6. Verificação de webhook
+
+Stripe usa `/api/stripe/webhook`, assinatura oficial `Stripe-Signature` sobre o corpo
+bruto e `STRIPE_WEBHOOK_SECRET`, com verificação da sessão/PaymentIntent na conta Connect.
+O GET de confirmação é somente leitura; redirect e frontend não aprovam transações.
+O protocolo abaixo é do processador legado e não substitui a assinatura oficial Stripe.
 
 `api/payments/webhook.js`:
 - Corpo bruto (`bodyParser` desligado) para HMAC byte a byte.
@@ -147,11 +154,13 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
 | `PAYMENT_WEBHOOK_IP_ALLOWLIST` | Env da Vercel (server) | Webhook | Conforme o parceiro publicar IPs |
 | `OPENAI_API_KEY` | Env da Vercel (server) | `server/notifications/*` | Trimestral + on-incident |
 | `STRIPE_SECRET_KEY` | Env da Vercel (server) | `server/stripe/*` | Rotacionar no dashboard da Stripe + on-incident. Nunca no frontend. |
+| `STRIPE_WEBHOOK_SECRET` | Env da Vercel (server) | Webhook oficial Stripe | Rotacionar com a destination correspondente e validar entrega. |
 | `SECURITY_AUDIT_IP_SALT` | Env da Vercel (server) | `server/security/auditLog.js` | Não rotacionar sem migração (invalida correlação de hashes antigos) |
 
 Regras: nunca no frontend, nunca no repositório (`.env` e `.env.*` estão no `.gitignore`;
 `.env.example` só tem placeholders). Chaves `VITE_*` são públicas por definição — só a URL e a
-chave publicável do Supabase.
+chave publicável do Supabase, além de `VITE_STRIPE_PUBLISHABLE_KEY` (`pk_test_*` ou
+`pk_live_*`). Esta chave Stripe é pública; o backend confere seu modo antes de reservar.
 
 ### Procedimento de rotação de `PAYMENT_WEBHOOK_SECRET`
 
