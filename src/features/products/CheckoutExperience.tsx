@@ -48,7 +48,7 @@ export function CheckoutExperience({product,price,currency,layout,design=default
   try{await onPay({name:name.trim(),email:email.trim().toLowerCase()})}catch(e){setError(e instanceof Error?e.message:'Não foi possível continuar. Tente novamente.');setBusy(false)}
  }
  return <div className={`co-experience ${preview?'co-preview':''}`} style={checkoutStyle(design)}>
-  <header className="co-header"><div className="co-container"><div className="co-brand">{logo&&safeCheckoutUrl(logo.props.url)?<CheckoutContentBlock block={logo}/>:<SphexPayLogo showName/>}</div><span><LockKeyhole/> Checkout protegido</span></div></header>
+  <header className="co-header"><div className="co-container"><div className="co-brand">{logo&&safeCheckoutUrl(logo.props.url)?<CheckoutContentBlock block={logo}/>:<SphexPayLogo showName adaptiveTheme/>}</div><span><LockKeyhole/> Checkout protegido</span></div></header>
   {preview&&<div className="co-preview-notice">PRÉVIA INTERATIVA · NENHUMA COBRANÇA SERÁ REALIZADA</div>}
   <main className="co-container co-main">
    <div className="co-topline"><span>{product.producerDisplayName||'SPHEXPAY'} <i/> {product.name}</span><span><ShieldCheck/> Seus dados protegidos</span></div>
