@@ -24,11 +24,12 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20260909001000_stripe_checkout_integrity.sql'))
  await db.exec(read('supabase/migrations/20260909010000_stripe_connect_modes.sql'))
  await db.exec(read('supabase/migrations/20261006025244_stripe_checkout_elements.sql'))
+ await db.exec(read('supabase/migrations/20261006184000_stripe_sandbox_financial_isolation.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
  await db.query("insert into product_checkouts(id,product_id,seller_id,offer_id,name,slug) values($1,$2,$3,$4,'Checkout','checkout')",[checkout,product,seller,offer])
- await db.query("insert into stripe_connected_accounts(user_id,stripe_account_id) values($1,'acct_seller')",[seller])
+ await db.query("insert into stripe_connected_accounts(user_id,stripe_account_id,stripe_mode) values($1,'acct_seller','live'),($1,'acct_test','test'),($1,'acct_legacy','legacy')",[seller])
 },30000)
 afterAll(async()=>{await db?.close()})
 beforeEach(async()=>{
@@ -68,6 +69,30 @@ describe('migration Stripe executada em PostgreSQL',()=>{
  it('conta incompatível causa rollback sem consumir o evento',async()=>{
   await expect(apply('evt_bad','approved',0,undefined,'acct_other')).rejects.toThrow('STRIPE_IDENTITY_MISMATCH')
   expect(await count('stripe_webhook_events')).toBe(0);expect(await count('payment_transactions')).toBe(0)
+ })
+ it('pagamentos de teste preservam confirmação e auditoria sem gerar receita ou push financeiro',async()=>{
+  await db.exec("update stripe_checkout_orders set stripe_account_id='acct_test'")
+  const testApply=(event:string,status:string,refunded=0)=>apply(event,status,refunded,undefined,'acct_test')
+  expect(await testApply('evt_test','approved')).toMatchObject({duplicate:false,test:true,orderId:order})
+  expect(await testApply('evt_test','approved')).toEqual({duplicate:true})
+  await testApply('evt_test_charge','approved')
+  await testApply('evt_test_late_failure','declined')
+  expect((await db.query('select status from stripe_checkout_orders')).rows[0]).toEqual({status:'approved'})
+  await testApply('evt_test_refund','refunded',10000)
+  expect((await db.query('select status,refunded_cents from stripe_checkout_orders')).rows[0]).toEqual({status:'refunded',refunded_cents:10000})
+  expect(await count('stripe_webhook_events')).toBe(4)
+  for(const table of ['payment_transactions','payment_transaction_events','financial_event_outbox'])expect(await count(table)).toBe(0)
+ })
+ it('conta legada sem modo classificado não consome eventos nem gera receita',async()=>{
+  await db.exec("update stripe_checkout_orders set stripe_account_id='acct_legacy'")
+  await expect(apply('evt_legacy','approved',0,undefined,'acct_legacy')).rejects.toThrow('STRIPE_ACCOUNT_MODE_REQUIRED')
+  expect(await count('stripe_webhook_events')).toBe(0)
+  expect(await count('payment_transactions')).toBe(0)
+ })
+ it('registra o modo real no ledger e na notificação financeira',async()=>{
+  await apply('evt_live','approved')
+  expect((await db.query<{metadata:{stripe_mode:string}}>('select metadata from payment_transactions')).rows[0].metadata.stripe_mode).toBe('live')
+  expect((await db.query<{payload:{stripe_mode:string}}>('select payload from financial_event_outbox')).rows[0].payload.stripe_mode).toBe('live')
  })
  it('reserva parâmetros imutáveis e exige reconciliação após 23 horas',async()=>{
   const reserve=async(parameters:object)=>(await db.query<any>("select reserve_stripe_account_for_mode($1,'test',$2) as result",[seller,parameters])).rows[0].result

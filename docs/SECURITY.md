@@ -79,6 +79,8 @@ usuário. Checkout Stripe: criação de sessão 30/min por IP; consulta de confi
 
 Stripe usa `/api/stripe/webhook`, assinatura oficial `Stripe-Signature` sobre o corpo
 bruto e `STRIPE_WEBHOOK_SECRET`, com verificação da sessão/PaymentIntent na conta Connect.
+Pagamentos Test preservam pedido e recibos assinados, sem gerar receita, saldo ou outbox financeiro.
+A RPC exige uma conta explicitamente classificada como Test ou Live; legado requer reconciliação.
 O GET de confirmação é somente leitura; redirect e frontend não aprovam transações.
 O protocolo abaixo é do processador legado e não substitui a assinatura oficial Stripe.
 
