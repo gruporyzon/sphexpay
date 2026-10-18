@@ -7,12 +7,14 @@ Marcar conforme concluir. Detalhes e justificativas em `docs/SECURITY.md`.
 
 - [x] Aplicar migration `supabase/migrations/20260908120000_security_hardening.sql`
       (cria `security_audit_log`, RPC `record_security_event`, força RLS, reduz GRANTs).
-- [ ] Habilitar extensão **`pg_cron`** — Painel Supabase → Database → Extensions → `pg_cron` → Enable.
-- [ ] Depois de habilitar, agendar a limpeza do log de auditoria (retenção 400 dias):
+- [x] Habilitar extensão **`pg_cron`** — Painel Supabase → Database → Extensions → `pg_cron` → Enable.
+- [x] Depois de habilitar, agendar a limpeza do log de auditoria (retenção 400 dias):
       ```sql
       select cron.schedule('prune-security-audit','0 3 * * 0',
         $$select public.prune_security_audit_log()$$);
       ```
+      Agendado em 2026-10-18 (job `prune-security-audit`, domingos 03:00 UTC). EXECUTE da função
+      restrito a `service_role` (revogado de `anon`/`authenticated`).
       Alternativa sem pg_cron: rodar `select public.prune_security_audit_log();` manualmente
       de tempos em tempos.
 
@@ -26,14 +28,14 @@ Marcar conforme concluir. Detalhes e justificativas em `docs/SECURITY.md`.
 
 Nunca commitar valores. Localmente ficam no `.env` (que está no `.gitignore`).
 
-- [ ] `SECURITY_AUDIT_IP_SALT` — string aleatória longa (32+ bytes hex). Já definida no `.env`
+- [x] `SECURITY_AUDIT_IP_SALT` — string aleatória longa (32+ bytes hex). Já definida no `.env`
       local; **copiar o mesmo valor para a Vercel**. Não rotacionar sem migração (invalida a
       correlação de hashes antigos).
       Gerar um novo, se necessário:
       `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
-- [ ] `STRIPE_SECRET_KEY` — chave secreta da Stripe (dashboard → Developers → API keys).
+- [x] `STRIPE_SECRET_KEY` — chave secreta da Stripe (dashboard → Developers → API keys).
       Server-side apenas. Necessária para o onboarding Connect (`api/stripe/connect/*`).
-- [ ] Aplicar a migration `supabase/migrations/20260903110000_stripe_connect_foundation.sql`.
+- [x] Aplicar a migration `supabase/migrations/20260903110000_stripe_connect_foundation.sql`.
 - [ ] `PAYMENT_WEBHOOK_SECRET` — segredo de assinatura de webhook do processador. Quando
       adicionar webhooks da Stripe, usar o *signing secret* do endpoint (dashboard → Webhooks).
       Enquanto vazio, `/api/payments/webhook` responde `503 PAYMENT_WEBHOOK_NOT_CONFIGURED`
@@ -49,7 +51,7 @@ Nunca commitar valores. Localmente ficam no `.env` (que está no `.gitignore`).
       em `vercel.json`, após confirmar zero violações legítimas no app rodando. Ajustar
       `connect-src` com a URL exata do projeto Supabase.
 - [ ] Tornar MFA obrigatório para contas com papel `admin`.
-- [ ] `npm audit fix` + revalidar `npm run test` / `npm run build`.
+- [x] `npm audit fix` + revalidar `npm run test` / `npm run build`.
 - [ ] Obter o AOC (Attestation of Compliance) PCI do parceiro processador.
 - [ ] Confirmar com o adquirente qual SAQ se aplica e preencher a SAQ-A oficial.
 - [ ] Pentest externo.
