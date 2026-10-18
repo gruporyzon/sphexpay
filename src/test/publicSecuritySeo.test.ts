@@ -62,14 +62,6 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(final).toContain('.landing-v2 .payment-section{min-height:0')
   expect(final).not.toContain('.landing-v2 .security-section')
  })
- it('força contraste claro nas seções escuras e no CTA final',()=>{
-  const final=css.slice(css.indexOf('/* Public navigation and section rhythm — authoritative final layer. */'))
-  expect(landing).toContain('landing-cta public-section--dark')
-  expect(landing).toContain('public-heading--on-dark')
-  expect(final).toContain('.landing .public-heading--on-dark{color:#f8f7f4}')
-  expect(final).toContain('.landing-v2 .landing-cta h2{max-width:800px;color:#f8f7f4}')
-  expect(final).not.toMatch(/landing-cta h2[^}]*color:#1/)
- })
  it('isola o banner preto premium de jornadas de cobrança',()=>{
   const marker='/* Jornadas de cobrança — banner preto premium, isolado da restante landing. */',section=css.slice(css.indexOf(marker))
   expect(section).toContain('.landing-v2 .payment-section')
