@@ -13,3 +13,5 @@ reference-assets/
 .env.local
 .env.*.local
 .vercel/
+# Playwright CLI output (may contain credentials)
+.playwright-cli/

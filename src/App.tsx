@@ -65,6 +65,7 @@ const modules=[['competicao',<CompetitionPage/>],['vendas-ao-vivo',<Suspense fal
 export default function App(){return <BrowserRouter><SystemChrome/><Routes>
  {(import.meta.env.DEV||import.meta.env.MODE==='checkout-qa')&&<Route path="/dev/checkout-preview" element={<DevCheckoutPreview/>}/> }
  {import.meta.env.DEV&&<Route path="/dev/workspace-preview" element={<DashboardDataProvider><SoundProvider><Layout navigationRoot="/dev/workspace-preview"/></SoundProvider></DashboardDataProvider>}><Route index element={<Dashboard/>}/>{modules.map(([path,element])=><Route path={path} element={element} key={`workspace-${path}`}/>)}<Route path="financeiro" element={<FinancialHub/>}><Route index element={<FinancialOverview/>}/><Route path="saques" element={<WithdrawalsSection/>}/></Route><Route path="social" element={<Deferred><SocialPage/></Deferred>}/></Route>}
+ {import.meta.env.DEV&&<Route path="/dev/onboarding-preview" element={<OnboardingPage/>}/>}
  {import.meta.env.DEV&&<Route path="/dev/dashboard-preview" element={<><DevPreviewNavigator/><DevDashboardPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/live-sales-preview" element={<><DevPreviewNavigator/><DevLiveSalesPreview/></>}/>}
  {import.meta.env.DEV&&<Route path="/dev/transactions-preview" element={<><DevPreviewNavigator/><DevTransactionsPreview/></>}/>}

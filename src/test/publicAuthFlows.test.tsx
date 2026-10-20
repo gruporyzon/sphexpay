@@ -41,11 +41,12 @@ describe('fluxos públicos de autenticação',()=>{
  })
  it('valida e envia cadastro somente pelos campos suportados',async()=>{
   const user=userEvent.setup();renderRoute(<SignupPage/>,'/criar-conta')
-  const inputs=screen.getAllByRole('textbox');await user.type(inputs[0],'Pessoa Teste');await user.type(inputs[1],'11999990000');await user.type(inputs[2],'pessoa@example.com')
-  const passwords=screen.getAllByLabelText(/Senha|Confirmar senha/);await user.type(passwords[0],'Senha@123');await user.type(passwords[1],'Senha@123')
-  for(const checkbox of screen.getAllByRole('checkbox'))await user.click(checkbox)
-  await user.click(screen.getByRole('button',{name:'Criar conta'}))
-  expect(mocks.signUp).toHaveBeenCalledOnce();expect(await screen.findByRole('heading',{name:'Confirmação enviada'})).toBeInTheDocument()
+  await user.type(screen.getByLabelText('Nome completo'),'Pessoa Teste');await user.type(screen.getByLabelText('E-mail'),'pessoa@example.com');await user.type(screen.getByLabelText('Telefone'),'11999990000')
+  await user.type(screen.getByLabelText('Senha'),'Senha@123');await user.type(screen.getByLabelText('Confirmar senha'),'Senha@123')
+  await user.click(screen.getByRole('button',{name:'Continuar'}))
+  expect(await screen.findByRole('alert')).toHaveTextContent('Aceite os Termos de Uso');expect(mocks.signUp).not.toHaveBeenCalled()
+  await user.click(screen.getByRole('checkbox'));await user.click(screen.getByRole('button',{name:'Continuar'}))
+  expect(mocks.signUp).toHaveBeenCalledOnce();expect(mocks.signUp).toHaveBeenCalledWith('pessoa@example.com','Senha@123',{full_name:'Pessoa Teste',phone:'(11) 99999-0000',onboarding_complete:false});expect(await screen.findByRole('heading',{name:'Confirmação enviada'})).toBeInTheDocument()
  })
  it('envia recuperação com resposta neutra',async()=>{
   const user=userEvent.setup();renderRoute(<ForgotPasswordPage/>,'/recuperar-senha');await user.type(screen.getByLabelText('E-mail'),'pessoa@example.com');await user.click(screen.getByRole('button',{name:'Enviar link de recuperação'}))

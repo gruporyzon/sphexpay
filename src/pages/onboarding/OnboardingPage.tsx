@@ -1,15 +1,76 @@
-import { useState,type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Bell,Building2,Check,ChevronLeft,ChevronRight,Globe2,UserRound } from 'lucide-react'
-import { SphexPayLogo } from '../../components/branding/SphexPayLogo'
+import { useEffect,useRef,useState,type CSSProperties } from 'react'
+import { Navigate,useNavigate } from 'react-router-dom'
+import { ArrowRight,Check,ChevronLeft,ChevronRight } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
-import { authMessage,authService } from '../../services/authService'
-import { BrazilFlag } from '../../components/forms/BrazilFlag'
-import { maskPhoneBR } from '../../lib/masks'
-const steps=[['Perfil',UserRound],['Negócio',Building2],['Preferências',Bell],['Conclusão',Check]] as const
-export default function OnboardingPage(){const {user}=useAuth(),navigate=useNavigate(),[step,setStep]=useState(0),[error,setError]=useState(''),[loading,setLoading]=useState(false),[data,setData]=useState({name:String(user?.user_metadata?.full_name??''),phone:String(user?.user_metadata?.phone??''),country:'Brasil',language:'pt-BR',business:'',operation:'Produtos digitais',personType:'Pessoa jurídica',category:'Educação',volume:'Até R$ 50 mil/mês',currency:'BRL',notifications:true,salesAlerts:true,theme:'light'}),set=(key:keyof typeof data,value:string|boolean)=>setData(current=>({...current,[key]:value}));const next=(event:FormEvent)=>{event.preventDefault();if(step===0&&!data.name.trim()){setError('Informe seu nome para continuar.');return}if(step===1&&!data.business.trim()){setError('Informe o nome do negócio.');return}setError('');setStep(value=>Math.min(3,value+1))};const finish=async()=>{setLoading(true);try{const {error:failure}=await authService.updateMetadata({...data,onboarding_complete:true});if(failure)throw failure;document.documentElement.dataset.theme=data.theme;navigate('/app',{replace:true})}catch(reason){setError(authMessage(reason))}finally{setLoading(false)}};return <main className="onboarding-shell"><header><SphexPayLogo showName priority/><span>Configuração inicial segura</span></header><div className="onboarding-layout"><aside><span>PRIMEIROS PASSOS</span><h1>Prepare seu espaço de trabalho.</h1><p>Aqui pedimos apenas dados operacionais básicos. O envio de documentos para compliance acontece depois, em Verificação.</p><nav>{steps.map(([label,Icon],index)=><div className={index===step?'active':index<step?'done':''} key={label}><i>{index<step?<Check/>:<Icon/>}</i><span><b>{label}</b><small>Etapa {index+1} de 4</small></span></div>)}</nav></aside><section className="onboarding-card"><div className="onboarding-progress"><i style={{width:`${(step+1)*25}%`}}/></div>{step===0&&<OnboardingForm title="Vamos começar pelo seu perfil" subtitle="Essas informações identificam seu espaço de trabalho." onSubmit={next}><div className="onboarding-grid"><Field label="Nome completo" value={data.name} onChange={v=>set('name',v)}/><PhoneField label="Telefone" value={data.phone} onChange={v=>set('phone',v)}/><SelectField label="País" value={data.country} onChange={v=>set('country',v)} options={['Brasil','Portugal','Estados Unidos']}/><SelectField label="Idioma" value={data.language} onChange={v=>set('language',v)} options={['pt-BR','en-US','es-ES']}/></div><p className="onboarding-hint"><Globe2/> A foto continua armazenada apenas neste dispositivo até o Storage remoto ser configurado.</p></OnboardingForm>}{step===1&&<OnboardingForm title="Conte sobre sua operação" subtitle="Usaremos essas escolhas para organizar a experiência do painel." onSubmit={next}><div className="onboarding-grid"><Field label="Nome do negócio" value={data.business} onChange={v=>set('business',v)}/><SelectField label="Tipo de operação" value={data.operation} onChange={v=>set('operation',v)} options={['Produtos digitais','Serviços','SaaS','E-commerce']}/><SelectField label="Perfil" value={data.personType} onChange={v=>set('personType',v)} options={['Pessoa física','Pessoa jurídica']}/><SelectField label="Categoria" value={data.category} onChange={v=>set('category',v)} options={['Educação','Tecnologia','Serviços','Varejo']}/><SelectField label="Volume estimado" value={data.volume} onChange={v=>set('volume',v)} options={['Até R$ 10 mil/mês','Até R$ 50 mil/mês','Até R$ 250 mil/mês','Acima de R$ 250 mil/mês']}/><SelectField label="Moeda principal" value={data.currency} onChange={v=>set('currency',v)} options={['BRL','USD','EUR']}/></div></OnboardingForm>}{step===2&&<OnboardingForm title="Ajuste suas preferências" subtitle="Você poderá mudar tudo depois nas configurações." onSubmit={next}><div className="onboarding-toggles"><Toggle label="Notificações internas" checked={data.notifications} onChange={v=>set('notifications',v)}/><Toggle label="Alertas de novas vendas" checked={data.salesAlerts} onChange={v=>set('salesAlerts',v)}/><SelectField label="Tema inicial" value={data.theme} onChange={v=>set('theme',v)} options={['light','dark']}/><SelectField label="Moeda" value={data.currency} onChange={v=>set('currency',v)} options={['BRL','USD','EUR']}/></div></OnboardingForm>}{step===3&&<div className="onboarding-complete"><div><Check/></div><span>CONFIGURAÇÃO CONCLUÍDA</span><h2>Seu espaço SphexPay está pronto.</h2><p>{data.name}, seu painel está pronto. O próximo passo para liberar a operação é enviar seus documentos em <b>Verificação</b> (menu Pagamentos).</p><dl><div><dt>Negócio</dt><dd>{data.business}</dd></div><div><dt>Operação</dt><dd>{data.operation}</dd></div><div><dt>Moeda</dt><dd>{data.currency}</dd></div></dl><button className="auth-submit" onClick={finish} disabled={loading}>{loading?'Finalizando...':'Entrar na SphexPay'}</button></div>}{error&&<p className="onboarding-error">{error}</p>}{step>0&&step<3&&<button className="onboarding-back" onClick={()=>setStep(value=>value-1)}><ChevronLeft/> Voltar</button>}</section></div></main>}
-function OnboardingForm({title,subtitle,onSubmit,children}:{title:string;subtitle:string;onSubmit:(e:FormEvent)=>void;children:React.ReactNode}){return <form onSubmit={onSubmit}><span className="auth-eyebrow">ETAPA ATUAL</span><h2>{title}</h2><p>{subtitle}</p>{children}<button className="auth-submit">Continuar <ChevronRight/></button></form>}
-function Field({label,value,onChange}:{label:string;value:string;onChange:(v:string)=>void}){return <label><span>{label}</span><input value={value} onChange={e=>onChange(e.target.value)} required/></label>}
-function PhoneField({label,value,onChange}:{label:string;value:string;onChange:(v:string)=>void}){return <label><span>{label}</span><div className="onboarding-phone"><span className="field-cc"><BrazilFlag className=""/>+55</span><input type="tel" inputMode="numeric" autoComplete="tel-national" placeholder="(11) 91234-5678" value={value} onChange={e=>onChange(maskPhoneBR(e.target.value))} required/></div></label>}
-function SelectField({label,value,onChange,options}:{label:string;value:string;onChange:(v:string)=>void;options:string[]}){return <label><span>{label}</span><select value={value} onChange={e=>onChange(e.target.value)}>{options.map(item=><option key={item}>{item}</option>)}</select></label>}
-function Toggle({label,checked,onChange}:{label:string;checked:boolean;onChange:(v:boolean)=>void}){return <label className="onboarding-toggle"><span>{label}</span><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)}/><i/></label>}
+import { FlowNotice,FlowShell } from '../../features/signup/FlowShell'
+import { emptyAnswers,isComplete,questionnaire,type QuestionnaireAnswers } from '../../features/signup/questionnaire'
+import { onboardingService } from '../../features/signup/onboardingService'
+
+const draftKey=(userId:string)=>`sphexpay:onboarding-draft:${userId}`
+const total=questionnaire.length
+
+function readDraft(userId:string|undefined):QuestionnaireAnswers{
+ if(!userId)return emptyAnswers()
+ try{const saved=JSON.parse(sessionStorage.getItem(draftKey(userId))||'null');return saved&&typeof saved==='object'?{...emptyAnswers(),...saved}:emptyAnswers()}catch{return emptyAnswers()}
+}
+
+export default function OnboardingPage(){
+ const {user}=useAuth(),navigate=useNavigate()
+ const [answers,setAnswers]=useState<QuestionnaireAnswers>(()=>readDraft(user?.id))
+ const [step,setStep]=useState(()=>{const index=questionnaire.findIndex(question=>!answers[question.key]);return index<0?total-1:index})
+ const [direction,setDirection]=useState<'next'|'prev'>('next'),[error,setError]=useState(''),[saving,setSaving]=useState(false),[done,setDone]=useState(false)
+ const heading=useRef<HTMLHeadingElement>(null),firstRender=useRef(true)
+ const question=questionnaire[step],selected=answers[question.key],last=step===total-1
+
+ useEffect(()=>{if(!user?.id)return;try{sessionStorage.setItem(draftKey(user.id),JSON.stringify(answers))}catch{/* armazenamento indisponível */}},[answers,user?.id])
+ useEffect(()=>{if(firstRender.current){firstRender.current=false;return}heading.current?.focus()},[step,done])
+
+ if(user?.user_metadata?.onboarding_complete&&!done&&!saving)return <Navigate to="/app" replace/>
+
+ const choose=(value:string)=>{setAnswers(current=>({...current,[question.key]:value}));setError('')}
+ const back=()=>{if(step===0||saving)return;setDirection('prev');setError('');setStep(value=>value-1)}
+ const next=async()=>{
+  if(!selected||saving)return
+  if(!last){setDirection('next');setStep(value=>value+1);return}
+  if(!user?.id||!isComplete(answers)){setError('Responda todas as etapas para concluir.');return}
+  setSaving(true);setError('')
+  try{
+   await onboardingService.save(user.id,answers)
+   try{sessionStorage.removeItem(draftKey(user.id))}catch{/* armazenamento indisponível */}
+   setDone(true)
+  }catch(reason){setError(reason instanceof Error?reason.message:'Não foi possível concluir. Tente novamente.')}
+  finally{setSaving(false)}
+ }
+
+ const firstName=String(user?.user_metadata?.full_name??'').trim().split(/\s+/)[0]
+
+ return <FlowShell complete={done}>
+  <div className="spx-flow-progress" role="progressbar" aria-label="Progresso do cadastro" aria-valuemin={1} aria-valuemax={total} aria-valuenow={done?total:step+1} aria-valuetext={done?'Cadastro concluído':`Etapa ${step+1} de ${total}`}>
+   <div className="spx-flow-track"><i style={{width:`${done?100:((step+1)/total)*100}%`}}/></div>
+   <div className="spx-flow-dots" aria-hidden="true">{questionnaire.map((item,index)=><span key={item.key} className={done||index<step?'done':index===step?'current':''}/>)}</div>
+  </div>
+
+  {done?<div className="spx-flow-done">
+   <div className="spx-flow-check" aria-hidden="true"><svg viewBox="0 0 84 84"><circle cx="42" cy="42" r="40"/><path d="M27 43.5l10 10 20-22"/></svg></div>
+   <h1 ref={heading} tabIndex={-1}>{firstName?`Tudo pronto, ${firstName}.`:'Tudo pronto.'}</h1>
+   <p>Sua conta SphexPay está criada. Para liberar recebimentos, o próximo passo é concluir a verificação da sua conta.</p>
+   <button type="button" className="spx-flow-button full" onClick={()=>navigate('/app',{replace:true})}>Acessar painel <ArrowRight aria-hidden="true"/></button>
+  </div>:<div className={`spx-flow-step${direction==='prev'?' from-prev':''}`} key={question.key}>
+   <span className="spx-flow-eyebrow">Etapa {step+1} de {total}</span>
+   <h1 ref={heading} tabIndex={-1} id={`onboarding-question-${question.key}`}>{question.title}</h1>
+   <p className="spx-flow-subtitle">{question.subtitle}</p>
+   <fieldset className={`spx-flow-options${question.layout==='list'?' is-list':''}`} aria-labelledby={`onboarding-question-${question.key}`}>
+    {question.options.map((option,index)=><div className={`spx-flow-slot${option.wide?' wide':''}`} style={{'--i':index} as CSSProperties} key={option.value}>
+     <label className="spx-flow-option"><input type="radio" name={question.key} value={option.value} checked={selected===option.value} onChange={()=>choose(option.value)}/><span className="spx-flow-radio" aria-hidden="true"/><span>{option.label}</span></label>
+    </div>)}
+   </fieldset>
+   {error&&<div style={{marginTop:16}}><FlowNotice message={error}/></div>}
+   <div className="spx-flow-actions">
+    <button type="button" className="spx-flow-button outline" onClick={back} disabled={step===0||saving}><ChevronLeft aria-hidden="true"/>Voltar</button>
+    <button type="button" key={`${question.key}-${Boolean(selected)}`} className={`spx-flow-button${selected?' is-ready':''}`} onClick={next} disabled={!selected||saving} aria-busy={saving}>
+     {saving?<><span className="spx-flow-spinner" aria-hidden="true"/>Concluindo...</>:last?<>Concluir <Check aria-hidden="true"/></>:<>Próximo <ChevronRight aria-hidden="true"/></>}
+    </button>
+   </div>
+  </div>}
+ </FlowShell>
+}
