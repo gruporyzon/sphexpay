@@ -1,0 +1,1616 @@
+{
+  "results": [
+    {
+      "route": "",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Olá, Conta de revisão visual",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [
+        {
+          "text": "R$ 0,00",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "29px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "—",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "0",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "R$ 0,00",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "R$ 0,00",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "panels": [
+        {
+          "text": "MEIOS DE PAGAMENTODesempenho por canalNenhuma venda registra",
+          "classes": "panel dashboard-payment-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "Hoje7 dias30 dias90 diasPersonalizado",
+          "classes": "internal-filter-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 1719,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "produtos",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Produtos",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [
+        {
+          "text": "1",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "0",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "0",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "panels": [
+        {
+          "text": "Produtos ativos1",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "REm rascunho0",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Produtos pausados0",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "AtivoPagamento único · CursosProduto de revisão com nome ext",
+          "classes": "panel pv2-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Todos os statusRascunhoAtivoPausadoArquivado",
+          "classes": "input select",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Todos os tiposPagamento únicoAssinatura",
+          "classes": "input select",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Todas as categoriasCursos",
+          "classes": "input select",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Atualizados recentementeNome A–ZMaior preço",
+          "classes": "input select",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 557,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "produtos/checkout",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Seu produto mereceuma boa primeira impressão.",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [],
+      "controls": [
+        {
+          "text": "Produto de revisão com nome extenso para conferir quebra de ",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 552,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "produtos/links",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Links de pagamento",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "Scale ProAtivohttps://pay.sphexpay.local/pay/LNK-A92F · váli",
+          "classes": "panel p-5 flex flex-col md:flex-row md:items-center gap-4",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [],
+      "body": 223,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "vendas-ao-vivo",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Vendas ao Vivo",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "Vendas ao vivo0confirmadas hoje",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Valor movimentadoR$ 0,00total global",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Países alcançados0destinos ativos",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Maior destino—no momento",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Atividade+0%última hora",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "REDE GLOBAL SPHEXPAYOperação internacionalFluxos recentes a ",
+          "classes": "panel live-world-map-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "ATIVIDADE AO VIVOÚltimas transaçõesNenhuma atividade global ",
+          "classes": "panel live-world-feed",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "FLUXO POR REGIÃODistribuição das transações de hoje0 eventos",
+          "classes": "panel live-world-regions",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [],
+      "body": 2093,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "vendas",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Vendas",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "PesquisarStatusTodosAprovadaPendenteRecusadaReembolsadaCharg",
+          "classes": "panel transactions-table-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "Hoje7 dias30 dias90 diasPersonalizado",
+          "classes": "internal-filter-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "TodosAprovadaPendenteRecusadaReembolsadaChargeback",
+          "classes": "input internal-filter-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 497,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "vitrine",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Vitrine",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [
+        {
+          "text": "01",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "29px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "00",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "29px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "00",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "29px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "panels": [
+        {
+          "text": "SEU PRÓXIMO ESPAÇOResultados abrem portas.Seu produto merece",
+          "classes": "vitrine-hero",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "PublicadoCursosProduto de revisão com nome extenso para conf",
+          "classes": "vitrine-card is-published",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "PublicadoCursosProduto de revisão com nome extenso para conf",
+          "classes": "vitrine-card is-published",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "normal"
+        }
+      ],
+      "body": 961,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "assinaturas",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Assinaturas",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [
+        {
+          "text": "0",
+          "classes": "subscriptions-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "0",
+          "classes": "subscriptions-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "0",
+          "classes": "subscriptions-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "0",
+          "classes": "subscriptions-value",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "22px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "panels": [
+        {
+          "text": "Assinaturas ativas00,00%vs. o período anterior05 de out10 de",
+          "classes": "subscriptions-primary-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Novos assinantes00,00%vs. o período anterior",
+          "classes": "subscriptions-side-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Assinaturas canceladas00,00%vs. o período anterior",
+          "classes": "subscriptions-side-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Assinaturas inativadas00,00%vs. o período anterior",
+          "classes": "subscriptions-side-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "Esse mêsMês passadoÚltimos 30 diasÚltimos 90 diasTodo o perí",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 466,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "financeiro",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Financeiro",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [
+        {
+          "text": "R$ 124.820,40",
+          "classes": "text-xl financial-money",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "R$ 38.920,80",
+          "classes": "text-xl financial-money",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "R$ 2.840,00",
+          "classes": "text-xl financial-money",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "R$ 43,96",
+          "classes": "text-xl financial-money",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "panels": [
+        {
+          "text": "STRIPE CONNECTConfigure seus recebimentosAtive sua conta de ",
+          "classes": "panel stripe-connect-card is-not_connected",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "DisponívelR$ 124.820,40",
+          "classes": "panel financial-balance-card p-5",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Saldo futuroR$ 38.920,80",
+          "classes": "panel financial-balance-card p-5",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Valores bloqueadosR$ 2.840,00",
+          "classes": "panel financial-balance-card p-5",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Taxas no períodoR$ 43,96",
+          "classes": "panel financial-balance-card p-5",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Histórico financeiroDataDescriçãoTipoStatusValor líquido20/1",
+          "classes": "panel financial-ledger-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "HojeOntemÚltimos 7 diasÚltimos 30 diasÚltimos 90 diasEste mê",
+          "classes": "internal-filter-value dashboard-period",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 657,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "financeiro/saques",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Financeiro",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "Saldo disponívelR$ 167.555,69Valor do saqueConta de destinoS",
+          "classes": "panel withdrawal-request-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Histórico de saquesAcompanhe suas solicitações e movimentaçõ",
+          "classes": "panel withdrawal-history-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Selecione uma contaConta cadastrada •••• 4821",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 351,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "verificacao",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Documentos e liberação da operação",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "Situação do cadastroRascunhoPreencha os dados e envie os doc",
+          "classes": "panel kyc-status-panel is-draft",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Dados do cadastroPessoa físicaPessoa jurídicaNome completoCP",
+          "classes": "panel kyc-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "DocumentosFormatos aceitos: JPG, PNG ou PDF, até 10 MB por a",
+          "classes": "panel kyc-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Enviar para análiseFaltam documentos: Documento de identidad",
+          "classes": "panel kyc-submit-bar",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "700",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 881,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "afiliados",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Afiliados",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [],
+      "controls": [],
+      "body": 110,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "premiacoes",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Premiações",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "JORNADA SPHEXPAYR$ 215.250,00 para Sphex 500KR$ 284.750,00 e",
+          "classes": "panel journey-overview",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "NÍVEL 01CONQUISTA ALCANÇADASPHEXPAY RECOGNITIONSphex 10KPrim",
+          "classes": "panel journey-award-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "NÍVEL 02CONQUISTA ALCANÇADASPHEXPAY RECOGNITIONSphex 100KRec",
+          "classes": "panel journey-award-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "NÍVEL 03PRÓXIMA CONQUISTASPHEXPAY RECOGNITIONSphex 500KMarco",
+          "classes": "panel journey-award-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "NÍVEL 04BLOQUEADASPHEXPAY RECOGNITIONSphex 1MReconhecimento ",
+          "classes": "panel journey-award-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "NÍVEL 05BLOQUEADASPHEXPAY RECOGNITIONSphex 5M+O nível máximo",
+          "classes": "panel journey-award-card",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [],
+      "body": 896,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "relatorios",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Relatórios",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "FaturamentoR$ 284.750,00",
+          "classes": "panel report-kpi",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "LucroR$ 284.706,04",
+          "classes": "panel report-kpi",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Vendas1",
+          "classes": "panel report-kpi",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Ticket médioR$ 89,00",
+          "classes": "panel report-kpi",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Aprovação20.0%",
+          "classes": "panel report-kpi",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Saldo disponívelR$ 167.555,69",
+          "classes": "panel report-kpi",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Resumo geralAtualização automática pelo período selecionado0",
+          "classes": "panel report-chart",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Desempenho da meta81.4%R$ 284.750,00 de R$ 350.000,00Receita",
+          "classes": "panel report-score",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "HojeOntemÚltimos 7 diasÚltimos 30 diasÚltimos 90 diasEste mê",
+          "classes": "internal-filter-value dashboard-period",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 644,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "relatorios/clientes",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Relatórios",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "PesquisarTodosAtivoInativoClientePaísTotal gastoComprasÚltim",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "TodosAtivoInativo",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 387,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "notificacoes",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Notificações",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "Aviso de segurançaRevise os dispositivos com acesso autoriza",
+          "classes": "panel notification-page-list",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 804,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "configuracoes",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Configurações",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "PerfilEmpresaAplicativoNotificaçõesSons e vozSegurançaPrefer",
+          "classes": "panel p-2 self-start overflow-auto",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "PerfilPreferências armazenadas localmente neste navegador.RR",
+          "classes": "panel p-5 md:p-7",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [
+        {
+          "text": "",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "",
+          "classes": "input",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "400",
+          "radius": "12px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "body": 484,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "integracoes",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Integrações",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [
+        {
+          "text": "2",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "1",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Operacional",
+          "classes": "integration-status",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Produção",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "25.545px",
+          "weight": "300",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "panels": [
+        {
+          "text": "Integrações ativas2 Conectadas agora",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Webhooks ativos1 Entrega monitorada",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Status da API Operacional Última sincronização há 2 min",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        },
+        {
+          "text": "Ambiente atualProdução Controle protegido",
+          "classes": "panel",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [],
+      "body": 981,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "social",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Social",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [
+        {
+          "text": "CdO que você quer compartilhar?",
+          "classes": "panel social-compact-composer",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "12px",
+          "weight": "400",
+          "radius": "19px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "controls": [],
+      "body": 421,
+      "errors": [],
+      "failures": []
+    },
+    {
+      "route": "competicao",
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "lang": "pt-BR",
+      "scroll": 393,
+      "fontReady": true,
+      "headings": [
+        {
+          "text": "Rumo ao iPhone 17 Pro Max",
+          "classes": "",
+          "font": "SphexDashboard, Arial, sans-serif",
+          "size": "16px",
+          "weight": "600",
+          "radius": "0px",
+          "numeric": "lining-nums tabular-nums"
+        }
+      ],
+      "metrics": [],
+      "panels": [],
+      "controls": [],
+      "body": 2267,
+      "errors": [],
+      "failures": []
+    }
+  ],
+  "issues": [],
+  "interactions": [
+    "PT/EN/ES menus, persistence and form preservation",
+    "Language keyboard navigation and focus return",
+    "Appearance preferences and persistence",
+    "Product metric labels and readable mobile filters",
+    "Product dialog, mobile controls and closing",
+    "Subscription date label spacing",
+    "Subscription tabs, search and disabled CSV for empty results",
+    "Showcase filters and empty search",
+    "Social feed tabs"
+  ]
+}

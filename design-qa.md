@@ -1,60 +1,42 @@
-# SphexPay — padronização visual dos módulos
+# SphexPay — seletores e movimento do workspace
 
-**final result: passed**
+Revisão de 20/10/2026, sobre main `713192cd46f9101d82d925a1496b50644666ce57`. A revisão da padronização anterior está em [design-qa anterior](docs/workspace-modules-qa/design-qa.md).
 
-A Visão geral existente é a referência. Continuação do PR #5, a partir do HEAD 544afae655f21b672322e6acede8813c2a2dea48, sem recriar páginas ou alterar serviços de negócio.
+## Implementação
 
-## Resultado
+- Vendas usa seletores compactos de 7/30/90 dias e BRL/EUR/USD, seguindo as cápsulas da Visão geral. Hoje, período personalizado e datas continuam disponíveis em Mais filtros. As datas ficam em coluna para evitar sobreposição dentro do painel estreito.
+- Um indicador compartilhado desliza entre períodos, moedas, abas e navegação de módulos. Botões têm resposta ao pressionar, menus têm entrada suave e o foco de teclado permanece visível.
+- Os selects administrativos mantêm seus elementos nativos, valores, validação, submissão e handlers React. Um menu visual compartilhado trata a escolha, teclado, Escape, Tab, busca por letras, grupos e opções desabilitadas.
+- O menu usa um portal acima dos modais e se posiciona dentro do viewport. Escape cancela a seleção sem fechar o diálogo que contém o campo.
+- Movimento reduzido desativa as novas animações. Os textos usam o sistema de tradução existente e a fonte Raleway local.
+- Checkout público, canvas de edição, selects múltiplos e campos explicitamente marcados `data-native-picker` conservam o seletor nativo.
 
-- Raleway local (SphexDashboard), títulos 16/22 px com peso 600 e seções 13/18 px com peso 500.
-- Números alinhados e tabulares, peso 300, escalas de 29/23 px e adaptação mobile.
-- Cartões de 19 px; botões e abas em cápsula; campos de 12 px de raio e fonte de pelo menos 16 px no mobile.
-- Checkouts administrativos e Vitrine agora seguem a hierarquia da Visão geral. Os cartões da Vitrine usam os tokens dos dois temas.
-- Produtos reserva espaço para os ícones das métricas, quebra rótulos e organiza filtros em coluna nas telas estreitas. Suas abas agora usam o mesmo estilo de seleção.
-- O grupo de data de Assinaturas ganha uma linha própria no mobile, preservando espaço entre rótulo e período.
-- Modais ficam acima do cabeçalho e da ajuda. A animação de entrada deixa de reter um contexto de empilhamento; páginas com um diálogo aberto não mantêm transform. O botão de fechar de Novo produto foi acionado no navegador após a correção.
+## Validação
 
-## Matriz e evidências
+**Resultado final: aprovado.** TypeScript, ESLint, 36 testes direcionados em seis arquivos e build Vite passaram. `git diff --check` limpo. O aviso existente de chunks acima de 500 kB permanece sem bloquear o build. Não se declara a suíte completa aprovada.
 
-Chromium/Playwright 1.64.1, componentes reais em /dev/workspace-preview, densidade 1, altura de 900 CSS px, fontes carregadas e conteúdo estabilizado antes de medir. Rota existente disponível somente em desenvolvimento. A revisão usa conta fictícia e respostas locais do host sphexpay-qa.invalid; não depende de credenciais ou dados privados.
+Chromium 153, Playwright 1.64.1, altura de 900 CSS px. [24 combinações de Vendas](docs/workspace-interactions-qa/results.json): larguras 320/393/820/1366 px, claro/escuro e PT/EN/ES. Verificaram-se início e conclusão da transição real do indicador animado, escolha de período e moeda, menu Status dentro do viewport, teclado, cancelamento, foco e datas personalizadas. Sem erros de execução.
 
-| Largura | Temas | Idiomas | Combinações |
-| --- | --- | --- | --- |
-| 320 px | claro e escuro | PT/EN/ES | 120 |
-| 393 px | claro e escuro | PT/EN/ES | 120 |
-| 820 px | claro e escuro | PT/EN/ES | 120 |
-| 1366 px | claro e escuro | PT/EN/ES | 120 |
+[Interações adicionais](docs/workspace-interactions-qa/interactions.json): seleção por toque, abertura e fechamento pelo rótulo, abas de Assinaturas/Social/Vitrine/Financeiro, navegação entre módulos, filtro e modal de Produtos, Escape preservando o diálogo e movimento reduzido. A contagem zero desse arquivo indica execução apenas das interações; as 24 combinações estão no arquivo anterior.
 
-20 rotas: Visão geral, Produtos, Checkouts, Links de pagamento, Vendas ao Vivo, Vendas, Vitrine, Assinaturas, Financeiro, Saques, Verificação, Afiliados, Premiações, Relatórios, Clientes, Notificações, Configurações, Integrações, Social e Competição.
+[Conferência dos 20 módulos](docs/workspace-interactions-qa/module-smoke/matrix.json): 393 px, tema claro e português, sem falhas de layout, fonte ou execução. Também passaram os nove grupos de interações existentes: idiomas, preferências, formulários, filtros, busca e modais. A conferência usa o CSS final, incluindo o painel de datas corrigido. O alinhamento final dos rótulos de data foi conferido novamente por toque no mobile.
 
-480 combinações verificadas, sem falhas nos critérios do runner. Produtos e Assinaturas foram revisados novamente nas 48 combinações afetadas pelos últimos ajustes de espaçamento. A matriz final substitui essas linhas pelos resultados da revisão posterior.
+Capturas inspecionadas visualmente: [Vendas mobile escuro](docs/workspace-interactions-qa/sales-393-dark.jpg), [Vendas desktop claro](docs/workspace-interactions-qa/sales-1366-light.jpg) e [período personalizado mobile](docs/workspace-interactions-qa/sales-custom-393.jpg).
 
-- [Matriz final](docs/workspace-modules-qa/matrix.csv): largura, idioma, tema, hierarquia, pesos, raios e tamanhos dos campos realmente observados.
-- [Comparação mobile escuro](docs/workspace-modules-qa/comparison-dark.jpg): Visão geral, Produtos, Vitrine e Assinaturas, capturas recortadas apenas no limite vertical do quadro.
-- [Comparação desktop claro](docs/workspace-modules-qa/comparison-light.jpg): os mesmos módulos reduzidos proporcionalmente para comparação.
-- [Modal mobile](docs/workspace-modules-qa/product-dialog-mobile.jpg): captura depois da correção das camadas.
-- Capturas comparadas visualmente com a Visão geral no mesmo tema e viewport. Listas e navegação horizontal mantêm sua rolagem própria.
+As evidências locais usam somente a aplicação local, conta fictícia e APIs interceptadas em `sphexpay-qa.invalid`. Nenhum dado real é escrito.
 
-## Interações
-
-Passaram no navegador: PT/EN/ES com persistência; troca de idioma sem reiniciar um formulário; navegação de idioma por teclado e retorno do foco; aparência nas Preferências com persistência; formulário Novo produto, fonte mobile e fechamento; ausência de colisão entre rótulos e ícones de métricas; filtros de Produtos legíveis; abas e busca de Assinaturas; exportação desabilitada para resultados vazios; separação do rótulo de data; filtros e busca vazia da Vitrine; abas do feed Social.
-
-## Checks e reprodução
-
-TypeScript, ESLint, 62 testes direcionados em 11 arquivos e build Vite aprovados nesta atualização. git diff --check limpo. O aviso de chunks acima de 500 kB continua; não bloqueia o build.
-
-A tentativa inicial da suíte completa ficou sem progresso no teste de integração legado sphexpay.test.tsx e foi interrompida. Não se declara a suíte inteira aprovada. Os 166 testes citados na revisão anterior não são usados como evidência deste PR.
+## Reprodução
 
 ```bash
 npm ci
 npx playwright install --with-deps chromium
 npm run typecheck
 npm run lint
-npm run test -- src/test/headerLanguage.test.tsx src/test/workspaceSearch.test.tsx src/test/dashboardLayout.test.ts src/test/dashboardFilterMobile.test.ts src/test/subscriptions.test.tsx src/test/affiliates.test.tsx src/test/checkoutExperience.test.tsx src/test/checkoutStudio.test.ts src/test/checkoutBuilderSave.test.tsx src/test/productsV2Advanced.test.ts src/test/notificationSanitizer.test.ts --maxWorkers=2
-npm run test:workspace
+npm run test -- src/test/workspaceInteractions.test.tsx src/test/dashboardFilterMobile.test.ts src/test/headerLanguage.test.tsx src/test/dashboardAccess.test.tsx src/test/subscriptions.test.tsx src/test/checkoutExperience.test.tsx --maxWorkers=2
+node scripts/workspace-interactions-qa.mjs
 npm run build
 ```
 
-O runner inicia e encerra seu próprio Vite local com configuração fictícia. QA_WIDTH e QA_ROUTES permitem repetir uma largura ou módulos; QA_ONLY_INTERACTIONS=1 executa os fluxos. QA_BASE_URL aceita apenas localhost/127.0.0.1. A configuração fictícia não é adicionada ao aplicativo ou à Vercel.
+O runner inicia e encerra seu próprio Vite com configuração fictícia. `QA_BROWSER_PATH` permite usar um Chromium instalado no ambiente, sem acrescentar dependências ao aplicativo. `QA_BASE_URL` aceita apenas localhost/127.0.0.1. `QA_ONLY_INTERACTIONS=1` repete somente os fluxos de interação, preservando a matriz completa.
 
-Autenticação, permissões, dados persistidos, moedas, valores financeiros, pagamentos, webhooks e serviços permanecem sem alterações neste PR. O canvas do editor e o checkout público conservam a tipografia configurada. Esta revisão não comprova processamento de pagamentos reais ou uma sessão privada em produção.
+Autenticação, permissões, valores financeiros, serviços de dados, pagamentos e webhooks não foram alterados. Esta revisão de interface não comprova processamento de pagamentos reais.

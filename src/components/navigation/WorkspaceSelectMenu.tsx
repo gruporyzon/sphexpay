@@ -61,8 +61,15 @@ export function WorkspaceSelectMenu(){
    const target=event.target instanceof Element?event.target:null
    if(panel.current?.contains(target))return
    closeAdvancedFilters(target)
-   const select=target?.closest('select')
+   const label=target?.closest('label')
+   const select=target?.closest('select')||(!target?.closest('button,a,input,textarea')?label?.control:null)
    if(select instanceof HTMLSelectElement&&isEligible(select)&&event.button===0){event.preventDefault();if(current.current?.select===select)close();else open(select)}else close()
+  }
+  const click=(event:MouseEvent)=>{
+   const target=event.target instanceof Element?event.target:null
+   const control=target?.closest('label')?.control
+   // Label activation forwards a second native click unless its default is cancelled.
+   if(control instanceof HTMLSelectElement&&isEligible(control)&&target!==control&&!target?.closest('button,a,input,textarea'))event.preventDefault()
   }
   const keydown=(event:KeyboardEvent)=>{
    if(event.key==='Escape'&&!current.current){const open=document.querySelector<HTMLDetailsElement>('.internal-app-shell .reference-custom-period[open]');if(open){event.preventDefault();open.open=false;open.querySelector<HTMLElement>('summary')?.focus()}}
@@ -89,8 +96,8 @@ export function WorkspaceSelectMenu(){
    }
   }
   const focus=(event:FocusEvent)=>{if(current.current&&event.target!==current.current.select&&!panel.current?.contains(event.target as Node))close()}
-  document.addEventListener('pointerdown',pointer,true);document.addEventListener('keydown',keydown,true);document.addEventListener('focusin',focus)
-  return()=>{document.removeEventListener('pointerdown',pointer,true);document.removeEventListener('keydown',keydown,true);document.removeEventListener('focusin',focus);close()}
+  document.addEventListener('pointerdown',pointer,true);document.addEventListener('click',click,true);document.addEventListener('keydown',keydown,true);document.addEventListener('focusin',focus)
+  return()=>{document.removeEventListener('pointerdown',pointer,true);document.removeEventListener('click',click,true);document.removeEventListener('keydown',keydown,true);document.removeEventListener('focusin',focus);close()}
  },[activate,close,commit,open])
  useEffect(()=>{close()},[pathname,locale,close])
  const anchorSelect=menu?.select

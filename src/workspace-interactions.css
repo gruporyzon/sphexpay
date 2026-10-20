@@ -24,12 +24,19 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control .reference-custom-period{position:static;flex-basis:24px;}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control .reference-custom-period>summary{display:flex;gap:6px;width:auto;min-width:24px;height:36px;font-size:11px;white-space:nowrap;}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control .reference-custom-period>div{right:auto;left:0;top:43px;width:min(290px,calc(100vw - 28px));z-index:160;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .reference-custom-period .dashboard-custom-dates{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .reference-custom-period .dashboard-custom-dates label{display:flex;flex-direction:column;align-items:stretch;gap:5px;min-width:0;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .reference-custom-period .dashboard-custom-dates label>span{align-self:flex-start;text-align:left;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .reference-custom-period .dashboard-custom-dates input{box-sizing:border-box;width:100%;min-width:0;max-width:100%;}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select{
  display:flex;align-items:center;gap:10px;min-width:0;max-width:100%;min-height:41px;padding:8px 12px;border:1px solid var(--line);border-radius:99px;background:var(--panel);color:var(--text);
 }
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select>span{flex:0 0 auto;white-space:nowrap;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select>select{flex:1;min-width:0;width:auto;height:auto;min-height:24px;margin:0;padding:0 22px 0 0;border:0;border-radius:0;background-color:transparent;box-shadow:none;color:var(--text);font-size:12px;font-weight:400;}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .transactions-filter{flex:0 0 220px;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .transactions-filter{position:relative;}
+:root[data-top-surface=app] .workspace-select-chevron{position:absolute;right:12px;width:14px;height:14px;pointer-events:none;color:var(--muted);transition:transform .18s var(--workspace-ease);}
+:root[data-top-surface=app] .transactions-filter:has(select[aria-expanded=true]) .workspace-select-chevron{transform:rotate(180deg);}
 :root[data-top-surface=app] .internal-app-shell select[aria-expanded=true]{outline:2px solid var(--line-strong);outline-offset:3px;}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select:focus-within{border-color:var(--line-strong);}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select:has(select:focus-visible){outline:2px solid var(--text);outline-offset:3px;}
@@ -56,6 +63,7 @@
  :root[data-top-surface=app] .workspace-select-menu{font-size:14px;}
 }
 @media(prefers-reduced-motion:reduce){
+ :root[data-top-surface=app] .workspace-select-chevron{transition:none;}
  :root[data-top-surface=app] .internal-app-shell [data-selection-motion]::before,:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary),:root[data-top-surface=app] .workspace-select-menu,:root[data-top-surface=app] .workspace-select-menu [role=option]{animation:none!important;transition:none!important;}
  :root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary):active{transform:none;}
  :root[data-top-surface=app] :is(.workspace-language-menu,.profile-menu,.dropdown,.notification-dropdown),:root[data-top-surface=app] .internal-app-shell .reference-custom-period[open]>div,:root[data-top-surface=app] .internal-app-shell .subscriptions-multiselect[open]>div{animation:none;}

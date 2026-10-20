@@ -1,0 +1,858 @@
+{
+  "cases": 24,
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 27,
+        "right": 293,
+        "top": 590.421875,
+        "bottom": 856.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 320,
+        "scroll": 320,
+        "lang": "pt-BR",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 27,
+        "right": 293,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 320,
+        "scroll": 320,
+        "lang": "en-US",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 27,
+        "right": 293,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 320,
+        "scroll": 320,
+        "lang": "es-ES",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 27,
+        "right": 293,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 320,
+        "scroll": 320,
+        "lang": "pt-BR",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 27,
+        "right": 293,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 320,
+        "scroll": 320,
+        "lang": "en-US",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 27,
+        "right": 293,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 320,
+        "scroll": 320,
+        "lang": "es-ES",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 393,
+      "theme": "light",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 29,
+        "right": 364,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 393,
+        "scroll": 393,
+        "lang": "pt-BR",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 393,
+      "theme": "light",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 29,
+        "right": 364,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 393,
+        "scroll": 393,
+        "lang": "en-US",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 393,
+      "theme": "light",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 29,
+        "right": 364,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 393,
+        "scroll": 393,
+        "lang": "es-ES",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 393,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 29,
+        "right": 364,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 393,
+        "scroll": 393,
+        "lang": "pt-BR",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 393,
+      "theme": "dark",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 29,
+        "right": 364,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 393,
+        "scroll": 393,
+        "lang": "en-US",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 393,
+      "theme": "dark",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 29,
+        "right": 364,
+        "top": 584.421875,
+        "bottom": 850.421875,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 393,
+        "scroll": 393,
+        "lang": "es-ES",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 820,
+      "theme": "light",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 557,
+        "right": 777,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 820,
+        "scroll": 820,
+        "lang": "pt-BR",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 820,
+      "theme": "light",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 557,
+        "right": 777,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 820,
+        "scroll": 820,
+        "lang": "en-US",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 820,
+      "theme": "light",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 557,
+        "right": 777,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 820,
+        "scroll": 820,
+        "lang": "es-ES",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 820,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 557,
+        "right": 777,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 820,
+        "scroll": 820,
+        "lang": "pt-BR",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 820,
+      "theme": "dark",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 557,
+        "right": 777,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 820,
+        "scroll": 820,
+        "lang": "en-US",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 820,
+      "theme": "dark",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 557,
+        "right": 777,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 820,
+        "scroll": 820,
+        "lang": "es-ES",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "light",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 1060,
+        "right": 1280,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 1366,
+        "scroll": 1366,
+        "lang": "pt-BR",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "light",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 1060,
+        "right": 1280,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 1366,
+        "scroll": 1366,
+        "lang": "en-US",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "light",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(34, 34, 34)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 1060,
+        "right": 1280,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 1366,
+        "scroll": 1366,
+        "lang": "es-ES",
+        "theme": "light",
+        "font": true
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 1060,
+        "right": 1280,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 1366,
+        "scroll": 1366,
+        "lang": "pt-BR",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "dark",
+      "locale": "en-US",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 63, 3)",
+        "width": "65px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 1060,
+        "right": 1280,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 1366,
+        "scroll": 1366,
+        "lang": "en-US",
+        "theme": "dark",
+        "font": true
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "dark",
+      "locale": "es-ES",
+      "selection": {
+        "transform": "matrix(1, 0, 0, 1, 59, 3)",
+        "width": "61px",
+        "bg": "rgb(255, 255, 255)",
+        "ready": "ready",
+        "transitions": [
+          {
+            "type": "transitionrun",
+            "elapsed": 0
+          },
+          {
+            "type": "transitionend",
+            "elapsed": 0.26
+          }
+        ]
+      },
+      "geometry": {
+        "left": 1060,
+        "right": 1280,
+        "top": 359.40625,
+        "bottom": 625.40625,
+        "animation": "workspace-menu-in"
+      },
+      "layout": {
+        "width": 1366,
+        "scroll": 1366,
+        "lang": "es-ES",
+        "theme": "dark",
+        "font": true
+      }
+    }
+  ],
+  "interactions": [
+    "24 sales combinations: animated periods/currencies, status menu, keyboard, cancel, custom dates, bounds and focus",
+    "assinaturas sliding selection",
+    "social sliding selection",
+    "vitrine sliding selection",
+    "financeiro sliding selection",
+    "Product filter shares the animated listbox",
+    "Product modal opens and select Escape preserves dialog",
+    "Module navigation keeps its sliding indicator and changes the page",
+    "Touch selection and advanced period panel on mobile",
+    "Reduced motion disables selection transitions and menu animation"
+  ],
+  "errors": []
+}
