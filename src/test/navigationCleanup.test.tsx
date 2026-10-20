@@ -27,10 +27,13 @@ describe('limpeza da navegação autenticada',()=>{
   const expand=within(brand as HTMLElement).getByRole('button',{name:'Expandir menu lateral'});expect(expand).toHaveAttribute('aria-expanded','false');await user.click(expand);expect(view.container.querySelector('.internal-app-shell')).toHaveClass('sidebar-expanded')
  })
 
- it('remove tema do header e Configurações da sidebar sem duplicar o controle mobile',()=>{
-  const view=renderLayout(),sidebar=view.container.querySelector('#app-navigation')!
-  expect(screen.queryByRole('button',{name:'Alternar tema'})).not.toBeInTheDocument();expect(within(sidebar as HTMLElement).queryByRole('link',{name:'Configurações'})).not.toBeInTheDocument();expect(view.container.querySelectorAll('.mobile-menu-toggle')).toHaveLength(1)
-  const css=readFileSync(resolve(process.cwd(),'src/index.css'),'utf8');expect(css).toContain('@media(max-width:1023px){.internal-app-shell .internal-sidebar .sidebar-brand>.sidebar-collapse-toggle{display:none!important}}')
+ it('oferece tema no header e acesso às configurações sem duplicar o controle mobile',async()=>{
+  const view=renderLayout(),sidebar=view.container.querySelector('#app-navigation')!,user=userEvent.setup()
+  const initial=useDemoStore.getState().theme
+  await user.click(screen.getByRole('button',{name:initial==='dark'?'Ativar modo claro':'Ativar modo escuro'}))
+  expect(useDemoStore.getState().theme).toBe(initial==='dark'?'light':'dark')
+  expect(within(sidebar as HTMLElement).getByRole('link',{name:'Configurações'})).toHaveAttribute('href','/app/configuracoes')
+  expect(view.container.querySelectorAll('.mobile-menu-toggle')).toHaveLength(1)
  })
 
  it('mantém a premiação e seus dados, alterando somente a composição responsiva',()=>{
