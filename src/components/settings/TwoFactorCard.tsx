@@ -1,3 +1,4 @@
+import {T} from '../../i18n'
 import { useCallback,useEffect,useState } from 'react'
 import { KeyRound,Loader2,ShieldCheck,ShieldOff } from 'lucide-react'
 import { authMessage,mfaService,recordSecurityEvent } from '../../services/authService'
@@ -80,8 +81,8 @@ export function TwoFactorCard(){
 
  if(mode==='unavailable'){
   return <div className="p-5 rounded-xl border border-[var(--line)]">
-   <div className="flex items-center gap-2"><ShieldOff size={18}/><b className="text-sm">Verificação em duas etapas</b></div>
-   <p className="muted text-xs mt-2">A autenticação ainda não está configurada neste ambiente.</p>
+   <div className="flex items-center gap-2"><ShieldOff size={18}/><b className="text-sm"><T>Verificação em duas etapas</T></b></div>
+   <p className="muted text-xs mt-2"><T>A autenticação ainda não está configurada neste ambiente.</T></p>
   </div>
  }
 
@@ -90,36 +91,36 @@ export function TwoFactorCard(){
    <div className="flex items-center gap-2">
     <ShieldCheck size={18} className={mode==='active'?'text-emerald-600':''}/>
     <div>
-     <b className="text-sm">Verificação em duas etapas (TOTP)</b>
-     <p className="muted text-xs mt-1">Protege o acesso com um código temporário de um aplicativo autenticador.</p>
+     <b className="text-sm"><T>Verificação em duas etapas (TOTP)</T></b>
+     <p className="muted text-xs mt-1"><T>Protege o acesso com um código temporário de um aplicativo autenticador.</T></p>
     </div>
    </div>
-   <span className={`text-xs px-2 py-1 rounded-lg ${mode==='active'?'bg-emerald-500/10 text-emerald-600':'bg-[var(--panel-2)] muted'}`}>{mode==='active'?'Ativa':mode==='loading'?'...':'Inativa'}</span>
+   <span className={`text-xs px-2 py-1 rounded-lg ${mode==='active'?'bg-emerald-500/10 text-emerald-600':'bg-[var(--panel-2)] muted'}`}><T>{mode==='active'?'Ativa':mode==='loading'?'...':'Inativa'}</T></span>
   </div>
 
-  {mode==='loading'&&<p className="muted text-xs flex items-center gap-2"><Loader2 size={14} className="animate-spin"/> Carregando estado da conta...</p>}
+  {mode==='loading'&&<p className="muted text-xs flex items-center gap-2"><Loader2 size={14} className="animate-spin"/><T> Carregando estado da conta...</T></p>}
 
-  {mode==='inactive'&&<button className="btn btn-primary" onClick={startEnrollment} disabled={busy}>{busy?<Loader2 size={16} className="animate-spin"/>:<ShieldCheck size={16}/>} Ativar verificação em duas etapas</button>}
+  {mode==='inactive'&&<button className="btn btn-primary" onClick={startEnrollment} disabled={busy}>{busy?<Loader2 size={16} className="animate-spin"/>:<ShieldCheck size={16}/>}<T> Ativar verificação em duas etapas</T></button>}
 
   {mode==='enrolling'&&enroll&&<div className="space-y-3">
-   <p className="text-xs">1. Escaneie o QR Code no seu aplicativo autenticador (Google Authenticator, 1Password, Authy).</p>
+   <p className="text-xs"><T>1. Escaneie o QR Code no seu aplicativo autenticador (Google Authenticator, 1Password, Authy).</T></p>
    <img src={enroll.qr} alt="QR Code para configurar a verificação em duas etapas" width={176} height={176} className="rounded-lg border border-[var(--line)] bg-white p-2"/>
-   <p className="text-xs muted break-all">Ou informe a chave manualmente: <code className="text-[var(--text)]">{enroll.secret}</code></p>
-   <label className="block"><span className="label">2. Código de 6 dígitos</span>
+   <p className="text-xs muted break-all"><T>Ou informe a chave manualmente: </T><code className="text-[var(--text)]">{enroll.secret}</code></p>
+   <label className="block"><span className="label"><T>2. Código de 6 dígitos</T></span>
     <input className="input" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e=>setCode(onlyDigits(e.target.value))}/>
    </label>
    <div className="flex items-center gap-3">
-    <button className="btn btn-primary" onClick={confirmEnrollment} disabled={busy}>{busy?<Loader2 size={16} className="animate-spin"/>:<KeyRound size={16}/>} Confirmar e ativar</button>
-    <button className="btn" onClick={cancelEnrollment} disabled={busy}>Cancelar</button>
+    <button className="btn btn-primary" onClick={confirmEnrollment} disabled={busy}>{busy?<Loader2 size={16} className="animate-spin"/>:<KeyRound size={16}/>}<T> Confirmar e ativar</T></button>
+    <button className="btn" onClick={cancelEnrollment} disabled={busy}><T>Cancelar</T></button>
    </div>
   </div>}
 
   {mode==='active'&&<div className="space-y-3">
-   <p className="text-xs muted">Para desativar, confirme com um código atual do seu aplicativo.</p>
-   <label className="block"><span className="label">Código de 6 dígitos</span>
+   <p className="text-xs muted"><T>Para desativar, confirme com um código atual do seu aplicativo.</T></p>
+   <label className="block"><span className="label"><T>Código de 6 dígitos</T></span>
     <input className="input" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e=>setCode(onlyDigits(e.target.value))}/>
    </label>
-   <button className="btn text-red-500" onClick={disable} disabled={busy}>{busy?<Loader2 size={16} className="animate-spin"/>:<ShieldOff size={16}/>} Desativar verificação em duas etapas</button>
+   <button className="btn text-red-500" onClick={disable} disabled={busy}>{busy?<Loader2 size={16} className="animate-spin"/>:<ShieldOff size={16}/>}<T> Desativar verificação em duas etapas</T></button>
   </div>}
 
   {error&&<p className="text-xs text-red-500" role="alert">{error}</p>}

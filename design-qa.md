@@ -1,64 +1,49 @@
-# SphexPay — revisão do dashboard por referência de vídeo
+# SphexPay — cabeçalho, idiomas e contraste
 
 **final result: passed**
 
-O resultado passa na revisão visual do dashboard e da navegação solicitada, com as adaptações de marca e conteúdo descritas abaixo. Não constitui comprovação de identidade pixel a pixel ou da família tipográfica original.
+Revisão da atualização solicitada: corrigir colisões no cabeçalho, colocar um seletor de idiomas com bandeiras no lugar da aparência, mover aparência para Configurações → Preferências e intensificar o preto e o branco. O histórico da revisão anterior do dashboard foi preservado em `docs/reference-dashboard-qa/design-qa.md`.
 
-## Evidências e normalização
+## Fonte, captura e normalização
 
-- Fonte visual: `/workspace/scratch/3a59c023d16f/upload/ScreenRecording_10-20-2026 01-57-41_1(1).mp4`, 512 × 1108 px, 30 fps. Quadros em 2 s, 15 s e 25 s.
-- Fonte normalizada: `/workspace/scratch/3a59c023d16f/analysis/dashboard-reference/normalized-mobile.png`. Removidas apenas as barras nativas do iOS; recorte (0,65)-(512,1094), reduzido para 393 × 790 px.
-- Implementação renderizada no Chrome: `/dev/workspace-preview` durante desenvolvimento. O mesmo `Layout` e `Dashboard` da área autenticada, sem alterar seus guards de produção.
-- Captura mobile: iframe de 393 × 800 CSS px, densidade 1. Comparação dos primeiros 790 px contra a fonte normalizada. A margem externa de 20 px do suporte de QA foi recortada.
-- Estado comparado: tema escuro, topo da página, 30 dias, BRL, conexão ausente. A referência contém participantes reais; o ambiente local da SphexPay está sem sessão e sem vendas. Essas diferenças de conteúdo foram consideradas antes da avaliação.
-- Implementação final: `docs/reference-dashboard-qa/mobile-dark.png`, `mobile-light.png`, `mobile-metrics.png`, `mobile-320.png`, `mobile-320-light.png`, `tablet-dark.png`, `desktop-dark.png`, `desktop-light.png`.
-- Viewports adicionais: 320 × 800, 820 × 800 e 1363 × 936 CSS px. Largura do documento igual à largura do viewport nos tamanhos examinados. Só a faixa de navegação tem overflow horizontal intencional.
-- Pareamento da visão completa: `/workspace/scratch/3a59c023d16f/analysis/dashboard-reference/iterations/comparison-final.jpg`, fonte à esquerda e implementação à direita, ambas 393 × 790 px.
-- Pareamentos focados, abertos e inspecionados em conjunto: `focus-navigation.jpg`, `focus-connection.jpg`, `focus-filters-ranking.jpg` e `focus-metrics-final.jpg` no mesmo diretório de análise. Os pareamentos permanecem fora do repositório por conterem nomes e números financeiros da referência.
+- Referência de idioma: `/workspace/scratch/3a59c023d16f/upload/IMG_8797.png`, 1290 × 581 px. Comparação proporcional em 393 × 177 px; a densidade/CSS original não foi informada. Não se afirma equivalência pixel a pixel.
+- Estado anterior da SphexPay: `/workspace/scratch/3a59c023d16f/upload/IMG_8792.jpeg`, 1290 × 2796 px. Removida a região nativa superior de 185 px e normalizado o conteúdo restante para 393 × 795 px. Nome, moeda, período e valores privados diferem do estado local vazio e não foram reproduzidos.
+- Implementação real: `/dev/workspace-preview`, que usa o mesmo Layout, Dashboard e Settings do app, somente em desenvolvimento. Nenhum guard de produção foi modificado.
+- Chrome, viewports 393 × 800 e 320 × 800 CSS px em iframe, densidade 1. Captura do navegador 1363 × 936 px; recortada apenas a margem externa de QA de 20 px. Desktop: 1363 × 936 CSS px.
+- Evidências: `docs/header-language-qa/mobile-393-menu.jpg`, `mobile-393-dark.jpg`, `mobile-393-light.jpg`, `mobile-320-dark-menu.jpg`, `mobile-320-light-menu.jpg`, `mobile-preferences-light.jpg`, `desktop-dark-menu.jpg`, `desktop-dark.jpg`, `desktop-light.jpg`.
+- Comparações abertas e inspecionadas em pares, com fonte e implementação no mesmo arquivo: `/workspace/scratch/3a59c023d16f/analysis/header-qa/comparison-menu.jpg`, `comparison-dashboard.jpg`, `comparison-menu-focus.jpg`. Esses pares permanecem fora do repositório porque incluem a referência privada do usuário.
 
-## Histórico de comparação e correções
+## Achados e correções
 
-1. **Bloqueado — P1:** a apresentação anterior tinha direção azul e navegação lateral/inferior, incompatíveis com o vídeo. Substituída a composição por superfícies neutras, cabeçalho e navegação superior horizontal. Os módulos continuam acessíveis pelos mesmos destinos.
-2. **Bloqueado — P2:** regras antigas centralizavam a saudação, empilhavam os filtros e acrescentavam uma linha de ações antes dos cartões. Corrigidos o alinhamento e a direção dos filtros; atualização manual e ferramentas administrativas passaram para “Mais filtros”. Evidência: `comparison-initial.jpg` e `comparison-second.jpg`.
-3. **Bloqueado — P2:** o cartão de conexão começava cerca de 7 px abaixo da referência e o bloco de progresso tinha altura menor. Ajustados espaçamento da saudação, altura da navegação, progresso de 100 px e cabeçalho do ranking de 53 px. Evidência posterior: `comparison-final.jpg` e os três primeiros focos.
-4. **Bloqueado — P2:** as métricas estavam aproximadamente 7 px mais altas que os cartões da referência por excesso de margem interna. Reduzidas as margens do valor. Receita medida no navegador: 103,34 px de altura. Nova captura e comparação: `mobile-metrics.png` e `focus-metrics-final.jpg`.
-5. **Bloqueado — P2:** a largura legada da busca fazia o campo ultrapassar o painel de ajuda. Limitados campo e contêiner à largura do painel e removidos posicionamento e padding herdados. Comparação do estado expandido: `help-search.png` e `help-search-fixed.png` no diretório local de análise.
-6. **Passou:** recaptura após as correções, sem diferenças P0/P1/P2 acionáveis no escopo comparado. Demais diferenças são adaptações esperadas ou limites de origem, abaixo.
+- **P1 — controles sobrepostos:** o layout anterior permitia que tamanho do avatar, contador e marca disputassem espaço. A linha agora usa grid com espaço restante para a marca e áreas independentes para idioma, sino e perfil. Em 393 px: idioma termina em 283, sino ocupa 291–331 e perfil 339–379. Em 320 px: idioma termina em 224, sino ocupa 230–266 e perfil 272–308; a marca termina em 141,39 e idioma começa em 149,39. Recapturas citadas acima confirmam que não há colisão.
+- **P2 — menus concorrentes:** idioma, perfil e notificações compartilham um evento de abertura. Abrir um fecha o anterior. Em 393 px o painel de notificações ocupa 14–379 px; o perfil permanece dentro do viewport. Confirmado por interação no navegador e testes renderizados.
+- **P2 — aparência no cabeçalho e baixa intensidade:** substituído o botão Claro/Black por idioma; aparência disponível em Preferências com claro, escuro e sistema. Fundo interno agora #000000 no escuro e #ffffff no claro; texto principal #ffffff/#080808. Recapturas em ambos os temas confirmam o resultado.
+- **Passou após correções:** nenhuma diferença P0/P1/P2 acionável no escopo desta atualização. O seletor preserva nomes nativos, bandeiras vetoriais, chevron e marca de seleção. Seu painel usa linhas de pelo menos 47 px para toque e largura de 224 px; é maior que a referência normalizada. É uma adaptação explícita de legibilidade e acesso, sem alegar cópia pixel a pixel.
 
-## Superfícies obrigatórias
+## Superfícies de fidelidade
 
-- **Fontes e tipografia:** Raleway variável local, sob OFL, escolhida por semelhança visual dos glifos, pesos e proporções. Não foi possível confirmar a família original apenas pelo vídeo. Saudação 16/22, título da conexão 15/20, corpo 12/21, navegação 13/20, valor de receita 29 px e peso 300. Conferidos quebra de linhas, hierarquia e truncamento do ranking. Fallback Arial; números alinhados com recursos OpenType.
-- **Espaçamento e composição:** margens mobile de 14 px, cabeçalho de 64 px, navegação de 49 px, cartão de conexão com raio de 19 px, CTA de 41 px e ranking com três linhas. Grade de métricas em duas colunas no celular, composição lateral no tablet e desktop. Cabeçalho permanece visível na rolagem; a faixa do menu acompanha o fluxo da página, como no vídeo.
-- **Cores e tokens:** fundo escuro amostrado `#0c0c0c`, conexão `#161616`, cartões `#121212`, texto `#b9b9b9`, linhas `#242424`, texto secundário `#858585`. Claro usa inversão neutra `#fafafa`/branco e texto `#262626`. Cores semânticas de conversão, erro e ações destrutivas preservadas. O vídeo disponível não exibe uma referência clara; esse tema foi adaptado, não verificado como idêntico.
-- **Imagens e ativos:** marca vetorial existente da SphexPay, sem reutilizar a marca WOOV. Fonte distribuída com sua licença. Ícones vetoriais da biblioteca existente; nenhuma ilustração ou avatar fictício substitui dados de conta. A ausência de participantes usa estado vazio explícito.
-- **Textos e conteúdo:** dados de vendas, conexão, premiações e competição vêm dos hooks/serviços existentes. Não copiadas taxas, franquias, participantes ou promessas comerciais do outro gateway. Conversão de checkout aparece indisponível quando não há visitas registradas. O bloco inferior remete aos módulos efetivos da SphexPay.
+- **Tipografia:** mantida a Raleway variável local, denominada SphexDashboard no CSS, com fallback Arial. A fonte original da referência não é identificável com certeza pela imagem. Idioma com 14 px/1,45 no painel, nomes nativos completos e Português/Brasil em duas linhas. Sem corte dos itens. A palavra SphexPay permanece visível em 320 px.
+- **Espaçamento e composição:** marca à esquerda e idioma/sino/perfil à direita; navegação horizontal superior preservada. Cabeçalho mobile de 68 px, controles de 40 px e de 36 px até 360 px, gaps de 8/6 px. Painel limitado ao viewport compacto; bordas arredondadas e estados hover/foco/selecionado. Não há dock inferior.
+- **Cores:** preto puro, branco puro, painéis #0a0a0a e #141414, texto secundário #b0b0b0, linhas #2b2b2b. A referência mais cinza foi deliberadamente intensificada conforme a nova instrução. Cores semânticas mantidas, verde e erro mais visíveis.
+- **Ativos:** logo existente da SphexPay e ícones vetoriais do projeto. Bandeiras BR/US/ES autohospedadas de flag-icons 7.3.2, licença MIT incluída em `public/flags/LICENSE.txt`. Sem emoji ou imagem contendo a interface inteira.
+- **Conteúdo:** catálogo local com 1608 entradas em inglês e espanhol, React e Zustand para seleção persistida. Nomes de pessoas/produtos, identificadores, valores e enums financeiros não são traduzidos. Mensagens dinâmicas não catalogadas, como erros externos, conservam seu texto de origem. Sem serviços externos de tradução ou envio de dados.
 
-## Interações e verificação
+## Interações, testes e limites
 
-- Menu percorrível horizontalmente; teclado com setas, Home e End; roda do mouse; apenas uma rota ativa, inclusive subrotas de Produtos.
-- Menu inferior e sidebar ausentes do shell renderizado.
-- Alternância Claro/Black, filtros 7/30/90 dias, moeda BRL/EUR/USD e “Mais filtros”. O novo período de 90 dias também é reconhecido pelos seletores compartilhados e pela análise dos demais módulos.
-- Ajuda abre, fecha com Escape e devolve foco; links navegam para módulos reais. A busca de módulos foi preservada no painel de ajuda, incluindo Ctrl/Cmd + K.
-- Perfil e notificações continuam no cabeçalho. Editor e planejamento continuam condicionados à autorização administrativa existente.
-- Verificados Produtos e Preferências com o novo shell. Estado sem backend do catálogo mostra mensagem de erro, sem dados comerciais fabricados.
-- Animações de entrada, estados ativos, hover, progresso e valores; movimento reduzido respeitado.
-- Logs do navegador examinados: nenhuma exceção da aplicação observada no dashboard local. Mensagens da extensão do navegador foram distinguidas de erros do produto.
-- 104 testes em 15 arquivos aprovados, incluindo navegação, acesso administrativo, filtro de 90 dias, moeda, layout, perfil e proteção de rotas.
-- TypeScript e ESLint aprovados; build Vite aprovado. Aviso de tamanho de chunks permanece, sem erro de compilação.
-- A tentativa da suíte completa encontrou testes antigos da página pública (`publicEntry` e `publicSecuritySeo`) incompatíveis com a landing já existente e foi interrompida. A bateria de integração antiga também usa seletores da sidebar removida. Não se declara a suíte completa aprovada.
+- Português → inglês → espanhol no navegador, recarga preservando espanhol e retorno a português. Cabeçalho, navegação, dashboard e Configurações atualizados; atributo lang acompanha a escolha.
+- Aparência alterada em Configurações → Preferências; claro e escuro persistem após recarregar. Opção sistema usa o mecanismo existente e acompanha a mudança do sistema enquanto o Layout está montado.
+- Menu por teclado com setas, Home/End, Enter e Escape; seleção e Escape restauram o foco. Clique externo e abertura de outro controle fecham o painel.
+- Testes renderizados verificam idioma sem reiniciar formulário, sincronização entre cabeçalho e Preferências, persistência, fallback de localidade inválida, variáveis de tradução e preservação de nomes/valores no dashboard.
+- Largura do documento igual a 320/393 px nos viewports mobile; navegação e lista de seções de Configurações têm rolagem própria intencional.
+- Logs do navegador examinados após as interações: nenhuma exceção da aplicação observada. Mensagens da extensão do navegador (`chrome-extension://…`, envio de metadados) foram distinguidas dos logs do produto.
+- 166 testes aprovados em 26 arquivos: 109 focados em dashboard/cabeçalho/idiomas e 57 regressões de checkout, produtos, notificações e assinaturas.
+- TypeScript, ESLint e build Vite aprovados; aviso preexistente de chunks grandes permanece.
+- A área privada de produção exige autenticação. A revisão visual usa os componentes reais no ambiente local vazio; não comprova uma sessão privada ou processamento de pagamentos em produção. Autenticação, RLS, MFA, webhooks e dados persistidos no servidor não foram alterados.
 
-## Limites e adaptações esperadas
+## Checklist
 
-- A fonte original, o tema claro e uma referência desktop deste dashboard não estão identificados no vídeo disponível. Raleway e a expansão responsiva são aproximações fundamentadas, não cópias verificadas desses estados.
-- O seletor de aparência ocupa a cápsula do cabeçalho; perfil e saída continuam no menu de conta existente. Não foi inventado um seletor de países sem suporte funcional.
-- O ambiente local não valida pagamentos reais nem dados privados de uma conta em produção. Autenticação, RLS, MFA, processamento e webhooks não foram alterados.
-
-## Checklist de implementação
-
-- [x] Comparar fonte e implementação juntas, em escala equivalente.
-- [x] Corrigir e recapturar os problemas P1/P2 identificados.
-- [x] Conferir fontes, espaçamento, cores, ativos e conteúdo.
-- [x] Verificar mobile compacto, mobile padrão, tablet e desktop.
-- [x] Testar navegação, temas, filtros e permissões.
-- [x] Remover o suporte temporário de QA do diretório público antes do build.
-- [x] Executar testes focados, TypeScript, lint e build.
+- [x] Abrir pares fonte/implementação e região focada do menu.
+- [x] Conferir tipografia, composição, cores, ativos e conteúdo.
+- [x] Corrigir colisões, recapturar 320/393 px e desktop.
+- [x] Testar idiomas, persistência, preferências e menus.
+- [x] Remover o suporte público temporário de QA antes do build final.

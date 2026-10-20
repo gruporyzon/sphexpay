@@ -1,3 +1,6 @@
+import {translate as uiText} from '../../i18n'
+import {useAppLocale} from '../../i18n/localeStore'
+import {T} from '../../i18n'
 import {useCallback,useEffect,useRef,useState} from 'react'
 import {Grid2X2} from 'lucide-react'
 import {useLocation,useNavigate} from 'react-router-dom'
@@ -8,7 +11,7 @@ import {MobileMoreSheet} from './MobileMoreSheet'
 import './mobile-navigation.css'
 import {mobileDockVisualStyle} from '../../lib/mobileDockVisual'
 
-export function MobileAppDock({navigationRoot='/app'}:{navigationRoot?:string}){
+export function MobileAppDock({navigationRoot='/app'}:{navigationRoot?:string}){useAppLocale(state=>state.locale);
  const location=useLocation(),navigate=useNavigate(),[more,setMore]=useState(false),[scrolling,setScrolling]=useState(false),[mobile,setMobile]=useState(()=>matchMedia('(max-width: 767px)').matches),opacity=useDemoStore(state=>state.preferences.mobileNavigation.opacity),index=mobileNavigationIndex(location.pathname.replace(navigationRoot,'/app')),scrollFrame=useRef(0),scrollEnd=useRef<number|undefined>(undefined),scrollingRef=useRef(false),close=useCallback(()=>setMore(false),[])
  useEffect(()=>{const media=matchMedia('(max-width: 767px)'),update=()=>setMobile(media.matches);media.addEventListener?.('change',update);return()=>media.removeEventListener?.('change',update)},[])
  useEffect(()=>setMore(false),[location.pathname])
@@ -29,5 +32,5 @@ export function MobileAppDock({navigationRoot='/app'}:{navigationRoot?:string}){
  useEffect(()=>{const viewport=window.visualViewport;if(!viewport)return;const update=()=>{document.documentElement.toggleAttribute('data-mobile-keyboard',window.innerHeight-viewport.height>150)};viewport.addEventListener('resize',update);update();return()=>{viewport.removeEventListener('resize',update);document.documentElement.removeAttribute('data-mobile-keyboard')}},[])
  const select=(path:string)=>{navigator.vibrate?.(8);navigate(path.replace(/^\/app/,navigationRoot))}
  if(!mobile)return null
- return <><nav className={`mobile-app-dock${scrolling&&!more?' is-scrolling':''}`} aria-label="Navegação principal mobile" style={{...mobileDockVisualStyle(opacity),'--dock-active-index':index} as React.CSSProperties}><MobileDockIndicator index={index}/><div className="mobile-dock-items">{primaryMobileNavigation.map((item,itemIndex)=><button key={item.id} aria-label={item.label} aria-current={index===itemIndex?'page':undefined} className={index===itemIndex?'active':''} onClick={()=>select(item.path)}><item.icon/><span>{item.label}</span></button>)}<button aria-label="Mais módulos" aria-haspopup="dialog" aria-expanded={more} aria-current={index===4?'page':undefined} className={index===4||more?'active':''} onClick={()=>{navigator.vibrate?.(8);if(more){if(history.state?.mobileMore)history.back();else setMore(false)}else setMore(true)}}><Grid2X2/><span>Mais</span></button></div></nav><MobileMoreSheet open={more} onClose={close} navigationRoot={navigationRoot}/></>
+ return <><nav className={`mobile-app-dock${scrolling&&!more?' is-scrolling':''}`} aria-label={uiText("Navegação principal mobile")} style={{...mobileDockVisualStyle(opacity),'--dock-active-index':index} as React.CSSProperties}><MobileDockIndicator index={index}/><div className="mobile-dock-items">{primaryMobileNavigation.map((item,itemIndex)=><button key={item.id} aria-label={item.label} aria-current={index===itemIndex?'page':undefined} className={index===itemIndex?'active':''} onClick={()=>select(item.path)}><item.icon/><span><T>{item.label}</T></span></button>)}<button aria-label={uiText("Mais módulos")} aria-haspopup="dialog" aria-expanded={more} aria-current={index===4?'page':undefined} className={index===4||more?'active':''} onClick={()=>{navigator.vibrate?.(8);if(more){if(history.state?.mobileMore)history.back();else setMore(false)}else setMore(true)}}><Grid2X2/><span><T>Mais</T></span></button></div></nav><MobileMoreSheet open={more} onClose={close} navigationRoot={navigationRoot}/></>
 }

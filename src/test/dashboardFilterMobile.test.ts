@@ -1,12 +1,17 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { describe,expect,it } from 'vitest'
+import { describe,expect,it,vi,beforeEach } from 'vitest'
+import {act,render,screen} from '@testing-library/react'
+import {createElement} from 'react'
+import userEvent from '@testing-library/user-event'
+import {DashboardPeriodFilter,DashboardCurrencySelector} from '../components/dashboard/DashboardControls'
+import {RealtimeStatus} from '../components/dashboard/RealtimeStatus'
+import {useAppLocale} from '../i18n/localeStore'
 
 const css=readFileSync(resolve(process.cwd(),'src/index.css'),'utf8')
-const controls=readFileSync(resolve(process.cwd(),'src/components/dashboard/DashboardControls.tsx'),'utf8')
-const realtime=readFileSync(resolve(process.cwd(),'src/components/dashboard/RealtimeStatus.tsx'),'utf8')
 
 describe('filtros do Dashboard no mobile',()=>{
+ beforeEach(()=>act(()=>useAppLocale.getState().setLocale('pt-BR')))
  it('usa selects nativos compactos sem cortar texto',()=>{
   expect(css).toContain('height:50px;')
   expect(css).toContain('min-height:50px;')
@@ -19,12 +24,11 @@ describe('filtros do Dashboard no mobile',()=>{
   expect(css).toContain('.dashboard-page .dashboard-filter-bar{grid-template-columns:minmax(0,1fr);gap:12px}')
   expect(css).toContain('.dashboard-page .dashboard-realtime{grid-column:1/-1')
  })
- it('compacta labels, ícones, status e botão sem reduzir áreas de toque',()=>{
+ it('compacta labels, ícones, status e botão sem reduzir áreas de toque',async()=>{
   expect(css).toContain('grid-template-columns:20px minmax(0,1fr)')
   expect(css).toContain('width:20px;height:20px')
   expect(css).toContain('width:44px;height:44px')
-  expect(realtime).toContain('aria-label="Atualizar vendas"')
-  expect(realtime).toContain('Atualização ao vivo')
+  const refresh=vi.fn();render(createElement(RealtimeStatus,{status:'live',updatedAt:'',onRefresh:refresh,loading:false}));expect(screen.getByText('Atualização ao vivo')).toBeVisible();await userEvent.click(screen.getByRole('button',{name:'Atualizar vendas'}));expect(refresh).toHaveBeenCalledOnce()
  })
  it('mantém o texto em uma linha e reserva espaço para a seta',()=>{
   expect(css).toContain('padding:0 42px 0 14px;')
@@ -32,12 +36,12 @@ describe('filtros do Dashboard no mobile',()=>{
   expect(css).toContain('text-overflow:ellipsis;')
   expect(css).toContain('-webkit-appearance:auto;')
  })
- it('mantém os selects reais, labels acessíveis e moedas completas',()=>{
-  expect(controls).toContain('aria-label="Período do gráfico"')
-  expect(controls).toContain('aria-label="Moeda de exibição"')
-  expect(controls).toContain('USD — Dólar americano')
-  expect(controls).toContain('BRL — Real brasileiro')
-  expect(controls).toContain('EUR — Euro')
+ it('mantém selects acessíveis e valores estáveis ao trocar o idioma',async()=>{
+  const periodChange=vi.fn(),currencyChange=vi.fn()
+  render(createElement('div',null,createElement(DashboardPeriodFilter,{period:{preset:'7d'},onChange:periodChange}),createElement(DashboardCurrencySelector,{currency:'BRL',onChange:currencyChange})))
+  await userEvent.selectOptions(screen.getByRole('combobox',{name:'Período do gráfico'}),'90d');expect(periodChange).toHaveBeenCalledWith({preset:'90d'})
+  await userEvent.selectOptions(screen.getByRole('combobox',{name:'Moeda de exibição'}),'USD');expect(currencyChange).toHaveBeenCalledWith('USD')
+  act(()=>useAppLocale.getState().setLocale('en-US'));expect(screen.getByRole('combobox',{name:'Display currency'})).toHaveValue('BRL');expect(screen.getByRole('option',{name:/USD/})).toHaveValue('USD')
  })
  it('limita a alteração ao breakpoint mobile',()=>{
   const start=css.indexOf('/* Native dashboard selects'),end=css.indexOf('/* Mobile podium',start),block=css.slice(start,end)

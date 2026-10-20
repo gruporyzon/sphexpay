@@ -1,3 +1,6 @@
+import {translate as uiText} from '../../i18n'
+import {useAppLocale} from '../../i18n/localeStore'
+import {T} from '../../i18n'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
@@ -40,7 +43,7 @@ const toInput = (profile: KycProfile | null): KycProfileInput =>
     }
     : emptyInput
 
-export default function KycPage() {
+export default function KycPage() {useAppLocale(state=>state.locale);
   const { user } = useAuth()
   const admin = useDashboardAdmin(user?.id)
   const [tab, setTab] = useState<'profile' | 'review'>('profile')
@@ -53,20 +56,20 @@ export default function KycPage() {
     <section className="kyc-page page-enter" aria-labelledby="kyc-title">
       <header className="kyc-heading">
         <div>
-          <span className="kyc-eyebrow"><ShieldCheck size={14} /> Verificação de cadastro</span>
-          <h1 id="kyc-title">Documentos e liberação da operação</h1>
-          <p>Envie seus dados e documentos para análise de compliance. A operação é liberada após a aprovação.</p>
+          <span className="kyc-eyebrow"><ShieldCheck size={14} /><T> Verificação de cadastro</T></span>
+          <h1 id="kyc-title"><T>Documentos e liberação da operação</T></h1>
+          <p><T>Envie seus dados e documentos para análise de compliance. A operação é liberada após a aprovação.</T></p>
         </div>
       </header>
 
       {admin.allowed && (
-        <nav className="kyc-tabs" aria-label="Seções de verificação">
+        <nav className="kyc-tabs" aria-label={uiText("Seções de verificação")}>
           <button className={tab === 'profile' ? 'active' : ''} onClick={() => setTab('profile')} aria-current={tab === 'profile' ? 'page' : undefined}>
-            <UserCog size={16} /> Meu cadastro
-          </button>
+            <UserCog size={16} /><T> Meu cadastro
+          </T></button>
           <button className={tab === 'review' ? 'active' : ''} onClick={() => setTab('review')} aria-current={tab === 'review' ? 'page' : undefined}>
-            <ClipboardCheck size={16} /> Análise (admin)
-          </button>
+            <ClipboardCheck size={16} /><T> Análise (admin)
+          </T></button>
         </nav>
       )}
 
@@ -77,7 +80,7 @@ export default function KycPage() {
 
 /* ---------------------------------------------------------------- merchant */
 
-function MerchantKyc({ userId }: { userId?: string }) {
+function MerchantKyc({ userId }: { userId?: string }) {useAppLocale(state=>state.locale);
   const [overview, setOverview] = useState<KycOverview>({ profile: null, documents: [] })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -185,7 +188,7 @@ function MerchantKyc({ userId }: { userId?: string }) {
   }
 
   if (loading) return <Loading label="Carregando seu cadastro" />
-  if (error) return <StateMessage title="Erro ao carregar">{error} <button className="kyc-inline-retry" onClick={() => void load()}>Tentar novamente</button></StateMessage>
+  if (error) return <StateMessage title={uiText("Erro ao carregar")}>{error} <button className="kyc-inline-retry" onClick={() => void load()}><T>Tentar novamente</T></button></StateMessage>
 
   return (
     <div className="kyc-merchant">
@@ -193,7 +196,7 @@ function MerchantKyc({ userId }: { userId?: string }) {
 
       <Card className="kyc-card">
         <div className="kyc-card-head">
-          <h2><UserCog size={18} /> Dados do cadastro</h2>
+          <h2><UserCog size={18} /><T> Dados do cadastro</T></h2>
           <PersonTypeToggle value={input.personType} disabled={locked} onChange={value => set('personType', value)} />
         </div>
 
@@ -217,7 +220,7 @@ function MerchantKyc({ userId }: { userId?: string }) {
         </div>
 
         <fieldset className="kyc-fieldset" disabled={locked}>
-          <legend>Endereço</legend>
+          <legend><T>Endereço</T></legend>
           <div className="kyc-grid">
             <MaskedField label="CEP" mask="cep" value={input.address.zip || ''} onChange={onZipChange}
               autoComplete="postal-code"
@@ -230,22 +233,22 @@ function MerchantKyc({ userId }: { userId?: string }) {
             <TextField label="Cidade" value={input.address.city || ''} onChange={value => setAddress('city', value)} />
             <MaskedField label="UF" mask="uf" value={input.address.state || ''} onChange={value => setAddress('state', value)} />
           </div>
-          {cepStatus === 'loading' && <p className="kyc-cep-status">Buscando endereço pelo CEP…</p>}
-          {cepStatus === 'error' && <p className="kyc-cep-status is-warn">Não foi possível consultar o CEP agora. Preencha o endereço manualmente.</p>}
+          {cepStatus === 'loading' && <p className="kyc-cep-status"><T>Buscando endereço pelo CEP…</T></p>}
+          {cepStatus === 'error' && <p className="kyc-cep-status is-warn"><T>Não foi possível consultar o CEP agora. Preencha o endereço manualmente.</T></p>}
         </fieldset>
 
         {!locked && (
           <div className="kyc-card-actions">
             <Button variant="primary" onClick={() => void saveProfile()} disabled={savingProfile}>
-              {savingProfile ? <Loader2 className="kyc-spin" size={16} /> : <CheckCircle2 size={16} />} Salvar dados
-            </Button>
+              {savingProfile ? <Loader2 className="kyc-spin" size={16} /> : <CheckCircle2 size={16} />}<T> Salvar dados
+            </T></Button>
           </div>
         )}
       </Card>
 
       <Card className="kyc-card">
-        <div className="kyc-card-head"><h2><FileText size={18} /> Documentos</h2></div>
-        <p className="kyc-card-note">Formatos aceitos: JPG, PNG ou PDF, até 10 MB por arquivo.</p>
+        <div className="kyc-card-head"><h2><FileText size={18} /><T> Documentos</T></h2></div>
+        <p className="kyc-card-note"><T>Formatos aceitos: JPG, PNG ou PDF, até 10 MB por arquivo.</T></p>
         <div className="kyc-doc-grid">
           {required.map(docType => (
             <DocumentCard key={docType} docType={docType} locked={locked}
@@ -260,7 +263,7 @@ function MerchantKyc({ userId }: { userId?: string }) {
       {!locked && (
         <Card className="kyc-submit-bar">
           <div>
-            <b>Enviar para análise</b>
+            <b><T>Enviar para análise</T></b>
             <p>
               {submittable
                 ? 'Tudo pronto. O time de compliance retorna em até 2 dias úteis.'
@@ -270,15 +273,15 @@ function MerchantKyc({ userId }: { userId?: string }) {
             </p>
           </div>
           <Button variant="primary" disabled={!submittable || submitting} onClick={() => void submit()}>
-            {submitting ? <Loader2 className="kyc-spin" size={16} /> : <ShieldCheck size={16} />} Enviar para análise
-          </Button>
+            {submitting ? <Loader2 className="kyc-spin" size={16} /> : <ShieldCheck size={16} />}<T> Enviar para análise
+          </T></Button>
         </Card>
       )}
     </div>
   )
 }
 
-function StatusPanel({ profile }: { profile: KycProfile | null }) {
+function StatusPanel({ profile }: { profile: KycProfile | null }) {useAppLocale(state=>state.locale);
   const status = profile?.status ?? 'draft'
   return (
     <Card className={`kyc-status-panel is-${status}`}>
@@ -287,7 +290,7 @@ function StatusPanel({ profile }: { profile: KycProfile | null }) {
       </div>
       <div className="kyc-status-copy">
         <div className="kyc-status-line">
-          <span>Situação do cadastro</span>
+          <span><T>Situação do cadastro</T></span>
           <Badge tone={STATUS_TONE[status]}>{STATUS_LABELS[status]}</Badge>
         </div>
         <p>
@@ -302,7 +305,7 @@ function StatusPanel({ profile }: { profile: KycProfile | null }) {
   )
 }
 
-function FeedbackModal({ tone, text, onClose }: { tone: 'error' | 'success'; text: string; onClose: () => void }) {
+function FeedbackModal({ tone, text, onClose }: { tone: 'error' | 'success'; text: string; onClose: () => void }) {useAppLocale(state=>state.locale);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -315,19 +318,19 @@ function FeedbackModal({ tone, text, onClose }: { tone: 'error' | 'success'; tex
       <div className={`kyc-feedback is-${tone}`} role="alertdialog" aria-modal="true" onMouseDown={event => event.stopPropagation()}>
         <span className="kyc-feedback-icon">{tone === 'error' ? <AlertTriangle size={20} /> : <CheckCircle2 size={20} />}</span>
         <p>{text}</p>
-        <Button variant="primary" onClick={onClose} autoFocus>Entendi</Button>
+        <Button variant="primary" onClick={onClose} autoFocus><T>Entendi</T></Button>
       </div>
     </div>,
     document.body,
   )
 }
 
-function PersonTypeToggle({ value, onChange, disabled }: { value: KycPersonType; onChange: (value: KycPersonType) => void; disabled?: boolean }) {
+function PersonTypeToggle({ value, onChange, disabled }: { value: KycPersonType; onChange: (value: KycPersonType) => void; disabled?: boolean }) {useAppLocale(state=>state.locale);
   return (
-    <div className="kyc-person-toggle" role="group" aria-label="Tipo de pessoa">
+    <div className="kyc-person-toggle" role="group" aria-label={uiText("Tipo de pessoa")}>
       {(['individual', 'company'] as KycPersonType[]).map(option => (
         <button key={option} type="button" className={value === option ? 'active' : ''} disabled={disabled} onClick={() => onChange(option)}>
-          {option === 'individual' ? 'Pessoa física' : 'Pessoa jurídica'}
+          <T>{option === 'individual' ? 'Pessoa física' : 'Pessoa jurídica'}</T>
         </button>
       ))}
     </div>
@@ -338,7 +341,7 @@ function DocumentCard({ docType, document, locked, onChanged, onFeedback }: {
   docType: KycDocType; document: KycDocument | null; locked: boolean
   onChanged: () => Promise<void> | void
   onFeedback: (value: { tone: 'error' | 'success'; text: string }) => void
-}) {
+}) {useAppLocale(state=>state.locale);
   const [busy, setBusy] = useState(false)
   const [preview, setPreview] = useState('')
   const label = DOC_LABELS[docType]
@@ -396,7 +399,7 @@ function DocumentCard({ docType, document, locked, onChanged, onFeedback }: {
       {!locked && (
         <label className={`kyc-doc-upload${busy ? ' is-busy' : ''}`}>
           {busy ? <Loader2 className="kyc-spin" size={16} /> : <Upload size={16} />}
-          <span>{document ? 'Substituir arquivo' : 'Enviar arquivo'}</span>
+          <span><T>{document ? 'Substituir arquivo' : 'Enviar arquivo'}</T></span>
           <input type="file" accept={KYC_UPLOAD_ACCEPT} disabled={busy}
             onChange={event => { void upload(event.target.files?.[0]); event.target.value = '' }} />
         </label>
@@ -415,7 +418,7 @@ const REVIEW_FILTERS: { value: string; label: string }[] = [
   { value: '', label: 'Todos' },
 ]
 
-function AdminReview() {
+function AdminReview() {useAppLocale(state=>state.locale);
   const [status, setStatus] = useState('pending')
   const [items, setItems] = useState<KycSubmissionSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -438,31 +441,31 @@ function AdminReview() {
 
   return (
     <div className="kyc-admin">
-      <div className="kyc-admin-filters" role="tablist" aria-label="Filtrar submissões">
+      <div className="kyc-admin-filters" role="tablist" aria-label={uiText("Filtrar submissões")}>
         {REVIEW_FILTERS.map(filter => (
           <button key={filter.value || 'all'} role="tab" aria-selected={status === filter.value}
             className={status === filter.value ? 'active' : ''} onClick={() => setStatus(filter.value)}>
-            {filter.label}
+            <T>{filter.label}</T>
           </button>
         ))}
       </div>
 
       {loading ? <Loading label="Carregando a fila" />
-        : error ? <StateMessage title="Erro">{error} <button className="kyc-inline-retry" onClick={() => void load()}>Tentar novamente</button></StateMessage>
-        : !items.length ? <Empty title="Nada na fila" text="Nenhuma submissão para este filtro." />
+        : error ? <StateMessage title={uiText("Erro")}>{error} <button className="kyc-inline-retry" onClick={() => void load()}><T>Tentar novamente</T></button></StateMessage>
+        : !items.length ? <Empty title={uiText("Nada na fila")} text={uiText("Nenhuma submissão para este filtro.")} />
         : (
           <Card className="kyc-admin-table">
             <table>
-              <thead><tr><th>Merchant</th><th>Tipo</th><th>Documentos</th><th>Enviado</th><th>Status</th><th /></tr></thead>
+              <thead><tr><th><T>Merchant</T></th><th><T>Tipo</T></th><th><T>Documentos</T></th><th><T>Enviado</T></th><th><T>Status</T></th><th /></tr></thead>
               <tbody>
                 {items.map(item => (
                   <tr key={item.userId}>
                     <td><b>{item.legalName || item.companyName || 'Sem nome'}</b><small>{item.taxId ? maskCpfCnpj(item.taxId) : '—'}</small></td>
-                    <td>{item.personType === 'company' ? 'PJ' : 'PF'}</td>
-                    <td>{item.documents.approved}/{item.documents.total} aprovados</td>
+                    <td><T>{item.personType === 'company' ? 'PJ' : 'PF'}</T></td>
+                    <td>{item.documents.approved}/{item.documents.total}<T> aprovados</T></td>
                     <td>{dateTime(item.submittedAt)}</td>
                     <td><Badge tone={STATUS_TONE[item.status]}>{STATUS_LABELS[item.status]}</Badge></td>
-                    <td><Button size="sm" variant="ghost" onClick={() => setOpenUser(item.userId)}>Analisar</Button></td>
+                    <td><Button size="sm" variant="ghost" onClick={() => setOpenUser(item.userId)}><T>Analisar</T></Button></td>
                   </tr>
                 ))}
               </tbody>
@@ -475,7 +478,7 @@ function AdminReview() {
   )
 }
 
-function ReviewModal({ userId, onClose, onReviewed }: { userId: string; onClose: () => void; onReviewed: () => void }) {
+function ReviewModal({ userId, onClose, onReviewed }: { userId: string; onClose: () => void; onReviewed: () => void }) {useAppLocale(state=>state.locale);
   const [detail, setDetail] = useState<KycOverview | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -508,25 +511,25 @@ function ReviewModal({ userId, onClose, onReviewed }: { userId: string; onClose:
   }
 
   return (
-    <Modal title="Análise de cadastro" onClose={onClose} className="kyc-review-modal">
+    <Modal title={uiText("Análise de cadastro")} onClose={onClose} className="kyc-review-modal">
       {loading ? <Loading label="Carregando submissão" />
-        : !profile ? <StateMessage title="Erro">{error || 'Submissão não encontrada.'}</StateMessage>
+        : !profile ? <StateMessage title={uiText("Erro")}>{error || 'Submissão não encontrada.'}</StateMessage>
         : (
           <div className="kyc-review-body">
             <dl className="kyc-review-facts">
-              <div><dt>Nome / Razão social</dt><dd>{profile.legalName || '—'}</dd></div>
-              <div><dt>Tipo</dt><dd>{profile.personType === 'company' ? 'Pessoa jurídica' : 'Pessoa física'}</dd></div>
-              <div><dt>{profile.personType === 'company' ? 'CNPJ' : 'CPF'}</dt><dd>{profile.taxId ? maskCpfCnpj(profile.taxId) : '—'}</dd></div>
-              {profile.personType === 'company' && <div><dt>Nome fantasia</dt><dd>{profile.tradeName || '—'}</dd></div>}
-              {profile.personType === 'individual' && <div><dt>Nascimento</dt><dd>{profile.birthDate || '—'}</dd></div>}
-              <div><dt>Telefone</dt><dd>{profile.phone ? maskPhoneBR(profile.phone) : '—'}</dd></div>
-              <div><dt>Endereço</dt><dd>{[profile.address.street, profile.address.number, profile.address.city, profile.address.state].filter(Boolean).join(', ') || '—'}</dd></div>
-              <div><dt>Enviado</dt><dd>{dateTime(profile.submittedAt)}</dd></div>
+              <div><dt><T>Nome / Razão social</T></dt><dd>{profile.legalName || '—'}</dd></div>
+              <div><dt><T>Tipo</T></dt><dd><T>{profile.personType === 'company' ? 'Pessoa jurídica' : 'Pessoa física'}</T></dd></div>
+              <div><dt><T>{profile.personType === 'company' ? 'CNPJ' : 'CPF'}</T></dt><dd>{profile.taxId ? maskCpfCnpj(profile.taxId) : '—'}</dd></div>
+              {profile.personType === 'company' && <div><dt><T>Nome fantasia</T></dt><dd>{profile.tradeName || '—'}</dd></div>}
+              {profile.personType === 'individual' && <div><dt><T>Nascimento</T></dt><dd>{profile.birthDate || '—'}</dd></div>}
+              <div><dt><T>Telefone</T></dt><dd>{profile.phone ? maskPhoneBR(profile.phone) : '—'}</dd></div>
+              <div><dt><T>Endereço</T></dt><dd>{[profile.address.street, profile.address.number, profile.address.city, profile.address.state].filter(Boolean).join(', ') || '—'}</dd></div>
+              <div><dt><T>Enviado</T></dt><dd>{dateTime(profile.submittedAt)}</dd></div>
             </dl>
 
-            <h3>Documentos</h3>
+            <h3><T>Documentos</T></h3>
             <div className="kyc-review-docs">
-              {detail!.documents.length === 0 && <p className="kyc-muted">Nenhum documento enviado.</p>}
+              {detail!.documents.length === 0 && <p className="kyc-muted"><T>Nenhum documento enviado.</T></p>}
               {detail!.documents.map(doc => (
                 <article key={doc.id} className={`kyc-review-doc is-${doc.status}`}>
                   <header>
@@ -535,38 +538,38 @@ function ReviewModal({ userId, onClose, onReviewed }: { userId: string; onClose:
                   </header>
                   {doc.signedUrl && (
                     doc.mimeType === 'application/pdf'
-                      ? <a href={doc.signedUrl} target="_blank" rel="noopener noreferrer" className="kyc-review-doc-link"><FileText size={16} /> Abrir PDF</a>
+                      ? <a href={doc.signedUrl} target="_blank" rel="noopener noreferrer" className="kyc-review-doc-link"><FileText size={16} /><T> Abrir PDF</T></a>
                       : <a href={doc.signedUrl} target="_blank" rel="noopener noreferrer" className="kyc-review-doc-thumb"><img src={doc.signedUrl} alt={doc.docType} /></a>
                   )}
                   <div className="kyc-review-doc-actions">
-                    <Button size="sm" disabled={Boolean(busy)} onClick={() => void run(() => kycService.adminReviewDocument(doc.id, 'approved'), `doc-ok-${doc.id}`)}>Aprovar</Button>
+                    <Button size="sm" disabled={Boolean(busy)} onClick={() => void run(() => kycService.adminReviewDocument(doc.id, 'approved'), `doc-ok-${doc.id}`)}><T>Aprovar</T></Button>
                     <Button size="sm" variant="danger" disabled={Boolean(busy) || !reason.trim()}
-                      onClick={() => void run(() => kycService.adminReviewDocument(doc.id, 'rejected', reason), `doc-no-${doc.id}`)}>Reprovar</Button>
+                      onClick={() => void run(() => kycService.adminReviewDocument(doc.id, 'rejected', reason), `doc-no-${doc.id}`)}><T>Reprovar</T></Button>
                   </div>
                 </article>
               ))}
             </div>
 
             <label className="kyc-review-reason">
-              <span>Motivo (para reprovar ou pedir ajustes)</span>
+              <span><T>Motivo (para reprovar ou pedir ajustes)</T></span>
               <textarea value={reason} onChange={event => setReason(event.target.value)} rows={3} maxLength={2000} />
             </label>
 
-            {error && <StateMessage title="Atenção">{error}</StateMessage>}
+            {error && <StateMessage title={uiText("Atenção")}>{error}</StateMessage>}
 
             <div className="kyc-review-decision">
               <Button variant="primary" disabled={Boolean(busy)}
                 onClick={() => void run(() => kycService.adminReviewProfile(userId, 'approved'), 'profile-ok')}>
-                {busy === 'profile-ok' ? <Loader2 className="kyc-spin" size={16} /> : <CheckCircle2 size={16} />} Aprovar cadastro
-              </Button>
+                {busy === 'profile-ok' ? <Loader2 className="kyc-spin" size={16} /> : <CheckCircle2 size={16} />}<T> Aprovar cadastro
+              </T></Button>
               <Button disabled={Boolean(busy) || !reason.trim()}
-                onClick={() => void run(() => kycService.adminReviewProfile(userId, 'needs_more_info', reason), 'profile-info')}>
+                onClick={() => void run(() => kycService.adminReviewProfile(userId, 'needs_more_info', reason), 'profile-info')}><T>
                 Pedir ajustes
-              </Button>
+              </T></Button>
               <Button variant="danger" disabled={Boolean(busy) || !reason.trim()}
-                onClick={() => void run(() => kycService.adminReviewProfile(userId, 'rejected', reason), 'profile-no')}>
+                onClick={() => void run(() => kycService.adminReviewProfile(userId, 'rejected', reason), 'profile-no')}><T>
                 Reprovar
-              </Button>
+              </T></Button>
             </div>
           </div>
         )}

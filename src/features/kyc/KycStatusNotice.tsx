@@ -1,3 +1,4 @@
+import {T} from '../../i18n'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AlertTriangle, ArrowRight, ShieldCheck } from 'lucide-react'
@@ -34,7 +35,7 @@ export function KycStatusNotice() {
     <Link to="/app/verificacao" className={`kyc-notice tone-${tone}`}>
       <span className="kyc-notice-icon">{tone === 'bad' ? <AlertTriangle size={16} /> : <ShieldCheck size={16} />}</span>
       <span className="kyc-notice-text">
-        <b>Verificação: {STATUS_LABELS[key]}</b>
+        <b><T>Verificação: </T>{STATUS_LABELS[key]}</b>
         <small>{MESSAGES[key]}</small>
       </span>
       <ArrowRight size={16} />

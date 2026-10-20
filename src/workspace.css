@@ -3,20 +3,20 @@
    sampled neutral tokens and real SphexPay data/actions. */
 @font-face{font-family:SphexDashboard;src:url('/fonts/raleway-variable.ttf') format('truetype');font-style:normal;font-weight:100 900;font-display:swap}
 :root[data-top-surface=app]{
- --bg:#fafafa;--bg-elevated:#fff;--panel:#fff;--panel-2:#f2f2f2;--panel-3:#e9e9e9;--text:#262626;--text-strong:#171717;--muted:#777;--muted-2:#888;--line:#e2e2e2;--line-strong:#b7b7b7;
+ --bg:#ffffff;--bg-elevated:#fff;--panel:#fff;--panel-2:#f2f2f2;--panel-3:#e9e9e9;--text:#080808;--text-strong:#000;--muted:#525252;--muted-2:#606060;--line:#e2e2e2;--line-strong:#b7b7b7;
  --orange:#222;--orange-hover:#000;--orange-active:#333;--orange-soft:#ededed;--orange-glow:#0000000a;--gradient-brand:#222;--gradient-surface:var(--panel);--gradient-glow:none;
  --success:#40864d;--success-soft:#f3f8f3;--danger:#bd4452;--danger-soft:#fff1f3;--warning:#967025;--warning-soft:#fcf5e8;--info:#595959;--info-soft:#eee;
  --shadow-xs:none;--shadow-sm:none;--shadow:none;--shadow-lg:0 15px 50px #00000018;--radius-sm:10px;--radius-md:14px;--radius-lg:19px;--radius-xl:20px;
  --internal-app-bg:var(--bg);--internal-page-bg:var(--bg);--internal-shell-bg:var(--bg);--internal-main-bg:var(--bg);--internal-sidebar-bg:var(--panel);--internal-surface-1:var(--panel);--internal-surface-2:var(--panel-2);--internal-surface-3:var(--panel-3);--internal-surface-hover:var(--panel-2);
  --internal-border-subtle:var(--line);--internal-border-default:var(--line-strong);--internal-text-primary:var(--text);--internal-text-secondary:var(--muted);--internal-text-muted:var(--muted);--internal-positive:var(--success);--internal-negative:var(--danger);--internal-warning:var(--warning);--internal-info:var(--info);--internal-accent:var(--orange);
  --spx-bg:var(--bg);--spx-surface:var(--panel);--spx-surface-elevated:var(--panel-2);--spx-surface-soft:var(--panel-2);--spx-border:var(--line);--spx-border-strong:var(--line-strong);--spx-text:var(--text);--spx-text-muted:var(--muted);--spx-accent:var(--orange);--spx-accent-hover:var(--orange-hover);--spx-accent-soft:var(--orange-soft);--spx-accent-halo:var(--orange-glow);--spx-accent-foreground:#fff;--spx-shadow-sm:none;--spx-shadow-md:var(--shadow-lg);--spx-focus:0 0 0 3px #8883;
- --reference-header-rgb:250,250,250;--reference-primary:#222;--reference-primary-text:#fff;--reference-connection-border:#b3b3b3;
+ --reference-header-rgb:255,255,255;--reference-primary:#222;--reference-primary-text:#fff;--reference-connection-border:#b3b3b3;
  font-family:SphexDashboard,Arial,sans-serif;color-scheme:light;
 }
 :root[data-top-surface=app][data-theme=dark]{
- --bg:#0c0c0c;--bg-elevated:#121212;--panel:#121212;--panel-2:#191919;--panel-3:#242424;--text:#b9b9b9;--text-strong:#c2c2c2;--muted:#858585;--muted-2:#777;--line:#242424;--line-strong:#555;
- --orange:#b9b9b9;--orange-hover:#d5d5d5;--orange-active:#aaa;--orange-soft:#1c1c1c;--orange-glow:#ffffff08;--gradient-brand:#b9b9b9;--success:#71b27e;--success-soft:#101710;--danger:#e894a0;--danger-soft:#28171b;--warning:#d4ac62;--warning-soft:#292216;--info:#b6b6b6;--info-soft:#222;
- --reference-header-rgb:12,12,12;--reference-primary:#b9b9b9;--reference-primary-text:#090909;--reference-connection-border:#565656;--spx-accent-foreground:#0c0c0c;--shadow-lg:0 15px 50px #0007;color-scheme:dark;
+ --bg:#000;--bg-elevated:#0a0a0a;--panel:#0a0a0a;--panel-2:#141414;--panel-3:#212121;--text:#fff;--text-strong:#fff;--muted:#b0b0b0;--muted-2:#999;--line:#2b2b2b;--line-strong:#727272;
+ --orange:#fff;--orange-hover:#ededed;--orange-active:#dcdcdc;--orange-soft:#1c1c1c;--orange-glow:#ffffff08;--gradient-brand:#fff;--success:#63e98d;--success-soft:#101710;--danger:#ff7189;--danger-soft:#28171b;--warning:#d4ac62;--warning-soft:#292216;--info:#b6b6b6;--info-soft:#222;
+ --reference-header-rgb:0,0,0;--reference-primary:#fff;--reference-primary-text:#090909;--reference-connection-border:#565656;--spx-accent-foreground:#0c0c0c;--shadow-lg:0 15px 50px #0007;color-scheme:dark;
 }
 :root[data-top-surface=app] .internal-app-shell.workspace-reference{
  --orange:inherit;--orange-hover:inherit;--orange-active:inherit;--orange-soft:inherit;--orange-glow:inherit;--gradient-brand:inherit;--internal-accent:inherit;--spx-accent:inherit;--spx-accent-hover:inherit;--spx-accent-soft:inherit;--spx-accent-halo:inherit;--spx-accent-foreground:inherit;--internal-brand-color:var(--text-strong);
@@ -72,7 +72,7 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-filter-bar{flex-direction:row!important;align-items:center!important;gap:6px!important}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-filter-bar>.reference-segments{width:auto!important;max-width:none!important;min-width:0!important;flex:0 1 auto!important}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-filter-bar>.reference-custom-period{width:16px!important;min-width:16px!important;max-width:16px!important;flex:0 0 16px!important;margin:0!important}
-:root[data-top-surface=app][data-theme=dark] .internal-app-shell.workspace-reference .reference-connection-card{background:#161616}
+:root[data-top-surface=app][data-theme=dark] .internal-app-shell.workspace-reference .reference-connection-card{background:#101010}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help{position:fixed;right:max(16px,var(--safe-right));bottom:max(16px,var(--safe-bottom));z-index:140}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help-trigger{display:grid;place-items:center;width:52px;height:52px;border:0;border-radius:50%;background:var(--reference-primary);color:var(--reference-primary-text);box-shadow:0 4px 18px #0002;transition:transform .2s}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help-trigger:hover{transform:translateY(-2px)}
@@ -122,3 +122,54 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result>span{display:grid;gap:2px;flex:1;min-width:0}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result small{font-size:9px;color:var(--muted)}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result>svg{width:14px;height:14px;flex:0 0 14px}
+
+/* Header controls have independent, fixed hit areas; the brand owns the remaining space. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-brand-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-brand-row>.sphexpay-brand{min-width:0;max-width:100%;overflow:hidden}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .sphexpay-wordmark{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto;min-width:max-content}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions :is(.notification-bell-wrap,.profile-menu-root){position:relative;flex:0 0 40px;width:40px;min-width:40px;height:40px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions :is(.notification-bell,.profile-menu-trigger){box-sizing:border-box;position:relative;display:grid;place-items:center;flex:0 0 40px;width:40px;min-width:40px;max-width:40px;height:40px;min-height:40px;max-height:40px;padding:0!important;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--text)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions .profile-menu-trigger>.profile-photo{display:grid;width:28px;height:28px;min-width:28px;min-height:28px;flex:0 0 28px;border:0;border-radius:9px;overflow:hidden}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions .profile-menu-trigger>.profile-photo img{width:100%;height:100%;object-fit:cover}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions .notification-bell>span{display:grid;place-items:center;position:absolute;right:-2px;top:-3px;min-width:15px;height:15px;padding:0 3px;border:2px solid var(--bg);border-radius:99px;font-size:8px;line-height:1;font-weight:600;background:var(--text);color:var(--bg)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language{position:relative;flex:0 0 auto;min-width:0}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-trigger{display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:var(--bg);color:var(--text);font:500 12px/1 SphexDashboard,Arial,sans-serif;white-space:nowrap}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-trigger>img,:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu img{display:block;object-fit:cover;width:24px;height:18px;border-radius:2px;flex:0 0 24px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-trigger>svg{width:13px;height:13px;color:var(--muted);transition:transform .18s}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-trigger[aria-expanded=true]>svg{transform:rotate(180deg)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:180;width:224px;max-width:calc(100vw - 28px);padding:8px;border:1px solid var(--line);border-radius:19px;background:var(--panel);box-shadow:var(--shadow-lg);animation:reference-reveal .16s ease}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu>button{display:grid;grid-template-columns:24px minmax(0,1fr) 17px;align-items:center;gap:12px;width:100%;min-height:47px;padding:11px 10px;border:0;border-radius:11px;background:transparent;color:var(--text);text-align:left;font:400 14px/1.45 SphexDashboard,Arial,sans-serif}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu>button:hover,:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu>button:focus-visible{background:var(--panel-2)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu small{display:block;font-size:inherit}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu>button>svg{width:17px;height:17px;visibility:hidden}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu>button>svg.selected{visibility:visible}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-preference-section{padding:20px;margin:0 0 22px;border:1px solid var(--line);border-radius:16px;background:var(--panel-2);min-width:0}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-preference-section legend{padding:0 6px;font-size:15px;font-weight:500;color:var(--text)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-preference-section>p{font-size:12px;line-height:1.7;color:var(--muted);margin-bottom:16px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options label{display:flex;align-items:center;gap:9px;min-height:54px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);font-size:12px;cursor:pointer}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options label:has(input:checked){border-color:var(--text);background:var(--panel-3)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options label:has(input:focus-visible){outline:2px solid var(--text);outline-offset:3px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options input{width:14px;height:14px;accent-color:var(--text);flex:0 0 14px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options svg{width:17px;height:17px;flex:0 0 17px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options img{width:24px;height:18px;object-fit:cover;border-radius:2px}
+@media(max-width:767px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-brand-row{height:68px;gap:12px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions{gap:8px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .profile-menu{position:absolute;top:calc(100% + 10px);left:auto;right:0;width:min(340px,calc(100vw - 28px));max-height:calc(100dvh - 100px - var(--safe-top));overflow-y:auto}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-appearance-options{grid-template-columns:1fr}
+}
+@media(max-width:360px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-brand-row{gap:8px;padding-inline:12px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .sphexpay-theme-mark{width:25px;height:25px;flex-basis:25px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .sphexpay-wordmark{font-size:17px;margin-left:6px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions{gap:6px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions :is(.notification-bell-wrap,.profile-menu-root){width:36px;min-width:36px;height:36px;flex-basis:36px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-header-actions :is(.notification-bell,.profile-menu-trigger){width:36px;min-width:36px;max-width:36px;height:36px;min-height:36px;max-height:36px;flex-basis:36px;border-radius:12px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-trigger{gap:5px;min-height:36px;padding:7px 8px;font-size:11px;border-radius:12px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-trigger>img{width:20px;height:15px;flex-basis:20px}
+}
+
+@media(max-width:767px){:root[data-top-surface=app] .internal-app-shell.workspace-reference .notification-panel{position:fixed;top:calc(var(--safe-top) + 78px);left:14px;right:14px;width:auto;max-height:calc(100dvh - var(--safe-top) - 95px);overflow-y:auto}}
+@media(max-width:360px){:root[data-top-surface=app] .internal-app-shell.workspace-reference .workspace-language-menu{position:fixed;top:calc(var(--safe-top) + 78px);right:12px}}

@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import {MemoryRouter,Route,Routes} from 'react-router-dom'
 import {beforeEach,describe,expect,it,vi} from 'vitest'
 import {Layout} from '../components/Layout'
+import {useAppLocale} from '../i18n/localeStore'
 import {useDemoStore} from '../store/useDemoStore'
 
 vi.mock('../hooks/useAuth',()=>({useAuth:()=>({user:{email:'player@sphexpay.com',user_metadata:{full_name:'Ronald'}},signOut:vi.fn()})}))
@@ -13,7 +14,7 @@ vi.mock('../components/branding/SphexPayLogo',()=>({SphexPayLogo:()=> <span>Sphe
 const renderLayout=()=>render(<MemoryRouter initialEntries={['/app']}><Routes><Route path="/app" element={<Layout/>}><Route index element={<p>Dashboard atual</p>}/><Route path="produtos" element={<p>Produtos atuais</p>}/></Route></Routes></MemoryRouter>)
 
 describe('cabeçalho único da área autenticada',()=>{
- beforeEach(()=>act(()=>useDemoStore.getState().reset()))
+ beforeEach(()=>act(()=>{useDemoStore.getState().reset();useAppLocale.getState().setLocale('pt-BR')}))
  it('concentra navegação e controles no topo, sem dock ou sidebar',()=>{
   const view=renderLayout(),header=screen.getByRole('banner')
   expect(within(header).getByRole('button',{name:'Notificações'})).toBeVisible()
@@ -23,12 +24,7 @@ describe('cabeçalho único da área autenticada',()=>{
   expect(view.container.querySelector('.internal-sidebar')).not.toBeInTheDocument()
   expect(screen.getByRole('link',{name:'Ir para o conteúdo'})).toHaveAttribute('href','#workspace-content')
  })
- it('alterna os dois temas pelo cabeçalho e preserva a preferência',async()=>{
-  renderLayout();const user=userEvent.setup(),initial=useDemoStore.getState().theme
-  await user.click(screen.getByRole('button',{name:initial==='dark'?'Ativar modo claro':'Ativar modo escuro'}))
-  expect(useDemoStore.getState().theme).toBe(initial==='dark'?'light':'dark')
-  expect(screen.getByRole('button',{name:initial==='dark'?'Ativar modo escuro':'Ativar modo claro'})).toBeVisible()
- })
+ it('substitui a aparência pelo idioma no cabeçalho e persiste a escolha',async()=>{renderLayout();const user=userEvent.setup(),header=screen.getByRole('banner'),initialTheme=useDemoStore.getState().theme;expect(within(header).queryByRole('button',{name:/Ativar modo/})).not.toBeInTheDocument();await user.click(screen.getByRole('button',{name:'Idioma do aplicativo: Português (Brasil)'}));await user.click(screen.getByRole('menuitemradio',{name:'English (US)'}));expect(screen.getByRole('link',{name:'Overview'})).toBeVisible();expect(useDemoStore.getState().theme).toBe(initialTheme);expect(useAppLocale.getState().locale).toBe('en-US')})
  it('abre ajuda acessível e devolve o foco ao fechar com Escape',async()=>{
   renderLayout();const user=userEvent.setup(),trigger=screen.getByRole('button',{name:'Abrir ajuda'})
   await user.click(trigger);const panel=screen.getByRole('dialog',{name:'Ajuda SphexPay'})
