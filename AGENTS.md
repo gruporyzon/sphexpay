@@ -24,4 +24,5 @@ Checklist completo e atualizável em `docs/SECURITY-SETUP.md`. Resumo do que ain
 - [ ] Habilitar MFA TOTP no Supabase (Authentication) — sem isso o card de 2FA falha.
 - [ ] `PAYMENT_WEBHOOK_SECRET` só quando integrar um parceiro processador real (fica vazio até lá).
 - [ ] Antes de produção: promover CSP de Report-Only para enforcing em `vercel.json`.
+- [ ] Cadastrar `RESEND_API_KEY` e `TEAM_NOTIFY_EMAIL` nos Secrets das Edge Functions do Supabase (avisos internos de novas contas e KYC — ver `docs/SECURITY-SETUP.md`).
 - [ ] KYC: definir política de retenção dos documentos antes de produção (migration e Edge Functions já aplicadas).

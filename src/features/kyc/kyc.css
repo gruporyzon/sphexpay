@@ -126,3 +126,33 @@
  .kyc-admin-table{overflow-x:auto}
  .kyc-admin-table table{min-width:560px}
 }
+
+/* Lembrete "Concluir verificação" ao entrar no painel */
+.kyc-prompt-backdrop{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.42);backdrop-filter:blur(6px);animation:kyc-prompt-fade .3s ease both}
+.kyc-prompt{position:relative;width:min(100%,440px);padding:30px 28px 24px;border:1px solid var(--line);border-radius:20px;background:var(--panel);color:var(--text);box-shadow:var(--shadow-lg);animation:kyc-prompt-in .45s cubic-bezier(.22,1,.36,1) both}
+.kyc-prompt-close{position:absolute;top:14px;right:14px;display:grid;place-items:center;width:32px;height:32px;border:0;border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;transition:background .2s,color .2s}
+.kyc-prompt-close:hover{background:var(--panel-2);color:var(--text)}
+.kyc-prompt-close svg{width:16px;height:16px}
+.kyc-prompt-icon{display:grid;place-items:center;width:52px;height:52px;margin-bottom:18px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2);color:var(--text-strong);animation:kyc-prompt-pop .6s cubic-bezier(.34,1.56,.64,1) .15s both}
+.kyc-prompt-icon svg{width:24px;height:24px}
+.kyc-prompt h2{color:var(--text-strong);font-size:21px;font-weight:600;letter-spacing:-.035em}
+.kyc-prompt p{margin-top:8px;color:var(--muted);font-size:13px;line-height:1.6}
+.kyc-prompt-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:20px 0 22px;padding:0;list-style:none}
+.kyc-prompt-steps li{display:grid;gap:6px;padding:11px 10px;border:1px solid var(--line);border-radius:11px;background:var(--panel-2);color:var(--muted);font-size:11px;line-height:1.3;animation:kyc-prompt-rise .45s cubic-bezier(.22,1,.36,1) both}
+.kyc-prompt-steps li:nth-child(1){animation-delay:.2s}.kyc-prompt-steps li:nth-child(2){animation-delay:.27s}.kyc-prompt-steps li:nth-child(3){animation-delay:.34s}
+.kyc-prompt-steps b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--text-strong);color:var(--panel);font-size:10px}
+.kyc-prompt-actions{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.kyc-prompt-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 18px;border-radius:11px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:transform .2s,background .2s,box-shadow .2s}
+.kyc-prompt-secondary{border:1px solid var(--line);background:transparent;color:var(--text)}
+.kyc-prompt-secondary:hover{background:var(--panel-2)}
+.kyc-prompt-primary{border:1px solid var(--text-strong);background:var(--text-strong);color:var(--panel)}
+.kyc-prompt-primary:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(0,0,0,.18)}
+.kyc-prompt-primary svg{width:16px;height:16px;transition:transform .2s}
+.kyc-prompt-primary:hover svg{transform:translateX(3px)}
+.kyc-prompt :where(button):focus-visible{outline:2px solid var(--text-strong);outline-offset:2px}
+@keyframes kyc-prompt-fade{from{opacity:0}to{opacity:1}}
+@keyframes kyc-prompt-in{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes kyc-prompt-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+@keyframes kyc-prompt-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(max-width:480px){.kyc-prompt{padding:26px 20px 20px}.kyc-prompt-actions{grid-template-columns:1fr}.kyc-prompt-actions .kyc-prompt-primary{order:-1}.kyc-prompt-steps{grid-template-columns:1fr}.kyc-prompt-steps li{grid-template-columns:auto 1fr;align-items:center}}
+@media(prefers-reduced-motion:reduce){.kyc-prompt-backdrop,.kyc-prompt,.kyc-prompt-icon,.kyc-prompt-steps li{animation:none}}

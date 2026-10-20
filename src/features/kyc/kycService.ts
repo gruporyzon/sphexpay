@@ -10,6 +10,7 @@ import type {
   KycSubmissionSummary,
 } from './types'
 import { checkUploadFile, onlyDigits } from './validation'
+import { notifyTeam } from '../signup/onboardingService'
 
 const client = () => {
   if (!supabase) throw new Error('O módulo de verificação não está disponível neste ambiente.')
@@ -157,6 +158,7 @@ export const kycService = {
   async submit(): Promise<KycProfile> {
     const { data, error } = await client().rpc('kyc_submit')
     if (error) throw new Error(kycSubmitMessage(error.message))
+    void notifyTeam('kyc_submitted')
     return profileFromRow(data as Record<string, unknown>)
   },
 

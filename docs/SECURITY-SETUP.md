@@ -45,6 +45,20 @@ Nunca commitar valores. Localmente ficam no `.env` (que está no `.gitignore`).
 - [ ] `PAYMENT_WEBHOOK_IP_ALLOWLIST` — opcional, vazio. CSV dos IPs de origem que o parceiro
       publicar. Vazio = sem restrição de IP.
 
+## E-mails internos (Resend → Edge Function `team-notify`)
+
+Avisos para a equipe quando uma conta conclui o questionário inicial e quando um cadastro de
+verificação (KYC) é enviado. O domínio `sphexpay.com.br` já está verificado na Resend (DNS na
+Vercel: `resend._domainkey`, `send`, `rsend`). Configurar em Supabase → Edge Functions → Secrets:
+
+- [ ] `RESEND_API_KEY` — chave da Resend com permissão *Sending access* restrita a `sphexpay.com.br`.
+- [ ] `TEAM_NOTIFY_EMAIL` — e-mail(s) da equipe que recebem os avisos (separados por vírgula).
+- [ ] `TEAM_NOTIFY_FROM` — opcional; padrão `SphexPay <notificacoes@sphexpay.com.br>`.
+
+Enquanto faltar segredo, a função responde `503 NOTIFY_NOT_CONFIGURED` e o cadastro segue normal
+(o aviso nunca bloqueia o usuário). O e-mail de KYC não leva CPF/CNPJ, nascimento, endereço nem
+documentos — só nome, tipo de pessoa, quantidade de documentos e o link da fila.
+
 ## Antes de produção (pagamentos reais)
 
 - [ ] Promover a CSP de `Content-Security-Policy-Report-Only` para `Content-Security-Policy`

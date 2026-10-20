@@ -1,0 +1,181 @@
+/* Fluxo de entrada SphexPay — cadastro, confirmação e questionário inicial.
+   Mesmo vocabulário visual do gateway público (gateway-landing.css): fundo #090909,
+   azul #0080ff com brilho interno, contorno escuro, SphexGraphik e aura azul animada.
+   Como a landing pública, o fluxo de entrada é sempre escuro; o painel (/app) mantém
+   seus modos claro e escuro. */
+@font-face{font-family:SphexGraphik;src:url('/gateway/graphik-regular.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:SphexGraphik;src:url('/gateway/graphik-medium.woff2') format('woff2');font-weight:500 700;font-style:normal;font-display:swap}
+
+.spx-flow{
+ --fl-bg:#090909;--fl-surface:#111111;--fl-surface-hover:#161616;--fl-line:#262626;--fl-line-strong:#3d3d3d;
+ --fl-text:#f4f4f4;--fl-muted:#a0a0a0;--fl-faint:#6f6f6f;--fl-blue:#0080ff;--fl-blue-hover:#168bff;--fl-blue-soft:rgba(0,128,255,.12);
+ --fl-blue-line:#3f9bff;--fl-focus:0 0 0 3px rgba(0,128,255,.28);--fl-danger:#ff6b6b;--fl-success:#3ddc97;--fl-ease:cubic-bezier(.22,1,.36,1);
+ position:relative;isolation:isolate;min-height:100dvh;display:flex;flex-direction:column;align-items:center;overflow:hidden;
+ padding:clamp(24px,6vh,72px) 16px 56px;background:var(--fl-bg);color:var(--fl-text);
+ font:400 14px/1.5 SphexGraphik,Arial,sans-serif;letter-spacing:-.02em;-webkit-font-smoothing:antialiased;color-scheme:dark
+}
+.spx-flow *{box-sizing:border-box}
+.spx-flow :where(h1,h2,h3,p){margin:0;font-family:inherit}
+.spx-flow :where(button,input,a,select){font-family:inherit;letter-spacing:inherit;-webkit-tap-highlight-color:transparent}
+.spx-flow a{color:inherit}
+.spx-flow :where(button,a,input,[tabindex]):focus-visible{outline:2px solid #8cc5ff;outline-offset:3px}
+.spx-flow h1[tabindex="-1"]:focus{outline:none}
+
+/* Aura azul — mesma assinatura do hero do gateway, mais discreta. */
+.spx-flow-aura{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden;mask-image:linear-gradient(transparent 45%,#000 100%);opacity:.55}
+.spx-flow-aura:before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 45% 34% at 66% 108%,#38b8ff 1%,#135fff 40%,transparent 100%),radial-gradient(ellipse 85% 23% at 50% 112%,#1246ed 35%,transparent 100%)}
+.spx-flow-aura:after{content:'';position:absolute;width:160%;height:260px;bottom:-215px;left:-30%;background:linear-gradient(95deg,#132268 10%,#1d51ff 50%,#53ddff 92%);filter:blur(40px);border-radius:45%;transform:rotate(-8deg);animation:fl-aura 14s ease-in-out infinite alternate}
+.spx-flow.is-complete .spx-flow-aura{opacity:.9;transition:opacity 1.2s var(--fl-ease)}
+
+.spx-flow-back{position:absolute;top:22px;left:24px;display:inline-flex;align-items:center;gap:8px;color:var(--fl-muted);font-size:13px;text-decoration:none;transition:color .2s}
+.spx-flow-back:hover{color:var(--fl-text)}
+.spx-flow-back svg{width:16px;height:16px;transition:transform .25s var(--fl-ease)}
+.spx-flow-back:hover svg{transform:translateX(-3px)}
+
+.spx-flow-main{width:min(100%,448px);margin-top:clamp(24px,7vh,84px)}
+.spx-flow-brand{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:34px;color:var(--fl-text);text-decoration:none;animation:fl-rise .7s var(--fl-ease) both}
+.spx-flow-brand img{width:28px;height:36px;object-fit:contain;filter:brightness(0) invert(1)}
+.spx-flow-brand span{font-size:26px;letter-spacing:-1.2px;line-height:1}
+.spx-flow-brand b{font-weight:500}
+
+/* Progresso */
+.spx-flow-progress{margin-bottom:26px}
+.spx-flow-track{height:3px;border-radius:99px;background:var(--fl-line);overflow:hidden}
+.spx-flow-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#1d51ff,#0080ff 55%,#53ddff);box-shadow:0 0 12px rgba(0,128,255,.6);transition:width .7s var(--fl-ease)}
+.spx-flow-dots{display:flex;justify-content:center;gap:9px;margin-top:14px}
+.spx-flow-dots span{width:6px;height:6px;border-radius:50%;background:var(--fl-line-strong);transition:background .3s,transform .4s var(--fl-ease),box-shadow .4s}
+.spx-flow-dots span.done{background:var(--fl-blue)}
+.spx-flow-dots span.current{background:var(--fl-blue);transform:scale(1.35);box-shadow:0 0 0 4px var(--fl-blue-soft)}
+
+/* Cabeçalho da etapa */
+.spx-flow-eyebrow{display:block;margin-bottom:10px;color:var(--fl-blue);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.spx-flow h1{font-size:clamp(24px,5vw,28px);font-weight:500;line-height:1.18;letter-spacing:-.035em}
+.spx-flow-subtitle{margin-top:8px;color:var(--fl-muted);font-size:14px}
+
+/* Transição entre etapas */
+.spx-flow-step{animation:fl-step-next .55s var(--fl-ease) both}
+.spx-flow-step.from-prev{animation-name:fl-step-prev}
+.spx-flow-step>*{animation:fl-rise .55s var(--fl-ease) both}
+.spx-flow-step>:nth-child(2){animation-delay:40ms}
+.spx-flow-step>:nth-child(3){animation-delay:80ms}
+
+/* Opções */
+.spx-flow-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 0;padding:0;border:0;min-width:0}
+.spx-flow-options.is-list{grid-template-columns:1fr}
+.spx-flow-options legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.spx-flow-slot{--i:0;display:grid;min-width:0;animation:fl-option-in .5s var(--fl-ease) both;animation-delay:calc(120ms + var(--i) * 45ms)}
+.spx-flow-slot.wide{grid-column:1/-1}
+.spx-flow-option{position:relative;display:flex;align-items:center;gap:12px;min-height:52px;padding:12px 16px;border:1px solid var(--fl-line);border-radius:10px;background:var(--fl-surface);color:var(--fl-text);cursor:pointer;font-size:14px;line-height:1.3;
+ transition:border-color .25s,background .25s,transform .25s var(--fl-ease),box-shadow .3s}
+.spx-flow-option:hover{border-color:var(--fl-line-strong);background:var(--fl-surface-hover);transform:translateY(-1px)}
+.spx-flow-option input{position:absolute;opacity:0;pointer-events:none}
+.spx-flow-radio{flex:0 0 auto;position:relative;width:18px;height:18px;border:1.5px solid var(--fl-line-strong);border-radius:50%;transition:border-color .25s}
+.spx-flow-radio:after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--fl-blue);transform:scale(0);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.spx-flow-option:has(input:checked){border-color:var(--fl-blue-line);background:var(--fl-blue-soft);box-shadow:inset 0 1px 2px rgba(212,231,255,.18),0 0 0 1px rgba(0,128,255,.25),0 8px 24px rgba(0,128,255,.12);animation:fl-pick .45s var(--fl-ease)}
+.spx-flow-option:has(input:checked) .spx-flow-radio{border-color:var(--fl-blue)}
+.spx-flow-option:has(input:checked) .spx-flow-radio:after{transform:scale(1)}
+.spx-flow-option:has(input:focus-visible){outline:2px solid #8cc5ff;outline-offset:2px}
+
+/* Botões — mesmos do gateway */
+.spx-flow-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}
+.spx-flow-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 22px;border:1px solid #60acff;border-radius:7px;background:var(--fl-blue);
+ box-shadow:inset 0 3px 8px 1px rgba(212,231,255,.7),inset 0 -3px 8px rgba(0,82,221,.4),0 0 14px rgba(0,123,255,.08);color:#fff;font-size:15px;font-weight:500;line-height:1.2;cursor:pointer;text-decoration:none;
+ transition:box-shadow .25s,transform .25s var(--fl-ease),background .25s,opacity .3s}
+.spx-flow-button svg{width:17px;height:17px;transition:transform .25s var(--fl-ease)}
+.spx-flow-button:hover:not(:disabled){background:var(--fl-blue-hover);box-shadow:inset 0 3px 8px 1px rgba(212,231,255,.7),0 0 24px rgba(0,128,255,.32);transform:translateY(-2px)}
+.spx-flow-button:hover:not(:disabled) svg{transform:translateX(3px)}
+.spx-flow-button:disabled{opacity:.38;cursor:default;box-shadow:inset 0 3px 8px 1px rgba(212,231,255,.35)}
+.spx-flow-button.is-ready{animation:fl-ready .6s var(--fl-ease)}
+.spx-flow-button.outline{border-color:var(--fl-line-strong);background:var(--fl-bg);box-shadow:inset 0 1px 2px rgba(230,230,230,.35),inset 0 -1px 2px rgba(255,255,255,.05);color:var(--fl-text)}
+.spx-flow-button.outline:hover:not(:disabled){background:var(--fl-surface-hover);box-shadow:inset 0 1px 2px rgba(230,230,230,.35),0 0 16px rgba(255,255,255,.06)}
+.spx-flow-button.outline:hover:not(:disabled) svg{transform:translateX(-3px)}
+.spx-flow-button.full{width:100%}
+.spx-flow-button[aria-busy=true]{pointer-events:none}
+.spx-flow-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:fl-spin .8s linear infinite}
+
+/* Campos do cadastro — rótulo dentro da caixa */
+.spx-flow-form{display:grid;gap:14px;margin-top:28px}
+.spx-flow-field{--i:0;position:relative;display:block;padding:11px 14px 9px;border:1px solid var(--fl-line);border-radius:10px;background:var(--fl-surface);cursor:text;
+ transition:border-color .25s,box-shadow .25s,background .25s;animation:fl-option-in .5s var(--fl-ease) both;animation-delay:calc(80ms + var(--i) * 50ms)}
+.spx-flow-field:hover{border-color:var(--fl-line-strong)}
+.spx-flow-field:focus-within{border-color:var(--fl-blue);box-shadow:var(--fl-focus);background:var(--fl-surface-hover)}
+.spx-flow-field>span{display:block;cursor:text;color:var(--fl-muted);font-size:12px;line-height:1.2;transition:color .2s}
+.spx-flow-field:focus-within>span{color:var(--fl-blue)}
+.spx-flow-field>span label{cursor:inherit}
+.spx-flow-field>span i{color:var(--fl-danger);font-style:normal;margin-left:2px}
+.spx-flow-field input{width:100%;margin-top:4px;padding:0;border:0;outline:0;background:transparent;color:var(--fl-text);font-size:16px;line-height:1.4}
+.spx-flow-field input::placeholder{color:var(--fl-faint)}
+.spx-flow-field input:-webkit-autofill{-webkit-text-fill-color:var(--fl-text);transition:background-color 9999s}
+.spx-flow-field.has-toggle input{padding-right:34px}
+.spx-flow-field.is-invalid{border-color:var(--fl-danger)}
+.spx-flow-eye{position:absolute;right:10px;bottom:8px;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:7px;background:transparent;color:var(--fl-muted);cursor:pointer;transition:color .2s,background .2s}
+.spx-flow-eye:hover{color:var(--fl-text);background:var(--fl-surface-hover)}
+.spx-flow-eye svg{width:17px;height:17px}
+.spx-flow-strength{display:grid;gap:6px;margin-top:-4px}
+.spx-flow-strength div{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.spx-flow-strength i{height:3px;border-radius:99px;background:var(--fl-line);transition:background .35s,box-shadow .35s}
+.spx-flow-strength i.on{background:var(--fl-blue);box-shadow:0 0 8px rgba(0,128,255,.45)}
+.spx-flow-strength.weak i.on{background:var(--fl-danger);box-shadow:none}
+.spx-flow-strength small{color:var(--fl-faint);font-size:12px}
+.spx-flow-consent{display:flex;align-items:flex-start;gap:10px;margin-top:2px;color:var(--fl-muted);font-size:13px;line-height:1.5;cursor:pointer}
+.spx-flow-consent input{flex:0 0 auto;width:18px;height:18px;margin:1px 0 0;accent-color:var(--fl-blue);cursor:pointer}
+.spx-flow-consent a{color:var(--fl-text);text-decoration:underline;text-underline-offset:3px}
+.spx-flow-consent a:hover{color:var(--fl-blue)}
+.spx-flow-notice{display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border:1px solid color-mix(in srgb,var(--fl-danger) 40%,transparent);border-radius:9px;background:color-mix(in srgb,var(--fl-danger) 10%,transparent);color:var(--fl-text);font-size:13px;animation:fl-shake .45s var(--fl-ease)}
+.spx-flow-notice svg{flex:0 0 auto;width:16px;height:16px;margin-top:1px;color:var(--fl-danger)}
+.spx-flow-notice.success{border-color:color-mix(in srgb,var(--fl-success) 40%,transparent);background:color-mix(in srgb,var(--fl-success) 10%,transparent);animation:fl-rise .45s var(--fl-ease) both}
+.spx-flow-notice.success svg{color:var(--fl-success)}
+.spx-flow-divider{display:flex;align-items:center;gap:12px;margin:22px 0 16px;color:var(--fl-faint);font-size:12px}
+.spx-flow-divider:before,.spx-flow-divider:after{content:'';flex:1;height:1px;background:var(--fl-line)}
+.spx-flow .social-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.spx-flow .social-buttons button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 12px;border:1px solid var(--fl-line-strong);border-radius:7px;background:var(--fl-bg);color:var(--fl-text);font-size:13px;cursor:pointer;transition:background .2s,transform .25s var(--fl-ease)}
+.spx-flow .social-buttons button:hover:not(:disabled){background:var(--fl-surface-hover);transform:translateY(-1px)}
+.spx-flow .social-buttons button:disabled{opacity:.4;cursor:default}
+.spx-flow .social-buttons svg{width:17px;height:17px}
+.spx-flow .social-buttons small{grid-column:1/-1;color:var(--fl-faint);font-size:11px;text-align:center}
+.spx-flow-switch{margin-top:22px;color:var(--fl-muted);font-size:14px;text-align:center}
+.spx-flow-switch a{color:var(--fl-blue);font-weight:500;text-decoration:none}
+.spx-flow-switch a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* Confirmação de e-mail */
+.spx-flow-icon{display:grid;place-items:center;width:60px;height:60px;margin-bottom:22px;border:1px solid var(--fl-blue-line);border-radius:16px;background:var(--fl-blue-soft);color:var(--fl-blue);box-shadow:0 0 30px rgba(0,128,255,.18);animation:fl-pop .7s var(--fl-ease) both}
+.spx-flow-icon svg{width:26px;height:26px}
+.spx-flow-checklist{display:grid;gap:10px;margin:24px 0}
+.spx-flow-checklist span{display:flex;align-items:center;gap:10px;color:var(--fl-muted);font-size:14px}
+.spx-flow-checklist svg{width:17px;height:17px;color:var(--fl-blue)}
+
+/* Conclusão do questionário */
+.spx-flow-done{text-align:center;animation:fl-rise .6s var(--fl-ease) both}
+.spx-flow-check{position:relative;width:84px;height:84px;margin:6px auto 26px}
+.spx-flow-check svg{width:100%;height:100%;overflow:visible}
+.spx-flow-check circle{fill:none;stroke:var(--fl-blue);stroke-width:2.5;stroke-dasharray:252;stroke-dashoffset:252;transform:rotate(-90deg);transform-origin:center;animation:fl-draw 1s var(--fl-ease) .1s forwards;filter:drop-shadow(0 0 8px rgba(0,128,255,.6))}
+.spx-flow-check path{fill:none;stroke:var(--fl-blue);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:48;stroke-dashoffset:48;animation:fl-draw .5s var(--fl-ease) .75s forwards}
+.spx-flow-check:before{content:'';position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,rgba(0,128,255,.28),transparent 70%);animation:fl-glow 2.4s ease-in-out .9s infinite}
+.spx-flow-done p{margin:10px auto 28px;max-width:340px;color:var(--fl-muted)}
+
+@keyframes fl-rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fl-step-next{from{opacity:0;transform:translateX(26px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fl-step-prev{from{opacity:0;transform:translateX(-26px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fl-option-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes fl-pick{0%{transform:scale(1)}40%{transform:scale(.97)}100%{transform:scale(1)}}
+@keyframes fl-ready{0%{box-shadow:inset 0 3px 8px 1px rgba(212,231,255,.7),0 0 0 0 rgba(0,128,255,.55)}100%{box-shadow:inset 0 3px 8px 1px rgba(212,231,255,.7),0 0 0 14px rgba(0,128,255,0)}}
+@keyframes fl-aura{from{transform:rotate(-10deg) translateX(-6%) scaleY(.85)}to{transform:rotate(6deg) translateX(4%) scaleY(1.3)}}
+@keyframes fl-spin{to{transform:rotate(360deg)}}
+@keyframes fl-shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+@keyframes fl-pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes fl-draw{to{stroke-dashoffset:0}}
+@keyframes fl-glow{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+
+@media(max-width:520px){
+ .spx-flow{padding-top:64px}
+ .spx-flow-main{margin-top:8px}
+ .spx-flow-brand{margin-bottom:26px}
+ .spx-flow-options{grid-template-columns:1fr;gap:10px}
+ .spx-flow-option{min-height:50px}
+ .spx-flow .social-buttons{grid-template-columns:1fr}
+ .spx-flow-back{top:18px;left:16px}
+}
+@media(prefers-reduced-motion:reduce){
+ .spx-flow *,.spx-flow *:before,.spx-flow *:after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0ms!important;transition-duration:.01ms!important}
+ .spx-flow-check circle,.spx-flow-check path{stroke-dashoffset:0}
+}
