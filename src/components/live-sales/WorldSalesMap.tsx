@@ -1,3 +1,5 @@
+import {translate as uiText} from '../../i18n'
+import {T} from '../../i18n'
 import { memo,useMemo,useState } from 'react'
 import { geoGraticule10,geoNaturalEarth1,geoPath } from 'd3-geo'
 import { feature } from 'topojson-client'
@@ -22,9 +24,9 @@ function routePath(destination:[number,number]){
 export const WorldSalesMap=memo(function WorldSalesMap({events}:{events:GlobalSaleEvent[]}){
  const [hovered,setHovered]=useState<GlobalSaleEvent|null>(null)
  const recent=events.slice(0,7),active=recent[0],activeIds=useMemo(()=>new Set(recent.map(event=>event.country.id)),[recent])
- return <div className="live-world-map" aria-label="Mapa mundial de vendas ao vivo">
+ return <div className="live-world-map" aria-label={uiText("Mapa mundial de vendas ao vivo")}>
   <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-labelledby="world-map-title">
-   <title id="world-map-title">Destinos globais das vendas mais recentes</title>
+   <title id="world-map-title"><T>Destinos globais das vendas mais recentes</T></title>
    <defs>
     <linearGradient id="live-world-land" x1="0" y1="0" x2="0" y2="1"><stop stopColor="var(--live-map-land-hi)"/><stop offset="1" stopColor="var(--live-map-land)"/></linearGradient>
     <filter id="live-world-glow" x="-200%" y="-200%" width="400%" height="400%"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
@@ -37,8 +39,8 @@ export const WorldSalesMap=memo(function WorldSalesMap({events}:{events:GlobalSa
    <g className="live-world-points">{recent.map((event,index)=>{const point=projection(event.country.coordinates);if(!point)return null;return <g key={event.transaction.transactionId} className={index===0?'active':''} onMouseEnter={()=>setHovered(event)} onMouseLeave={()=>setHovered(null)} onFocus={()=>setHovered(event)} onBlur={()=>setHovered(null)} tabIndex={0} role="button" aria-label={`${event.activity} em ${event.country.name}`}><circle className="wave" cx={point[0]} cy={point[1]} r="9"/><circle cx={point[0]} cy={point[1]} r={index===0?5:3.5}/></g>})}</g>
   </svg>
   {hovered&&<div className="live-world-tooltip" style={{left:`${((projection(hovered.country.coordinates)?.[0]??0)/width)*100}%`,top:`${((projection(hovered.country.coordinates)?.[1]??0)/height)*100}%`}}><span>{hovered.country.flag} {hovered.country.name}</span><strong>{hovered.activity}</strong></div>}
-  <div className="live-world-map-legend"><span><i/> Origem</span><span><i/> Destino recente</span></div>
-  {!events.length&&<div className="live-world-map-empty"><strong>Aguardando atividade global</strong><span>Os novos destinos aparecerão aqui em tempo real.</span></div>}
-  {active&&<div className="live-world-now" aria-live="polite"><i/><span>Último destino</span><strong>{active.country.flag} {active.country.name}</strong></div>}
+  <div className="live-world-map-legend"><span><i/><T> Origem</T></span><span><i/><T> Destino recente</T></span></div>
+  {!events.length&&<div className="live-world-map-empty"><strong><T>Aguardando atividade global</T></strong><span><T>Os novos destinos aparecerão aqui em tempo real.</T></span></div>}
+  {active&&<div className="live-world-now" aria-live="polite"><i/><span><T>Último destino</T></span><strong>{active.country.flag} {active.country.name}</strong></div>}
  </div>
 })

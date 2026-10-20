@@ -1,3 +1,4 @@
+import {T} from '../../i18n'
 import type { InputHTMLAttributes, ReactNode } from 'react'
 import { cn } from '../../lib/utils'
 import { maskCEP, maskCNPJ, maskCPF, maskCpfCnpj, maskDateBR, maskPhoneBR, maskUF } from '../../lib/masks'
@@ -29,7 +30,7 @@ function FieldShell({
 }) {
   return (
     <label className="spx-field">
-      <span>{label}</span>
+      <span><T>{label}</T></span>
       <span className={cn('spx-field-box', invalid && 'is-invalid', disabled && 'is-disabled')}>
         {adornment}
         {children}
