@@ -1,6 +1,6 @@
 import { useCallback,useEffect,useMemo,useState,type ReactNode } from 'react'
 import { ArrowDownRight,BadgeDollarSign,CircleDollarSign,CreditCard,Percent,ReceiptText,ShieldAlert,Wallet } from 'lucide-react'
-import { Card,PageTitle } from '../components/ui'
+import { Card } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
 import { useDashboardPeriod } from '../hooks/useDashboardPeriod'
 import { useDashboardCurrency } from '../hooks/useDashboardCurrency'
@@ -10,10 +10,7 @@ import { useScenarioPlanner } from '../hooks/useScenarioPlanner'
 import { useDashboardAdmin } from '../hooks/useDashboardAdmin'
 import { convertCents,deriveScenarioMetrics,generatePeriodSeries,generateSalesTimeline,periodTitle,seriesFromTransactions,type ExchangeRate,type FinancialTransaction } from '../lib/dashboardFinance'
 import { dashboardService } from '../services/dashboardService'
-import { OverviewHeroCarousel } from '../components/dashboard/OverviewHeroCarousel'
-import { NextAwardCard } from '../components/dashboard/NextAwardCard'
 import { PremiumStatCard,type PremiumStat } from '../components/dashboard/PremiumStatCard'
-import { DashboardCurrencySelector,DashboardPeriodFilter } from '../components/dashboard/DashboardControls'
 import { DashboardScenarioEditor } from '../components/dashboard/DashboardScenarioEditor'
 import { formatCents } from '../lib/currencyFormat'
 import { RevenueSection } from '../components/dashboard/RevenueSection'
@@ -23,27 +20,13 @@ import { LiveOperationsPanel } from '../components/dashboard/LiveOperationsPanel
 import { demoExchangeRates } from '../demo/demoSimulationEngine'
 import { useDashboardLayout } from '../hooks/useDashboardLayout'
 import { DashboardLayoutButton,DashboardLayoutEditor } from '../components/dashboard/DashboardLayoutEditor'
-import { DashboardOverviewVisual } from '../components/dashboard/DashboardOverviewVisual'
+import { ReferenceDashboardView,ReferenceOperationLinks } from '../components/dashboard/ReferenceDashboardView'
 import type { DashboardWidgetId } from '../lib/dashboardLayout'
 
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
-const mobileHeroQuery='(max-width: 768px)'
-
-function useMobileDashboard(){
- const [mobile,setMobile]=useState(()=>typeof window!=='undefined'&&window.matchMedia(mobileHeroQuery).matches)
- useEffect(()=>{
-  const media=window.matchMedia(mobileHeroQuery),update=()=>setMobile(media.matches)
-  update()
-  if(typeof media.addEventListener==='function')media.addEventListener('change',update)
-  else media.addListener(update)
-  return()=>{if(typeof media.removeEventListener==='function')media.removeEventListener('change',update);else media.removeListener(update)}
- },[])
- return mobile
-}
-
 export default function Dashboard(){
  const {user}=useAuth(),adminAccess=useDashboardAdmin(user?.id),admin=adminAccess.allowed
- const layoutEditor=useDashboardLayout(user?.id),mobileDashboard=useMobileDashboard()
+ const layoutEditor=useDashboardLayout(user?.id)
  const {period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
  const [mode,setMode]=useState<'production'|'planning'>('production'),[rates,setRates]=useState<ExchangeRate[]>([]),[rateError,setRateError]=useState(false)
  const live=useLiveSales(user?.id,period),planner=useScenarioPlanner(user?.id,Boolean(admin))
@@ -89,18 +72,16 @@ export default function Dashboard(){
   ['recent-sales',loading?<LiveSalesSkeleton key="recent-sales"/>:<LiveSalesFeedContent key="recent-sales" sales={feed} displayCurrency={planning?planner.scenario.currency:currency} rates={planning?[]:effectiveRates} planning={Boolean(planning)}/>]
  ]) as Record<DashboardWidgetId,ReactNode>
 
- return <div className="page-enter dashboard-page">
-  {!mobileDashboard&&<OverviewHeroCarousel/>}
-  <PageTitle title="Dashboard" subtitle={live.demo?'Acompanhe resultados, vendas e indicadores em tempo real.':'Sua operação em uma visão clara. Acompanhe vendas, receitas e resultados.'} action={<div className="dashboard-header-actions">{admin&&!live.demo?<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>:null}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>} {!planning&&!live.demo&&<RealtimeStatus iconOnly status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</div>}/>
-  {adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}
-  <Card className="dashboard-filter-bar"><div className="dashboard-filter-controls"><DashboardPeriodFilter period={period} onChange={setPeriod}/><DashboardCurrencySelector currency={currency} onChange={setCurrency}/></div>{(adminAccess.loading||admin&&!mobileLayout)&&<div className="dashboard-filter-actions">{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:<DashboardLayoutButton editor={layoutEditor}/>}</div>}</Card>
-  {(rateError||unavailableConversions>0)&&!planning&&!live.demo&&<p className="dashboard-conversion-notice">{unavailableConversions?`${unavailableConversions} transação(ões) permanecem na moeda original e não entram no total convertido porque não há taxa disponível.`:'As taxas de conversão estão temporariamente indisponíveis. Valores originais foram preservados.'}</p>}
-  {!planning&&<NextAwardCard currentRevenue={live.eligibleRevenueCents/100}/>}
-  {layoutEditor.editing?<DashboardLayoutEditor editor={layoutEditor} widgets={widgets}/>:<><DashboardOverviewVisual stats={cards} formatMetric={formatMetric} balanceCents={Math.max(0,metrics.approvedRevenueCents-metrics.feesCents)} currency={planning?planner.scenario.currency:currency} chartLabel={periodTitle(period)} chartTotalCents={chartTotal} growth={metrics.growthRate} data={series} loading={loading} error={error} planning={Boolean(planning)} feed={feed} rates={planning?[]:effectiveRates} heading="Resultados em contexto" eyebrow="RESUMO DA OPERAÇÃO"/><div className="dashboard-layout-legacy" aria-hidden="true"><DashboardLayoutEditor editor={layoutEditor} widgets={widgets}/></div></>}
+ return <ReferenceDashboardView name={user?.user_metadata?.full_name||user?.email?.split('@')[0]||'SphexPay'} userId={user?.id} period={period} setPeriod={setPeriod} currency={planning?planner.scenario.currency:currency} setCurrency={setCurrency} metrics={metrics} series={series} sales={feed} rates={planning?[]:effectiveRates} eligibleRevenueCents={live.eligibleRevenueCents||0} loading={loading} error={error} notice={unavailableConversions&&!planning?`${unavailableConversions} transação(ões) sem cotação disponível permanecem na moeda original.`:undefined}
+  adminTools={<>{admin&&!live.demo&&<button className="btn" onClick={()=>setMode(current=>current==='production'?'planning':'production')}>{planning?'Ver produção':'Editar planejamento'}</button>}{planning&&<DashboardScenarioEditor scenario={planner.scenario} rates={rates} onSave={planner.save} onSaveRates={saveRates}/>} {!planning&&!live.demo&&<RealtimeStatus iconOnly status={live.realtime} updatedAt={live.updatedAt} onRefresh={()=>void live.refresh()} loading={live.loading}/>}</>}
+  filterTools={<>{adminAccess.loading?<span className="dashboard-admin-state">Validando acesso administrativo...</span>:admin&&!mobileLayout?<DashboardLayoutButton editor={layoutEditor}/>:null}{adminAccess.error&&<p className="dashboard-admin-warning">{adminAccess.error}</p>}{rateError&&<p className="muted text-xs">Cotações temporariamente indisponíveis.</p>}</>}
+  editor={layoutEditor.editing?<DashboardLayoutEditor editor={layoutEditor} widgets={widgets}/>:undefined}
+  supplemental={<>
   <section className="dashboard-payment-section">
    <Card className="dashboard-payment-card"><div className="insight-heading"><div><span className="section-eyebrow"><Wallet/> MEIOS DE PAGAMENTO</span><h2>Desempenho por canal</h2></div>{!planning&&paymentStats.length>0&&<div className="payment-performance-summary"><div><span>Total processado</span><strong>{formatCents(paymentStats.reduce((sum,item)=>sum+item.total,0),currency)}</strong></div><div><span>Método líder</span><strong>{paymentStats[0].method}</strong><small>{paymentStats[0].share.toFixed(1)}% do total</small></div></div>}</div>{planning?<div className="dashboard-inline-empty">Canais reais não são misturados ao planejamento.</div>:<div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count} transações · {item.approved} aprovadas</span></div><div className="payment-performance-track" role="progressbar" aria-label={`Participação de ${item.method}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(item.share)}><i style={{width:`${item.share}%`}}/></div><div className="payment-performance-value"><strong>{formatCents(item.total,currency)}</strong><span>{item.share.toFixed(1)}%</span></div></div>)}{!paymentStats.length&&<div className="dashboard-inline-empty">Nenhuma venda registrada neste período.</div>}</div>}</Card>
   </section>
   {admin&&mobileLayout&&<div className="dashboard-layout-mobile-action"><DashboardLayoutButton editor={layoutEditor}/></div>}
   {admin&&planning&&<LiveOperationsPanel/>}
- </div>
+  <ReferenceOperationLinks/>
+ </>}/>
 }

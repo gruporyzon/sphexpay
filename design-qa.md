@@ -1,65 +1,64 @@
-# SphexPay entrance — design QA
+# SphexPay — revisão do dashboard por referência de vídeo
 
-Date: 2026-10-20.
+**final result: passed**
 
-## Target and evidence
+O resultado passa na revisão visual do dashboard e da navegação solicitada, com as adaptações de marca e conteúdo descritas abaixo. Não constitui comprovação de identidade pixel a pixel ou da família tipográfica original.
 
-Visual target: https://wiven.com.br/ and the user-supplied recordings `Gravação de Tela 2026-10-20 às 00.02.30.mov` (1898×958, 76.2 s) and `IMG_8772.MP4` (1290×2796, 69.5 s). The brand, product copy, conditions and rewards must be SphexPay's.
+## Evidências e normalização
 
-Implementation: `src/pages/public/GatewayLanding.tsx`, served in the cloud browser at the managed local preview.
+- Fonte visual: `/workspace/scratch/3a59c023d16f/upload/ScreenRecording_10-20-2026 01-57-41_1(1).mp4`, 512 × 1108 px, 30 fps. Quadros em 2 s, 15 s e 25 s.
+- Fonte normalizada: `/workspace/scratch/3a59c023d16f/analysis/dashboard-reference/normalized-mobile.png`. Removidas apenas as barras nativas do iOS; recorte (0,65)-(512,1094), reduzido para 393 × 790 px.
+- Implementação renderizada no Chrome: `/dev/workspace-preview` durante desenvolvimento. O mesmo `Layout` e `Dashboard` da área autenticada, sem alterar seus guards de produção.
+- Captura mobile: iframe de 393 × 800 CSS px, densidade 1. Comparação dos primeiros 790 px contra a fonte normalizada. A margem externa de 20 px do suporte de QA foi recortada.
+- Estado comparado: tema escuro, topo da página, 30 dias, BRL, conexão ausente. A referência contém participantes reais; o ambiente local da SphexPay está sem sessão e sem vendas. Essas diferenças de conteúdo foram consideradas antes da avaliação.
+- Implementação final: `docs/reference-dashboard-qa/mobile-dark.png`, `mobile-light.png`, `mobile-metrics.png`, `mobile-320.png`, `mobile-320-light.png`, `tablet-dark.png`, `desktop-dark.png`, `desktop-light.png`.
+- Viewports adicionais: 320 × 800, 820 × 800 e 1363 × 936 CSS px. Largura do documento igual à largura do viewport nos tamanhos examinados. Só a faixa de navegação tem overflow horizontal intencional.
+- Pareamento da visão completa: `/workspace/scratch/3a59c023d16f/analysis/dashboard-reference/iterations/comparison-final.jpg`, fonte à esquerda e implementação à direita, ambas 393 × 790 px.
+- Pareamentos focados, abertos e inspecionados em conjunto: `focus-navigation.jpg`, `focus-connection.jpg`, `focus-filters-ranking.jpg` e `focus-metrics-final.jpg` no mesmo diretório de análise. Os pareamentos permanecem fora do repositório por conterem nomes e números financeiros da referência.
 
-Evidence is stored under `docs/landing-qa/`:
+## Histórico de comparação e correções
 
-- `wiven-desktop-comparison.jpg`: source and implementation together, each rendered at 1280×900 CSS px, displayed at 0.5 scale in the same browser screenshot. Both at the entrance. Density is the same in both frames; no device chrome is compared.
-- `wiven-mobile-hero-comparison.jpg`: source and implementation together at 390×844 CSS px, 1:1 scale. Hero composition after the first typography correction.
-- `wiven-mobile-products-comparison.jpg`: focused mobile section/copy/card comparison, both 390×844. Absolute vertical scroll positions differ; compare the heading/paragraph/card regions relative to each other, not page-top offsets.
-- `wiven-mobile-rewards-comparison.jpg`: native Sphex award artwork and working selection. Selection/scroll state differs from the reference; not a pixel comparison of award content.
-- `wiven-320-comparison.jpg`: narrow 320×844 CSS viewport, 1:1 scale; no horizontal overflow in non-carousel headings or controls.
-- `sphexpay-entry-final.jpg`: final standalone entrance, 1363×936 browser screenshot.
+1. **Bloqueado — P1:** a apresentação anterior tinha direção azul e navegação lateral/inferior, incompatíveis com o vídeo. Substituída a composição por superfícies neutras, cabeçalho e navegação superior horizontal. Os módulos continuam acessíveis pelos mesmos destinos.
+2. **Bloqueado — P2:** regras antigas centralizavam a saudação, empilhavam os filtros e acrescentavam uma linha de ações antes dos cartões. Corrigidos o alinhamento e a direção dos filtros; atualização manual e ferramentas administrativas passaram para “Mais filtros”. Evidência: `comparison-initial.jpg` e `comparison-second.jpg`.
+3. **Bloqueado — P2:** o cartão de conexão começava cerca de 7 px abaixo da referência e o bloco de progresso tinha altura menor. Ajustados espaçamento da saudação, altura da navegação, progresso de 100 px e cabeçalho do ranking de 53 px. Evidência posterior: `comparison-final.jpg` e os três primeiros focos.
+4. **Bloqueado — P2:** as métricas estavam aproximadamente 7 px mais altas que os cartões da referência por excesso de margem interna. Reduzidas as margens do valor. Receita medida no navegador: 103,34 px de altura. Nova captura e comparação: `mobile-metrics.png` e `focus-metrics-final.jpg`.
+5. **Bloqueado — P2:** a largura legada da busca fazia o campo ultrapassar o painel de ajuda. Limitados campo e contêiner à largura do painel e removidos posicionamento e padding herdados. Comparação do estado expandido: `help-search.png` e `help-search-fixed.png` no diretório local de análise.
+6. **Passou:** recaptura após as correções, sem diferenças P0/P1/P2 acionáveis no escopo comparado. Demais diferenças são adaptações esperadas ou limites de origem, abaixo.
 
-The input videos were inspected as ordered frame contact sheets to check scroll order, animated card loops and desktop/mobile layout differences. Full-view comparisons were complemented by readable focused mobile typography, card and award evidence. Screenshot pairs are combined in the same comparison input, not merely separate image views.
+## Superfícies obrigatórias
 
-## Findings and iteration history
+- **Fontes e tipografia:** Raleway variável local, sob OFL, escolhida por semelhança visual dos glifos, pesos e proporções. Não foi possível confirmar a família original apenas pelo vídeo. Saudação 16/22, título da conexão 15/20, corpo 12/21, navegação 13/20, valor de receita 29 px e peso 300. Conferidos quebra de linhas, hierarquia e truncamento do ranking. Fallback Arial; números alinhados com recursos OpenType.
+- **Espaçamento e composição:** margens mobile de 14 px, cabeçalho de 64 px, navegação de 49 px, cartão de conexão com raio de 19 px, CTA de 41 px e ranking com três linhas. Grade de métricas em duas colunas no celular, composição lateral no tablet e desktop. Cabeçalho permanece visível na rolagem; a faixa do menu acompanha o fluxo da página, como no vídeo.
+- **Cores e tokens:** fundo escuro amostrado `#0c0c0c`, conexão `#161616`, cartões `#121212`, texto `#b9b9b9`, linhas `#242424`, texto secundário `#858585`. Claro usa inversão neutra `#fafafa`/branco e texto `#262626`. Cores semânticas de conversão, erro e ações destrutivas preservadas. O vídeo disponível não exibe uma referência clara; esse tema foi adaptado, não verificado como idêntico.
+- **Imagens e ativos:** marca vetorial existente da SphexPay, sem reutilizar a marca WOOV. Fonte distribuída com sua licença. Ícones vetoriais da biblioteca existente; nenhuma ilustração ou avatar fictício substitui dados de conta. A ausência de participantes usa estado vazio explícito.
+- **Textos e conteúdo:** dados de vendas, conexão, premiações e competição vêm dos hooks/serviços existentes. Não copiadas taxas, franquias, participantes ou promessas comerciais do outro gateway. Conversão de checkout aparece indisponível quando não há visitas registradas. O bloco inferior remete aos módulos efetivos da SphexPay.
 
-1. P2: initial mobile hero used four lines, smaller CTA and desktop account buttons. Corrected to the reference's six-line 36px heading, 52px CTA and menu-only mobile header. Recompared in the combined mobile hero capture.
-2. P2: first feature heading wrapped into four lines, and mobile feature paragraphs were smaller than the reference. Corrected the mobile title to three lines and feature descriptions to 16px/1.5. Recompared the resulting 343px card width and 124px heading region in `wiven-mobile-products-comparison.jpg`.
-3. P2: reward navigation needed enough trailing space to position the final card. Added a trailing carousel spacer; verified 5M+ selected, horizontal offset 1116px and previous/next behavior in the browser and regression test.
-4. Corrected missing spaces around mobile-hidden line breaks. Verified narrow-screen body copy and explicit reward heading breaks.
-5. Verified the menu focus trap, section navigation, close/restore behavior and Escape support. A dedicated regression test covers this flow.
+## Interações e verificação
 
-## Required fidelity surfaces
+- Menu percorrível horizontalmente; teclado com setas, Home e End; roda do mouse; apenas uma rota ativa, inclusive subrotas de Produtos.
+- Menu inferior e sidebar ausentes do shell renderizado.
+- Alternância Claro/Black, filtros 7/30/90 dias, moeda BRL/EUR/USD e “Mais filtros”. O novo período de 90 dias também é reconhecido pelos seletores compartilhados e pela análise dos demais módulos.
+- Ajuda abre, fecha com Escape e devolve foco; links navegam para módulos reais. A busca de módulos foi preservada no painel de ajuda, incluindo Ctrl/Cmd + K.
+- Perfil e notificações continuam no cabeçalho. Editor e planejamento continuam condicionados à autorização administrativa existente.
+- Verificados Produtos e Preferências com o novo shell. Estado sem backend do catálogo mostra mensagem de erro, sem dados comerciais fabricados.
+- Animações de entrada, estados ativos, hover, progresso e valores; movimento reduzido respeitado.
+- Logs do navegador examinados: nenhuma exceção da aplicação observada no dashboard local. Mensagens da extensão do navegador foram distinguidas de erros do produto.
+- 104 testes em 15 arquivos aprovados, incluindo navegação, acesso administrativo, filtro de 90 dias, moeda, layout, perfil e proteção de rotas.
+- TypeScript e ESLint aprovados; build Vite aprovado. Aviso de tamanho de chunks permanece, sem erro de compilação.
+- A tentativa da suíte completa encontrou testes antigos da página pública (`publicEntry` e `publicSecuritySeo`) incompatíveis com a landing já existente e foi interrompida. A bateria de integração antiga também usa seletores da sidebar removida. Não se declara a suíte completa aprovada.
 
-| Surface | Result |
-| --- | --- |
-| Fonts and typography | Reference Graphik assets are local. Desktop hero 48px/1.12; mobile hero and section headings 36px, six-line/three-line layouts; desktop section headings 36px/1.15. Narrow 320px hero reduces to 30px to fit the longer Sphex copy. |
-| Spacing and rhythm | Reference content widths, three-column desktop cards, one-column mobile cards, centered heading groups, horizontal carousels and stacked mobile footer checked. Header and CTA bounds verified at 320 and 390px. |
-| Color tokens | #090909 background, restrained gray borders, blue glass CTA with inset highlight, blue atmospheric glow, dark integration/member panels. The recordings supply glow evidence where live Framer rendering differs. |
-| Image quality | Real local source illustrations and optimized video loops, existing Sphex brand and official award images. Images retain aspect ratio; responsive slots have fixed intrinsic dimensions. No external runtime media hotlinks. |
-| Copy and content | Sphex branding and actual account routes. Reference customer endorsements, approval percentages, service guarantees and rates were not attributed to Sphex. Visual demo content is identified as illustrative. |
+## Limites e adaptações esperadas
 
-## Intentional adaptations
+- A fonte original, o tema claro e uma referência desktop deste dashboard não estão identificados no vídeo disponível. Raleway e a expansão responsiva são aproximações fundamentadas, não cópias verificadas desses estados.
+- O seletor de aparência ocupa a cápsula do cabeçalho; perfil e saída continuam no menu de conta existente. Não foi inventado um seletor de países sem suporte funcional.
+- O ambiente local não valida pagamentos reais nem dados privados de uma conta em produção. Autenticação, RLS, MFA, processamento e webhooks não foram alterados.
 
-- Sphex symbol replaces the Wiven eagle; the symbol floats/glows rather than morphing the competitor's emblem.
-- Customer endorsement carousel becomes product/audience categories; no competitor customers are represented as Sphex customers.
-- Rewards use the five official Sphex milestones and existing artwork.
-- Conditions cards avoid quoting unverified fees or settlement promises.
-- Brand-containing checkout and phone demonstrations are rebuilt natively; generic reference motion clips and affiliate/member artwork are local assets.
-- The existing help content remains accessible through an expandable section.
+## Checklist de implementação
 
-These are brand/content adaptations, not a claim of pixel-identical media or identical proprietary animation timing.
-
-## Functional checks
-
-Cloud browser: menu open/close and section link; keyboard/tab semantics; journey tab change; 5M+ award selection and carousel scroll; login navigation to `/entrar`; desktop entrance; mobile 390px; narrow 320px with document scrollWidth equal to viewport and no non-carousel heading/control overflow.
-
-Console: no application errors observed. The browser extension emitted metadata errors under its own `chrome-extension://` origin; these are unrelated to the app.
-
-Local verification: TypeScript passed; ESLint passed; Vite production build passed; 14 tests passed across landingOrbit, landingDevice and landingMotion. Existing bundle-size warnings remain outside the entrance change.
-
-Limits: no physical iOS/Android device test; no real login or payment submission. The local environment does not include production authentication configuration. The authenticated application and payment processing were not changed.
-
-## Follow-up polish
-
-P3: animation phase and atmospheric glow vary between captures. Brand-specific copy and artwork intentionally change visual content.
-
-final result: passed
+- [x] Comparar fonte e implementação juntas, em escala equivalente.
+- [x] Corrigir e recapturar os problemas P1/P2 identificados.
+- [x] Conferir fontes, espaçamento, cores, ativos e conteúdo.
+- [x] Verificar mobile compacto, mobile padrão, tablet e desktop.
+- [x] Testar navegação, temas, filtros e permissões.
+- [x] Remover o suporte temporário de QA do diretório público antes do build.
+- [x] Executar testes focados, TypeScript, lint e build.
