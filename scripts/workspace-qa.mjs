@@ -22,7 +22,7 @@ let browser
 const results=[],issues=[],interactions=[]
 let page
 try{
- browser=await chromium.launch({headless:true,args:['--no-sandbox']})
+ browser=await chromium.launch({headless:true,args:['--no-sandbox'],...(process.env.QA_BROWSER_PATH?{executablePath:process.env.QA_BROWSER_PATH}:{})})
  const context=await browser.newContext({deviceScaleFactor:1,reducedMotion:'reduce'})
  await context.route('https://sphexpay-qa.invalid/**',async route=>{
   const url=new URL(route.request().url()),table=url.pathname.split('/').at(-1)

@@ -1,0 +1,62 @@
+/* Shared interactions for the authenticated workspace and its portaled menus. */
+:root[data-top-surface=app]{--workspace-motion:260ms;--workspace-ease:cubic-bezier(.22,.8,.24,1);}
+:root[data-top-surface=app] .internal-app-shell [data-selection-motion]{position:relative;isolation:isolate;}
+:root[data-top-surface=app] .internal-app-shell [data-selection-motion]::before{
+ content:'';position:absolute;left:0;top:0;width:var(--selection-width);height:var(--selection-height);border-radius:99px;
+ transform:translate(var(--selection-x),var(--selection-y));background:var(--reference-primary);pointer-events:none;z-index:-1;
+ transition:transform var(--workspace-motion) var(--workspace-ease),width var(--workspace-motion) var(--workspace-ease),height var(--workspace-motion) var(--workspace-ease),background .18s ease;
+}
+:root[data-top-surface=app] .internal-app-shell .reference-navigation[data-selection-motion]::before{background:var(--panel-3);}
+:root[data-top-surface=app] .internal-app-shell [data-selection-motion=ready]>:is(button,a):is(.active,[aria-pressed=true],[aria-selected=true],[aria-current=page]){background:transparent!important;color:var(--reference-primary-text);box-shadow:none;}
+:root[data-top-surface=app] .internal-app-shell .reference-navigation[data-selection-motion=ready]>.active{color:var(--text);}
+:root[data-top-surface=app] .internal-app-shell [data-selection-motion=ready]>:is(button,a).active::after{display:none;}
+:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary){transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .16s var(--workspace-ease);-webkit-tap-highlight-color:transparent;}
+:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary):active:not(:disabled){transform:scale(.97);}
+:root[data-top-surface=app] :is(.internal-app-shell,.modal-surface,.pv2-wizard,.affiliate-drawer) :is(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--text);outline-offset:3px;}
+:root[data-top-surface=app] .internal-app-shell .social-tabs{padding:4px;border:1px solid var(--line);border-radius:99px;gap:4px;}
+:root[data-top-surface=app] .internal-app-shell .social-tabs button{border-radius:99px;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:22px;min-width:0;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-filter-bar>*{width:auto;min-width:0;max-width:100%;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control{position:relative;display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-width:0;max-width:100%;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-segments{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:99px;background:var(--bg);max-width:100%;overflow-x:auto;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-segments button{flex:0 0 auto;border:0;border-radius:99px;min-height:32px;padding:5px 11px;background:transparent;color:var(--muted);font:400 12px/20px SphexDashboard,Arial,sans-serif;white-space:nowrap;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-segments button[aria-pressed=true]{background:var(--reference-primary);color:var(--reference-primary-text);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control .reference-custom-period{position:static;flex-basis:24px;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control .reference-custom-period>summary{display:flex;gap:6px;width:auto;min-width:24px;height:36px;font-size:11px;white-space:nowrap;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .workspace-period-control .reference-custom-period>div{right:auto;left:0;top:43px;width:min(290px,calc(100vw - 28px));z-index:160;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select{
+ display:flex;align-items:center;gap:10px;min-width:0;max-width:100%;min-height:41px;padding:8px 12px;border:1px solid var(--line);border-radius:99px;background:var(--panel);color:var(--text);
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select>span{flex:0 0 auto;white-space:nowrap;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--muted);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select>select{flex:1;min-width:0;width:auto;height:auto;min-height:24px;margin:0;padding:0 22px 0 0;border:0;border-radius:0;background-color:transparent;box-shadow:none;color:var(--text);font-size:12px;font-weight:400;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .transactions-filter{flex:0 0 220px;}
+:root[data-top-surface=app] .internal-app-shell select[aria-expanded=true]{outline:2px solid var(--line-strong);outline-offset:3px;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select:focus-within{border-color:var(--line-strong);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select:has(select:focus-visible){outline:2px solid var(--text);outline-offset:3px;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select>select:is(:focus-visible,[aria-expanded=true]){outline:none;box-shadow:none;}
+:root[data-top-surface=app] .workspace-select-menu{
+ position:fixed;z-index:420;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:6px;
+ border:1px solid var(--line-strong);border-radius:18px;background:var(--panel);color:var(--text);box-shadow:0 12px 40px #00000024;
+ font:400 13px/1.5 SphexDashboard,Arial,sans-serif;animation:workspace-menu-in .16s var(--workspace-ease);transform-origin:top;
+}
+:root[data-top-surface=app] .workspace-select-menu[data-above=true]{transform-origin:bottom;}
+:root[data-top-surface=app] .workspace-select-menu [role=option]{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:42px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:background .15s ease,color .15s ease;}
+:root[data-top-surface=app] .workspace-select-menu [role=option]>span{min-width:0;overflow-wrap:anywhere;}
+:root[data-top-surface=app] .workspace-select-menu [role=option]>svg{flex:0 0 16px;width:16px;height:16px;visibility:hidden;}
+:root[data-top-surface=app] .workspace-select-menu [aria-selected=true]{background:var(--reference-primary);color:var(--reference-primary-text);}
+:root[data-top-surface=app] .workspace-select-menu [aria-selected=true]>svg{visibility:visible;}
+:root[data-top-surface=app] .workspace-select-menu [data-highlighted=true]:not([aria-selected=true]){background:var(--panel-2);}
+:root[data-top-surface=app] .workspace-select-menu [aria-disabled=true]{opacity:.4;cursor:not-allowed;}
+:root[data-top-surface=app] .workspace-select-group{padding:10px 12px 5px;color:var(--muted);font-size:11px;font-weight:500;}
+@keyframes workspace-menu-in{from{opacity:0;transform:translateY(4px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+:root[data-top-surface=app] :is(.workspace-language-menu,.profile-menu,.dropdown,.notification-dropdown),:root[data-top-surface=app] .internal-app-shell .reference-custom-period[open]>div,:root[data-top-surface=app] .internal-app-shell .subscriptions-multiselect[open]>div{animation:workspace-menu-in .16s var(--workspace-ease);}
+@media(max-width:767px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .internal-filter-select>select{font-size:16px;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .transactions-filter{flex:1 1 100%;}
+ :root[data-top-surface=app] .workspace-select-menu{font-size:14px;}
+}
+@media(prefers-reduced-motion:reduce){
+ :root[data-top-surface=app] .internal-app-shell [data-selection-motion]::before,:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary),:root[data-top-surface=app] .workspace-select-menu,:root[data-top-surface=app] .workspace-select-menu [role=option]{animation:none!important;transition:none!important;}
+ :root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary):active{transform:none;}
+ :root[data-top-surface=app] :is(.workspace-language-menu,.profile-menu,.dropdown,.notification-dropdown),:root[data-top-surface=app] .internal-app-shell .reference-custom-period[open]>div,:root[data-top-surface=app] .internal-app-shell .subscriptions-multiselect[open]>div{animation:none;}
+}
