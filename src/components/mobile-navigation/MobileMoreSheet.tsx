@@ -1,10 +1,11 @@
 import {useCallback,useEffect,useRef,useState} from 'react'
+import {Settings,X} from 'lucide-react'
 import {useNavigate} from 'react-router-dom'
 import {remainingMobileNavigation} from '../../config/navigation'
 
 const EXIT_DURATION=380
 
-export function MobileMoreSheet({open,onClose}:{open:boolean;onClose:()=>void}){
+export function MobileMoreSheet({open,onClose,navigationRoot='/app'}:{open:boolean;onClose:()=>void;navigationRoot?:string}){
  const navigate=useNavigate(),sheet=useRef<HTMLElement>(null),startY=useRef(0),[drag,setDrag]=useState(0),[present,setPresent]=useState(open),[closing,setClosing]=useState(false)
  const close=useCallback(()=>history.state?.mobileMore?history.back():onClose(),[onClose])
 
@@ -36,11 +37,12 @@ export function MobileMoreSheet({open,onClose}:{open:boolean;onClose:()=>void}){
   }
   addEventListener('popstate',pop,{once:true})
   addEventListener('keydown',key)
+  const previousFocus=document.activeElement as HTMLElement|null
   requestAnimationFrame(()=>sheet.current?.focus())
-  return()=>{removeEventListener('popstate',pop);removeEventListener('keydown',key)}
+  return()=>{removeEventListener('popstate',pop);removeEventListener('keydown',key);previousFocus?.focus()}
  },[close,onClose,open])
 
  if(!present)return null
- const go=(path:string)=>{if(history.state?.mobileMore)history.replaceState({...history.state,mobileMore:false},'');onClose();navigate(path)}
- return <div className={`mobile-more-layer${closing?' is-closing':''}`}><button className="mobile-more-backdrop" aria-label="Fechar mais módulos" onClick={close}/><section ref={sheet} className="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="Mais módulos" tabIndex={-1} style={{'--sheet-drag':`${drag}px`} as React.CSSProperties}><div className="mobile-more-handle" aria-hidden="true" onPointerDown={event=>{startY.current=event.clientY;setDrag(0);event.currentTarget.setPointerCapture(event.pointerId)}} onPointerMove={event=>{if(startY.current)setDrag(Math.max(0,event.clientY-startY.current))}} onPointerUp={()=>{if(drag>84)close();else setDrag(0);startY.current=0}}/><header><span>SPHEX PAY</span><h2>Mais módulos</h2><p>Acesse todas as áreas disponíveis da sua operação.</p></header><nav className="mobile-more-grid" aria-label="Outros módulos">{remainingMobileNavigation.map((item,index)=><button key={item.id} aria-label={item.label} style={{'--module-index':index} as React.CSSProperties} onClick={()=>go(item.path)}><item.icon/><span>{item.label}</span><small>{item.group}</small></button>)}</nav></section></div>
+ const go=(path:string)=>{if(history.state?.mobileMore)history.replaceState({...history.state,mobileMore:false},'');onClose();navigate(path.replace(/^\/app/,navigationRoot))}
+ return <div className={`mobile-more-layer${closing?' is-closing':''}`}><button className="mobile-more-backdrop" aria-label="Fechar mais módulos" onClick={close}/><section ref={sheet} className="mobile-more-sheet" role="dialog" aria-modal="true" aria-label="Mais módulos" tabIndex={-1} style={{'--sheet-drag':`${drag}px`} as React.CSSProperties}><div className="mobile-more-handle" aria-hidden="true" onPointerDown={event=>{startY.current=event.clientY;setDrag(0);event.currentTarget.setPointerCapture(event.pointerId)}} onPointerMove={event=>{if(startY.current)setDrag(Math.max(0,event.clientY-startY.current))}} onPointerUp={()=>{if(drag>84)close();else setDrag(0);startY.current=0}}/><header><button className="workspace-more-close" aria-label="Fechar módulos" onClick={close}><X/></button><span>SPHEXPAY</span><h2>Mais módulos</h2><p>Acesse todas as áreas disponíveis da sua operação.</p></header><nav className="mobile-more-grid" aria-label="Outros módulos">{remainingMobileNavigation.map((item,index)=><button key={item.id} aria-label={item.label} style={{'--module-index':index} as React.CSSProperties} onClick={()=>go(item.path)}><item.icon/><span>{item.label}</span><small>{item.group}</small></button>)}</nav><button className="workspace-more-settings" onClick={()=>go('/app/configuracoes')}><Settings/>Configurações</button></section></div>
 }

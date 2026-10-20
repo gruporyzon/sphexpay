@@ -7,7 +7,7 @@ export function DashboardPeriodFilter({period,onChange}:{period:PeriodFilter;onC
 }
 
 export function DashboardCurrencySelector({currency,onChange}:{currency:Currency;onChange:(currency:Currency)=>void}){
- return <label className="dashboard-currency-selector dashboard-control-field internal-filter-select"><Coins className="internal-filter-icon" aria-hidden="true"/><span>Moeda de exibição</span><select className="internal-filter-value" aria-label="Moeda de exibição" value={currency} onChange={event=>onChange(event.target.value as Currency)}><option value="BRL">BRL — Real brasileiro</option><option value="USD">USD — Dólar americano</option><option value="EUR">EUR — Euro</option></select><ChevronDown className="dashboard-control-chevron internal-filter-chevron" aria-hidden="true"/></label>
+ return <label className="dashboard-currency-selector dashboard-control-field internal-filter-select"><Coins className="internal-filter-icon" aria-hidden="true"/><span>Moeda de exibição</span><select className="internal-filter-value" aria-label="Moeda de exibição" value={currency} onChange={event=>onChange(event.target.value as Currency)}><option value="BRL" label="BRL · Real">BRL — Real brasileiro</option><option value="USD" label="USD · Dólar">USD — Dólar americano</option><option value="EUR" label="EUR · Euro">EUR — Euro</option></select><ChevronDown className="dashboard-control-chevron internal-filter-chevron" aria-hidden="true"/></label>
 }
 
 export function DashboardModeIndicator({mode}:{mode:'production'|'planning'|'demo'}){
