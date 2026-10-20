@@ -185,3 +185,6 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-refresh .next-award-plaque img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;transform:none}
 :root[data-top-surface=app] .internal-app-shell.workspace-refresh .overview-slide .iphone-art{position:relative!important;display:grid;place-items:center;width:100%;height:210px;overflow:hidden}
 :root[data-top-surface=app] .internal-app-shell.workspace-refresh .overview-slide .competition-product-image{position:static!important;inset:auto!important;width:160px;height:170px;max-height:170px;object-fit:contain;transform:rotate(-8deg)!important;margin:0}
+/* Preserve the meaning of destructive actions alongside the neutral buttons. */
+:root[data-top-surface=app] .internal-app-shell.workspace-refresh :is(.btn-danger,.btn.danger,.btn.text-red-500){color:var(--danger);background:var(--danger-soft);border-color:color-mix(in srgb,var(--danger) 25%,var(--line))}
+:root[data-top-surface=app] .internal-app-shell.workspace-refresh :is(.btn-danger,.btn.danger,.btn.text-red-500):hover:not(:disabled){color:var(--danger);background:color-mix(in srgb,var(--danger) 14%,var(--panel));border-color:var(--danger)}
