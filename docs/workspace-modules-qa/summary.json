@@ -1,0 +1,18 @@
+{
+  "screenConfigurations": 480,
+  "affectedConfigurationsRechecked": 48,
+  "failures": 0,
+  "interactionGroups": [
+    "PT/EN/ES menus, persistence and form preservation",
+    "Language keyboard navigation and focus return",
+    "Appearance preferences and persistence",
+    "Product metric labels and readable mobile filters",
+    "Product dialog, mobile controls and closing",
+    "Subscription date label spacing",
+    "Subscription tabs, search and disabled CSV for empty results",
+    "Showcase filters and empty search",
+    "Social feed tabs"
+  ],
+  "unitTests": 62,
+  "unitFiles": 11
+}

@@ -1,49 +1,60 @@
-# SphexPay — cabeçalho, idiomas e contraste
+# SphexPay — padronização visual dos módulos
 
 **final result: passed**
 
-Revisão da atualização solicitada: corrigir colisões no cabeçalho, colocar um seletor de idiomas com bandeiras no lugar da aparência, mover aparência para Configurações → Preferências e intensificar o preto e o branco. O histórico da revisão anterior do dashboard foi preservado em `docs/reference-dashboard-qa/design-qa.md`.
+A Visão geral existente é a referência. Continuação do PR #5, a partir do HEAD 544afae655f21b672322e6acede8813c2a2dea48, sem recriar páginas ou alterar serviços de negócio.
 
-## Fonte, captura e normalização
+## Resultado
 
-- Referência de idioma: `/workspace/scratch/3a59c023d16f/upload/IMG_8797.png`, 1290 × 581 px. Comparação proporcional em 393 × 177 px; a densidade/CSS original não foi informada. Não se afirma equivalência pixel a pixel.
-- Estado anterior da SphexPay: `/workspace/scratch/3a59c023d16f/upload/IMG_8792.jpeg`, 1290 × 2796 px. Removida a região nativa superior de 185 px e normalizado o conteúdo restante para 393 × 795 px. Nome, moeda, período e valores privados diferem do estado local vazio e não foram reproduzidos.
-- Implementação real: `/dev/workspace-preview`, que usa o mesmo Layout, Dashboard e Settings do app, somente em desenvolvimento. Nenhum guard de produção foi modificado.
-- Chrome, viewports 393 × 800 e 320 × 800 CSS px em iframe, densidade 1. Captura do navegador 1363 × 936 px; recortada apenas a margem externa de QA de 20 px. Desktop: 1363 × 936 CSS px.
-- Evidências: `docs/header-language-qa/mobile-393-menu.jpg`, `mobile-393-dark.jpg`, `mobile-393-light.jpg`, `mobile-320-dark-menu.jpg`, `mobile-320-light-menu.jpg`, `mobile-preferences-light.jpg`, `desktop-dark-menu.jpg`, `desktop-dark.jpg`, `desktop-light.jpg`.
-- Comparações abertas e inspecionadas em pares, com fonte e implementação no mesmo arquivo: `/workspace/scratch/3a59c023d16f/analysis/header-qa/comparison-menu.jpg`, `comparison-dashboard.jpg`, `comparison-menu-focus.jpg`. Esses pares permanecem fora do repositório porque incluem a referência privada do usuário.
+- Raleway local (SphexDashboard), títulos 16/22 px com peso 600 e seções 13/18 px com peso 500.
+- Números alinhados e tabulares, peso 300, escalas de 29/23 px e adaptação mobile.
+- Cartões de 19 px; botões e abas em cápsula; campos de 12 px de raio e fonte de pelo menos 16 px no mobile.
+- Checkouts administrativos e Vitrine agora seguem a hierarquia da Visão geral. Os cartões da Vitrine usam os tokens dos dois temas.
+- Produtos reserva espaço para os ícones das métricas, quebra rótulos e organiza filtros em coluna nas telas estreitas. Suas abas agora usam o mesmo estilo de seleção.
+- O grupo de data de Assinaturas ganha uma linha própria no mobile, preservando espaço entre rótulo e período.
+- Modais ficam acima do cabeçalho e da ajuda. A animação de entrada deixa de reter um contexto de empilhamento; páginas com um diálogo aberto não mantêm transform. O botão de fechar de Novo produto foi acionado no navegador após a correção.
 
-## Achados e correções
+## Matriz e evidências
 
-- **P1 — controles sobrepostos:** o layout anterior permitia que tamanho do avatar, contador e marca disputassem espaço. A linha agora usa grid com espaço restante para a marca e áreas independentes para idioma, sino e perfil. Em 393 px: idioma termina em 283, sino ocupa 291–331 e perfil 339–379. Em 320 px: idioma termina em 224, sino ocupa 230–266 e perfil 272–308; a marca termina em 141,39 e idioma começa em 149,39. Recapturas citadas acima confirmam que não há colisão.
-- **P2 — menus concorrentes:** idioma, perfil e notificações compartilham um evento de abertura. Abrir um fecha o anterior. Em 393 px o painel de notificações ocupa 14–379 px; o perfil permanece dentro do viewport. Confirmado por interação no navegador e testes renderizados.
-- **P2 — aparência no cabeçalho e baixa intensidade:** substituído o botão Claro/Black por idioma; aparência disponível em Preferências com claro, escuro e sistema. Fundo interno agora #000000 no escuro e #ffffff no claro; texto principal #ffffff/#080808. Recapturas em ambos os temas confirmam o resultado.
-- **Passou após correções:** nenhuma diferença P0/P1/P2 acionável no escopo desta atualização. O seletor preserva nomes nativos, bandeiras vetoriais, chevron e marca de seleção. Seu painel usa linhas de pelo menos 47 px para toque e largura de 224 px; é maior que a referência normalizada. É uma adaptação explícita de legibilidade e acesso, sem alegar cópia pixel a pixel.
+Chromium/Playwright 1.64.1, componentes reais em /dev/workspace-preview, densidade 1, altura de 900 CSS px, fontes carregadas e conteúdo estabilizado antes de medir. Rota existente disponível somente em desenvolvimento. A revisão usa conta fictícia e respostas locais do host sphexpay-qa.invalid; não depende de credenciais ou dados privados.
 
-## Superfícies de fidelidade
+| Largura | Temas | Idiomas | Combinações |
+| --- | --- | --- | --- |
+| 320 px | claro e escuro | PT/EN/ES | 120 |
+| 393 px | claro e escuro | PT/EN/ES | 120 |
+| 820 px | claro e escuro | PT/EN/ES | 120 |
+| 1366 px | claro e escuro | PT/EN/ES | 120 |
 
-- **Tipografia:** mantida a Raleway variável local, denominada SphexDashboard no CSS, com fallback Arial. A fonte original da referência não é identificável com certeza pela imagem. Idioma com 14 px/1,45 no painel, nomes nativos completos e Português/Brasil em duas linhas. Sem corte dos itens. A palavra SphexPay permanece visível em 320 px.
-- **Espaçamento e composição:** marca à esquerda e idioma/sino/perfil à direita; navegação horizontal superior preservada. Cabeçalho mobile de 68 px, controles de 40 px e de 36 px até 360 px, gaps de 8/6 px. Painel limitado ao viewport compacto; bordas arredondadas e estados hover/foco/selecionado. Não há dock inferior.
-- **Cores:** preto puro, branco puro, painéis #0a0a0a e #141414, texto secundário #b0b0b0, linhas #2b2b2b. A referência mais cinza foi deliberadamente intensificada conforme a nova instrução. Cores semânticas mantidas, verde e erro mais visíveis.
-- **Ativos:** logo existente da SphexPay e ícones vetoriais do projeto. Bandeiras BR/US/ES autohospedadas de flag-icons 7.3.2, licença MIT incluída em `public/flags/LICENSE.txt`. Sem emoji ou imagem contendo a interface inteira.
-- **Conteúdo:** catálogo local com 1608 entradas em inglês e espanhol, React e Zustand para seleção persistida. Nomes de pessoas/produtos, identificadores, valores e enums financeiros não são traduzidos. Mensagens dinâmicas não catalogadas, como erros externos, conservam seu texto de origem. Sem serviços externos de tradução ou envio de dados.
+20 rotas: Visão geral, Produtos, Checkouts, Links de pagamento, Vendas ao Vivo, Vendas, Vitrine, Assinaturas, Financeiro, Saques, Verificação, Afiliados, Premiações, Relatórios, Clientes, Notificações, Configurações, Integrações, Social e Competição.
 
-## Interações, testes e limites
+480 combinações verificadas, sem falhas nos critérios do runner. Produtos e Assinaturas foram revisados novamente nas 48 combinações afetadas pelos últimos ajustes de espaçamento. A matriz final substitui essas linhas pelos resultados da revisão posterior.
 
-- Português → inglês → espanhol no navegador, recarga preservando espanhol e retorno a português. Cabeçalho, navegação, dashboard e Configurações atualizados; atributo lang acompanha a escolha.
-- Aparência alterada em Configurações → Preferências; claro e escuro persistem após recarregar. Opção sistema usa o mecanismo existente e acompanha a mudança do sistema enquanto o Layout está montado.
-- Menu por teclado com setas, Home/End, Enter e Escape; seleção e Escape restauram o foco. Clique externo e abertura de outro controle fecham o painel.
-- Testes renderizados verificam idioma sem reiniciar formulário, sincronização entre cabeçalho e Preferências, persistência, fallback de localidade inválida, variáveis de tradução e preservação de nomes/valores no dashboard.
-- Largura do documento igual a 320/393 px nos viewports mobile; navegação e lista de seções de Configurações têm rolagem própria intencional.
-- Logs do navegador examinados após as interações: nenhuma exceção da aplicação observada. Mensagens da extensão do navegador (`chrome-extension://…`, envio de metadados) foram distinguidas dos logs do produto.
-- 166 testes aprovados em 26 arquivos: 109 focados em dashboard/cabeçalho/idiomas e 57 regressões de checkout, produtos, notificações e assinaturas.
-- TypeScript, ESLint e build Vite aprovados; aviso preexistente de chunks grandes permanece.
-- A área privada de produção exige autenticação. A revisão visual usa os componentes reais no ambiente local vazio; não comprova uma sessão privada ou processamento de pagamentos em produção. Autenticação, RLS, MFA, webhooks e dados persistidos no servidor não foram alterados.
+- [Matriz final](docs/workspace-modules-qa/matrix.csv): largura, idioma, tema, hierarquia, pesos, raios e tamanhos dos campos realmente observados.
+- [Comparação mobile escuro](docs/workspace-modules-qa/comparison-dark.jpg): Visão geral, Produtos, Vitrine e Assinaturas, capturas recortadas apenas no limite vertical do quadro.
+- [Comparação desktop claro](docs/workspace-modules-qa/comparison-light.jpg): os mesmos módulos reduzidos proporcionalmente para comparação.
+- [Modal mobile](docs/workspace-modules-qa/product-dialog-mobile.jpg): captura depois da correção das camadas.
+- Capturas comparadas visualmente com a Visão geral no mesmo tema e viewport. Listas e navegação horizontal mantêm sua rolagem própria.
 
-## Checklist
+## Interações
 
-- [x] Abrir pares fonte/implementação e região focada do menu.
-- [x] Conferir tipografia, composição, cores, ativos e conteúdo.
-- [x] Corrigir colisões, recapturar 320/393 px e desktop.
-- [x] Testar idiomas, persistência, preferências e menus.
-- [x] Remover o suporte público temporário de QA antes do build final.
+Passaram no navegador: PT/EN/ES com persistência; troca de idioma sem reiniciar um formulário; navegação de idioma por teclado e retorno do foco; aparência nas Preferências com persistência; formulário Novo produto, fonte mobile e fechamento; ausência de colisão entre rótulos e ícones de métricas; filtros de Produtos legíveis; abas e busca de Assinaturas; exportação desabilitada para resultados vazios; separação do rótulo de data; filtros e busca vazia da Vitrine; abas do feed Social.
+
+## Checks e reprodução
+
+TypeScript, ESLint, 62 testes direcionados em 11 arquivos e build Vite aprovados nesta atualização. git diff --check limpo. O aviso de chunks acima de 500 kB continua; não bloqueia o build.
+
+A tentativa inicial da suíte completa ficou sem progresso no teste de integração legado sphexpay.test.tsx e foi interrompida. Não se declara a suíte inteira aprovada. Os 166 testes citados na revisão anterior não são usados como evidência deste PR.
+
+```bash
+npm ci
+npx playwright install --with-deps chromium
+npm run typecheck
+npm run lint
+npm run test -- src/test/headerLanguage.test.tsx src/test/workspaceSearch.test.tsx src/test/dashboardLayout.test.ts src/test/dashboardFilterMobile.test.ts src/test/subscriptions.test.tsx src/test/affiliates.test.tsx src/test/checkoutExperience.test.tsx src/test/checkoutStudio.test.ts src/test/checkoutBuilderSave.test.tsx src/test/productsV2Advanced.test.ts src/test/notificationSanitizer.test.ts --maxWorkers=2
+npm run test:workspace
+npm run build
+```
+
+O runner inicia e encerra seu próprio Vite local com configuração fictícia. QA_WIDTH e QA_ROUTES permitem repetir uma largura ou módulos; QA_ONLY_INTERACTIONS=1 executa os fluxos. QA_BASE_URL aceita apenas localhost/127.0.0.1. A configuração fictícia não é adicionada ao aplicativo ou à Vercel.
+
+Autenticação, permissões, dados persistidos, moedas, valores financeiros, pagamentos, webhooks e serviços permanecem sem alterações neste PR. O canvas do editor e o checkout público conservam a tipografia configurada. Esta revisão não comprova processamento de pagamentos reais ou uma sessão privada em produção.
