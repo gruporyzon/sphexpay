@@ -15,10 +15,10 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(button,input,select,textarea):not(:where(.studio-canvas,.studio-canvas *,.checkout-public,.checkout-public *,.api-key-field input)){
  font-family:var(--workspace-font);font-variant-numeric:lining-nums tabular-nums;
 }
-:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(h1,h2,h3,h4):not(:where(.studio-canvas *,.checkout-public *)){
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(h1,h2,h3,h4):not(:where(.studio-canvas *,.checkout-public *,.reference-greeting h1)){
  font-family:var(--workspace-font);color:var(--text);font-weight:500;letter-spacing:-.025em;
 }
-:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.page-title:not(.reference-greeting) h1,.pv2-head h1,.pv2-editor>header h1,.social-header h1,.subscriptions-heading h1,.competition-hero h1,.affiliates-heading h1,.kyc-heading h1){
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.page-title:not(.reference-greeting) h1,.pv2-head h1,.pv2-editor>header h1,.social-header h1,.subscriptions-heading h1,.competition-hero h1,.affiliates-heading h1,.kyc-heading h1,.co-hub-hero h1,.vitrine-heading h1){
  font-size:var(--workspace-title-size);line-height:var(--workspace-title-leading);font-weight:600;letter-spacing:-.03em;
 }
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.page-title:not(.reference-greeting),.pv2-head,.pv2-editor>header,.subscriptions-heading,.affiliates-heading,.kyc-heading){
@@ -27,7 +27,7 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.page-title p,.pv2-head p,.pv2-section-head p,.social-header p,.affiliates-heading p,.kyc-heading p){
  font-size:var(--workspace-body-size);line-height:21px;font-weight:400;color:var(--muted);
 }
-:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.pv2-section-head h2,.social-header h2,.social-discover h2,.social-explore h2,.insight-heading h2,.panel>header h2,.kyc-card-head h2){
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.pv2-section-head h2,.social-header h2,.social-discover h2,.social-explore h2,.insight-heading h2,.panel>header h2,.kyc-card-head h2,.vitrine-section-heading h2,.vitrine-empty h3,.co-hub-empty h2,.affiliate-state h2){
  font-size:var(--workspace-section-size);line-height:18px;font-weight:500;
 }
 
@@ -37,7 +37,7 @@
  font-size:var(--workspace-number-size);line-height:1.15;font-weight:300;letter-spacing:-.035em;
  font-variant-numeric:lining-nums tabular-nums;white-space:normal;overflow-wrap:anywhere;
 }
-:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.subscriptions-side-card .subscriptions-value,.pv2-price strong,.product-price,.pv2-offers strong){
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.subscriptions-side-card .subscriptions-value,.pv2-price strong,.product-price,.pv2-offers strong,.vitrine-card-price strong){
  min-width:0;max-width:100%;font-family:var(--workspace-font);font-size:var(--workspace-number-small);line-height:1.2;font-weight:300;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums;overflow-wrap:anywhere;
 }
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-price{
@@ -51,7 +51,7 @@
 }
 
 /* Flat surfaces and the same radius as the overview, including lazy-loaded modules. */
-:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.panel,.metric-card,.pv2-editor-card,.pv2-summary>div,.subscriptions-primary-card,.subscriptions-side-card,.subscriptions-table-surface,.subscription-mobile-card,.financial-balance-card,.withdrawal-request-card,.notification-summary,.stripe-connect-card,.integration-card,.affiliate-surface,.affiliate-card,.kyc-card){
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.panel,.metric-card,.pv2-editor-card,.pv2-summary>div,.subscriptions-primary-card,.subscriptions-side-card,.subscriptions-table-surface,.subscription-mobile-card,.financial-balance-card,.withdrawal-request-card,.notification-summary,.stripe-connect-card,.integration-card,.affiliate-surface,.affiliate-card,.kyc-card,.vitrine-card,.vitrine-empty,.vitrine-hero,.co-hub-empty){
  min-width:0;border-color:var(--line);border-radius:var(--workspace-card-radius);background:var(--panel);box-shadow:none;
 }
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.pv2-card,.metric-card):hover{
@@ -166,4 +166,79 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.subscriptions-toolbar,.subscriptions-filter-row,.pv2-toolbar)>*{
  min-width:0;max-width:100%;
 }
+}
+
+/* Modules with dedicated controls share the overview's surfaces and hierarchy. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.vitrine-heading,.co-hub-hero){margin-bottom:26px;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-button{
+ min-height:41px;padding:9px 15px;border-radius:99px;font:400 12px/1.4 var(--workspace-font);box-shadow:none;letter-spacing:0;
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-button.is-primary{background:var(--reference-primary);border-color:var(--reference-primary);color:var(--reference-primary-text);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-button.is-secondary{background:var(--panel);border-color:var(--line);color:var(--text);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-button:hover:not(:disabled){transform:none;border-color:var(--line-strong);box-shadow:none;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-hero::after{display:none;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-hero h2{font-size:16px;line-height:22px;font-weight:500;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.vitrine-hero h2 span,.vitrine-rule){color:var(--text);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.vitrine-hero-label,.vitrine-hero p,.vitrine-summary dt){color:var(--muted);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.vitrine-rule,.vitrine-summary){border-color:var(--line);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-summary dd{
+ font-family:var(--workspace-font);font-size:29px;line-height:1.15;font-weight:300;letter-spacing:-.035em;color:var(--text);font-variant-numeric:lining-nums tabular-nums;
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-filters{
+ display:flex;gap:4px;max-width:100%;padding:4px;border:1px solid var(--line);border-radius:24px;background:var(--bg);overflow-x:auto;
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-filters button{flex:0 0 auto;min-height:34px;border-radius:99px;font-size:12px;font-weight:400;white-space:nowrap;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-filters button[aria-pressed=true]{background:var(--reference-primary);color:var(--reference-primary-text);box-shadow:none;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-search input{
+ min-height:41px;border-radius:12px;background:var(--panel-2);color:var(--text);font:400 12px/1.5 var(--workspace-font);
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .financial-money{font-weight:500;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .financial-balance-card>.financial-money{font-weight:300;}
+/* A single scoped portal contract also covers dialogs mounted outside Layout. */
+:root[data-top-surface=app] :is(.modal-surface,.pv2-wizard,.pv2-dialog,.affiliate-drawer,.withdrawal-modal-backdrop>section) .btn{
+ min-height:41px;border-radius:99px;font-size:12px;line-height:1.4;font-weight:400;box-shadow:none;
+}
+:root[data-top-surface=app] :is(.modal-surface,.pv2-wizard,.pv2-dialog,.affiliate-drawer,.withdrawal-modal-backdrop>section) .input{
+ min-height:41px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2);color:var(--text);font-size:12px;font-weight:400;
+}
+:root[data-top-surface=app] :is(.modal-surface,.pv2-wizard,.pv2-dialog,.affiliate-drawer,.withdrawal-modal-backdrop>section) .btn-primary{
+ background:var(--reference-primary);border-color:var(--reference-primary);color:var(--reference-primary-text);
+}
+@media(max-width:767px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-search input,
+ :root[data-top-surface=app] :is(.modal-surface,.pv2-wizard,.pv2-dialog,.affiliate-drawer,.withdrawal-modal-backdrop>section) .input{font-size:16px;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .vitrine-heading{flex-wrap:wrap;align-items:center;gap:12px;}
+}
+@media(prefers-reduced-motion:reduce){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page :is(.btn,.vitrine-button){transition:none;}
+}
+
+/* Keep dialogs above the sticky header and help, including inline module dialogs. */
+:root[data-top-surface=app] :is(.modal-backdrop,.pv2-wizard-backdrop,.pv2-history-backdrop,.affiliate-drawer-backdrop,.withdrawal-modal-backdrop,.demo-config-backdrop){z-index:300;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .page-enter{animation-fill-mode:backwards;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .page-enter:has([aria-modal=true]){animation:none;transform:none;}
+
+/* Product summaries reserve space for their corner icons and wrap labels. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-stats>.panel>span:not(.pv2-stat-mark){padding-right:22px;min-height:32px;line-height:16px;overflow-wrap:anywhere;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-tabs{
+ display:flex;gap:4px;min-width:0;max-width:100%;padding:4px;border:1px solid var(--line);border-radius:99px;background:var(--bg);overflow-x:auto;
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-tabs button{
+ flex:0 0 auto;min-height:34px;padding:7px 12px;border:0;border-radius:99px;background:transparent;color:var(--muted);font-family:var(--workspace-font);font-size:12px;line-height:20px;font-weight:400;white-space:nowrap;
+}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-tabs button.active{background:var(--reference-primary);color:var(--reference-primary-text);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-tabs button.active::after{display:none;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-tabs button:disabled{opacity:.45;}
+@media(max-width:767px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-stats>.panel{min-width:0;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-toolbar .pv2-search{grid-column:1/-1;width:100%;max-width:none;min-width:0;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-toolbar select{width:100%;max-width:100%;min-width:0;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .subscriptions-filter-row{grid-template-columns:minmax(0,1fr);}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .subscriptions-date-group>span{flex:0 0 auto;white-space:nowrap;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .subscriptions-date-group .subscriptions-select{flex:1;min-width:0;}
+}
+@media(max-width:479px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-toolbar{grid-template-columns:minmax(0,1fr);}
 }
