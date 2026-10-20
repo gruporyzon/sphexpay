@@ -1,107 +1,49 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { render,screen,within } from '@testing-library/react'
+import {fireEvent,render,screen,within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter,Route,Routes } from 'react-router-dom'
-import { describe,expect,it,vi } from 'vitest'
-import { Layout } from '../components/Layout'
+import {MemoryRouter,Route,Routes} from 'react-router-dom'
+import {describe,expect,it,vi} from 'vitest'
+import {WorkspaceTopNavigation} from '../components/navigation/WorkspaceTopNavigation'
+import {navigationItems,competitionNavigation} from '../config/navigation'
 
-vi.mock('../hooks/useAuth',()=>({useAuth:()=>({user:{email:'player@sphexpay.com',user_metadata:{}},signOut:vi.fn()})}))
-vi.mock('../hooks/useNotificationAudio',()=>({useNotificationAudio:()=>undefined}))
-vi.mock('../components/notifications/NotificationBell',()=>({NotificationBell:()=>null}))
-vi.mock('../components/common/SearchInput',()=>({SearchInput:()=>null}))
-vi.mock('../components/profile/AvatarUploader',()=>({AvatarUploader:()=>null}))
-vi.mock('../components/profile/ProfileMenu',()=>({ProfileMenu:()=>null}))
-vi.mock('../components/branding/SphexPayLogo',()=>({SphexPayLogo:()=> <span>SphexPay</span>}))
-vi.mock('../components/ui',()=>({Dropdown:()=>null}))
+function Navigation(){return <><WorkspaceTopNavigation/><Routes><Route path="*" element={<p>Conteúdo do módulo</p>}/></Routes></>}
+function renderNavigation(path='/app'){return render(<MemoryRouter initialEntries={[path]}><Navigation/></MemoryRouter>)}
 
-const renderLayout=()=>render(<MemoryRouter initialEntries={['/app']}><Routes><Route path="/app" element={<Layout/>}><Route index element={<p>Dashboard atual</p>}/><Route path="vendas" element={<p>Vendas atuais</p>}/></Route></Routes></MemoryRouter>)
-
-describe('drawer autenticado mobile',()=>{
- it('usa uma única posição, abre acima do backdrop e restaura scroll e foco ao fechar',async()=>{
-  const user=userEvent.setup()
-  document.body.style.overflow='auto'
-  const view=renderLayout()
-  const trigger=view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!
-  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
-
-  expect(trigger).toHaveAttribute('aria-expanded','false')
-  await user.click(trigger)
-  expect(drawer).toHaveClass('mobile-open')
-  expect(drawer).toHaveAttribute('role','dialog')
-  expect(drawer).toHaveAttribute('aria-modal','true')
-  expect(view.container.querySelector('.app-menu-backdrop')).toBeInTheDocument()
-  expect(document.body.style.overflow).toBe('hidden')
-  expect(view.container.querySelector('.mobile-sidebar-close')).toHaveFocus()
-
-  await user.keyboard('{Escape}')
-  expect(drawer).not.toHaveClass('mobile-open')
-  expect(view.container.querySelector('.app-menu-backdrop')).not.toBeInTheDocument()
-  expect(document.body.style.overflow).toBe('auto')
-  expect(trigger).toHaveFocus()
+describe('navegação superior responsiva',()=>{
+ it('oferece todos os módulos e destaca somente a subrota atual',()=>{
+  renderNavigation('/app/produtos/checkout')
+  const nav=screen.getByRole('navigation',{name:'Navegação principal'})
+  for(const item of [...navigationItems,competitionNavigation])expect(within(nav).getByRole('link',{name:item.id==='dashboard'?'Visão geral':item.label})).toHaveAttribute('href',item.path)
+  expect(within(nav).getByRole('link',{name:'Checkouts'})).toHaveAttribute('aria-current','page')
+  expect(within(nav).getByRole('link',{name:'Produtos'})).not.toHaveAttribute('aria-current')
+  expect(nav.querySelectorAll('[aria-current="page"]')).toHaveLength(1)
  })
-
- it('fecha pelo backdrop, por navegação e permanece estável em dez ciclos',async()=>{
-  const user=userEvent.setup()
-  const view=renderLayout()
-  const trigger=view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!
-  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
-
-  await user.click(trigger)
-  await user.click(view.container.querySelector<HTMLButtonElement>('.app-menu-backdrop')!)
-  expect(drawer).not.toHaveClass('mobile-open')
-
-  await user.click(trigger)
-  await user.click(screen.getByRole('link',{name:'Vendas'}))
-  expect(screen.getByText('Vendas atuais')).toBeVisible()
-  expect(drawer).not.toHaveClass('mobile-open')
-
-  for(let cycle=0;cycle<10;cycle+=1){await user.click(trigger);expect(drawer).toHaveClass('mobile-open');await user.keyboard('{Escape}');expect(drawer).not.toHaveClass('mobile-open')}
+ it('navega e atualiza o item ativo sem um segundo menu',async()=>{
+  const user=userEvent.setup();renderNavigation()
+  await user.click(screen.getByRole('link',{name:'Financeiro'}))
+  expect(screen.getByRole('link',{name:'Financeiro'})).toHaveAttribute('aria-current','page')
+  expect(screen.getByRole('link',{name:'Visão geral'})).not.toHaveAttribute('aria-current')
+  expect(screen.getAllByRole('navigation')).toHaveLength(1)
  })
-
- it('mantém o CSS mobile como única autoridade de deslocamento e stacking',()=>{
-  const layout=readFileSync(resolve(process.cwd(),'src/components/Layout.tsx'),'utf8')
-  const css=readFileSync(resolve(process.cwd(),'src/index.css'),'utf8')
-  expect(layout).not.toContain('max-lg:-translate-x-full')
-  expect(css).toMatch(/\.internal-sidebar\{[\s\S]*?z-index:80!important;[\s\S]*?width:min\(88vw,320px\)!important;[\s\S]*?transform:translate3d\(-105%,0,0\);[\s\S]*?transition:transform 200ms ease/)
-  expect(css).toContain('.internal-sidebar.mobile-open{transform:translate3d(0,0,0)}')
-  expect(css).toMatch(/\.app-menu-backdrop\{position:fixed;z-index:75;/)
+ it('permite percorrer os módulos pelo teclado',async()=>{
+  const user=userEvent.setup();renderNavigation()
+  const first=screen.getByRole('link',{name:'Início'});first.focus()
+  await user.keyboard('{ArrowRight}');expect(screen.getByRole('link',{name:'Visão geral'})).toHaveFocus()
+  await user.keyboard('{End}');expect(screen.getByRole('link',{name:'Configurações'})).toHaveFocus()
+  await user.keyboard('{Home}');expect(first).toHaveFocus()
+  await user.keyboard('{ArrowLeft}');expect(screen.getByRole('link',{name:'Configurações'})).toHaveFocus()
  })
-
- it('exibe somente Financeiro no drawer principal, sem Saques independente',async()=>{
-  const user=userEvent.setup()
-  const view=renderLayout()
-  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
-  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
-  expect(within(drawer).getByRole('link',{name:'Financeiro'})).toBeVisible()
-  expect(within(drawer).queryByRole('link',{name:'Saques'})).not.toBeInTheDocument()
+ it('rola o menu com a roda e libera a página ao chegar ao limite',()=>{
+  renderNavigation();const nav=screen.getByRole('navigation',{name:'Navegação principal'})
+  Object.defineProperties(nav,{scrollWidth:{value:1200},clientWidth:{value:393}})
+  const wheel=new WheelEvent('wheel',{deltaY:120,bubbles:true,cancelable:true});fireEvent(nav,wheel)
+  expect(wheel.defaultPrevented).toBe(true);expect(nav.scrollLeft).toBe(120)
+  nav.scrollLeft=807;const end=new WheelEvent('wheel',{deltaY:120,bubbles:true,cancelable:true});fireEvent(nav,end)
+  expect(end.defaultPrevented).toBe(false)
  })
-
- it('exibe somente Relatórios no drawer principal, sem Clientes independente',async()=>{
-  const user=userEvent.setup()
-  const view=renderLayout()
-  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
-  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
-  expect(within(drawer).getByRole('link',{name:'Relatórios'})).toBeVisible()
-  expect(within(drawer).queryByRole('link',{name:'Clientes'})).not.toBeInTheDocument()
- })
-
- it('exibe somente Vendas no drawer principal, sem Transações independente',async()=>{
-  const user=userEvent.setup()
-  const view=renderLayout()
-  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
-  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
-  expect(within(drawer).getByRole('link',{name:'Vendas'})).toBeVisible()
-  expect(within(drawer).queryByRole('link',{name:'Transações'})).not.toBeInTheDocument()
- })
-
- it('exibe somente Produtos no drawer principal, sem Checkout ou Links',async()=>{
-  const user=userEvent.setup()
-  const view=renderLayout()
-  await user.click(view.container.querySelector<HTMLButtonElement>('.mobile-menu-toggle')!)
-  const drawer=view.container.querySelector<HTMLElement>('#app-navigation')!
-  expect(within(drawer).getByRole('link',{name:'Produtos'})).toBeVisible()
-  expect(within(drawer).queryByRole('link',{name:'Checkout'})).not.toBeInTheDocument()
-  expect(within(drawer).queryByRole('link',{name:'Links de pagamento'})).not.toBeInTheDocument()
+ it('respeita movimento reduzido ao revelar a rota ativa',()=>{
+  vi.mocked(window.matchMedia).mockReturnValueOnce({matches:true} as MediaQueryList)
+  const scroll=vi.fn();Object.defineProperty(HTMLElement.prototype,'scrollIntoView',{configurable:true,value:scroll})
+  renderNavigation('/app/financeiro');expect(scroll).toHaveBeenCalledWith({block:'nearest',inline:'nearest',behavior:'instant'})
+  Reflect.deleteProperty(HTMLElement.prototype,'scrollIntoView')
  })
 })

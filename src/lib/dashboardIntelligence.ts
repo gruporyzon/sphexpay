@@ -9,6 +9,7 @@ export function periodRevenueLabel(period:PeriodFilter){
  if(period.preset==='today')return'Faturamento de hoje'
  if(period.preset==='7d')return'Faturamento dos últimos 7 dias'
  if(period.preset==='30d')return'Faturamento dos últimos 30 dias'
+ if(period.preset==='90d')return'Faturamento dos últimos 90 dias'
  if(period.preset==='custom')return'Faturamento do período selecionado'
  if(period.preset==='yesterday')return'Faturamento de ontem'
  if(period.preset==='month')return'Faturamento deste mês'

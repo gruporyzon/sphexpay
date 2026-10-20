@@ -2,7 +2,7 @@ export type SaleStatus = 'Aprovado' | 'Pendente' | 'Recusado' | 'Reembolsado' | 
 export type PaymentMethod = 'Pix' | 'Cartão de crédito' | 'Boleto' | 'Assinatura'
 export type Theme = 'light' | 'dark'
 export type ThemePreference = Theme | 'system'
-export type PeriodPreset = 'today'|'yesterday'|'7d'|'30d'|'month'|'lastMonth'|'custom'
+export type PeriodPreset = 'today'|'yesterday'|'7d'|'30d'|'90d'|'month'|'lastMonth'|'custom'
 export interface PeriodFilter { preset:PeriodPreset; from?:string; to?:string }
 export interface ShippingAddress { recipient:string; postalCode:string; street:string; number:string; complement:string; district:string; city:string; state:string; country:string; phone:string; reference:string }
 
