@@ -1,0 +1,6434 @@
+{
+ "% concluído": {
+  "en-US": "% complete",
+  "es-ES": "% completado"
+ },
+ "% do total": {
+  "en-US": "% of total",
+  "es-ES": "% del total"
+ },
+ "% sobre o período anterior": {
+  "en-US": "% over the previous period",
+  "es-ES": "% respecto al período anterior"
+ },
+ ", com ticket entre": {
+  "en-US": ", with an average order value between",
+  "es-ES": ", con un importe medio entre"
+ },
+ ". Nenhuma venda poderá ser criada pelo preview.": {
+  "en-US": ". No sales can be created in the preview.",
+  "es-ES": ". No se podrán crear ventas desde la vista previa."
+ },
+ ". Seu progresso considera o faturamento elegível da sua operação.": {
+  "en-US": ". Your progress is based on eligible revenue from your operation.",
+  "es-ES": ". Tu progreso considera la facturación elegible de tu operación."
+ },
+ "/ recorrência": {
+  "en-US": "/ recurring payment",
+  "es-ES": "/ recurrencia"
+ },
+ "01 / SUA SELEÇÃO": {
+  "en-US": "01 / YOUR SELECTION",
+  "es-ES": "01 / TU SELECCIÓN"
+ },
+ "01 item": {
+  "en-US": "01 item",
+  "es-ES": "01 artículo"
+ },
+ "01/09/2026 a 01/10/2026": {
+  "en-US": "09/01/2026 to 10/01/2026",
+  "es-ES": "01/09/2026 a 01/10/2026"
+ },
+ "02 / ACOMPANHE SUA EVOLUÇÃO": {
+  "en-US": "02 / TRACK YOUR PROGRESS",
+  "es-ES": "02 / SIGUE TU EVOLUCIÓN"
+ },
+ "1. Escaneie o QR Code no seu aplicativo autenticador (Google Authenticator, 1Password, Authy).": {
+  "en-US": "1. Scan the QR code in your authenticator app (Google Authenticator, 1Password, Authy).",
+  "es-ES": "1. Escanea el código QR en tu aplicación de autenticación (Google Authenticator, 1Password, Authy)."
+ },
+ "120 req/min": {
+  "en-US": "120 req/min",
+  "es-ES": "120 solicitudes/min"
+ },
+ "2. Código de 6 dígitos": {
+  "en-US": "2. Six-digit code",
+  "es-ES": "2. Código de 6 dígitos"
+ },
+ "30 dias": {
+  "en-US": "30 days",
+  "es-ES": "30 días"
+ },
+ "7 dias": {
+  "en-US": "7 days",
+  "es-ES": "7 días"
+ },
+ "90 dias": {
+  "en-US": "90 days",
+  "es-ES": "90 días"
+ },
+ "99,98% de disponibilidade nos últimos 30 dias": {
+  "en-US": "99.98% uptime over the last 30 days",
+  "es-ES": "99,98 % de disponibilidad en los últimos 30 días"
+ },
+ ": iPhone 17 Pro Max.": {
+  "en-US": ": iPhone 17 Pro Max.",
+  "es-ES": ": iPhone 17 Pro Max."
+ },
+ "A análise considera as 500 transações recorrentes mais recentes.": {
+  "en-US": "The analysis covers the 500 most recent recurring transactions.",
+  "es-ES": "El análisis considera las 500 transacciones recurrentes más recientes."
+ },
+ "A autenticação ainda não está configurada neste ambiente.": {
+  "en-US": "Authentication is not configured in this environment yet.",
+  "es-ES": "La autenticación aún no está configurada en este entorno."
+ },
+ "A notificação será enviada ao(s) dispositivo(s) selecionado(s).": {
+  "en-US": "The notification will be sent to the selected devices.",
+  "es-ES": "La notificación se enviará a los dispositivos seleccionados."
+ },
+ "A placa será enviada ao endereço cadastrado. Acompanhe o envio na área de atividade.": {
+  "en-US": "The award plaque will be sent to your registered address. Track delivery in the activity area.",
+  "es-ES": "La placa se enviará a la dirección registrada. Sigue el envío en el área de actividad."
+ },
+ "A rota e o vínculo com o produto estão preparados. Cursos, turmas e concessão de acesso não serão simulados enquanto não existir um serviço Sphex Members.": {
+  "en-US": "The route and product link are ready. Courses, classes and access grants will not be simulated until a Sphex Members service exists.",
+  "es-ES": "La ruta y el vínculo con el producto están preparados. Los cursos, grupos y accesos no se simularán hasta que exista un servicio Sphex Members."
+ },
+ "ACTIVE": {
+  "en-US": "ACTIVE",
+  "es-ES": "ACTIVO"
+ },
+ "ADMINISTRAÇÃO": {
+  "en-US": "ADMINISTRATION",
+  "es-ES": "ADMINISTRACIÓN"
+ },
+ "API operacional": {
+  "en-US": "API operational",
+  "es-ES": "API operativa"
+ },
+ "APP CENTER": {
+  "en-US": "APP CENTER",
+  "es-ES": "CENTRO DE APLICACIONES"
+ },
+ "ATALHOS INTELIGENTES": {
+  "en-US": "SMART SHORTCUTS",
+  "es-ES": "ACCESOS RÁPIDOS"
+ },
+ "ATIVIDADE": {
+  "en-US": "ACTIVITY",
+  "es-ES": "ACTIVIDAD"
+ },
+ "ATIVIDADE AO VIVO": {
+  "en-US": "LIVE ACTIVITY",
+  "es-ES": "ACTIVIDAD EN VIVO"
+ },
+ "Abaixo do formulário": {
+  "en-US": "Below the form",
+  "es-ES": "Debajo del formulario"
+ },
+ "Abra a SphexPay pelo novo ícone.": {
+  "en-US": "Open SphexPay using the new icon.",
+  "es-ES": "Abre SphexPay desde el nuevo icono."
+ },
+ "Abra as configurações do site no navegador e permita Notificações.": {
+  "en-US": "Open the site's browser settings and allow notifications.",
+  "es-ES": "Abre la configuración del sitio en el navegador y permite las notificaciones."
+ },
+ "Abrindo pagamento…": {
+  "en-US": "Opening payment…",
+  "es-ES": "Abriendo pago…"
+ },
+ "Abrir": {
+  "en-US": "Open",
+  "es-ES": "Abrir"
+ },
+ "Abrir PDF": {
+  "en-US": "Open PDF",
+  "es-ES": "Abrir PDF"
+ },
+ "Abrir checkout público": {
+  "en-US": "Open public checkout",
+  "es-ES": "Abrir checkout público"
+ },
+ "Abrir configurações de notificações": {
+  "en-US": "Open notification settings",
+  "es-ES": "Abrir configuración de notificaciones"
+ },
+ "Aceitou → próxima etapa/final": {
+  "en-US": "Accepted → next/final step",
+  "es-ES": "Aceptado → siguiente etapa/final"
+ },
+ "Acessar conteúdo": {
+  "en-US": "Access content",
+  "es-ES": "Acceder al contenido"
+ },
+ "Acessar minhas compras": {
+  "en-US": "Access my purchases",
+  "es-ES": "Acceder a mis compras"
+ },
+ "Acessar outra conta": {
+  "en-US": "Switch account",
+  "es-ES": "Acceder a otra cuenta"
+ },
+ "Acesse Configurações → Preferências → Aparência para escolher o modo claro, escuro ou automático.": {
+  "en-US": "Go to Settings → Preferences → Appearance to choose light, dark or automatic mode.",
+  "es-ES": "Accede a Configuración → Preferencias → Apariencia para elegir el modo claro, oscuro o automático."
+ },
+ "Acesse Vendas no menu superior. O painel mostra as transações disponíveis da sua operação.": {
+  "en-US": "Open Sales in the top menu. The dashboard shows the transactions available for your operation.",
+  "es-ES": "Accede a Ventas en el menú superior. El panel muestra las transacciones disponibles de tu operación."
+ },
+ "Acesse todas as áreas disponíveis da sua operação.": {
+  "en-US": "Access every available area of your operation.",
+  "es-ES": "Accede a todas las áreas disponibles de tu operación."
+ },
+ "Acessos": {
+  "en-US": "Access",
+  "es-ES": "Accesos"
+ },
+ "Acompanhe sua próxima conquista,": {
+  "en-US": "Track your next milestone,",
+  "es-ES": "Sigue tu próxima conquista,"
+ },
+ "Acompanhe suas solicitações e movimentações.": {
+  "en-US": "Track your requests and transactions.",
+  "es-ES": "Sigue tus solicitudes y movimientos."
+ },
+ "Adicionar banner": {
+  "en-US": "Add banner",
+  "es-ES": "Añadir banner"
+ },
+ "Adicionar primeiro componente": {
+  "en-US": "Add first component",
+  "es-ES": "Añadir primer componente"
+ },
+ "Adicione um banner, ajuste o visual e confira o resultado antes de publicar.": {
+  "en-US": "Add a banner, customize the design and check the result before publishing.",
+  "es-ES": "Añade un banner, ajusta el diseño y revisa el resultado antes de publicar."
+ },
+ "Afiliado": {
+  "en-US": "Affiliate",
+  "es-ES": "Afiliado"
+ },
+ "Afiliados": {
+  "en-US": "Affiliates",
+  "es-ES": "Afiliados"
+ },
+ "Afiliações": {
+  "en-US": "Affiliate partnerships",
+  "es-ES": "Afiliaciones"
+ },
+ "Aguardando atividade global": {
+  "en-US": "Waiting for global activity",
+  "es-ES": "Esperando actividad global"
+ },
+ "Aguarde a confirmação do processador. Retornar ao checkout não confirma uma cobrança.": {
+  "en-US": "Wait for the processor's confirmation. Returning to checkout does not confirm a charge.",
+  "es-ES": "Espera la confirmación del procesador. Volver al checkout no confirma un cobro."
+ },
+ "Aguarde enquanto confirmamos sua configuração com segurança.": {
+  "en-US": "Please wait while we securely confirm your setup.",
+  "es-ES": "Espera mientras confirmamos tu configuración de forma segura."
+ },
+ "Agência 0001 · Conta •••• 4821": {
+  "en-US": "Branch 0001 · Account •••• 4821",
+  "es-ES": "Sucursal 0001 · Cuenta •••• 4821"
+ },
+ "Ajusta o ritmo gradualmente para evitar repetições.": {
+  "en-US": "Gradually adjusts the pace to avoid repetition.",
+  "es-ES": "Ajusta el ritmo gradualmente para evitar repeticiones."
+ },
+ "Ajuste a transparência do cabeçalho. Deslize o menu superior para acessar os módulos.": {
+  "en-US": "Adjust the header transparency. Swipe the top menu to access the modules.",
+  "es-ES": "Ajusta la transparencia del encabezado. Desliza el menú superior para acceder a los módulos."
+ },
+ "Ajuste da mídia": {
+  "en-US": "Media adjustment",
+  "es-ES": "Ajuste de medios"
+ },
+ "Ajuste seus critérios de busca ou redefina os filtros para obter mais resultados.": {
+  "en-US": "Adjust your search criteria or reset the filters to see more results.",
+  "es-ES": "Ajusta los criterios de búsqueda o restablece los filtros para obtener más resultados."
+ },
+ "Alertas automáticos": {
+  "en-US": "Automatic alerts",
+  "es-ES": "Alertas automáticas"
+ },
+ "Alguns comunicados permanecem somente nesta interface e não geram Push.": {
+  "en-US": "Some announcements only appear in this interface and do not generate push notifications.",
+  "es-ES": "Algunos avisos solo aparecen en esta interfaz y no generan notificaciones push."
+ },
+ "Alinhamento": {
+  "en-US": "Alignment",
+  "es-ES": "Alineación"
+ },
+ "Alterar foto": {
+  "en-US": "Change photo",
+  "es-ES": "Cambiar foto"
+ },
+ "Altura": {
+  "en-US": "Height",
+  "es-ES": "Altura"
+ },
+ "Ambiente": {
+  "en-US": "Environment",
+  "es-ES": "Entorno"
+ },
+ "Ambiente atual": {
+  "en-US": "Current environment",
+  "es-ES": "Entorno actual"
+ },
+ "Ambiente seguro": {
+  "en-US": "Secure environment",
+  "es-ES": "Entorno seguro"
+ },
+ "Ampliação": {
+  "en-US": "Zoom",
+  "es-ES": "Ampliación"
+ },
+ "Analisar": {
+  "en-US": "Analyze",
+  "es-ES": "Analizar"
+ },
+ "Antes do botão": {
+  "en-US": "Before the button",
+  "es-ES": "Antes del botón"
+ },
+ "Antes do formulário": {
+  "en-US": "Before the form",
+  "es-ES": "Antes del formulario"
+ },
+ "Anual": {
+  "en-US": "Annual",
+  "es-ES": "Anual"
+ },
+ "Análise (admin)": {
+  "en-US": "Review (admin)",
+  "es-ES": "Análisis (admin)"
+ },
+ "Ao vivo": {
+  "en-US": "Live",
+  "es-ES": "En vivo"
+ },
+ "Aplicar": {
+  "en-US": "Apply",
+  "es-ES": "Aplicar"
+ },
+ "Aplicar JSON": {
+  "en-US": "Apply JSON",
+  "es-ES": "Aplicar JSON"
+ },
+ "Aplicar modelo enviado": {
+  "en-US": "Apply uploaded template",
+  "es-ES": "Aplicar plantilla enviada"
+ },
+ "Apps para ampliar sua operação": {
+  "en-US": "Apps to extend your operation",
+  "es-ES": "Aplicaciones para ampliar tu operación"
+ },
+ "Aprovadas": {
+  "en-US": "Approved",
+  "es-ES": "Aprobadas"
+ },
+ "Aprovar": {
+  "en-US": "Approve",
+  "es-ES": "Aprobar"
+ },
+ "Aprovar cadastro": {
+  "en-US": "Approve registration",
+  "es-ES": "Aprobar registro"
+ },
+ "Aprovação": {
+  "en-US": "Approval",
+  "es-ES": "Aprobación"
+ },
+ "Arquivar": {
+  "en-US": "Archive",
+  "es-ES": "Archivar"
+ },
+ "Arredondado": {
+  "en-US": "Rounded",
+  "es-ES": "Redondeado"
+ },
+ "As propriedades aparecerão aqui.": {
+  "en-US": "Properties will appear here.",
+  "es-ES": "Las propiedades aparecerán aquí."
+ },
+ "Assinatura": {
+  "en-US": "Subscription",
+  "es-ES": "Suscripción"
+ },
+ "Assinaturas": {
+  "en-US": "Subscriptions",
+  "es-ES": "Suscripciones"
+ },
+ "Assistente": {
+  "en-US": "Assistant",
+  "es-ES": "Asistente"
+ },
+ "Assunto": {
+  "en-US": "Subject",
+  "es-ES": "Asunto"
+ },
+ "Assédio": {
+  "en-US": "Harassment",
+  "es-ES": "Acoso"
+ },
+ "Ativa": {
+  "en-US": "Active",
+  "es-ES": "Activa"
+ },
+ "Ativar": {
+  "en-US": "Enable",
+  "es-ES": "Activar"
+ },
+ "Ativar notificações": {
+  "en-US": "Enable notifications",
+  "es-ES": "Activar notificaciones"
+ },
+ "Ativar verificação em duas etapas": {
+  "en-US": "Enable two-step verification",
+  "es-ES": "Activar verificación en dos pasos"
+ },
+ "Ative as notificações.": {
+  "en-US": "Enable notifications.",
+  "es-ES": "Activa las notificaciones."
+ },
+ "Ative sons e voz dentro da SphexPay.": {
+  "en-US": "Enable sounds and voice inside SphexPay.",
+  "es-ES": "Activa los sonidos y la voz dentro de SphexPay."
+ },
+ "Ative uma oferta com preço válido antes de criar o checkout.": {
+  "en-US": "Activate an offer with a valid price before creating the checkout.",
+  "es-ES": "Activa una oferta con un precio válido antes de crear el checkout."
+ },
+ "Ativos": {
+  "en-US": "Active",
+  "es-ES": "Activos"
+ },
+ "Atribuição": {
+  "en-US": "Attribution",
+  "es-ES": "Atribución"
+ },
+ "Atualizado": {
+  "en-US": "Updated",
+  "es-ES": "Actualizado"
+ },
+ "Atualizados recentemente": {
+  "en-US": "Recently updated",
+  "es-ES": "Actualizados recientemente"
+ },
+ "Atualizar": {
+  "en-US": "Refresh",
+  "es-ES": "Actualizar"
+ },
+ "Atualizar diagnóstico": {
+  "en-US": "Refresh diagnostics",
+  "es-ES": "Actualizar diagnóstico"
+ },
+ "Atualizar dispositivos": {
+  "en-US": "Refresh devices",
+  "es-ES": "Actualizar dispositivos"
+ },
+ "Atualização": {
+  "en-US": "Update",
+  "es-ES": "Actualización"
+ },
+ "Atualização automática": {
+  "en-US": "Automatic refresh",
+  "es-ES": "Actualización automática"
+ },
+ "Atualização automática pelo período selecionado": {
+  "en-US": "Automatically updated for the selected period",
+  "es-ES": "Actualización automática según el período seleccionado"
+ },
+ "Até": {
+  "en-US": "To",
+  "es-ES": "Hasta"
+ },
+ "AudioContext": {
+  "en-US": "AudioContext",
+  "es-ES": "AudioContext"
+ },
+ "Auditoria": {
+  "en-US": "Audit",
+  "es-ES": "Auditoría"
+ },
+ "Auditoria da competição": {
+  "en-US": "Competition audit",
+  "es-ES": "Auditoría de la competición"
+ },
+ "Autentique suas requisições e acompanhe os eventos da operação.": {
+  "en-US": "Authenticate your requests and track operational events.",
+  "es-ES": "Autentica tus solicitudes y sigue los eventos de la operación."
+ },
+ "Automação": {
+  "en-US": "Automation",
+  "es-ES": "Automatización"
+ },
+ "Automação inteligente": {
+  "en-US": "Smart automation",
+  "es-ES": "Automatización inteligente"
+ },
+ "Automática": {
+  "en-US": "Automatic",
+  "es-ES": "Automática"
+ },
+ "Autorizo o uso deste endereço exclusivamente para a entrega da premiação.": {
+  "en-US": "I authorize this address to be used exclusively for award delivery.",
+  "es-ES": "Autorizo el uso de esta dirección exclusivamente para la entrega del premio."
+ },
+ "AÇÕES AVANÇADAS": {
+  "en-US": "ADVANCED ACTIONS",
+  "es-ES": "ACCIONES AVANZADAS"
+ },
+ "Ações": {
+  "en-US": "Actions",
+  "es-ES": "Acciones"
+ },
+ "Ações avançadas": {
+  "en-US": "Advanced actions",
+  "es-ES": "Acciones avanzadas"
+ },
+ "BLOCO SELECIONADO": {
+  "en-US": "SELECTED BLOCK",
+  "es-ES": "BLOQUE SELECCIONADO"
+ },
+ "BRL — Real brasileiro": {
+  "en-US": "BRL — Brazilian real",
+  "es-ES": "BRL — Real brasileño"
+ },
+ "Badge": {
+  "en-US": "Badge",
+  "es-ES": "Insignia"
+ },
+ "Banner em imagem ou vídeo": {
+  "en-US": "Image or video banner",
+  "es-ES": "Banner de imagen o vídeo"
+ },
+ "Bio": {
+  "en-US": "Bio",
+  "es-ES": "Biografía"
+ },
+ "Bloquear": {
+  "en-US": "Block",
+  "es-ES": "Bloquear"
+ },
+ "Boleto gerado": {
+  "en-US": "Boleto generated",
+  "es-ES": "Boleto generado"
+ },
+ "Botão / link": {
+  "en-US": "Button / link",
+  "es-ES": "Botón / enlace"
+ },
+ "Buscando endereço pelo CEP…": {
+  "en-US": "Looking up address by postal code…",
+  "es-ES": "Buscando dirección por código postal…"
+ },
+ "Buscar app": {
+  "en-US": "Search apps",
+  "es-ES": "Buscar aplicaciones"
+ },
+ "Buscar módulos": {
+  "en-US": "Search modules",
+  "es-ES": "Buscar módulos"
+ },
+ "CATÁLOGO": {
+  "en-US": "CATALOG",
+  "es-ES": "CATÁLOGO"
+ },
+ "CHECKOUT STUDIO": {
+  "en-US": "CHECKOUT STUDIO",
+  "es-ES": "CHECKOUT STUDIO"
+ },
+ "COMPETIÇÃO SPHEXPAY": {
+  "en-US": "SPHEXPAY COMPETITION",
+  "es-ES": "COMPETICIÓN SPHEXPAY"
+ },
+ "COMPRA PRINCIPAL": {
+  "en-US": "MAIN PURCHASE",
+  "es-ES": "COMPRA PRINCIPAL"
+ },
+ "COMUNIDADE SPHEX": {
+  "en-US": "SPHEX COMMUNITY",
+  "es-ES": "COMUNIDAD SPHEX"
+ },
+ "CONFIGURAÇÃO EDITÁVEL": {
+  "en-US": "EDITABLE CONFIGURATION",
+  "es-ES": "CONFIGURACIÓN EDITABLE"
+ },
+ "CONFIRMAÇÃO SEGURA": {
+  "en-US": "SECURE CONFIRMATION",
+  "es-ES": "CONFIRMACIÓN SEGURA"
+ },
+ "CONTROLE DA OPERAÇÃO": {
+  "en-US": "OPERATION CONTROL",
+  "es-ES": "CONTROL DE LA OPERACIÓN"
+ },
+ "CORE STATUS": {
+  "en-US": "CORE STATUS",
+  "es-ES": "ESTADO DEL SISTEMA"
+ },
+ "CRESCIMENTO QUE GANHA VISIBILIDADE": {
+  "en-US": "GROWTH THAT GETS NOTICED",
+  "es-ES": "CRECIMIENTO QUE GANA VISIBILIDAD"
+ },
+ "CTA": {
+  "en-US": "CTA",
+  "es-ES": "CTA"
+ },
+ "Cada produto tem sua própria meta. Confira o progresso e libere o próximo.": {
+  "en-US": "Each product has its own goal. Track your progress and unlock the next one.",
+  "es-ES": "Cada producto tiene su propia meta. Sigue el progreso y desbloquea el siguiente."
+ },
+ "Cada venda": {
+  "en-US": "Every sale",
+  "es-ES": "Cada venta"
+ },
+ "Cadastrar produto": {
+  "en-US": "Register product",
+  "es-ES": "Registrar producto"
+ },
+ "Cadastre o produto e uma oferta para criar um checkout personalizado.": {
+  "en-US": "Register the product and an offer to create a custom checkout.",
+  "es-ES": "Registra el producto y una oferta para crear un checkout personalizado."
+ },
+ "Cadastre somente taxas verificadas. O horário atual será salvo como timestamp da configuração.": {
+  "en-US": "Only register verified exchange rates. The current time will be saved as the configuration timestamp.",
+  "es-ES": "Registra únicamente tipos de cambio verificados. La hora actual se guardará como fecha de la configuración."
+ },
+ "Campos do comprador": {
+  "en-US": "Buyer fields",
+  "es-ES": "Campos del comprador"
+ },
+ "Canais reais não são misturados ao planejamento.": {
+  "en-US": "Actual channels are not mixed with planning data.",
+  "es-ES": "Los canales reales no se mezclan con la planificación."
+ },
+ "Cancelar": {
+  "en-US": "Cancel",
+  "es-ES": "Cancelar"
+ },
+ "Cantos arredondados": {
+  "en-US": "Rounded corners",
+  "es-ES": "Esquinas redondeadas"
+ },
+ "Carregando campos seguros…": {
+  "en-US": "Loading secure fields…",
+  "es-ES": "Cargando campos seguros…"
+ },
+ "Carregando estado da conta...": {
+  "en-US": "Loading account status...",
+  "es-ES": "Cargando estado de la cuenta..."
+ },
+ "Carregando produtos…": {
+  "en-US": "Loading products…",
+  "es-ES": "Cargando productos…"
+ },
+ "Carregando seus produtos e suas conquistas...": {
+  "en-US": "Loading your products and achievements...",
+  "es-ES": "Cargando tus productos y logros..."
+ },
+ "Carregar mais": {
+  "en-US": "Load more",
+  "es-ES": "Cargar más"
+ },
+ "Cartão": {
+  "en-US": "Card",
+  "es-ES": "Tarjeta"
+ },
+ "Cartão com Stripe": {
+  "en-US": "Card with Stripe",
+  "es-ES": "Tarjeta con Stripe"
+ },
+ "Cartão de crédito": {
+  "en-US": "Credit card",
+  "es-ES": "Tarjeta de crédito"
+ },
+ "Celular: ordem e posições": {
+  "en-US": "Mobile: order and positions",
+  "es-ES": "Móvil: orden y posiciones"
+ },
+ "Celulares": {
+  "en-US": "Mobile phones",
+  "es-ES": "Teléfonos móviles"
+ },
+ "Cenário": {
+  "en-US": "Scenario",
+  "es-ES": "Escenario"
+ },
+ "Cenários": {
+  "en-US": "Scenarios",
+  "es-ES": "Escenarios"
+ },
+ "Chargebacks": {
+  "en-US": "Chargebacks",
+  "es-ES": "Contracargos"
+ },
+ "Checkout": {
+  "en-US": "Checkout",
+  "es-ES": "Checkout"
+ },
+ "Checkout completo": {
+  "en-US": "Complete checkout",
+  "es-ES": "Checkout completo"
+ },
+ "Checkout protegido": {
+  "en-US": "Protected checkout",
+  "es-ES": "Checkout protegido"
+ },
+ "Classificação em tempo real": {
+  "en-US": "Live ranking",
+  "es-ES": "Clasificación en tiempo real"
+ },
+ "Cliente": {
+  "en-US": "Customer",
+  "es-ES": "Cliente"
+ },
+ "Clientes": {
+  "en-US": "Customers",
+  "es-ES": "Clientes"
+ },
+ "Clássico · 4:3": {
+  "en-US": "Classic · 4:3",
+  "es-ES": "Clásico · 4:3"
+ },
+ "Cobrança": {
+  "en-US": "Billing",
+  "es-ES": "Cobro"
+ },
+ "Comece pelo seu produto": {
+  "en-US": "Start with your product",
+  "es-ES": "Empieza por tu producto"
+ },
+ "Comissão": {
+  "en-US": "Commission",
+  "es-ES": "Comisión"
+ },
+ "Como altero a aparência?": {
+  "en-US": "How do I change the appearance?",
+  "es-ES": "¿Cómo cambio la apariencia?"
+ },
+ "Como podemos ajudar?": {
+  "en-US": "How can we help?",
+  "es-ES": "¿Cómo podemos ayudarte?"
+ },
+ "Competição SphexPay · vendas elegíveis": {
+  "en-US": "SphexPay competition · eligible sales",
+  "es-ES": "Competición SphexPay · ventas elegibles"
+ },
+ "Componentes": {
+  "en-US": "Components",
+  "es-ES": "Componentes"
+ },
+ "Compra protegida": {
+  "en-US": "Protected purchase",
+  "es-ES": "Compra protegida"
+ },
+ "Compra protegida conforme os termos da oferta.": {
+  "en-US": "Purchase protected under the offer terms.",
+  "es-ES": "Compra protegida según los términos de la oferta."
+ },
+ "Comprador": {
+  "en-US": "Buyer",
+  "es-ES": "Comprador"
+ },
+ "Comprar com segurança": {
+  "en-US": "Buy securely",
+  "es-ES": "Comprar de forma segura"
+ },
+ "Compras": {
+  "en-US": "Purchases",
+  "es-ES": "Compras"
+ },
+ "Computadores": {
+  "en-US": "Computers",
+  "es-ES": "Ordenadores"
+ },
+ "Concluir": {
+  "en-US": "Finish",
+  "es-ES": "Finalizar"
+ },
+ "Concluído": {
+  "en-US": "Completed",
+  "es-ES": "Completado"
+ },
+ "Condições provisórias": {
+  "en-US": "Provisional conditions",
+  "es-ES": "Condiciones provisionales"
+ },
+ "Conectadas agora": {
+  "en-US": "Connected now",
+  "es-ES": "Conectadas ahora"
+ },
+ "Conectar": {
+  "en-US": "Connect",
+  "es-ES": "Conectar"
+ },
+ "Conectar app": {
+  "en-US": "Connect app",
+  "es-ES": "Conectar aplicación"
+ },
+ "Conectar meus pagamentos": {
+  "en-US": "Connect my payments",
+  "es-ES": "Conectar mis pagos"
+ },
+ "Conecte credenciais em um backend seguro antes de habilitar este provider.": {
+  "en-US": "Connect credentials in a secure backend before enabling this provider.",
+  "es-ES": "Conecta las credenciales en un backend seguro antes de activar este proveedor."
+ },
+ "Conecte este dispositivo para receber e enviar alertas da SphexPay.": {
+  "en-US": "Connect this device to receive and send SphexPay alerts.",
+  "es-ES": "Conecta este dispositivo para recibir y enviar alertas de SphexPay."
+ },
+ "Conecte ferramentas que você já usa e deixe os dados fluírem com segurança.": {
+  "en-US": "Connect the tools you already use and let data flow securely.",
+  "es-ES": "Conecta las herramientas que ya utilizas y permite que los datos fluyan de forma segura."
+ },
+ "Conecte seus produtos com uma API clara, previsível e pronta para crescer com a sua operação.": {
+  "en-US": "Connect your products with a clear, predictable API ready to grow with your operation.",
+  "es-ES": "Conecta tus productos con una API clara, predecible y preparada para crecer con tu operación."
+ },
+ "Conexão segura": {
+  "en-US": "Secure connection",
+  "es-ES": "Conexión segura"
+ },
+ "Configurar": {
+  "en-US": "Configure",
+  "es-ES": "Configurar"
+ },
+ "Configurar área de membros": {
+  "en-US": "Configure members area",
+  "es-ES": "Configurar área de miembros"
+ },
+ "Configuração JSON": {
+  "en-US": "JSON configuration",
+  "es-ES": "Configuración JSON"
+ },
+ "Configuração do produto:": {
+  "en-US": "Product configuration:",
+  "es-ES": "Configuración del producto:"
+ },
+ "Configuração do provider": {
+  "en-US": "Provider configuration",
+  "es-ES": "Configuración del proveedor"
+ },
+ "Configurações": {
+  "en-US": "Settings",
+  "es-ES": "Configuración"
+ },
+ "Configurações da minha conta": {
+  "en-US": "My account settings",
+  "es-ES": "Configuración de mi cuenta"
+ },
+ "Configurações salvas": {
+  "en-US": "Settings saved",
+  "es-ES": "Configuración guardada"
+ },
+ "Configure a Stripe no Financeiro e habilite cartão na aba Pagamentos do produto.": {
+  "en-US": "Configure Stripe in Finance and enable cards in the product's Payments tab.",
+  "es-ES": "Configura Stripe en Finanzas y activa la tarjeta en la pestaña Pagos del producto."
+ },
+ "Configure a data final da oferta para exibir o timer.": {
+  "en-US": "Set the offer end date to display the timer.",
+  "es-ES": "Configura la fecha de finalización de la oferta para mostrar el temporizador."
+ },
+ "Configure sua conta no Financeiro. Ao habilitar, verificamos se a Stripe já autorizou pagamentos e repasses. Disponível para ofertas de pagamento único, à vista.": {
+  "en-US": "Set up your account in Finance. When enabled, we check whether Stripe has authorized payments and payouts. Available for one-time, non-installment offers.",
+  "es-ES": "Configura tu cuenta en Finanzas. Al activar, comprobamos si Stripe ha autorizado los pagos y las transferencias. Disponible para ofertas de pago único, sin cuotas."
+ },
+ "Configure uma operação dinâmica para visualizar o funcionamento da plataforma.": {
+  "en-US": "Configure a dynamic operation to see how the platform works.",
+  "es-ES": "Configura una operación dinámica para ver el funcionamiento de la plataforma."
+ },
+ "Confirmar e ativar": {
+  "en-US": "Confirm and activate",
+  "es-ES": "Confirmar y activar"
+ },
+ "Confirmar saque": {
+  "en-US": "Confirm withdrawal",
+  "es-ES": "Confirmar retiro"
+ },
+ "Confirmar solicitação": {
+  "en-US": "Confirm request",
+  "es-ES": "Confirmar solicitud"
+ },
+ "Confirmar solicitação de saque": {
+  "en-US": "Confirm withdrawal request",
+  "es-ES": "Confirmar solicitud de retiro"
+ },
+ "Confirme seu e-mail": {
+  "en-US": "Confirm your email",
+  "es-ES": "Confirma tu correo electrónico"
+ },
+ "Conquista resgatada": {
+  "en-US": "Achievement redeemed",
+  "es-ES": "Logro canjeado"
+ },
+ "Conquiste": {
+  "en-US": "Achieve",
+  "es-ES": "Consigue"
+ },
+ "Consideramos vendas aprovadas em reais, após descontos e antes das taxas. Reembolsos e chargebacks não contam. A visibilidade depende de manter a meta de R$ 1.000,00.": {
+  "en-US": "We count approved sales in Brazilian reais, after discounts and before fees. Refunds and chargebacks do not count. Visibility requires maintaining the R$ 1,000.00 goal.",
+  "es-ES": "Consideramos las ventas aprobadas en reales, después de descuentos y antes de comisiones. Los reembolsos y contracargos no cuentan. La visibilidad requiere mantener la meta de R$ 1.000,00."
+ },
+ "Consultando configuração de recebimentos...": {
+  "en-US": "Checking payout settings...",
+  "es-ES": "Consultando configuración de cobros..."
+ },
+ "Conta cadastrada": {
+  "en-US": "Registered account",
+  "es-ES": "Cuenta registrada"
+ },
+ "Conta de destino": {
+  "en-US": "Destination account",
+  "es-ES": "Cuenta de destino"
+ },
+ "Conta final": {
+  "en-US": "Account ending",
+  "es-ES": "Cuenta terminada en"
+ },
+ "Conteúdo": {
+  "en-US": "Content",
+  "es-ES": "Contenido"
+ },
+ "Conteúdo da oferta": {
+  "en-US": "Offer content",
+  "es-ES": "Contenido de la oferta"
+ },
+ "Conteúdo impróprio": {
+  "en-US": "Inappropriate content",
+  "es-ES": "Contenido inapropiado"
+ },
+ "Continuar": {
+  "en-US": "Continue",
+  "es-ES": "Continuar"
+ },
+ "Contorno": {
+  "en-US": "Outline",
+  "es-ES": "Contorno"
+ },
+ "Contribuições e conexões da comunidade — nunca faturamento.": {
+  "en-US": "Community contributions and connections — never revenue.",
+  "es-ES": "Contribuciones y conexiones de la comunidad; nunca facturación."
+ },
+ "Controle da operação": {
+  "en-US": "Operation control",
+  "es-ES": "Control de la operación"
+ },
+ "Controle do usuário": {
+  "en-US": "User control",
+  "es-ES": "Control del usuario"
+ },
+ "Controle protegido": {
+  "en-US": "Protected control",
+  "es-ES": "Control protegido"
+ },
+ "Controles de auditoria são restritos à equipe autorizada.": {
+  "en-US": "Audit controls are restricted to authorized staff.",
+  "es-ES": "Los controles de auditoría están restringidos al equipo autorizado."
+ },
+ "Controles protegidos por papel administrativo server-side.": {
+  "en-US": "Controls protected by server-side administrative roles.",
+  "es-ES": "Controles protegidos por un rol administrativo del servidor."
+ },
+ "Conversa da comunidade.": {
+  "en-US": "Community conversation.",
+  "es-ES": "Conversación de la comunidad."
+ },
+ "Conversa privada": {
+  "en-US": "Private conversation",
+  "es-ES": "Conversación privada"
+ },
+ "Conversas privadas entre produtores.": {
+  "en-US": "Private conversations between producers.",
+  "es-ES": "Conversaciones privadas entre productores."
+ },
+ "Conversão": {
+  "en-US": "Conversion",
+  "es-ES": "Conversión"
+ },
+ "Conversões": {
+  "en-US": "Conversions",
+  "es-ES": "Conversiones"
+ },
+ "Convidar afiliado": {
+  "en-US": "Invite affiliate",
+  "es-ES": "Invitar afiliado"
+ },
+ "Copiado": {
+  "en-US": "Copied",
+  "es-ES": "Copiado"
+ },
+ "Copiar": {
+  "en-US": "Copy",
+  "es-ES": "Copiar"
+ },
+ "Copiar JSON": {
+  "en-US": "Copy JSON",
+  "es-ES": "Copiar JSON"
+ },
+ "Copiar exemplo": {
+  "en-US": "Copy example",
+  "es-ES": "Copiar ejemplo"
+ },
+ "Copiar link": {
+  "en-US": "Copy link",
+  "es-ES": "Copiar enlace"
+ },
+ "Coproduções": {
+  "en-US": "Co-production",
+  "es-ES": "Coproducciones"
+ },
+ "Cor principal": {
+  "en-US": "Primary color",
+  "es-ES": "Color principal"
+ },
+ "Cores, espaçamento e estilo aplicados ao link publicado.": {
+  "en-US": "Colors, spacing and styling applied to the published link.",
+  "es-ES": "Colores, espaciado y estilo aplicados al enlace publicado."
+ },
+ "Corrigir endereço": {
+  "en-US": "Correct address",
+  "es-ES": "Corregir dirección"
+ },
+ "Cotações temporariamente indisponíveis.": {
+  "en-US": "Exchange rates temporarily unavailable.",
+  "es-ES": "Tipos de cambio temporalmente no disponibles."
+ },
+ "Criar": {
+  "en-US": "Create",
+  "es-ES": "Crear"
+ },
+ "Criar link": {
+  "en-US": "Create link",
+  "es-ES": "Crear enlace"
+ },
+ "Criar webhook": {
+  "en-US": "Create webhook",
+  "es-ES": "Crear webhook"
+ },
+ "Criação": {
+  "en-US": "Creation",
+  "es-ES": "Creación"
+ },
+ "Crie campanhas de notificações com precisão.": {
+  "en-US": "Create precise notification campaigns.",
+  "es-ES": "Crea campañas de notificaciones con precisión."
+ },
+ "Crie uma experiência de compra com a sua identidade. Imagens, vídeos e um link pronto para compartilhar.": {
+  "en-US": "Create a shopping experience with your identity. Images, videos and a link ready to share.",
+  "es-ES": "Crea una experiencia de compra con tu identidad. Imágenes, vídeos y un enlace listo para compartir."
+ },
+ "Crie, programe e acompanhe Pushes reais em poucos passos.": {
+  "en-US": "Create, schedule and track real push notifications in a few steps.",
+  "es-ES": "Crea, programa y sigue notificaciones push reales en pocos pasos."
+ },
+ "Critérios de desempate e entrega serão detalhados na versão definitiva.": {
+  "en-US": "Tie-breaking and delivery criteria will be detailed in the final version.",
+  "es-ES": "Los criterios de desempate y entrega se detallarán en la versión definitiva."
+ },
+ "Cápsula": {
+  "en-US": "Pill",
+  "es-ES": "Cápsula"
+ },
+ "Código": {
+  "en-US": "Code",
+  "es-ES": "Código"
+ },
+ "Código de 6 dígitos": {
+  "en-US": "Six-digit code",
+  "es-ES": "Código de 6 dígitos"
+ },
+ "DESENVOLVEDORES": {
+  "en-US": "DEVELOPERS",
+  "es-ES": "DESARROLLADORES"
+ },
+ "Da apresentação à compra.": {
+  "en-US": "From presentation to purchase.",
+  "es-ES": "De la presentación a la compra."
+ },
+ "Dados de pagamento no ambiente seguro da Stripe.": {
+  "en-US": "Payment details in Stripe's secure environment.",
+  "es-ES": "Datos de pago en el entorno seguro de Stripe."
+ },
+ "Dados do cadastro": {
+  "en-US": "Registration details",
+  "es-ES": "Datos del registro"
+ },
+ "Dashboard de produtor": {
+  "en-US": "Producer dashboard",
+  "es-ES": "Panel del productor"
+ },
+ "Data": {
+  "en-US": "Date",
+  "es-ES": "Fecha"
+ },
+ "Data da criação": {
+  "en-US": "Creation date",
+  "es-ES": "Fecha de creación"
+ },
+ "Data de afiliação": {
+  "en-US": "Affiliation date",
+  "es-ES": "Fecha de afiliación"
+ },
+ "Data de entrada": {
+  "en-US": "Joined on",
+  "es-ES": "Fecha de ingreso"
+ },
+ "Data de vencimento": {
+  "en-US": "Due date",
+  "es-ES": "Fecha de vencimiento"
+ },
+ "Data final": {
+  "en-US": "End date",
+  "es-ES": "Fecha final"
+ },
+ "Data inicial": {
+  "en-US": "Start date",
+  "es-ES": "Fecha inicial"
+ },
+ "De": {
+  "en-US": "From",
+  "es-ES": "Desde"
+ },
+ "De 01 de setembro de 2026 a 01 de outubro de 2026.": {
+  "en-US": "From September 1, 2026 to October 1, 2026.",
+  "es-ES": "Del 1 de septiembre de 2026 al 1 de octubre de 2026."
+ },
+ "Deduplicação obrigatória por order ID": {
+  "en-US": "Mandatory deduplication by order ID",
+  "es-ES": "Deduplicación obligatoria por ID de pedido"
+ },
+ "Denunciar": {
+  "en-US": "Report",
+  "es-ES": "Denunciar"
+ },
+ "Desabilitar cartão": {
+  "en-US": "Disable cards",
+  "es-ES": "Desactivar tarjeta"
+ },
+ "Desativar verificação em duas etapas": {
+  "en-US": "Disable two-step verification",
+  "es-ES": "Desactivar verificación en dos pasos"
+ },
+ "Descartar": {
+  "en-US": "Discard",
+  "es-ES": "Descartar"
+ },
+ "Descobrir produtores": {
+  "en-US": "Discover producers",
+  "es-ES": "Descubrir productores"
+ },
+ "Desconectar": {
+  "en-US": "Disconnect",
+  "es-ES": "Desconectar"
+ },
+ "Desconto": {
+  "en-US": "Discount",
+  "es-ES": "Descuento"
+ },
+ "Descrição": {
+  "en-US": "Description",
+  "es-ES": "Descripción"
+ },
+ "Descrição acessível": {
+  "en-US": "Accessible description",
+  "es-ES": "Descripción accesible"
+ },
+ "Desempenho da meta": {
+  "en-US": "Goal performance",
+  "es-ES": "Rendimiento de la meta"
+ },
+ "Desempenho por canal": {
+  "en-US": "Performance by channel",
+  "es-ES": "Rendimiento por canal"
+ },
+ "Desenvolvimento": {
+  "en-US": "Development",
+  "es-ES": "Desarrollo"
+ },
+ "Desfazer": {
+  "en-US": "Undo",
+  "es-ES": "Deshacer"
+ },
+ "Design": {
+  "en-US": "Design",
+  "es-ES": "Diseño"
+ },
+ "Design global": {
+  "en-US": "Global design",
+  "es-ES": "Diseño global"
+ },
+ "Desktop": {
+  "en-US": "Desktop",
+  "es-ES": "Escritorio"
+ },
+ "Destino": {
+  "en-US": "Destination",
+  "es-ES": "Destino"
+ },
+ "Destino da notificação": {
+  "en-US": "Notification destination",
+  "es-ES": "Destino de la notificación"
+ },
+ "Destino recente": {
+  "en-US": "Recent destination",
+  "es-ES": "Destino reciente"
+ },
+ "Destinos globais das vendas mais recentes": {
+  "en-US": "Global destinations of the latest sales",
+  "es-ES": "Destinos globales de las ventas más recientes"
+ },
+ "Detalhes": {
+  "en-US": "Details",
+  "es-ES": "Detalles"
+ },
+ "Diagnóstico do dispositivo": {
+  "en-US": "Device diagnostics",
+  "es-ES": "Diagnóstico del dispositivo"
+ },
+ "Digital": {
+  "en-US": "Digital",
+  "es-ES": "Digital"
+ },
+ "Dispositivo": {
+  "en-US": "Device",
+  "es-ES": "Dispositivo"
+ },
+ "Dispositivos ativos": {
+  "en-US": "Active devices",
+  "es-ES": "Dispositivos activos"
+ },
+ "Dispositivos selecionados": {
+  "en-US": "Selected devices",
+  "es-ES": "Dispositivos seleccionados"
+ },
+ "Disputa pelas principais posições": {
+  "en-US": "Competing for the top positions",
+  "es-ES": "Competición por los primeros puestos"
+ },
+ "Distribuir automaticamente": {
+  "en-US": "Distribute automatically",
+  "es-ES": "Distribuir automáticamente"
+ },
+ "Distribuição das transações de hoje": {
+  "en-US": "Today's transaction distribution",
+  "es-ES": "Distribución de las transacciones de hoy"
+ },
+ "Distribuição por horário (24 pesos)": {
+  "en-US": "Hourly distribution (24 weights)",
+  "es-ES": "Distribución por hora (24 ponderaciones)"
+ },
+ "Documentos": {
+  "en-US": "Documents",
+  "es-ES": "Documentos"
+ },
+ "Documentos e liberação da operação": {
+  "en-US": "Documents and operational approval",
+  "es-ES": "Documentos y autorización de la operación"
+ },
+ "Downsell": {
+  "en-US": "Downsell",
+  "es-ES": "Downsell"
+ },
+ "Duplicar": {
+  "en-US": "Duplicate",
+  "es-ES": "Duplicar"
+ },
+ "E-mail": {
+  "en-US": "Email",
+  "es-ES": "Correo electrónico"
+ },
+ "EDIÇÃO SEGURA · NENHUMA COMPRA SERÁ PROCESSADA": {
+  "en-US": "SAFE EDITING · NO PURCHASE WILL BE PROCESSED",
+  "es-ES": "EDICIÓN SEGURA · NO SE PROCESARÁ NINGUNA COMPRA"
+ },
+ "ELEMENTO": {
+  "en-US": "ELEMENT",
+  "es-ES": "ELEMENTO"
+ },
+ "ESTRUTURA SPHEXPAY": {
+  "en-US": "SPHEXPAY STRUCTURE",
+  "es-ES": "ESTRUCTURA SPHEXPAY"
+ },
+ "EUR — Euro": {
+  "en-US": "EUR — Euro",
+  "es-ES": "EUR — Euro"
+ },
+ "EVENTOS": {
+  "en-US": "EVENTS",
+  "es-ES": "EVENTOS"
+ },
+ "Editar": {
+  "en-US": "Edit",
+  "es-ES": "Editar"
+ },
+ "Editar elementos": {
+  "en-US": "Edit elements",
+  "es-ES": "Editar elementos"
+ },
+ "Editar layout": {
+  "en-US": "Edit layout",
+  "es-ES": "Editar diseño"
+ },
+ "Editar perfil": {
+  "en-US": "Edit profile",
+  "es-ES": "Editar perfil"
+ },
+ "Editar planejamento": {
+  "en-US": "Edit planning",
+  "es-ES": "Editar planificación"
+ },
+ "Elementos sem conteúdo ficam ocultos no link público. A ordem vale dentro de cada posição.": {
+  "en-US": "Elements without content are hidden on the public link. The order applies within each position.",
+  "es-ES": "Los elementos sin contenido se ocultan en el enlace público. El orden se aplica dentro de cada posición."
+ },
+ "Em breve": {
+  "en-US": "Coming soon",
+  "es-ES": "Próximamente"
+ },
+ "Em rascunho": {
+  "en-US": "Draft",
+  "es-ES": "En borrador"
+ },
+ "Email": {
+  "en-US": "Email",
+  "es-ES": "Correo electrónico"
+ },
+ "Encerrar": {
+  "en-US": "End",
+  "es-ES": "Finalizar"
+ },
+ "Encontre o que precisa para acompanhar sua operação.": {
+  "en-US": "Find what you need to manage your operation.",
+  "es-ES": "Encuentra lo que necesitas para seguir tu operación."
+ },
+ "Encontre produtores reais e novas conversas.": {
+  "en-US": "Find real producers and new conversations.",
+  "es-ES": "Encuentra productores reales y nuevas conversaciones."
+ },
+ "Endereço": {
+  "en-US": "Address",
+  "es-ES": "Dirección"
+ },
+ "Entendi": {
+  "en-US": "Got it",
+  "es-ES": "Entendido"
+ },
+ "Entre na sua conta para acessar a vitrine.": {
+  "en-US": "Sign in to access the showcase.",
+  "es-ES": "Inicia sesión para acceder al escaparate."
+ },
+ "Entrega": {
+  "en-US": "Delivery",
+  "es-ES": "Entrega"
+ },
+ "Entrega monitorada": {
+  "en-US": "Tracked delivery",
+  "es-ES": "Entrega supervisada"
+ },
+ "Envia somente novas vendas aprovadas produzidas por esta operação.": {
+  "en-US": "Only sends new approved sales generated by this operation.",
+  "es-ES": "Envía únicamente nuevas ventas aprobadas producidas por esta operación."
+ },
+ "Enviadas nesta execução": {
+  "en-US": "Sent in this run",
+  "es-ES": "Enviadas en esta ejecución"
+ },
+ "Enviado": {
+  "en-US": "Sent",
+  "es-ES": "Enviado"
+ },
+ "Enviar a cada": {
+  "en-US": "Send every",
+  "es-ES": "Enviar cada"
+ },
+ "Enviar ao dispositivo": {
+  "en-US": "Send to device",
+  "es-ES": "Enviar al dispositivo"
+ },
+ "Enviar capa": {
+  "en-US": "Upload cover",
+  "es-ES": "Subir portada"
+ },
+ "Enviar denúncia": {
+  "en-US": "Submit report",
+  "es-ES": "Enviar denuncia"
+ },
+ "Enviar imagem": {
+  "en-US": "Upload image",
+  "es-ES": "Subir imagen"
+ },
+ "Enviar para análise": {
+  "en-US": "Submit for review",
+  "es-ES": "Enviar para revisión"
+ },
+ "Enviar sequência": {
+  "en-US": "Send sequence",
+  "es-ES": "Enviar secuencia"
+ },
+ "Enviar uma vez": {
+  "en-US": "Send once",
+  "es-ES": "Enviar una vez"
+ },
+ "Envie JSON com os dados do evento.": {
+  "en-US": "Send JSON containing the event data.",
+  "es-ES": "Envía JSON con los datos del evento."
+ },
+ "Envie eventos importantes para os seus sistemas e acompanhe cada tentativa.": {
+  "en-US": "Send important events to your systems and track every attempt.",
+  "es-ES": "Envía eventos importantes a tus sistemas y sigue cada intento."
+ },
+ "Envie seus dados e documentos para análise de compliance. A operação é liberada após a aprovação.": {
+  "en-US": "Submit your details and documents for compliance review. Operations are enabled after approval.",
+  "es-ES": "Envía tus datos y documentos para la revisión de cumplimiento. La operación se habilita tras la aprobación."
+ },
+ "Envios e programações recentes": {
+  "en-US": "Recent sends and schedules",
+  "es-ES": "Envíos y programaciones recientes"
+ },
+ "Escolha entre 1 e 100.": {
+  "en-US": "Choose between 1 and 100.",
+  "es-ES": "Elige entre 1 y 100."
+ },
+ "Esse mês": {
+  "en-US": "This month",
+  "es-ES": "Este mes"
+ },
+ "Esta configuração depende do checkout oficial ainda não conectado.": {
+  "en-US": "This setting depends on the official checkout, which is not connected yet.",
+  "es-ES": "Esta configuración depende del checkout oficial, que aún no está conectado."
+ },
+ "Estado atual": {
+  "en-US": "Current status",
+  "es-ES": "Estado actual"
+ },
+ "Este cenário produzirá aproximadamente": {
+  "en-US": "This scenario will generate approximately",
+  "es-ES": "Este escenario producirá aproximadamente"
+ },
+ "Este dispositivo": {
+  "en-US": "This device",
+  "es-ES": "Este dispositivo"
+ },
+ "Estilo do botão": {
+  "en-US": "Button style",
+  "es-ES": "Estilo del botón"
+ },
+ "Estimativa": {
+  "en-US": "Estimate",
+  "es-ES": "Estimación"
+ },
+ "Etapa": {
+  "en-US": "Step",
+  "es-ES": "Etapa"
+ },
+ "Evento": {
+  "en-US": "Event",
+  "es-ES": "Evento"
+ },
+ "Eventos": {
+  "en-US": "Events",
+  "es-ES": "Eventos"
+ },
+ "Eventos enviados": {
+  "en-US": "Events sent",
+  "es-ES": "Eventos enviados"
+ },
+ "Excedente:": {
+  "en-US": "Overage:",
+  "es-ES": "Excedente:"
+ },
+ "Excluir": {
+  "en-US": "Delete",
+  "es-ES": "Eliminar"
+ },
+ "Excluir elemento": {
+  "en-US": "Delete element",
+  "es-ES": "Eliminar elemento"
+ },
+ "Execução": {
+  "en-US": "Run",
+  "es-ES": "Ejecución"
+ },
+ "Exemplo de requisição": {
+  "en-US": "Request example",
+  "es-ES": "Ejemplo de solicitud"
+ },
+ "Exibição": {
+  "en-US": "Display",
+  "es-ES": "Visualización"
+ },
+ "Expiração": {
+  "en-US": "Expiration",
+  "es-ES": "Caducidad"
+ },
+ "Explorar": {
+  "en-US": "Explore",
+  "es-ES": "Explorar"
+ },
+ "Explorar produtores": {
+  "en-US": "Explore producers",
+  "es-ES": "Explorar productores"
+ },
+ "Exportar": {
+  "en-US": "Export",
+  "es-ES": "Exportar"
+ },
+ "Exportar CSV": {
+  "en-US": "Export CSV",
+  "es-ES": "Exportar CSV"
+ },
+ "Exportar extrato": {
+  "en-US": "Export statement",
+  "es-ES": "Exportar extracto"
+ },
+ "Exportar relatório": {
+  "en-US": "Export report",
+  "es-ES": "Exportar informe"
+ },
+ "FALTA POUCO PARA SER SEU": {
+  "en-US": "ALMOST YOURS",
+  "es-ES": "FALTA POCO PARA QUE SEA TUYO"
+ },
+ "FLUXO POR REGIÃO": {
+  "en-US": "FLOW BY REGION",
+  "es-ES": "FLUJO POR REGIÓN"
+ },
+ "Faltam": {
+  "en-US": "Remaining",
+  "es-ES": "Faltan"
+ },
+ "Faturamento elegível": {
+  "en-US": "Eligible revenue",
+  "es-ES": "Facturación elegible"
+ },
+ "Fechar": {
+  "en-US": "Close",
+  "es-ES": "Cerrar"
+ },
+ "Fim": {
+  "en-US": "End",
+  "es-ES": "Fin"
+ },
+ "Fim opcional": {
+  "en-US": "Optional end",
+  "es-ES": "Final opcional"
+ },
+ "Finalize sua compra": {
+  "en-US": "Complete your purchase",
+  "es-ES": "Finaliza tu compra"
+ },
+ "Financeiro": {
+  "en-US": "Finance",
+  "es-ES": "Finanzas"
+ },
+ "Fluxos recentes a partir da sua operação": {
+  "en-US": "Recent flows from your operation",
+  "es-ES": "Flujos recientes de tu operación"
+ },
+ "Fonte segura": {
+  "en-US": "Secure source",
+  "es-ES": "Fuente segura"
+ },
+ "Formato do botão": {
+  "en-US": "Button shape",
+  "es-ES": "Forma del botón"
+ },
+ "Formatos aceitos: JPG, PNG ou PDF, até 10 MB por arquivo.": {
+  "en-US": "Accepted formats: JPG, PNG or PDF, up to 10 MB per file.",
+  "es-ES": "Formatos aceptados: JPG, PNG o PDF, hasta 10 MB por archivo."
+ },
+ "Foto do perfil": {
+  "en-US": "Profile photo",
+  "es-ES": "Foto de perfil"
+ },
+ "Fraude, manipulação e duplicidade são proibidas.": {
+  "en-US": "Fraud, manipulation and duplication are prohibited.",
+  "es-ES": "Se prohíben el fraude, la manipulación y la duplicación."
+ },
+ "Físico": {
+  "en-US": "Physical",
+  "es-ES": "Físico"
+ },
+ "GERADOR INTELIGENTE": {
+  "en-US": "SMART GENERATOR",
+  "es-ES": "GENERADOR INTELIGENTE"
+ },
+ "Garantia de 7 dias": {
+  "en-US": "7-day guarantee",
+  "es-ES": "Garantía de 7 días"
+ },
+ "Gerador": {
+  "en-US": "Generator",
+  "es-ES": "Generador"
+ },
+ "Gerador de notificações": {
+  "en-US": "Notification generator",
+  "es-ES": "Generador de notificaciones"
+ },
+ "Gerar convite": {
+  "en-US": "Generate invitation",
+  "es-ES": "Generar invitación"
+ },
+ "Gerenciamento local": {
+  "en-US": "Local management",
+  "es-ES": "Gestión local"
+ },
+ "Gerenciar produtos e checkouts": {
+  "en-US": "Manage products and checkouts",
+  "es-ES": "Gestionar productos y checkouts"
+ },
+ "Gerencie tudo que você vende no SphexPay.": {
+  "en-US": "Manage everything you sell on SphexPay.",
+  "es-ES": "Gestiona todo lo que vendes en SphexPay."
+ },
+ "Golpe": {
+  "en-US": "Scam",
+  "es-ES": "Estafa"
+ },
+ "HISTÓRICO": {
+  "en-US": "HISTORY",
+  "es-ES": "HISTORIAL"
+ },
+ "Habilitar cartão": {
+  "en-US": "Enable cards",
+  "es-ES": "Activar tarjeta"
+ },
+ "Headline": {
+  "en-US": "Headline",
+  "es-ES": "Titular"
+ },
+ "Histórico": {
+  "en-US": "History",
+  "es-ES": "Historial"
+ },
+ "Histórico de disparos": {
+  "en-US": "Sending history",
+  "es-ES": "Historial de envíos"
+ },
+ "Histórico de saques": {
+  "en-US": "Withdrawal history",
+  "es-ES": "Historial de retiros"
+ },
+ "Histórico financeiro": {
+  "en-US": "Financial history",
+  "es-ES": "Historial financiero"
+ },
+ "Hoje": {
+  "en-US": "Today",
+  "es-ES": "Hoy"
+ },
+ "Hoje, 10:42": {
+  "en-US": "Today, 10:42",
+  "es-ES": "Hoy, 10:42"
+ },
+ "Horas": {
+  "en-US": "Hours",
+  "es-ES": "Horas"
+ },
+ "Horário": {
+  "en-US": "Time",
+  "es-ES": "Hora"
+ },
+ "Horário simulado": {
+  "en-US": "Simulated time",
+  "es-ES": "Hora simulada"
+ },
+ "ID": {
+  "en-US": "ID",
+  "es-ES": "ID"
+ },
+ "ID / Data": {
+  "en-US": "ID / Date",
+  "es-ES": "ID / Fecha"
+ },
+ "ID da assinatura": {
+  "en-US": "Subscription ID",
+  "es-ES": "ID de suscripción"
+ },
+ "ID de afiliado": {
+  "en-US": "Affiliate ID",
+  "es-ES": "ID de afiliado"
+ },
+ "ID do Order Bump existente": {
+  "en-US": "Existing order bump ID",
+  "es-ES": "ID del order bump existente"
+ },
+ "ID público": {
+  "en-US": "Public ID",
+  "es-ES": "ID público"
+ },
+ "Identificador": {
+  "en-US": "Identifier",
+  "es-ES": "Identificador"
+ },
+ "Identificador / horário": {
+  "en-US": "Identifier / time",
+  "es-ES": "Identificador / hora"
+ },
+ "Identificação": {
+  "en-US": "Identification",
+  "es-ES": "Identificación"
+ },
+ "Identifique a compra e envie a confirmação ao comprador.": {
+  "en-US": "Identify the purchase and send confirmation to the buyer.",
+  "es-ES": "Identifica la compra y envía la confirmación al comprador."
+ },
+ "Imagem": {
+  "en-US": "Image",
+  "es-ES": "Imagen"
+ },
+ "Imagem de capa (opcional)": {
+  "en-US": "Cover image (optional)",
+  "es-ES": "Imagen de portada (opcional)"
+ },
+ "Imagens até 5 MB · MP4 / WebM até 25 MB": {
+  "en-US": "Images up to 5 MB · MP4 / WebM up to 25 MB",
+  "es-ES": "Imágenes de hasta 5 MB · MP4 / WebM de hasta 25 MB"
+ },
+ "Importar arquivo": {
+  "en-US": "Import file",
+  "es-ES": "Importar archivo"
+ },
+ "Informações": {
+  "en-US": "Information",
+  "es-ES": "Información"
+ },
+ "Informe um valor válido e não negativo.": {
+  "en-US": "Enter a valid, non-negative value.",
+  "es-ES": "Introduce un valor válido y no negativo."
+ },
+ "Informe uma URL HTTPS válida.": {
+  "en-US": "Enter a valid HTTPS URL.",
+  "es-ES": "Introduce una URL HTTPS válida."
+ },
+ "Infraestrutura financeira": {
+  "en-US": "Financial infrastructure",
+  "es-ES": "Infraestructura financiera"
+ },
+ "Iniciar outra compra": {
+  "en-US": "Start another purchase",
+  "es-ES": "Iniciar otra compra"
+ },
+ "Instalar aplicativo": {
+  "en-US": "Install app",
+  "es-ES": "Instalar aplicación"
+ },
+ "Instruções": {
+  "en-US": "Instructions",
+  "es-ES": "Instrucciones"
+ },
+ "Integração necessária": {
+  "en-US": "Integration required",
+  "es-ES": "Integración necesaria"
+ },
+ "Integrações ativas": {
+  "en-US": "Active integrations",
+  "es-ES": "Integraciones activas"
+ },
+ "Integridade do produto": {
+  "en-US": "Product integrity",
+  "es-ES": "Integridad del producto"
+ },
+ "Interações importantes da sua comunidade.": {
+  "en-US": "Important interactions in your community.",
+  "es-ES": "Interacciones importantes de tu comunidad."
+ },
+ "Início": {
+  "en-US": "Home",
+  "es-ES": "Inicio"
+ },
+ "Início da sessão": {
+  "en-US": "Session start",
+  "es-ES": "Inicio de sesión"
+ },
+ "Ir para o conteúdo": {
+  "en-US": "Skip to content",
+  "es-ES": "Ir al contenido"
+ },
+ "Ir para produtos": {
+  "en-US": "Go to products",
+  "es-ES": "Ir a productos"
+ },
+ "Itens (um por linha)": {
+  "en-US": "Items (one per line)",
+  "es-ES": "Elementos (uno por línea)"
+ },
+ "JORNADA DE PREMIAÇÕES": {
+  "en-US": "AWARDS JOURNEY",
+  "es-ES": "RECORRIDO DE PREMIOS"
+ },
+ "JORNADA SPHEXPAY": {
+  "en-US": "SPHEXPAY JOURNEY",
+  "es-ES": "RECORRIDO SPHEXPAY"
+ },
+ "JPG, PNG ou WebP · até 5 MB": {
+  "en-US": "JPG, PNG or WebP · up to 5 MB",
+  "es-ES": "JPG, PNG o WebP · hasta 5 MB"
+ },
+ "Janela (dias)": {
+  "en-US": "Window (days)",
+  "es-ES": "Ventana (días)"
+ },
+ "Largura": {
+  "en-US": "Width",
+  "es-ES": "Ancho"
+ },
+ "Legenda (opcional)": {
+  "en-US": "Caption (optional)",
+  "es-ES": "Leyenda (opcional)"
+ },
+ "Leia o status e o identificador retornado.": {
+  "en-US": "Read the returned status and identifier.",
+  "es-ES": "Lee el estado y el identificador devueltos."
+ },
+ "Ler regulamento": {
+  "en-US": "Read rules",
+  "es-ES": "Leer reglamento"
+ },
+ "Ler todas": {
+  "en-US": "Read all",
+  "es-ES": "Leer todas"
+ },
+ "Limite atual": {
+  "en-US": "Current limit",
+  "es-ES": "Límite actual"
+ },
+ "Limite por cliente": {
+  "en-US": "Limit per customer",
+  "es-ES": "Límite por cliente"
+ },
+ "Limite total": {
+  "en-US": "Total limit",
+  "es-ES": "Límite total"
+ },
+ "Limpar": {
+  "en-US": "Clear",
+  "es-ES": "Limpiar"
+ },
+ "Limpar cache offline": {
+  "en-US": "Clear offline cache",
+  "es-ES": "Borrar caché sin conexión"
+ },
+ "Limpar histórico": {
+  "en-US": "Clear history",
+  "es-ES": "Borrar historial"
+ },
+ "Limpar seleção": {
+  "en-US": "Clear selection",
+  "es-ES": "Limpiar selección"
+ },
+ "Link da oferta (HTTPS)": {
+  "en-US": "Offer link (HTTPS)",
+  "es-ES": "Enlace de la oferta (HTTPS)"
+ },
+ "Link público do checkout": {
+  "en-US": "Public checkout link",
+  "es-ES": "Enlace público del checkout"
+ },
+ "Localização": {
+  "en-US": "Location",
+  "es-ES": "Ubicación"
+ },
+ "Líquido": {
+  "en-US": "Net",
+  "es-ES": "Neto"
+ },
+ "MEIOS DE PAGAMENTO": {
+  "en-US": "PAYMENT METHODS",
+  "es-ES": "MÉTODOS DE PAGO"
+ },
+ "META": {
+  "en-US": "GOAL",
+  "es-ES": "META"
+ },
+ "MEU DESEMPENHO": {
+  "en-US": "MY PERFORMANCE",
+  "es-ES": "MI RENDIMIENTO"
+ },
+ "Maior preço": {
+  "en-US": "Highest price",
+  "es-ES": "Mayor precio"
+ },
+ "Mais": {
+  "en-US": "More",
+  "es-ES": "Más"
+ },
+ "Mais módulos": {
+  "en-US": "More modules",
+  "es-ES": "Más módulos"
+ },
+ "Mais opaco": {
+  "en-US": "More opaque",
+  "es-ES": "Más opaco"
+ },
+ "Mais transparente": {
+  "en-US": "More transparent",
+  "es-ES": "Más transparente"
+ },
+ "Mantenha esta página aberta durante a sequência.": {
+  "en-US": "Keep this page open during the sequence.",
+  "es-ES": "Mantén esta página abierta durante la secuencia."
+ },
+ "Manual": {
+  "en-US": "Manual",
+  "es-ES": "Manual"
+ },
+ "Marcar como lida": {
+  "en-US": "Mark as read",
+  "es-ES": "Marcar como leída"
+ },
+ "Marcar todas como lidas": {
+  "en-US": "Mark all as read",
+  "es-ES": "Marcar todas como leídas"
+ },
+ "Marco de": {
+  "en-US": "Milestone of",
+  "es-ES": "Hito de"
+ },
+ "Mensagem": {
+  "en-US": "Message",
+  "es-ES": "Mensaje"
+ },
+ "Mensagens": {
+  "en-US": "Messages",
+  "es-ES": "Mensajes"
+ },
+ "Mensal": {
+  "en-US": "Monthly",
+  "es-ES": "Mensual"
+ },
+ "Merchant": {
+  "en-US": "Merchant",
+  "es-ES": "Comerciante"
+ },
+ "Meta": {
+  "en-US": "Goal",
+  "es-ES": "Meta"
+ },
+ "Meta:": {
+  "en-US": "Goal:",
+  "es-ES": "Meta:"
+ },
+ "Meu cadastro": {
+  "en-US": "My registration",
+  "es-ES": "Mi registro"
+ },
+ "Meus Produtos": {
+  "en-US": "My Products",
+  "es-ES": "Mis productos"
+ },
+ "Meus produtos para vitrine": {
+  "en-US": "My showcase products",
+  "es-ES": "Mis productos para el escaparate"
+ },
+ "Minutos": {
+  "en-US": "Minutes",
+  "es-ES": "Minutos"
+ },
+ "Mobile": {
+  "en-US": "Mobile",
+  "es-ES": "Móvil"
+ },
+ "Modelo do checkout": {
+  "en-US": "Checkout template",
+  "es-ES": "Plantilla del checkout"
+ },
+ "Modelo na versão 1": {
+  "en-US": "Template version 1",
+  "es-ES": "Plantilla en versión 1"
+ },
+ "Modo": {
+  "en-US": "Mode",
+  "es-ES": "Modo"
+ },
+ "Moeda": {
+  "en-US": "Currency",
+  "es-ES": "Moneda"
+ },
+ "Moeda de exibição": {
+  "en-US": "Display currency",
+  "es-ES": "Moneda de visualización"
+ },
+ "Moeda-base": {
+  "en-US": "Base currency",
+  "es-ES": "Moneda base"
+ },
+ "Mostrar conteúdo inteiro": {
+  "en-US": "Show all content",
+  "es-ES": "Mostrar todo el contenido"
+ },
+ "Motivo": {
+  "en-US": "Reason",
+  "es-ES": "Motivo"
+ },
+ "Motivo (para reprovar ou pedir ajustes)": {
+  "en-US": "Reason (for rejection or requested changes)",
+  "es-ES": "Motivo (para rechazar o solicitar cambios)"
+ },
+ "Mover para baixo": {
+  "en-US": "Move down",
+  "es-ES": "Mover hacia abajo"
+ },
+ "Mover para cima": {
+  "en-US": "Move up",
+  "es-ES": "Mover hacia arriba"
+ },
+ "Método": {
+  "en-US": "Method",
+  "es-ES": "Método"
+ },
+ "Método líder": {
+  "en-US": "Leading method",
+  "es-ES": "Método principal"
+ },
+ "Métodos aceitos": {
+  "en-US": "Accepted methods",
+  "es-ES": "Métodos aceptados"
+ },
+ "Métodos de pagamento": {
+  "en-US": "Payment methods",
+  "es-ES": "Métodos de pago"
+ },
+ "Mês passado": {
+  "en-US": "Last month",
+  "es-ES": "Mes pasado"
+ },
+ "Módulo ainda não instalado": {
+  "en-US": "Module not installed yet",
+  "es-ES": "Módulo aún no instalado"
+ },
+ "NETWORK": {
+  "en-US": "NETWORK",
+  "es-ES": "RED"
+ },
+ "NOTIFICAÇÕES PUSH": {
+  "en-US": "PUSH NOTIFICATIONS",
+  "es-ES": "NOTIFICACIONES PUSH"
+ },
+ "NOVO CHECKOUT": {
+  "en-US": "NEW CHECKOUT",
+  "es-ES": "NUEVO CHECKOUT"
+ },
+ "NOVO PRODUTO": {
+  "en-US": "NEW PRODUCT",
+  "es-ES": "NUEVO PRODUCTO"
+ },
+ "Nascimento": {
+  "en-US": "Date of birth",
+  "es-ES": "Fecha de nacimiento"
+ },
+ "Navegador": {
+  "en-US": "Browser",
+  "es-ES": "Navegador"
+ },
+ "Navegação do cabeçalho": {
+  "en-US": "Header navigation",
+  "es-ES": "Navegación del encabezado"
+ },
+ "Nenhum afiliado encontrado": {
+  "en-US": "No affiliates found",
+  "es-ES": "No se encontraron afiliados"
+ },
+ "Nenhum código de rastreamento é criado sem integração logística.": {
+  "en-US": "No tracking code is created without a shipping integration.",
+  "es-ES": "No se crea ningún código de seguimiento sin una integración logística."
+ },
+ "Nenhum dado de cartão é armazenado pela SphexPay.": {
+  "en-US": "No card details are stored by SphexPay.",
+  "es-ES": "SphexPay no almacena ningún dato de tarjeta."
+ },
+ "Nenhum disparo encontrado.": {
+  "en-US": "No sends found.",
+  "es-ES": "No se encontraron envíos."
+ },
+ "Nenhum documento enviado.": {
+  "en-US": "No documents uploaded.",
+  "es-ES": "No se han enviado documentos."
+ },
+ "Nenhum envio encontrado neste período.": {
+  "en-US": "No sends found in this period.",
+  "es-ES": "No se encontraron envíos en este período."
+ },
+ "Nenhum módulo encontrado.": {
+  "en-US": "No modules found.",
+  "es-ES": "No se encontraron módulos."
+ },
+ "Nenhum participante elegível foi registrado. As posições serão preenchidas somente por transações reais confirmadas.": {
+  "en-US": "No eligible participants have been registered. Positions will only be filled by confirmed real transactions.",
+  "es-ES": "No hay participantes elegibles registrados. Los puestos solo se completarán con transacciones reales confirmadas."
+ },
+ "Nenhum produto vinculado.": {
+  "en-US": "No linked products.",
+  "es-ES": "No hay productos vinculados."
+ },
+ "Nenhum produtor encontrado.": {
+  "en-US": "No producers found.",
+  "es-ES": "No se encontraron productores."
+ },
+ "Nenhum resultado encontrado": {
+  "en-US": "No results found",
+  "es-ES": "No se encontraron resultados"
+ },
+ "Nenhum resultado financeiro no período.": {
+  "en-US": "No financial results for this period.",
+  "es-ES": "No hay resultados financieros en el período."
+ },
+ "Nenhum saque solicitado.": {
+  "en-US": "No withdrawals requested.",
+  "es-ES": "No se han solicitado retiros."
+ },
+ "Nenhum webhook configurado.": {
+  "en-US": "No webhooks configured.",
+  "es-ES": "No hay webhooks configurados."
+ },
+ "Nenhuma atividade global agora": {
+  "en-US": "No global activity right now",
+  "es-ES": "No hay actividad global ahora"
+ },
+ "Nenhuma integração bancária oficial está conectada.": {
+  "en-US": "No official banking integration is connected.",
+  "es-ES": "No hay ninguna integración bancaria oficial conectada."
+ },
+ "Nenhuma opção disponível.": {
+  "en-US": "No options available.",
+  "es-ES": "No hay opciones disponibles."
+ },
+ "Nenhuma venda recebida ainda. Conecte seu provedor para acompanhar as transações neste painel.": {
+  "en-US": "No sales received yet. Connect your provider to track transactions in this dashboard.",
+  "es-ES": "Aún no has recibido ventas. Conecta tu proveedor para seguir las transacciones en este panel."
+ },
+ "Nenhuma venda registrada neste período.": {
+  "en-US": "No sales recorded for this period.",
+  "es-ES": "No hay ventas registradas en este período."
+ },
+ "Nenhuma versão publicada.": {
+  "en-US": "No published versions.",
+  "es-ES": "No hay versiones publicadas."
+ },
+ "No iPhone ou iPad, abra o menu Compartilhar do Safari e escolha “Adicionar à Tela de Início”.": {
+  "en-US": "On iPhone or iPad, open Safari's Share menu and choose “Add to Home Screen”.",
+  "es-ES": "En iPhone o iPad, abre el menú Compartir de Safari y elige «Añadir a pantalla de inicio»."
+ },
+ "No máximo uma a cada 15 segundos": {
+  "en-US": "At most once every 15 seconds",
+  "es-ES": "Como máximo una cada 15 segundos"
+ },
+ "No máximo uma a cada 5 segundos": {
+  "en-US": "At most once every 5 seconds",
+  "es-ES": "Como máximo una cada 5 segundos"
+ },
+ "No máximo uma por minuto": {
+  "en-US": "At most once per minute",
+  "es-ES": "Como máximo una por minuto"
+ },
+ "No resumo do pedido": {
+  "en-US": "In the order summary",
+  "es-ES": "En el resumen del pedido"
+ },
+ "Nome": {
+  "en-US": "Name",
+  "es-ES": "Nombre"
+ },
+ "Nome / Razão social": {
+  "en-US": "Name / Legal business name",
+  "es-ES": "Nombre / Razón social"
+ },
+ "Nome A–Z": {
+  "en-US": "Name A–Z",
+  "es-ES": "Nombre A–Z"
+ },
+ "Nome completo": {
+  "en-US": "Full name",
+  "es-ES": "Nombre completo"
+ },
+ "Nome da oferta": {
+  "en-US": "Offer name",
+  "es-ES": "Nombre de la oferta"
+ },
+ "Nome de quem deu o depoimento": {
+  "en-US": "Testimonial author's name",
+  "es-ES": "Nombre de quien dejó el testimonio"
+ },
+ "Nome do checkout": {
+  "en-US": "Checkout name",
+  "es-ES": "Nombre del checkout"
+ },
+ "Nome e e-mail obrigatórios": {
+  "en-US": "Name and email required",
+  "es-ES": "Nombre y correo electrónico obligatorios"
+ },
+ "Nome fantasia": {
+  "en-US": "Trading name",
+  "es-ES": "Nombre comercial"
+ },
+ "Nome público": {
+  "en-US": "Public name",
+  "es-ES": "Nombre público"
+ },
+ "Notificações": {
+  "en-US": "Notifications",
+  "es-ES": "Notificaciones"
+ },
+ "Notificações automáticas": {
+  "en-US": "Automatic notifications",
+  "es-ES": "Notificaciones automáticas"
+ },
+ "Notificações completas no iPhone": {
+  "en-US": "Full notifications on iPhone",
+  "es-ES": "Notificaciones completas en iPhone"
+ },
+ "Notificações da operação": {
+  "en-US": "Operational notifications",
+  "es-ES": "Notificaciones de la operación"
+ },
+ "Notificações neste computador": {
+  "en-US": "Notifications on this computer",
+  "es-ES": "Notificaciones en este ordenador"
+ },
+ "Notificações não lidas": {
+  "en-US": "Unread notifications",
+  "es-ES": "Notificaciones sin leer"
+ },
+ "Nova etapa": {
+  "en-US": "New step",
+  "es-ES": "Nueva etapa"
+ },
+ "Nova integração": {
+  "en-US": "New integration",
+  "es-ES": "Nueva integración"
+ },
+ "Nova mensagem": {
+  "en-US": "New message",
+  "es-ES": "Nuevo mensaje"
+ },
+ "Nova oferta": {
+  "en-US": "New offer",
+  "es-ES": "Nueva oferta"
+ },
+ "Novo checkout": {
+  "en-US": "New checkout",
+  "es-ES": "Nuevo checkout"
+ },
+ "Novo produto": {
+  "en-US": "New product",
+  "es-ES": "Nuevo producto"
+ },
+ "NÍVEL": {
+  "en-US": "LEVEL",
+  "es-ES": "NIVEL"
+ },
+ "Não armazene senhas ou credenciais financeiras nesta aplicação.": {
+  "en-US": "Do not store passwords or financial credentials in this application.",
+  "es-ES": "No almacenes contraseñas ni credenciales financieras en esta aplicación."
+ },
+ "Não configurada": {
+  "en-US": "Not configured",
+  "es-ES": "No configurada"
+ },
+ "Não foi possível carregar a vitrine": {
+  "en-US": "Unable to load the showcase",
+  "es-ES": "No se pudo cargar el escaparate"
+ },
+ "Não foi possível carregar as assinaturas": {
+  "en-US": "Unable to load subscriptions",
+  "es-ES": "No se pudieron cargar las suscripciones"
+ },
+ "Não foi possível carregar os afiliados.": {
+  "en-US": "Unable to load affiliates.",
+  "es-ES": "No se pudieron cargar los afiliados."
+ },
+ "Não foi possível consultar o CEP agora. Preencha o endereço manualmente.": {
+  "en-US": "Unable to look up the postal code right now. Enter the address manually.",
+  "es-ES": "No se pudo consultar el código postal ahora. Introduce la dirección manualmente."
+ },
+ "Não foi possível continuar": {
+  "en-US": "Unable to continue",
+  "es-ES": "No se pudo continuar"
+ },
+ "Não informar": {
+  "en-US": "Prefer not to say",
+  "es-ES": "Prefiero no informar"
+ },
+ "O cartão é preenchido no ambiente seguro da Stripe. Cupons, parcelas e adicionais devem estar habilitados na integração para serem cobrados.": {
+  "en-US": "Card details are entered in Stripe's secure environment. Coupons, installments and extras must be enabled in the integration to be charged.",
+  "es-ES": "Los datos de tarjeta se introducen en el entorno seguro de Stripe. Los cupones, las cuotas y los extras deben estar habilitados en la integración para cobrarse."
+ },
+ "O controle da sua operação,": {
+  "en-US": "Control your operation,",
+  "es-ES": "El control de tu operación,"
+ },
+ "O convite fica pendente. Envio e aceitação dependem de um serviço transacional autenticado.": {
+  "en-US": "The invitation remains pending. Sending and acceptance depend on an authenticated transactional service.",
+  "es-ES": "La invitación queda pendiente. El envío y la aceptación dependen de un servicio transaccional autenticado."
+ },
+ "O endereço foi salvo. Você receberá atualizações pela central de notificações quando o status mudar.": {
+  "en-US": "The address has been saved. You will receive updates in the notification center when the status changes.",
+  "es-ES": "La dirección se ha guardado. Recibirás actualizaciones en el centro de notificaciones cuando cambie el estado."
+ },
+ "O modelo enviado usa tema claro, destaque índigo, banner com shimmer e posições próprias no celular.": {
+  "en-US": "The uploaded template uses a light theme, indigo accents, a shimmer banner and separate mobile positions.",
+  "es-ES": "La plantilla enviada usa un tema claro, detalles índigo, un banner con brillo y posiciones propias para el móvil."
+ },
+ "O modo silencioso, o Foco e o volume do iPhone podem impedir o som.": {
+  "en-US": "Silent mode, Focus and iPhone volume settings may prevent sound.",
+  "es-ES": "El modo silencio, Concentración y el volumen del iPhone pueden impedir el sonido."
+ },
+ "O pagamento foi interrompido. Você pode continuar sua compra.": {
+  "en-US": "The payment was interrupted. You can continue your purchase.",
+  "es-ES": "El pago se ha interrumpido. Puedes continuar tu compra."
+ },
+ "O produto será concluído após o pagamento, sem automação de entrega.": {
+  "en-US": "The product will be completed after payment, without automated delivery.",
+  "es-ES": "El producto se completará después del pago, sin entrega automatizada."
+ },
+ "O projeto ainda não possui uma área de membros. A configuração está preparada, mas nenhum acesso será simulado.": {
+  "en-US": "The project does not have a members area yet. Configuration is ready, but no access will be simulated.",
+  "es-ES": "El proyecto aún no tiene un área de miembros. La configuración está preparada, pero no se simulará ningún acceso."
+ },
+ "O pódio está aberto": {
+  "en-US": "The podium is open",
+  "es-ES": "El podio está abierto"
+ },
+ "O que você quer compartilhar?": {
+  "en-US": "What would you like to share?",
+  "es-ES": "¿Qué quieres compartir?"
+ },
+ "O resumo sempre mostra o total da oferta. As formas de pagamento disponíveis são definidas na configuração do produto e na conexão do vendedor.": {
+  "en-US": "The summary always shows the full offer price. Available payment methods are defined in the product settings and the seller's connection.",
+  "es-ES": "El resumen siempre muestra el total de la oferta. Los métodos de pago disponibles se definen en la configuración del producto y en la conexión del vendedor."
+ },
+ "O ritmo será ajustado gradualmente conforme o horário e a intensidade escolhida.": {
+  "en-US": "The pace will gradually adjust to the selected schedule and intensity.",
+  "es-ES": "El ritmo se ajustará gradualmente según el horario y la intensidad elegidos."
+ },
+ "O timer usa essas datas em todos os navegadores. Recarregar a página não reinicia o prazo. A barra de progresso precisa da data inicial.": {
+  "en-US": "The timer uses these dates in every browser. Reloading the page does not reset the deadline. The progress bar requires a start date.",
+  "es-ES": "El temporizador usa estas fechas en todos los navegadores. Recargar la página no reinicia el plazo. La barra de progreso necesita la fecha inicial."
+ },
+ "OPERATION CORE": {
+  "en-US": "OPERATION CORE",
+  "es-ES": "NÚCLEO OPERATIVO"
+ },
+ "OPERATIONAL": {
+  "en-US": "OPERATIONAL",
+  "es-ES": "OPERATIVO"
+ },
+ "OPERAÇÃO AO VIVO": {
+  "en-US": "LIVE OPERATION",
+  "es-ES": "OPERACIÓN EN VIVO"
+ },
+ "Objetivo": {
+  "en-US": "Goal",
+  "es-ES": "Objetivo"
+ },
+ "Ocultar elemento": {
+  "en-US": "Hide element",
+  "es-ES": "Ocultar elemento"
+ },
+ "Oferta": {
+  "en-US": "Offer",
+  "es-ES": "Oferta"
+ },
+ "Oferta principal": {
+  "en-US": "Main offer",
+  "es-ES": "Oferta principal"
+ },
+ "Ofertas": {
+  "en-US": "Offers",
+  "es-ES": "Ofertas"
+ },
+ "Olá,": {
+  "en-US": "Hello,",
+  "es-ES": "Hola,"
+ },
+ "Onde acompanho minhas vendas?": {
+  "en-US": "Where can I track my sales?",
+  "es-ES": "¿Dónde puedo seguir mis ventas?"
+ },
+ "Operacional": {
+  "en-US": "Operational",
+  "es-ES": "Operativo"
+ },
+ "Operação internacional": {
+  "en-US": "International operation",
+  "es-ES": "Operación internacional"
+ },
+ "Ordem": {
+  "en-US": "Order",
+  "es-ES": "Orden"
+ },
+ "Order Bump configurado": {
+  "en-US": "Order bump configured",
+  "es-ES": "Order bump configurado"
+ },
+ "Origem": {
+  "en-US": "Source",
+  "es-ES": "Origen"
+ },
+ "Original": {
+  "en-US": "Original",
+  "es-ES": "Original"
+ },
+ "Os dados aparecerão quando uma transação real for persistida e confirmada.": {
+  "en-US": "Data will appear when a real transaction is saved and confirmed.",
+  "es-ES": "Los datos aparecerán cuando se guarde y confirme una transacción real."
+ },
+ "Os novos destinos aparecerão aqui em tempo real.": {
+  "en-US": "New destinations will appear here in real time.",
+  "es-ES": "Los nuevos destinos aparecerán aquí en tiempo real."
+ },
+ "Os participantes competem com base no faturamento elegível registrado durante o período da campanha.": {
+  "en-US": "Participants compete based on eligible revenue recorded during the campaign period.",
+  "es-ES": "Los participantes compiten según la facturación elegible registrada durante la campaña."
+ },
+ "Ou informe a chave manualmente:": {
+  "en-US": "Or enter the key manually:",
+  "es-ES": "O introduce la clave manualmente:"
+ },
+ "Ou use uma URL HTTPS": {
+  "en-US": "Or use an HTTPS URL",
+  "es-ES": "O usa una URL HTTPS"
+ },
+ "Outbox com falha": {
+  "en-US": "Failed outbox",
+  "es-ES": "Bandeja de salida con error"
+ },
+ "Outbox pendente": {
+  "en-US": "Pending outbox",
+  "es-ES": "Bandeja de salida pendiente"
+ },
+ "Outro": {
+  "en-US": "Other",
+  "es-ES": "Otro"
+ },
+ "PIX gerado": {
+  "en-US": "PIX generated",
+  "es-ES": "PIX generado"
+ },
+ "PNG, JPG ou WebP · recorte e enquadramento local": {
+  "en-US": "PNG, JPG or WebP · local cropping and framing",
+  "es-ES": "PNG, JPG o WebP · recorte y encuadre local"
+ },
+ "PREMIAÇÃO": {
+  "en-US": "AWARD",
+  "es-ES": "PREMIO"
+ },
+ "PROCESSING": {
+  "en-US": "PROCESSING",
+  "es-ES": "PROCESANDO"
+ },
+ "PRÉ-VISUALIZAÇÃO": {
+  "en-US": "PREVIEW",
+  "es-ES": "VISTA PREVIA"
+ },
+ "PRÉVIA": {
+  "en-US": "PREVIEW",
+  "es-ES": "VISTA PREVIA"
+ },
+ "PRÉVIA INTERATIVA · NENHUMA COBRANÇA SERÁ REALIZADA": {
+  "en-US": "INTERACTIVE PREVIEW · NO CHARGES WILL BE MADE",
+  "es-ES": "VISTA PREVIA INTERACTIVA · NO SE REALIZARÁ NINGÚN COBRO"
+ },
+ "PRÊMIO": {
+  "en-US": "PRIZE",
+  "es-ES": "PREMIO"
+ },
+ "Pagamento": {
+  "en-US": "Payment",
+  "es-ES": "Pago"
+ },
+ "Pagamento em verificação": {
+  "en-US": "Payment under review",
+  "es-ES": "Pago en verificación"
+ },
+ "Pagamento único": {
+  "en-US": "One-time payment",
+  "es-ES": "Pago único"
+ },
+ "Pagamentos": {
+  "en-US": "Payments",
+  "es-ES": "Pagos"
+ },
+ "Pagar com segurança": {
+  "en-US": "Pay securely",
+  "es-ES": "Pagar de forma segura"
+ },
+ "Panorâmico · 21:9": {
+  "en-US": "Panoramic · 21:9",
+  "es-ES": "Panorámico · 21:9"
+ },
+ "Para desativar, confirme com um código atual do seu aplicativo.": {
+  "en-US": "To disable, confirm with a current code from your app.",
+  "es-ES": "Para desactivar, confirma con un código actual de tu aplicación."
+ },
+ "Para receber notificações completas no iPhone, adicione a SphexPay à Tela de Início.": {
+  "en-US": "To receive full notifications on iPhone, add SphexPay to your Home Screen.",
+  "es-ES": "Para recibir notificaciones completas en iPhone, añade SphexPay a la pantalla de inicio."
+ },
+ "Para você": {
+  "en-US": "For you",
+  "es-ES": "Para ti"
+ },
+ "Parar": {
+  "en-US": "Stop",
+  "es-ES": "Detener"
+ },
+ "Participante": {
+  "en-US": "Participant",
+  "es-ES": "Participante"
+ },
+ "Participação (%)": {
+  "en-US": "Share (%)",
+  "es-ES": "Participación (%)"
+ },
+ "Pausar": {
+  "en-US": "Pause",
+  "es-ES": "Pausar"
+ },
+ "Pause ou arquive o produto preservando vendas e referências financeiras.": {
+  "en-US": "Pause or archive the product while preserving sales and financial references.",
+  "es-ES": "Pausa o archiva el producto conservando las ventas y las referencias financieras."
+ },
+ "País": {
+  "en-US": "Country",
+  "es-ES": "País"
+ },
+ "Países ativos": {
+  "en-US": "Active countries",
+  "es-ES": "Países activos"
+ },
+ "Pedir ajustes": {
+  "en-US": "Request changes",
+  "es-ES": "Solicitar cambios"
+ },
+ "Perfis derivados das vendas recentes.": {
+  "en-US": "Profiles derived from recent sales.",
+  "es-ES": "Perfiles derivados de las ventas recientes."
+ },
+ "Performance demonstrativa": {
+  "en-US": "Demonstration performance",
+  "es-ES": "Rendimiento de demostración"
+ },
+ "Pergunta": {
+  "en-US": "Question",
+  "es-ES": "Pregunta"
+ },
+ "Personalizado": {
+  "en-US": "Custom",
+  "es-ES": "Personalizado"
+ },
+ "Personalizar": {
+  "en-US": "Customize",
+  "es-ES": "Personalizar"
+ },
+ "Personalize o comportamento": {
+  "en-US": "Customize behavior",
+  "es-ES": "Personaliza el comportamiento"
+ },
+ "Personalize, simule e programe alertas usando os canais já conectados à SphexPay.": {
+  "en-US": "Customize, simulate and schedule alerts using the channels already connected to SphexPay.",
+  "es-ES": "Personaliza, simula y programa alertas con los canales ya conectados a SphexPay."
+ },
+ "Período": {
+  "en-US": "Period",
+  "es-ES": "Período"
+ },
+ "Período do gráfico": {
+  "en-US": "Chart period",
+  "es-ES": "Período del gráfico"
+ },
+ "Pesquisar": {
+  "en-US": "Search",
+  "es-ES": "Buscar"
+ },
+ "Planejamento administrativo isolado. Estes valores não criam transações, compradores, relatórios ou notificações financeiras.": {
+  "en-US": "Isolated administrative planning. These values do not create transactions, buyers, reports or financial notifications.",
+  "es-ES": "Planificación administrativa aislada. Estos valores no crean transacciones, compradores, informes ni notificaciones financieras."
+ },
+ "Plano": {
+  "en-US": "Plan",
+  "es-ES": "Plan"
+ },
+ "Player": {
+  "en-US": "Player",
+  "es-ES": "Player"
+ },
+ "Porcentagem": {
+  "en-US": "Percentage",
+  "es-ES": "Porcentaje"
+ },
+ "Posição": {
+  "en-US": "Position",
+  "es-ES": "Posición"
+ },
+ "Posição atual": {
+  "en-US": "Current position",
+  "es-ES": "Posición actual"
+ },
+ "Posição horizontal": {
+  "en-US": "Horizontal position",
+  "es-ES": "Posición horizontal"
+ },
+ "Posição no checkout": {
+  "en-US": "Checkout position",
+  "es-ES": "Posición en el checkout"
+ },
+ "Posição vertical": {
+  "en-US": "Vertical position",
+  "es-ES": "Posición vertical"
+ },
+ "Powered by": {
+  "en-US": "Powered by",
+  "es-ES": "Desarrollado por"
+ },
+ "Preencha seus dados e continue com segurança.": {
+  "en-US": "Enter your details and continue securely.",
+  "es-ES": "Introduce tus datos y continúa de forma segura."
+ },
+ "Preencher o banner": {
+  "en-US": "Fill the banner",
+  "es-ES": "Rellenar el banner"
+ },
+ "Preenchido": {
+  "en-US": "Filled",
+  "es-ES": "Relleno"
+ },
+ "Preferências": {
+  "en-US": "Preferences",
+  "es-ES": "Preferencias"
+ },
+ "Preferências armazenadas localmente neste navegador.": {
+  "en-US": "Preferences stored locally in this browser.",
+  "es-ES": "Preferencias guardadas localmente en este navegador."
+ },
+ "Preferências salvas.": {
+  "en-US": "Preferences saved.",
+  "es-ES": "Preferencias guardadas."
+ },
+ "Premiação em dinheiro, sujeita à validação administrativa.": {
+  "en-US": "Cash award, subject to administrative validation.",
+  "es-ES": "Premio en efectivo, sujeto a validación administrativa."
+ },
+ "Premiação provisória": {
+  "en-US": "Provisional award",
+  "es-ES": "Premio provisional"
+ },
+ "Premiações": {
+  "en-US": "Awards",
+  "es-ES": "Premios"
+ },
+ "Preparando o formulário seguro…": {
+  "en-US": "Preparing the secure form…",
+  "es-ES": "Preparando el formulario seguro…"
+ },
+ "Preparando pagamento…": {
+  "en-US": "Preparing payment…",
+  "es-ES": "Preparando el pago…"
+ },
+ "Preview": {
+  "en-US": "Preview",
+  "es-ES": "Vista previa"
+ },
+ "Preço": {
+  "en-US": "Price",
+  "es-ES": "Precio"
+ },
+ "Preço persistido": {
+  "en-US": "Saved price",
+  "es-ES": "Precio guardado"
+ },
+ "Preços e condições comerciais independentes do produto.": {
+  "en-US": "Prices and commercial terms independent of the product.",
+  "es-ES": "Precios y condiciones comerciales independientes del producto."
+ },
+ "Primeiro clique": {
+  "en-US": "First click",
+  "es-ES": "Primer clic"
+ },
+ "Primeiro participante elegível a alcançar": {
+  "en-US": "First eligible participant to reach",
+  "es-ES": "Primer participante elegible en alcanzar"
+ },
+ "Primeiro participante elegível a alcançar R$ 30 mil.": {
+  "en-US": "First eligible participant to reach R$ 30,000.",
+  "es-ES": "Primer participante elegible en alcanzar R$ 30.000."
+ },
+ "Primeiros passos": {
+  "en-US": "Getting started",
+  "es-ES": "Primeros pasos"
+ },
+ "Principal": {
+  "en-US": "Main",
+  "es-ES": "Principal"
+ },
+ "Privacidade": {
+  "en-US": "Privacy",
+  "es-ES": "Privacidad"
+ },
+ "Processando pagamento…": {
+  "en-US": "Processing payment…",
+  "es-ES": "Procesando el pago…"
+ },
+ "Processando solicitação...": {
+  "en-US": "Processing request...",
+  "es-ES": "Procesando solicitud..."
+ },
+ "Produto": {
+  "en-US": "Product",
+  "es-ES": "Producto"
+ },
+ "Produto ativo": {
+  "en-US": "Active product",
+  "es-ES": "Producto activo"
+ },
+ "Produto que você quer vender": {
+  "en-US": "The product you want to sell",
+  "es-ES": "El producto que quieres vender"
+ },
+ "Produtos": {
+  "en-US": "Products",
+  "es-ES": "Productos"
+ },
+ "Produtos adquiridos": {
+  "en-US": "Purchased products",
+  "es-ES": "Productos adquiridos"
+ },
+ "Produtos ativos": {
+  "en-US": "Active products",
+  "es-ES": "Productos activos"
+ },
+ "Produtos e comissão": {
+  "en-US": "Products and commission",
+  "es-ES": "Productos y comisión"
+ },
+ "Produtos pausados": {
+  "en-US": "Paused products",
+  "es-ES": "Productos pausados"
+ },
+ "Produção": {
+  "en-US": "Production",
+  "es-ES": "Producción"
+ },
+ "Progresso": {
+  "en-US": "Progress",
+  "es-ES": "Progreso"
+ },
+ "Progresso da campanha": {
+  "en-US": "Campaign progress",
+  "es-ES": "Progreso de la campaña"
+ },
+ "Progresso para": {
+  "en-US": "Progress toward",
+  "es-ES": "Progreso hacia"
+ },
+ "Pronto para abrir o Studio": {
+  "en-US": "Ready to open the Studio",
+  "es-ES": "Listo para abrir el Studio"
+ },
+ "Proporção": {
+  "en-US": "Aspect ratio",
+  "es-ES": "Proporción"
+ },
+ "Proporção original": {
+  "en-US": "Original aspect ratio",
+  "es-ES": "Proporción original"
+ },
+ "Protege o acesso com um código temporário de um aplicativo autenticador.": {
+  "en-US": "Protects access with a temporary code from an authenticator app.",
+  "es-ES": "Protege el acceso con un código temporal de una aplicación de autenticación."
+ },
+ "Protegida": {
+  "en-US": "Protected",
+  "es-ES": "Protegida"
+ },
+ "Provider": {
+  "en-US": "Provider",
+  "es-ES": "Proveedor"
+ },
+ "Prévia": {
+  "en-US": "Preview",
+  "es-ES": "Vista previa"
+ },
+ "Prévia desktop e celular": {
+  "en-US": "Desktop and mobile preview",
+  "es-ES": "Vista previa de escritorio y móvil"
+ },
+ "Prévia interativa": {
+  "en-US": "Interactive preview",
+  "es-ES": "Vista previa interactiva"
+ },
+ "Próxima cobrança": {
+  "en-US": "Next charge",
+  "es-ES": "Próximo cobro"
+ },
+ "Próximo evento": {
+  "en-US": "Next event",
+  "es-ES": "Próximo evento"
+ },
+ "Próximo marco": {
+  "en-US": "Next milestone",
+  "es-ES": "Próximo hito"
+ },
+ "Publicado na sua vitrine": {
+  "en-US": "Published in your showcase",
+  "es-ES": "Publicado en tu escaparate"
+ },
+ "Publicar": {
+  "en-US": "Publish",
+  "es-ES": "Publicar"
+ },
+ "Publicação": {
+  "en-US": "Publication",
+  "es-ES": "Publicación"
+ },
+ "Publicação com link público": {
+  "en-US": "Publish with public link",
+  "es-ES": "Publicación con enlace público"
+ },
+ "Publicações": {
+  "en-US": "Posts",
+  "es-ES": "Publicaciones"
+ },
+ "Purchase no PIX": {
+  "en-US": "Purchase via PIX",
+  "es-ES": "Compra con PIX"
+ },
+ "Purchase no boleto": {
+  "en-US": "Purchase via boleto",
+  "es-ES": "Compra con boleto"
+ },
+ "Push": {
+  "en-US": "Push",
+  "es-ES": "Push"
+ },
+ "PÁGINA FINAL": {
+  "en-US": "FINAL PAGE",
+  "es-ES": "PÁGINA FINAL"
+ },
+ "PÓDIO": {
+  "en-US": "PODIUM",
+  "es-ES": "PODIO"
+ },
+ "Página": {
+  "en-US": "Page",
+  "es-ES": "Página"
+ },
+ "Página de vendas e suporte": {
+  "en-US": "Sales page and support",
+  "es-ES": "Página de ventas y soporte"
+ },
+ "Quadrado · 1:1": {
+  "en-US": "Square · 1:1",
+  "es-ES": "Cuadrado · 1:1"
+ },
+ "Quando seus produtos alcançarem R$ 1.000,00 em vendas, você poderá publicá-los aqui para ganhar mais visibilidade.": {
+  "en-US": "When your products reach R$ 1,000.00 in sales, you can publish them here for more visibility.",
+  "es-ES": "Cuando tus productos alcancen R$ 1.000,00 en ventas, podrás publicarlos aquí para ganar visibilidad."
+ },
+ "Quantidade": {
+  "en-US": "Quantity",
+  "es-ES": "Cantidad"
+ },
+ "Quantidade de compras": {
+  "en-US": "Number of purchases",
+  "es-ES": "Cantidad de compras"
+ },
+ "Quantidade de notificações": {
+  "en-US": "Number of notifications",
+  "es-ES": "Cantidad de notificaciones"
+ },
+ "Quantidade: 1": {
+  "en-US": "Quantity: 1",
+  "es-ES": "Cantidad: 1"
+ },
+ "R": {
+  "en-US": "R",
+  "es-ES": "R"
+ },
+ "R$ 10.000,00": {
+  "en-US": "R$ 10.000,00",
+  "es-ES": "R$ 10.000,00"
+ },
+ "R$ 100.000,00": {
+  "en-US": "R$ 100.000,00",
+  "es-ES": "R$ 100.000,00"
+ },
+ "R$ 30.000,00": {
+  "en-US": "R$ 30.000,00",
+  "es-ES": "R$ 30.000,00"
+ },
+ "RANKING": {
+  "en-US": "RANKING",
+  "es-ES": "CLASIFICACIÓN"
+ },
+ "REDE GLOBAL SPHEXPAY": {
+  "en-US": "SPHEXPAY GLOBAL NETWORK",
+  "es-ES": "RED GLOBAL SPHEXPAY"
+ },
+ "REGULAMENTO": {
+  "en-US": "RULES",
+  "es-ES": "REGLAMENTO"
+ },
+ "RR": {
+  "en-US": "RR",
+  "es-ES": "RR"
+ },
+ "Ranking": {
+  "en-US": "Ranking",
+  "es-ES": "Clasificación"
+ },
+ "Ranking Social": {
+  "en-US": "Social ranking",
+  "es-ES": "Clasificación social"
+ },
+ "Ranking temporariamente indisponível": {
+  "en-US": "Ranking temporarily unavailable",
+  "es-ES": "Clasificación temporalmente no disponible"
+ },
+ "Rastreamento": {
+  "en-US": "Tracking",
+  "es-ES": "Seguimiento"
+ },
+ "Realtime": {
+  "en-US": "Realtime",
+  "es-ES": "Tiempo real"
+ },
+ "Reativar áudio": {
+  "en-US": "Resume audio",
+  "es-ES": "Reactivar audio"
+ },
+ "Recarregar versão": {
+  "en-US": "Reload version",
+  "es-ES": "Recargar versión"
+ },
+ "Receba a confirmação da sua compra neste endereço.": {
+  "en-US": "Receive your purchase confirmation at this address.",
+  "es-ES": "Recibe la confirmación de tu compra en esta dirección."
+ },
+ "Recebimentos com Stripe Connect.": {
+  "en-US": "Payouts with Stripe Connect.",
+  "es-ES": "Cobros con Stripe Connect."
+ },
+ "Receita": {
+  "en-US": "Revenue",
+  "es-ES": "Ingresos"
+ },
+ "Receita confirmada": {
+  "en-US": "Confirmed revenue",
+  "es-ES": "Ingresos confirmados"
+ },
+ "Receita dos produtos": {
+  "en-US": "Product revenue",
+  "es-ES": "Ingresos de productos"
+ },
+ "Receita por dia": {
+  "en-US": "Daily revenue",
+  "es-ES": "Ingresos por día"
+ },
+ "Receita recorrente": {
+  "en-US": "Recurring revenue",
+  "es-ES": "Ingresos recurrentes"
+ },
+ "Recursos offline": {
+  "en-US": "Offline resources",
+  "es-ES": "Recursos sin conexión"
+ },
+ "Recusou → downsell/final": {
+  "en-US": "Declined → downsell/final",
+  "es-ES": "Rechazado → downsell/final"
+ },
+ "Reembolso, captura, cancelamento, exportação de produção e demais ações financeiras estão desabilitados.": {
+  "en-US": "Refunds, capture, cancellation, production exports and other financial actions are disabled.",
+  "es-ES": "Los reembolsos, la captura, la cancelación, la exportación de producción y las demás acciones financieras están deshabilitados."
+ },
+ "Reembolsos": {
+  "en-US": "Refunds",
+  "es-ES": "Reembolsos"
+ },
+ "Reembolsos, cancelamentos e chargebacks são excluídos.": {
+  "en-US": "Refunds, cancellations and chargebacks are excluded.",
+  "es-ES": "Se excluyen los reembolsos, las cancelaciones y los contracargos."
+ },
+ "Refazer": {
+  "en-US": "Redo",
+  "es-ES": "Rehacer"
+ },
+ "Referência:": {
+  "en-US": "Reference:",
+  "es-ES": "Referencia:"
+ },
+ "Registrar convite": {
+  "en-US": "Register invitation",
+  "es-ES": "Registrar invitación"
+ },
+ "Registro local. Nenhuma integração bancária oficial está conectada.": {
+  "en-US": "Local record. No official banking integration is connected.",
+  "es-ES": "Registro local. No hay ninguna integración bancaria oficial conectada."
+ },
+ "Regiões": {
+  "en-US": "Regions",
+  "es-ES": "Regiones"
+ },
+ "Regulamento da Competição SphexPay": {
+  "en-US": "SphexPay Competition Rules",
+  "es-ES": "Reglamento de la competición SphexPay"
+ },
+ "Regulamento em atualização. A versão definitiva será disponibilizada antes do início da campanha.": {
+  "en-US": "Rules being updated. The final version will be available before the campaign starts.",
+  "es-ES": "Reglamento en actualización. La versión definitiva estará disponible antes del inicio de la campaña."
+ },
+ "Reiniciar sessão": {
+  "en-US": "Restart session",
+  "es-ES": "Reiniciar sesión"
+ },
+ "Reinicie a atividade preservando as configurações ou encerre a sessão atual.": {
+  "en-US": "Restart activity while preserving settings, or end the current session.",
+  "es-ES": "Reinicia la actividad conservando la configuración o finaliza la sesión actual."
+ },
+ "Relacionamento e histórico da base de clientes.": {
+  "en-US": "Customer relationships and history.",
+  "es-ES": "Relación e historial de la base de clientes."
+ },
+ "Remover": {
+  "en-US": "Remove",
+  "es-ES": "Eliminar"
+ },
+ "Remover foto": {
+  "en-US": "Remove photo",
+  "es-ES": "Eliminar foto"
+ },
+ "Repasses": {
+  "en-US": "Payouts",
+  "es-ES": "Transferencias"
+ },
+ "Repetir vídeo": {
+  "en-US": "Loop video",
+  "es-ES": "Repetir vídeo"
+ },
+ "Representação estática da notificação": {
+  "en-US": "Static notification preview",
+  "es-ES": "Representación estática de la notificación"
+ },
+ "Reproduzir automaticamente sem som": {
+  "en-US": "Autoplay without sound",
+  "es-ES": "Reproducir automáticamente sin sonido"
+ },
+ "Reprovar": {
+  "en-US": "Reject",
+  "es-ES": "Rechazar"
+ },
+ "Resgatada": {
+  "en-US": "Redeemed",
+  "es-ES": "Canjeada"
+ },
+ "Resgatar": {
+  "en-US": "Redeem",
+  "es-ES": "Canjear"
+ },
+ "Responder": {
+  "en-US": "Reply",
+  "es-ES": "Responder"
+ },
+ "Resposta": {
+  "en-US": "Answer",
+  "es-ES": "Respuesta"
+ },
+ "Restaurar configurações": {
+  "en-US": "Restore settings",
+  "es-ES": "Restaurar configuración"
+ },
+ "Restaurar dados iniciais": {
+  "en-US": "Restore initial data",
+  "es-ES": "Restaurar datos iniciales"
+ },
+ "Restaurar este bloco": {
+  "en-US": "Restore this block",
+  "es-ES": "Restaurar este bloque"
+ },
+ "Restaurar padrão": {
+  "en-US": "Restore default",
+  "es-ES": "Restaurar valores predeterminados"
+ },
+ "Restaure métricas, produtos, clientes, vendas e preferências para o conjunto inicial.": {
+  "en-US": "Restore metrics, products, customers, sales and preferences to the initial dataset.",
+  "es-ES": "Restaura las métricas, los productos, los clientes, las ventas y las preferencias a los valores iniciales."
+ },
+ "Resultado líquido": {
+  "en-US": "Net income",
+  "es-ES": "Resultado neto"
+ },
+ "Resultados": {
+  "en-US": "Results",
+  "es-ES": "Resultados"
+ },
+ "Resultados abrem portas.": {
+  "en-US": "Results open doors.",
+  "es-ES": "Los resultados abren puertas."
+ },
+ "Resultados e premiações permanecem sujeitos à validação administrativa e confirmação de elegibilidade.": {
+  "en-US": "Results and awards remain subject to administrative validation and eligibility confirmation.",
+  "es-ES": "Los resultados y premios siguen sujetos a validación administrativa y confirmación de elegibilidad."
+ },
+ "Resultados reais retornados pelo backend Push.": {
+  "en-US": "Actual results returned by the Push backend.",
+  "es-ES": "Resultados reales devueltos por el backend de notificaciones push."
+ },
+ "Resumo": {
+  "en-US": "Summary",
+  "es-ES": "Resumen"
+ },
+ "Resumo da operação": {
+  "en-US": "Operation summary",
+  "es-ES": "Resumen de la operación"
+ },
+ "Resumo da sessão": {
+  "en-US": "Session summary",
+  "es-ES": "Resumen de la sesión"
+ },
+ "Resumo por período": {
+  "en-US": "Summary by period",
+  "es-ES": "Resumen por período"
+ },
+ "Reto": {
+  "en-US": "Straight",
+  "es-ES": "Recto"
+ },
+ "Retomar": {
+  "en-US": "Resume",
+  "es-ES": "Reanudar"
+ },
+ "Revisar solicitação": {
+  "en-US": "Review request",
+  "es-ES": "Revisar solicitud"
+ },
+ "Revise os dados antes de concluir a solicitação.": {
+  "en-US": "Review the details before completing your request.",
+  "es-ES": "Revisa los datos antes de completar la solicitud."
+ },
+ "Revise os dados da oferta antes de continuar.": {
+  "en-US": "Review the offer details before continuing.",
+  "es-ES": "Revisa los datos de la oferta antes de continuar."
+ },
+ "Revisão de participantes, elegibilidade, fraude, regulamento e publicação de resultados.": {
+  "en-US": "Review of participants, eligibility, fraud, rules and results publication.",
+  "es-ES": "Revisión de participantes, elegibilidad, fraude, reglamento y publicación de resultados."
+ },
+ "SEU PRÓXIMO ESPAÇO": {
+  "en-US": "YOUR NEXT SPACE",
+  "es-ES": "TU PRÓXIMO ESPACIO"
+ },
+ "SEUS PRESETS": {
+  "en-US": "YOUR PRESETS",
+  "es-ES": "TUS PRESETS"
+ },
+ "SOLICITAÇÃO REGISTRADA": {
+  "en-US": "REQUEST REGISTERED",
+  "es-ES": "SOLICITUD REGISTRADA"
+ },
+ "SPHEX SOCIAL": {
+  "en-US": "SPHEX SOCIAL",
+  "es-ES": "SPHEX SOCIAL"
+ },
+ "SPHEXPAY": {
+  "en-US": "SPHEXPAY",
+  "es-ES": "SPHEXPAY"
+ },
+ "SPHEXPAY RECOGNITION": {
+  "en-US": "SPHEXPAY RECOGNITION",
+  "es-ES": "RECONOCIMIENTO SPHEXPAY"
+ },
+ "STABLE": {
+  "en-US": "STABLE",
+  "es-ES": "ESTABLE"
+ },
+ "STRIPE CONNECT": {
+  "en-US": "STRIPE CONNECT",
+  "es-ES": "STRIPE CONNECT"
+ },
+ "SUA PRÓXIMA PREMIAÇÃO": {
+  "en-US": "YOUR NEXT AWARD",
+  "es-ES": "TU PRÓXIMO PREMIO"
+ },
+ "Sair da conta": {
+  "en-US": "Sign out",
+  "es-ES": "Cerrar sesión"
+ },
+ "Saldo disponível": {
+  "en-US": "Available balance",
+  "es-ES": "Saldo disponible"
+ },
+ "Salvar": {
+  "en-US": "Save",
+  "es-ES": "Guardar"
+ },
+ "Salvar Order Bump": {
+  "en-US": "Save order bump",
+  "es-ES": "Guardar order bump"
+ },
+ "Salvar alterações": {
+  "en-US": "Save changes",
+  "es-ES": "Guardar cambios"
+ },
+ "Salvar como rascunho": {
+  "en-US": "Save as draft",
+  "es-ES": "Guardar como borrador"
+ },
+ "Salvar cupom": {
+  "en-US": "Save coupon",
+  "es-ES": "Guardar cupón"
+ },
+ "Salvar dados": {
+  "en-US": "Save data",
+  "es-ES": "Guardar datos"
+ },
+ "Salvar etapa": {
+  "en-US": "Save step",
+  "es-ES": "Guardar etapa"
+ },
+ "Salvar link": {
+  "en-US": "Save link",
+  "es-ES": "Guardar enlace"
+ },
+ "Salvar oferta": {
+  "en-US": "Save offer",
+  "es-ES": "Guardar oferta"
+ },
+ "Salvar perfil": {
+  "en-US": "Save profile",
+  "es-ES": "Guardar perfil"
+ },
+ "Salvar preferências": {
+  "en-US": "Save preferences",
+  "es-ES": "Guardar preferencias"
+ },
+ "Salvar preset": {
+  "en-US": "Save preset",
+  "es-ES": "Guardar preset"
+ },
+ "Salvar produto": {
+  "en-US": "Save product",
+  "es-ES": "Guardar producto"
+ },
+ "Salvar taxas": {
+  "en-US": "Save rates",
+  "es-ES": "Guardar tipos de cambio"
+ },
+ "Salvar webhook": {
+  "en-US": "Save webhook",
+  "es-ES": "Guardar webhook"
+ },
+ "Saque solicitado com sucesso": {
+  "en-US": "Withdrawal requested successfully",
+  "es-ES": "Retiro solicitado correctamente"
+ },
+ "Saques": {
+  "en-US": "Withdrawals",
+  "es-ES": "Retiros"
+ },
+ "Saques no período": {
+  "en-US": "Withdrawals in this period",
+  "es-ES": "Retiros del período"
+ },
+ "Sazonalidade por dia (domingo a sábado)": {
+  "en-US": "Daily seasonality (Sunday to Saturday)",
+  "es-ES": "Estacionalidad por día (de domingo a sábado)"
+ },
+ "Se forem necessários, os dados adicionais serão solicitados pelo processador no próximo passo.": {
+  "en-US": "If required, the processor will request additional details in the next step.",
+  "es-ES": "Si son necesarios, el procesador solicitará datos adicionales en el siguiente paso."
+ },
+ "Secret": {
+  "en-US": "Secret",
+  "es-ES": "Secreto"
+ },
+ "Seguindo": {
+  "en-US": "Following",
+  "es-ES": "Siguiendo"
+ },
+ "Seguir": {
+  "en-US": "Follow",
+  "es-ES": "Seguir"
+ },
+ "Segundo colocado:": {
+  "en-US": "Second place:",
+  "es-ES": "Segundo puesto:"
+ },
+ "Segundos": {
+  "en-US": "Seconds",
+  "es-ES": "Segundos"
+ },
+ "Selecione": {
+  "en-US": "Select",
+  "es-ES": "Selecciona"
+ },
+ "Selecione o produto para gerenciar seus checkouts. Links de compra publicados usam o endereço /pay/ do checkout.": {
+  "en-US": "Select the product to manage its checkouts. Published purchase links use the checkout's /pay/ address.",
+  "es-ES": "Selecciona el producto para gestionar sus checkouts. Los enlaces de compra publicados usan la dirección /pay/ del checkout."
+ },
+ "Selecione um elemento": {
+  "en-US": "Select an element",
+  "es-ES": "Selecciona un elemento"
+ },
+ "Selecione uma conta": {
+  "en-US": "Select an account",
+  "es-ES": "Selecciona una cuenta"
+ },
+ "Selecione “Adicionar à Tela de Início”.": {
+  "en-US": "Select “Add to Home Screen”.",
+  "es-ES": "Selecciona «Añadir a pantalla de inicio»."
+ },
+ "Sem produto": {
+  "en-US": "No product",
+  "es-ES": "Sin producto"
+ },
+ "Semestral": {
+  "en-US": "Semiannual",
+  "es-ES": "Semestral"
+ },
+ "Service worker:": {
+  "en-US": "Service worker:",
+  "es-ES": "Service worker:"
+ },
+ "Serviço": {
+  "en-US": "Service",
+  "es-ES": "Servicio"
+ },
+ "Sessões e dispositivos": {
+  "en-US": "Sessions and devices",
+  "es-ES": "Sesiones y dispositivos"
+ },
+ "Seu produto merece": {
+  "en-US": "Your product deserves",
+  "es-ES": "Tu producto merece"
+ },
+ "Seu produto merece ser visto.": {
+  "en-US": "Your product deserves to be seen.",
+  "es-ES": "Tu producto merece ser visto."
+ },
+ "Seus dados de cartão são enviados diretamente à Stripe.": {
+  "en-US": "Your card details are sent directly to Stripe.",
+  "es-ES": "Los datos de tu tarjeta se envían directamente a Stripe."
+ },
+ "Seus dados protegidos": {
+  "en-US": "Your data protected",
+  "es-ES": "Tus datos protegidos"
+ },
+ "Shell, navegação e dados locais": {
+  "en-US": "Shell, navigation and local data",
+  "es-ES": "Estructura, navegación y datos locales"
+ },
+ "Silenciar usuário": {
+  "en-US": "Mute user",
+  "es-ES": "Silenciar usuario"
+ },
+ "Sistema": {
+  "en-US": "System",
+  "es-ES": "Sistema"
+ },
+ "Situação do cadastro": {
+  "en-US": "Registration status",
+  "es-ES": "Estado del registro"
+ },
+ "Slug": {
+  "en-US": "Slug",
+  "es-ES": "Slug"
+ },
+ "Solicitada em": {
+  "en-US": "Requested on",
+  "es-ES": "Solicitado el"
+ },
+ "Solicitar premiação": {
+  "en-US": "Request award",
+  "es-ES": "Solicitar premio"
+ },
+ "Solicite saques e acompanhe o histórico de movimentações.": {
+  "en-US": "Request withdrawals and track transaction history.",
+  "es-ES": "Solicita retiros y sigue el historial de movimientos."
+ },
+ "Som controlado pelo dispositivo. A SphexPay não reproduz áudio interno para notificações comerciais.": {
+  "en-US": "Sound is controlled by the device. SphexPay does not play internal audio for commercial notifications.",
+  "es-ES": "El sonido lo controla el dispositivo. SphexPay no reproduce audio interno para notificaciones comerciales."
+ },
+ "Som do aparelho": {
+  "en-US": "Device sound",
+  "es-ES": "Sonido del dispositivo"
+ },
+ "Somente PIX pago": {
+  "en-US": "Paid PIX only",
+  "es-ES": "Solo PIX pagado"
+ },
+ "Somente boleto pago": {
+  "en-US": "Paid boletos only",
+  "es-ES": "Solo boleto pagado"
+ },
+ "Somente como referência de leitura.": {
+  "en-US": "For read-only reference.",
+  "es-ES": "Solo como referencia de lectura."
+ },
+ "Somente transações aprovadas e elegíveis.": {
+  "en-US": "Approved, eligible transactions only.",
+  "es-ES": "Solo transacciones aprobadas y elegibles."
+ },
+ "Sons de notificações comerciais são controlados exclusivamente pelo sistema operacional.": {
+  "en-US": "Commercial notification sounds are controlled exclusively by the operating system.",
+  "es-ES": "Los sonidos de las notificaciones comerciales los controla exclusivamente el sistema operativo."
+ },
+ "Spam": {
+  "en-US": "Spam",
+  "es-ES": "Spam"
+ },
+ "Sphex API": {
+  "en-US": "Sphex API",
+  "es-ES": "Sphex API"
+ },
+ "Sphex Dark": {
+  "en-US": "Sphex Dark",
+  "es-ES": "Sphex Dark"
+ },
+ "Sphex Light": {
+  "en-US": "Sphex Light",
+  "es-ES": "Sphex Light"
+ },
+ "Sphex padrão": {
+  "en-US": "Sphex default",
+  "es-ES": "Sphex predeterminado"
+ },
+ "SphexPay": {
+  "en-US": "SphexPay",
+  "es-ES": "SphexPay"
+ },
+ "SphexPay · sua operação, sob seu controle.": {
+  "en-US": "SphexPay · your operation, under your control.",
+  "es-ES": "SphexPay · tu operación, bajo tu control."
+ },
+ "Status": {
+  "en-US": "Status",
+  "es-ES": "Estado"
+ },
+ "Status da API": {
+  "en-US": "API status",
+  "es-ES": "Estado de la API"
+ },
+ "Status inicial": {
+  "en-US": "Initial status",
+  "es-ES": "Estado inicial"
+ },
+ "Sua evolução na competição": {
+  "en-US": "Your competition progress",
+  "es-ES": "Tu evolución en la competición"
+ },
+ "Sua mensagem": {
+  "en-US": "Your message",
+  "es-ES": "Tu mensaje"
+ },
+ "Sua vitrine ainda está vazia": {
+  "en-US": "Your showcase is still empty",
+  "es-ES": "Tu escaparate aún está vacío"
+ },
+ "Suave": {
+  "en-US": "Smooth",
+  "es-ES": "Suave"
+ },
+ "Suporte": {
+  "en-US": "Support",
+  "es-ES": "Soporte"
+ },
+ "Tamanho": {
+  "en-US": "Size",
+  "es-ES": "Tamaño"
+ },
+ "Taxa": {
+  "en-US": "Rate",
+  "es-ES": "Tasa"
+ },
+ "Taxa de aprovação": {
+  "en-US": "Approval rate",
+  "es-ES": "Tasa de aprobación"
+ },
+ "Taxas de exibição": {
+  "en-US": "Display exchange rates",
+  "es-ES": "Tipos de cambio de visualización"
+ },
+ "Taxas no período": {
+  "en-US": "Fees in this period",
+  "es-ES": "Comisiones del período"
+ },
+ "Telefone": {
+  "en-US": "Phone",
+  "es-ES": "Teléfono"
+ },
+ "Templates prontos": {
+  "en-US": "Ready-made templates",
+  "es-ES": "Plantillas listas"
+ },
+ "Tentar novamente": {
+  "en-US": "Try again",
+  "es-ES": "Intentar de nuevo"
+ },
+ "Terceiro colocado:": {
+  "en-US": "Third place:",
+  "es-ES": "Tercer puesto:"
+ },
+ "Termos": {
+  "en-US": "Terms",
+  "es-ES": "Términos"
+ },
+ "Testar infraestrutura Push": {
+  "en-US": "Test Push infrastructure",
+  "es-ES": "Probar infraestructura push"
+ },
+ "Testar no meu dispositivo": {
+  "en-US": "Test on my device",
+  "es-ES": "Probar en mi dispositivo"
+ },
+ "Testar voz": {
+  "en-US": "Test voice",
+  "es-ES": "Probar voz"
+ },
+ "Teste indisponível": {
+  "en-US": "Test unavailable",
+  "es-ES": "Prueba no disponible"
+ },
+ "Texto": {
+  "en-US": "Text",
+  "es-ES": "Texto"
+ },
+ "Texto livre opcional": {
+  "en-US": "Optional free text",
+  "es-ES": "Texto libre opcional"
+ },
+ "Ticket médio": {
+  "en-US": "Average order value",
+  "es-ES": "Importe medio"
+ },
+ "Tipo": {
+  "en-US": "Type",
+  "es-ES": "Tipo"
+ },
+ "Tipo da linha": {
+  "en-US": "Row type",
+  "es-ES": "Tipo de fila"
+ },
+ "Tipo de banner": {
+  "en-US": "Banner type",
+  "es-ES": "Tipo de banner"
+ },
+ "Tipo principal": {
+  "en-US": "Primary type",
+  "es-ES": "Tipo principal"
+ },
+ "Todas as categorias": {
+  "en-US": "All categories",
+  "es-ES": "Todas las categorías"
+ },
+ "Todas as ofertas": {
+  "en-US": "All offers",
+  "es-ES": "Todas las ofertas"
+ },
+ "Todo o período": {
+  "en-US": "All time",
+  "es-ES": "Todo el período"
+ },
+ "Todos": {
+  "en-US": "All",
+  "es-ES": "Todos"
+ },
+ "Todos os dispositivos": {
+  "en-US": "All devices",
+  "es-ES": "Todos los dispositivos"
+ },
+ "Todos os dispositivos ativos": {
+  "en-US": "All active devices",
+  "es-ES": "Todos los dispositivos activos"
+ },
+ "Todos os status": {
+  "en-US": "All statuses",
+  "es-ES": "Todos los estados"
+ },
+ "Todos os tipos": {
+  "en-US": "All types",
+  "es-ES": "Todos los tipos"
+ },
+ "Token opcional": {
+  "en-US": "Optional token",
+  "es-ES": "Token opcional"
+ },
+ "Topo do checkout": {
+  "en-US": "Top of checkout",
+  "es-ES": "Parte superior del checkout"
+ },
+ "Toque em Compartilhar.": {
+  "en-US": "Tap Share.",
+  "es-ES": "Pulsa Compartir."
+ },
+ "Tornar principal": {
+  "en-US": "Make primary",
+  "es-ES": "Establecer como principal"
+ },
+ "Total": {
+  "en-US": "Total",
+  "es-ES": "Total"
+ },
+ "Total acumulado": {
+  "en-US": "Cumulative total",
+  "es-ES": "Total acumulado"
+ },
+ "Total desta compra": {
+  "en-US": "Total for this purchase",
+  "es-ES": "Total de esta compra"
+ },
+ "Total gasto": {
+  "en-US": "Total spent",
+  "es-ES": "Total gastado"
+ },
+ "Total processado": {
+  "en-US": "Total processed",
+  "es-ES": "Total procesado"
+ },
+ "Total:": {
+  "en-US": "Total:",
+  "es-ES": "Total:"
+ },
+ "Transação": {
+  "en-US": "Transaction",
+  "es-ES": "Transacción"
+ },
+ "Transparência do cabeçalho": {
+  "en-US": "Header transparency",
+  "es-ES": "Transparencia del encabezado"
+ },
+ "Trimestral": {
+  "en-US": "Quarterly",
+  "es-ES": "Trimestral"
+ },
+ "Três posições. Uma campanha de alta performance.": {
+  "en-US": "Three positions. One high-performance campaign.",
+  "es-ES": "Tres puestos. Una campaña de alto rendimiento."
+ },
+ "Título": {
+  "en-US": "Title",
+  "es-ES": "Título"
+ },
+ "Título do prazo": {
+  "en-US": "Deadline title",
+  "es-ES": "Título del plazo"
+ },
+ "UM NOVO PALCO PARA SUAS CONQUISTAS": {
+  "en-US": "A NEW STAGE FOR YOUR ACHIEVEMENTS",
+  "es-ES": "UN NUEVO ESCENARIO PARA TUS LOGROS"
+ },
+ "URL HTTPS": {
+  "en-US": "HTTPS URL",
+  "es-ES": "URL HTTPS"
+ },
+ "URL de acesso": {
+  "en-US": "Access URL",
+  "es-ES": "URL de acceso"
+ },
+ "URL do endpoint": {
+  "en-US": "Endpoint URL",
+  "es-ES": "URL del endpoint"
+ },
+ "URL gerada": {
+  "en-US": "Generated URL",
+  "es-ES": "URL generada"
+ },
+ "URL privada": {
+  "en-US": "Private URL",
+  "es-ES": "URL privada"
+ },
+ "USD — Dólar americano": {
+  "en-US": "USD — US dollar",
+  "es-ES": "USD — Dólar estadounidense"
+ },
+ "UTMs preservadas": {
+  "en-US": "UTMs preserved",
+  "es-ES": "UTM conservadas"
+ },
+ "Um evento de venda aprovado.": {
+  "en-US": "An approved sale event.",
+  "es-ES": "Un evento de venta aprobada."
+ },
+ "Um ritmo alto pode gerar muitas notificações.": {
+  "en-US": "A high rate may generate many notifications.",
+  "es-ES": "Un ritmo alto puede generar muchas notificaciones."
+ },
+ "Uma oferta precisa estar": {
+  "en-US": "An offer must be",
+  "es-ES": "Una oferta debe estar"
+ },
+ "Unidade": {
+  "en-US": "Unit",
+  "es-ES": "Unidad"
+ },
+ "Upsell": {
+  "en-US": "Upsell",
+  "es-ES": "Upsell"
+ },
+ "Usa variações locais curtas, sem chamar IA a cada venda.": {
+  "en-US": "Uses short local variations, without calling AI for each sale.",
+  "es-ES": "Usa variaciones locales breves, sin llamar a la IA por cada venta."
+ },
+ "Usar novamente": {
+  "en-US": "Use again",
+  "es-ES": "Usar de nuevo"
+ },
+ "Usar preços cadastrados": {
+  "en-US": "Use registered prices",
+  "es-ES": "Usar precios registrados"
+ },
+ "Use a chave no cabeçalho": {
+  "en-US": "Use the key in the header",
+  "es-ES": "Usa la clave en el encabezado"
+ },
+ "Use um link direto de MP4/WebM. Links de páginas do YouTube não são arquivos de vídeo.": {
+  "en-US": "Use a direct MP4/WebM link. YouTube page links are not video files.",
+  "es-ES": "Usa un enlace directo de MP4/WebM. Los enlaces a páginas de YouTube no son archivos de vídeo."
+ },
+ "Username": {
+  "en-US": "Username",
+  "es-ES": "Nombre de usuario"
+ },
+ "VISUALIZAÇÃO": {
+  "en-US": "PREVIEW",
+  "es-ES": "VISUALIZACIÓN"
+ },
+ "Validando acesso administrativo...": {
+  "en-US": "Validating administrative access...",
+  "es-ES": "Validando acceso administrativo..."
+ },
+ "Validando acesso...": {
+  "en-US": "Validating access...",
+  "es-ES": "Validando acceso..."
+ },
+ "Valor": {
+  "en-US": "Amount",
+  "es-ES": "Importe"
+ },
+ "Valor atual:": {
+  "en-US": "Current amount:",
+  "es-ES": "Importe actual:"
+ },
+ "Valor da oferta": {
+  "en-US": "Offer amount",
+  "es-ES": "Importe de la oferta"
+ },
+ "Valor do saque": {
+  "en-US": "Withdrawal amount",
+  "es-ES": "Importe del retiro"
+ },
+ "Valor fixo": {
+  "en-US": "Fixed amount",
+  "es-ES": "Importe fijo"
+ },
+ "Valor líquido": {
+  "en-US": "Net amount",
+  "es-ES": "Importe neto"
+ },
+ "Valor mínimo": {
+  "en-US": "Minimum amount",
+  "es-ES": "Importe mínimo"
+ },
+ "Valor original": {
+  "en-US": "Original amount",
+  "es-ES": "Importe original"
+ },
+ "Valor restante": {
+  "en-US": "Remaining amount",
+  "es-ES": "Importe restante"
+ },
+ "Valor:": {
+  "en-US": "Amount:",
+  "es-ES": "Importe:"
+ },
+ "Variar mensagens automaticamente": {
+  "en-US": "Vary messages automatically",
+  "es-ES": "Variar mensajes automáticamente"
+ },
+ "Variáveis:": {
+  "en-US": "Variables:",
+  "es-ES": "Variables:"
+ },
+ "Velocidade": {
+  "en-US": "Speed",
+  "es-ES": "Velocidad"
+ },
+ "Vencimento": {
+  "en-US": "Due date",
+  "es-ES": "Vencimiento"
+ },
+ "Vendas": {
+  "en-US": "Sales",
+  "es-ES": "Ventas"
+ },
+ "Vendas e movimentações de pagamento": {
+  "en-US": "Sales and payment transactions",
+  "es-ES": "Ventas y movimientos de pago"
+ },
+ "Vendas elegíveis": {
+  "en-US": "Eligible sales",
+  "es-ES": "Ventas elegibles"
+ },
+ "Vendas reais. Conquistas por produto.": {
+  "en-US": "Real sales. Achievements by product.",
+  "es-ES": "Ventas reales. Logros por producto."
+ },
+ "Ver": {
+  "en-US": "View",
+  "es-ES": "Ver"
+ },
+ "Ver Dashboard": {
+  "en-US": "View dashboard",
+  "es-ES": "Ver panel"
+ },
+ "Ver detalhes": {
+  "en-US": "View details",
+  "es-ES": "Ver detalles"
+ },
+ "Ver documentação": {
+  "en-US": "View documentation",
+  "es-ES": "Ver documentación"
+ },
+ "Ver mais": {
+  "en-US": "See more",
+  "es-ES": "Ver más"
+ },
+ "Ver meu desempenho": {
+  "en-US": "View my performance",
+  "es-ES": "Ver mi rendimiento"
+ },
+ "Ver meus produtos elegíveis": {
+  "en-US": "View my eligible products",
+  "es-ES": "Ver mis productos elegibles"
+ },
+ "Ver relatório completo": {
+  "en-US": "View full report",
+  "es-ES": "Ver informe completo"
+ },
+ "Ver todas": {
+  "en-US": "View all",
+  "es-ES": "Ver todas"
+ },
+ "Ver todas as notificações": {
+  "en-US": "View all notifications",
+  "es-ES": "Ver todas las notificaciones"
+ },
+ "Ver todos os produtos": {
+  "en-US": "View all products",
+  "es-ES": "Ver todos los productos"
+ },
+ "Verificar atualização": {
+  "en-US": "Check for updates",
+  "es-ES": "Buscar actualizaciones"
+ },
+ "Verificar novamente": {
+  "en-US": "Check again",
+  "es-ES": "Verificar de nuevo"
+ },
+ "Verificação de cadastro": {
+  "en-US": "Registration verification",
+  "es-ES": "Verificación del registro"
+ },
+ "Verificação em duas etapas": {
+  "en-US": "Two-step verification",
+  "es-ES": "Verificación en dos pasos"
+ },
+ "Verificação em duas etapas (TOTP)": {
+  "en-US": "Two-step verification (TOTP)",
+  "es-ES": "Verificación en dos pasos (TOTP)"
+ },
+ "Verificação:": {
+  "en-US": "Verification:",
+  "es-ES": "Verificación:"
+ },
+ "Verifique sua conexão e tente novamente.": {
+  "en-US": "Check your connection and try again.",
+  "es-ES": "Revisa tu conexión e inténtalo de nuevo."
+ },
+ "Versão": {
+  "en-US": "Version",
+  "es-ES": "Versión"
+ },
+ "Versão atual": {
+  "en-US": "Current version",
+  "es-ES": "Versión actual"
+ },
+ "Versões": {
+  "en-US": "Versions",
+  "es-ES": "Versiones"
+ },
+ "Versões publicadas": {
+  "en-US": "Published versions",
+  "es-ES": "Versiones publicadas"
+ },
+ "Violência": {
+  "en-US": "Violence",
+  "es-ES": "Violencia"
+ },
+ "Visitas": {
+  "en-US": "Visits",
+  "es-ES": "Visitas"
+ },
+ "Visualizar": {
+  "en-US": "Preview",
+  "es-ES": "Vista previa"
+ },
+ "Visão geral": {
+  "en-US": "Overview",
+  "es-ES": "Vista general"
+ },
+ "Vitrine": {
+  "en-US": "Showcase",
+  "es-ES": "Escaparate"
+ },
+ "Vitrine publicada": {
+  "en-US": "Published showcase",
+  "es-ES": "Escaparate publicado"
+ },
+ "Você alcançou todas as suas metas de faturamento. Continue acompanhando as conquistas da sua operação.": {
+  "en-US": "You have reached all your revenue goals. Keep tracking your operation's achievements.",
+  "es-ES": "Has alcanzado todas tus metas de facturación. Sigue los logros de tu operación."
+ },
+ "Você decide o que publicar. Nada entra automaticamente.": {
+  "en-US": "You decide what to publish. Nothing is added automatically.",
+  "es-ES": "Tú decides qué publicar. No se añade nada automáticamente."
+ },
+ "Você escolhe ao salvar": {
+  "en-US": "You choose when saving",
+  "es-ES": "Lo eliges al guardar"
+ },
+ "Você possui alterações não salvas": {
+  "en-US": "You have unsaved changes",
+  "es-ES": "Tienes cambios sin guardar"
+ },
+ "Você será direcionado ao ambiente seguro da Stripe.": {
+  "en-US": "You will be redirected to Stripe's secure environment.",
+  "es-ES": "Se te dirigirá al entorno seguro de Stripe."
+ },
+ "Voltar": {
+  "en-US": "Back",
+  "es-ES": "Volver"
+ },
+ "Voltar ao Financeiro": {
+  "en-US": "Back to Finance",
+  "es-ES": "Volver a Finanzas"
+ },
+ "Voltar ao dashboard": {
+  "en-US": "Back to dashboard",
+  "es-ES": "Volver al panel"
+ },
+ "Voltar para Entrega": {
+  "en-US": "Back to Delivery",
+  "es-ES": "Volver a Entrega"
+ },
+ "Voltar para os dados": {
+  "en-US": "Back to details",
+  "es-ES": "Volver a los datos"
+ },
+ "Volume acumulado": {
+  "en-US": "Cumulative volume",
+  "es-ES": "Volumen acumulado"
+ },
+ "Voz": {
+  "en-US": "Voice",
+  "es-ES": "Voz"
+ },
+ "Voz da inteligência artificial": {
+  "en-US": "AI voice",
+  "es-ES": "Voz de la inteligencia artificial"
+ },
+ "Vídeo": {
+  "en-US": "Video",
+  "es-ES": "Vídeo"
+ },
+ "Vídeo · 16:9": {
+  "en-US": "Video · 16:9",
+  "es-ES": "Vídeo · 16:9"
+ },
+ "Webhook": {
+  "en-US": "Webhook",
+  "es-ES": "Webhook"
+ },
+ "Webhook de liberação": {
+  "en-US": "Access webhook",
+  "es-ES": "Webhook de acceso"
+ },
+ "Webhooks": {
+  "en-US": "Webhooks",
+  "es-ES": "Webhooks"
+ },
+ "Webhooks ativos": {
+  "en-US": "Active webhooks",
+  "es-ES": "Webhooks activos"
+ },
+ "Website": {
+  "en-US": "Website",
+  "es-ES": "Sitio web"
+ },
+ "Zona de perigo": {
+  "en-US": "Danger zone",
+  "es-ES": "Zona de peligro"
+ },
+ "a": {
+  "en-US": "to",
+  "es-ES": "a"
+ },
+ "agora": {
+  "en-US": "now",
+  "es-ES": "ahora"
+ },
+ "aprovadas": {
+  "en-US": "approved",
+  "es-ES": "aprobadas"
+ },
+ "aprovados": {
+  "en-US": "approved",
+  "es-ES": "aprobados"
+ },
+ "assinaturas ativas": {
+  "en-US": "active subscriptions",
+  "es-ES": "suscripciones activas"
+ },
+ "atuais": {
+  "en-US": "current",
+  "es-ES": "actuales"
+ },
+ "cliente": {
+  "en-US": "customer",
+  "es-ES": "cliente"
+ },
+ "conquistada": {
+  "en-US": "achieved",
+  "es-ES": "conseguida"
+ },
+ "conversão indisponível": {
+  "en-US": "conversion unavailable",
+  "es-ES": "conversión no disponible"
+ },
+ "convertido · taxa": {
+  "en-US": "converted · rate",
+  "es-ES": "convertido · tipo de cambio"
+ },
+ "da jornada": {
+  "en-US": "of the journey",
+  "es-ES": "del recorrido"
+ },
+ "da jornada completa": {
+  "en-US": "of the full journey",
+  "es-ES": "del recorrido completo"
+ },
+ "de": {
+  "en-US": "of",
+  "es-ES": "de"
+ },
+ "de 3": {
+  "en-US": "of 3",
+  "es-ES": "de 3"
+ },
+ "dias": {
+  "en-US": "days",
+  "es-ES": "días"
+ },
+ "e": {
+  "en-US": "and",
+  "es-ES": "y"
+ },
+ "em comparação com o período anterior (": {
+  "en-US": "compared to the previous period (",
+  "es-ES": "en comparación con el período anterior ("
+ },
+ "em faturamento acumulado": {
+  "en-US": "in cumulative revenue",
+  "es-ES": "en facturación acumulada"
+ },
+ "em faturamento · todas as plaquinhas conquistadas.": {
+  "en-US": "in revenue · all plaques achieved.",
+  "es-ES": "en facturación · todas las placas conseguidas."
+ },
+ "em um só lugar.": {
+  "en-US": "all in one place.",
+  "es-ES": "en un solo lugar."
+ },
+ "em vendas aprovadas por produto e escolha o que vai para a sua vitrine.": {
+  "en-US": "in approved sales per product, and choose what goes into your showcase.",
+  "es-ES": "en ventas aprobadas por producto y elige qué va a tu escaparate."
+ },
+ "em vendas elegíveis": {
+  "en-US": "in eligible sales",
+  "es-ES": "en ventas elegibles"
+ },
+ "entrega(s) em dispositivos ·": {
+  "en-US": "device deliveries ·",
+  "es-ES": "entregas a dispositivos ·"
+ },
+ "entregas": {
+  "en-US": "deliveries",
+  "es-ES": "entregas"
+ },
+ "entregas em dispositivos ·": {
+  "en-US": "device deliveries ·",
+  "es-ES": "entregas a dispositivos ·"
+ },
+ "envios ·": {
+  "en-US": "sends ·",
+  "es-ES": "envíos ·"
+ },
+ "eventos monitorados": {
+  "en-US": "monitored events",
+  "es-ES": "eventos supervisados"
+ },
+ "falha(s)": {
+  "en-US": "failures",
+  "es-ES": "fallos"
+ },
+ "falhas": {
+  "en-US": "failures",
+  "es-ES": "fallos"
+ },
+ "falhas em dispositivos ·": {
+  "en-US": "device failures ·",
+  "es-ES": "fallos en dispositivos ·"
+ },
+ "https://pay.sphexpay.local/pay/": {
+  "en-US": "https://pay.sphexpay.local/pay/",
+  "es-ES": "https://pay.sphexpay.local/pay/"
+ },
+ "no": {
+  "en-US": "in",
+  "es-ES": "en"
+ },
+ "notificações processadas": {
+  "en-US": "processed notifications",
+  "es-ES": "notificaciones procesadas"
+ },
+ "notificações restantes": {
+  "en-US": "remaining notifications",
+  "es-ES": "notificaciones restantes"
+ },
+ "não": {
+  "en-US": "not",
+  "es-ES": "no"
+ },
+ "para": {
+  "en-US": "to",
+  "es-ES": "para"
+ },
+ "para publicar o checkout e ativar o produto.": {
+  "en-US": "to publish the checkout and activate the product.",
+  "es-ES": "para publicar el checkout y activar el producto."
+ },
+ "produto": {
+  "en-US": "product",
+  "es-ES": "producto"
+ },
+ "registro": {
+  "en-US": "record",
+  "es-ES": "registro"
+ },
+ "registros · Página": {
+  "en-US": "records · Page",
+  "es-ES": "registros · Página"
+ },
+ "restantes · meta de": {
+  "en-US": "remaining · goal of",
+  "es-ES": "restantes · meta de"
+ },
+ "restantes.": {
+  "en-US": "remaining.",
+  "es-ES": "restantes."
+ },
+ "resultados · Página": {
+  "en-US": "results · Page",
+  "es-ES": "resultados · Página"
+ },
+ "será criado como rascunho usando o template": {
+  "en-US": "will be created as a draft using the template",
+  "es-ES": "se creará como borrador usando la plantilla"
+ },
+ "tentativas": {
+  "en-US": "attempts",
+  "es-ES": "intentos"
+ },
+ "transações ·": {
+  "en-US": "transactions ·",
+  "es-ES": "transacciones ·"
+ },
+ "uma boa primeira impressão.": {
+  "en-US": "a great first impression.",
+  "es-ES": "una buena primera impresión."
+ },
+ "utm_source, utm_medium, utm_campaign, utm_content, utm_term, src e sck são mantidos nos links gerados. O checkout deverá persistir esses parâmetros somente após consentimento quando exigido.": {
+  "en-US": "utm_source, utm_medium, utm_campaign, utm_content, utm_term, src and sck are preserved in generated links. The checkout should only persist these parameters after consent when required.",
+  "es-ES": "utm_source, utm_medium, utm_campaign, utm_content, utm_term, src y sck se conservan en los enlaces generados. El checkout solo deberá guardar estos parámetros tras obtener consentimiento cuando sea necesario."
+ },
+ "vendas por hora": {
+  "en-US": "sales per hour",
+  "es-ES": "ventas por hora"
+ },
+ "vs. o período anterior": {
+  "en-US": "vs. the previous period",
+  "es-ES": "frente al período anterior"
+ },
+ "x": {
+  "en-US": "x",
+  "es-ES": "x"
+ },
+ "x máximo": {
+  "en-US": "x maximum",
+  "es-ES": "x máximo"
+ },
+ "· Dispositivo": {
+  "en-US": "· Device",
+  "es-ES": "· Dispositivo"
+ },
+ "· OFERTA SELECIONADA": {
+  "en-US": "· SELECTED OFFER",
+  "es-ES": "· OFERTA SELECCIONADA"
+ },
+ "· Página": {
+  "en-US": "· Page",
+  "es-ES": "· Página"
+ },
+ "· conteúdo provisório · aceite e histórico de versões preparados no banco.": {
+  "en-US": "· provisional content · acceptance and version history prepared in the database.",
+  "es-ES": "· contenido provisional · aceptación e historial de versiones preparados en la base de datos."
+ },
+ "· final": {
+  "en-US": "· final",
+  "es-ES": "· final"
+ },
+ "· válido até": {
+  "en-US": "· valid until",
+  "es-ES": "· válido hasta"
+ },
+ "É necessário um backend com cofre de secrets para assinar e enviar o webhook. Nenhuma chamada falsa será executada.": {
+  "en-US": "A backend with a secrets vault is required to sign and send the webhook. No fake calls will be made.",
+  "es-ES": "Se necesita un backend con un almacén de secretos para firmar y enviar el webhook. No se ejecutará ninguna llamada falsa."
+ },
+ "Última aprovação": {
+  "en-US": "Last approval",
+  "es-ES": "Última aprobación"
+ },
+ "Última atualização": {
+  "en-US": "Last updated",
+  "es-ES": "Última actualización"
+ },
+ "Última compra": {
+  "en-US": "Last purchase",
+  "es-ES": "Última compra"
+ },
+ "Última sincronização há 2 min": {
+  "en-US": "Last synced 2 min ago",
+  "es-ES": "Última sincronización hace 2 min"
+ },
+ "Última transação": {
+  "en-US": "Last transaction",
+  "es-ES": "Última transacción"
+ },
+ "Última utilização": {
+  "en-US": "Last used",
+  "es-ES": "Último uso"
+ },
+ "Última venda elegível": {
+  "en-US": "Last eligible sale",
+  "es-ES": "Última venta elegible"
+ },
+ "Últimas transações": {
+  "en-US": "Recent transactions",
+  "es-ES": "Últimas transacciones"
+ },
+ "Últimas vendas": {
+  "en-US": "Recent sales",
+  "es-ES": "Últimas ventas"
+ },
+ "Último Push": {
+  "en-US": "Last Push",
+  "es-ES": "Último push"
+ },
+ "Último clique": {
+  "en-US": "Last click",
+  "es-ES": "Último clic"
+ },
+ "Último destino": {
+  "en-US": "Last destination",
+  "es-ES": "Último destino"
+ },
+ "Último pedido": {
+  "en-US": "Last order",
+  "es-ES": "Último pedido"
+ },
+ "Últimos 30 dias": {
+  "en-US": "Last 30 days",
+  "es-ES": "Últimos 30 días"
+ },
+ "Últimos 90 dias": {
+  "en-US": "Last 90 days",
+  "es-ES": "Últimos 90 días"
+ },
+ "⌘ K": {
+  "en-US": "⌘ K",
+  "es-ES": "⌘ K"
+ },
+ "A atividade social real formará este ranking.": {
+  "en-US": "Real social activity will shape this ranking.",
+  "es-ES": "La actividad social real formará esta clasificación."
+ },
+ "A compra segue para a página final sem ofertas intermediárias.": {
+  "en-US": "The purchase goes straight to the final page without intermediate offers.",
+  "es-ES": "La compra pasa a la página final sin ofertas intermedias."
+ },
+ "A escolha é salva neste navegador e também pode ser alterada no cabeçalho.": {
+  "en-US": "Your choice is saved in this browser and can also be changed in the header.",
+  "es-ES": "La elección se guarda en este navegador y también se puede cambiar en el encabezado."
+ },
+ "A estrutura permanece indisponível até existir um backend oficial compatível.": {
+  "en-US": "This feature remains unavailable until a compatible official backend exists.",
+  "es-ES": "Esta función permanece no disponible hasta que exista un backend oficial compatible."
+ },
+ "Abrir editor de planejamento": {
+  "en-US": "Open planning editor",
+  "es-ES": "Abrir editor de planificación"
+ },
+ "Abrir menu do perfil": {
+  "en-US": "Open profile menu",
+  "es-ES": "Abrir menú del perfil"
+ },
+ "Abrir opções da foto de perfil": {
+  "en-US": "Open profile photo options",
+  "es-ES": "Abrir opciones de la foto de perfil"
+ },
+ "Abrir publicação": {
+  "en-US": "Open post",
+  "es-ES": "Abrir publicación"
+ },
+ "Abrir {module}": {
+  "en-US": "Open {module}",
+  "es-ES": "Abrir {module}"
+ },
+ "Acompanhe sua evolução pelas metas e conquistas.": {
+  "en-US": "Track your progress through goals and achievements.",
+  "es-ES": "Sigue tu evolución a través de metas y logros."
+ },
+ "Acompanhe transações globais em tempo real": {
+  "en-US": "Track global transactions in real time",
+  "es-ES": "Sigue transacciones globales en tiempo real"
+ },
+ "Adicionar imagem": {
+  "en-US": "Add image",
+  "es-ES": "Añadir imagen"
+ },
+ "Ajuda SphexPay": {
+  "en-US": "SphexPay help",
+  "es-ES": "Ayuda SphexPay"
+ },
+ "Ajuste a busca ou os filtros para encontrar uma venda.": {
+  "en-US": "Adjust the search or filters to find a sale.",
+  "es-ES": "Ajusta la búsqueda o los filtros para encontrar una venta."
+ },
+ "Alterações relevantes sem secrets ou dados sensíveis.": {
+  "en-US": "Relevant changes without secrets or sensitive data.",
+  "es-ES": "Cambios relevantes sin secretos ni datos sensibles."
+ },
+ "Alterne mensagens curtas sem mudar o valor ou o tipo.": {
+  "en-US": "Alternate short messages without changing the amount or type.",
+  "es-ES": "Alterna mensajes breves sin cambiar el importe ni el tipo."
+ },
+ "Análise de cadastro": {
+  "en-US": "Registration review",
+  "es-ES": "Revisión del registro"
+ },
+ "Aparência": {
+  "en-US": "Appearance",
+  "es-ES": "Apariencia"
+ },
+ "Armazenado somente como digest": {
+  "en-US": "Stored only as a digest",
+  "es-ES": "Almacenado solo como resumen criptográfico"
+ },
+ "Arquivar notificação": {
+  "en-US": "Archive notification",
+  "es-ES": "Archivar notificación"
+ },
+ "Atenção": {
+  "en-US": "Attention",
+  "es-ES": "Atención"
+ },
+ "Atualizando indicador": {
+  "en-US": "Updating indicator",
+  "es-ES": "Actualizando indicador"
+ },
+ "Atualizando vendas": {
+  "en-US": "Updating sales",
+  "es-ES": "Actualizando ventas"
+ },
+ "Atualizar dashboard": {
+  "en-US": "Refresh dashboard",
+  "es-ES": "Actualizar panel"
+ },
+ "Atualizar operação": {
+  "en-US": "Refresh operation",
+  "es-ES": "Actualizar operación"
+ },
+ "Atualizar ranking": {
+  "en-US": "Refresh ranking",
+  "es-ES": "Actualizar clasificación"
+ },
+ "Atualizar vendas": {
+  "en-US": "Refresh sales",
+  "es-ES": "Actualizar ventas"
+ },
+ "Aumentar velocidade": {
+  "en-US": "Increase speed",
+  "es-ES": "Aumentar velocidad"
+ },
+ "Ações da publicação": {
+  "en-US": "Post actions",
+  "es-ES": "Acciones de la publicación"
+ },
+ "Banner anterior": {
+  "en-US": "Previous banner",
+  "es-ES": "Banner anterior"
+ },
+ "Brasil": {
+  "en-US": "Brazil",
+  "es-ES": "Brasil"
+ },
+ "Buscar assinaturas": {
+  "en-US": "Search subscriptions",
+  "es-ES": "Buscar suscripciones"
+ },
+ "Buscar campanha, moeda ou status": {
+  "en-US": "Search campaign, currency or status",
+  "es-ES": "Buscar campaña, moneda o estado"
+ },
+ "Buscar comunicado ou alerta...": {
+  "en-US": "Search announcements or alerts...",
+  "es-ES": "Buscar comunicados o alertas..."
+ },
+ "Buscar meus produtos": {
+  "en-US": "Search my products",
+  "es-ES": "Buscar mis productos"
+ },
+ "Buscar na plataforma...": {
+  "en-US": "Search the platform...",
+  "es-ES": "Buscar en la plataforma..."
+ },
+ "Buscar no histórico do gerador": {
+  "en-US": "Search generator history",
+  "es-ES": "Buscar en el historial del generador"
+ },
+ "Buscar notificações": {
+  "en-US": "Search notifications",
+  "es-ES": "Buscar notificaciones"
+ },
+ "Buscar produto ou categoria": {
+  "en-US": "Search product or category",
+  "es-ES": "Buscar producto o categoría"
+ },
+ "Buscar produto...": {
+  "en-US": "Search product...",
+  "es-ES": "Buscar producto..."
+ },
+ "Buscar produtores": {
+  "en-US": "Search producers",
+  "es-ES": "Buscar productores"
+ },
+ "Buscar produtos": {
+  "en-US": "Search products",
+  "es-ES": "Buscar productos"
+ },
+ "Buscar produtos...": {
+  "en-US": "Search products...",
+  "es-ES": "Buscar productos..."
+ },
+ "Buscar...": {
+  "en-US": "Search...",
+  "es-ES": "Buscar..."
+ },
+ "Cadastre identificadores reais; tokens e eventos não serão simulados.": {
+  "en-US": "Register real identifiers; tokens and events will not be simulated.",
+  "es-ES": "Registra identificadores reales; no se simularán tokens ni eventos."
+ },
+ "Cancelar sequência": {
+  "en-US": "Cancel sequence",
+  "es-ES": "Cancelar secuencia"
+ },
+ "Cards": {
+  "en-US": "Cards",
+  "es-ES": "Tarjetas"
+ },
+ "Carregando afiliados": {
+  "en-US": "Loading affiliates",
+  "es-ES": "Cargando afiliados"
+ },
+ "Carregando ranking": {
+  "en-US": "Loading ranking",
+  "es-ES": "Cargando clasificación"
+ },
+ "Categoria": {
+  "en-US": "Category",
+  "es-ES": "Categoría"
+ },
+ "Catálogo persistido usado pelo checkout oficial.": {
+  "en-US": "Saved catalog used by the official checkout.",
+  "es-ES": "Catálogo guardado que utiliza el checkout oficial."
+ },
+ "Cenário de planejamento": {
+  "en-US": "Planning scenario",
+  "es-ES": "Escenario de planificación"
+ },
+ "Cliente, produto ou ID...": {
+  "en-US": "Customer, product or ID...",
+  "es-ES": "Cliente, producto o ID..."
+ },
+ "Cobranças recorrentes": {
+  "en-US": "Recurring billing",
+  "es-ES": "Cobros recurrentes"
+ },
+ "Comentar": {
+  "en-US": "Comment",
+  "es-ES": "Comentar"
+ },
+ "Como podemos chamar você?": {
+  "en-US": "What should we call you?",
+  "es-ES": "¿Cómo podemos llamarte?"
+ },
+ "Comprador, produto ou identificador...": {
+  "en-US": "Buyer, product or identifier...",
+  "es-ES": "Comprador, producto o identificador..."
+ },
+ "Comunicados administrativos, segurança e premiações.": {
+  "en-US": "Administrative announcements, security and awards.",
+  "es-ES": "Comunicados administrativos, seguridad y premios."
+ },
+ "Conecte a SphexPay ao ecossistema que move a sua operação.": {
+  "en-US": "Connect SphexPay to the ecosystem that drives your operation.",
+  "es-ES": "Conecta SphexPay al ecosistema que impulsa tu operación."
+ },
+ "Configuração da mensagem": {
+  "en-US": "Message settings",
+  "es-ES": "Configuración del mensaje"
+ },
+ "Configuração do produto": {
+  "en-US": "Product settings",
+  "es-ES": "Configuración del producto"
+ },
+ "Construtor visual — sem processamento bancário.": {
+  "en-US": "Visual builder — no banking processing.",
+  "es-ES": "Constructor visual, sin procesamiento bancario."
+ },
+ "Conta de produtor": {
+  "en-US": "Producer account",
+  "es-ES": "Cuenta de productor"
+ },
+ "Conteúdo da publicação": {
+  "en-US": "Post content",
+  "es-ES": "Contenido de la publicación"
+ },
+ "Conteúdo do Social": {
+  "en-US": "Social content",
+  "es-ES": "Contenido de Social"
+ },
+ "Conversão indisponível": {
+  "en-US": "Conversion unavailable",
+  "es-ES": "Conversión no disponible"
+ },
+ "Convidar coprodutor": {
+  "en-US": "Invite co-producer",
+  "es-ES": "Invitar coproductor"
+ },
+ "Convites e regras persistentes com métricas somente quando houver eventos reais.": {
+  "en-US": "Persistent invitations and rules, with metrics only when real events exist.",
+  "es-ES": "Invitaciones y reglas persistentes, con métricas solo cuando existan eventos reales."
+ },
+ "Coprodução": {
+  "en-US": "Co-production",
+  "es-ES": "Coproducción"
+ },
+ "Crie um checkout e personalize no Studio antes de publicar.": {
+  "en-US": "Create a checkout and customize it in the Studio before publishing.",
+  "es-ES": "Crea un checkout y personalízalo en el Studio antes de publicar."
+ },
+ "Cupom": {
+  "en-US": "Coupon",
+  "es-ES": "Cupón"
+ },
+ "Cupons": {
+  "en-US": "Coupons",
+  "es-ES": "Cupones"
+ },
+ "Dados inteligentes": {
+  "en-US": "Smart data",
+  "es-ES": "Datos inteligentes"
+ },
+ "Data e hora de fim": {
+  "en-US": "End date and time",
+  "es-ES": "Fecha y hora de finalización"
+ },
+ "Data e hora de início": {
+  "en-US": "Start date and time",
+  "es-ES": "Fecha y hora de inicio"
+ },
+ "Data final do gráfico": {
+  "en-US": "Chart end date",
+  "es-ES": "Fecha final del gráfico"
+ },
+ "Data inicial do gráfico": {
+  "en-US": "Chart start date",
+  "es-ES": "Fecha inicial del gráfico"
+ },
+ "Defina como o comprador recebe acesso após confirmação real do pagamento.": {
+  "en-US": "Define how the buyer receives access after real payment confirmation.",
+  "es-ES": "Define cómo recibe acceso el comprador tras la confirmación real del pago."
+ },
+ "Deixe vazio para usar a linha de valor": {
+  "en-US": "Leave blank to use the amount line",
+  "es-ES": "Deja en blanco para usar la línea de importe"
+ },
+ "Denunciar publicação": {
+  "en-US": "Report post",
+  "es-ES": "Denunciar publicación"
+ },
+ "Destaques SphexPay": {
+  "en-US": "SphexPay highlights",
+  "es-ES": "Destacados SphexPay"
+ },
+ "Detalhes da venda": {
+  "en-US": "Sale details",
+  "es-ES": "Detalles de la venta"
+ },
+ "Disponível quando a coprodução for configurada": {
+  "en-US": "Available when co-production is configured",
+  "es-ES": "Disponible cuando se configure la coproducción"
+ },
+ "Disponível quando afiliações forem configuradas": {
+  "en-US": "Available when affiliate partnerships are configured",
+  "es-ES": "Disponible cuando se configuren las afiliaciones"
+ },
+ "Dispositivo do preview": {
+  "en-US": "Preview device",
+  "es-ES": "Dispositivo de la vista previa"
+ },
+ "Editar perfil social": {
+  "en-US": "Edit social profile",
+  "es-ES": "Editar perfil social"
+ },
+ "Ela pode ter sido removida ou não estar acessível.": {
+  "en-US": "It may have been removed or may not be accessible.",
+  "es-ES": "Es posible que se haya eliminado o que no esté accesible."
+ },
+ "Encontre um produtor e comece uma conversa.": {
+  "en-US": "Find a producer and start a conversation.",
+  "es-ES": "Encuentra un productor e inicia una conversación."
+ },
+ "Enviar": {
+  "en-US": "Send",
+  "es-ES": "Enviar"
+ },
+ "Envie a logo da sua marca": {
+  "en-US": "Upload your brand logo",
+  "es-ES": "Sube el logotipo de tu marca"
+ },
+ "Envie agora ou mantenha uma sequência enquanto esta página estiver aberta.": {
+  "en-US": "Send now or keep a sequence running while this page is open.",
+  "es-ES": "Envía ahora o mantén una secuencia mientras esta página esté abierta."
+ },
+ "Erro": {
+  "en-US": "Error",
+  "es-ES": "Error"
+ },
+ "Erro ao carregar": {
+  "en-US": "Loading error",
+  "es-ES": "Error al cargar"
+ },
+ "Escolha como a SphexPay aparece neste dispositivo.": {
+  "en-US": "Choose how SphexPay looks on this device.",
+  "es-ES": "Elige cómo se ve SphexPay en este dispositivo."
+ },
+ "Escolha como o valor será apresentado.": {
+  "en-US": "Choose how the amount is displayed.",
+  "es-ES": "Elige cómo se mostrará el importe."
+ },
+ "Escolha o alerta que deseja enviar.": {
+  "en-US": "Choose the alert you want to send.",
+  "es-ES": "Elige la alerta que quieres enviar."
+ },
+ "Escolha somente dispositivos conectados à sua conta.": {
+  "en-US": "Only choose devices connected to your account.",
+  "es-ES": "Elige únicamente dispositivos conectados a tu cuenta."
+ },
+ "Escolher dispositivos": {
+  "en-US": "Choose devices",
+  "es-ES": "Elegir dispositivos"
+ },
+ "Este username não está disponível.": {
+  "en-US": "This username is not available.",
+  "es-ES": "Este nombre de usuario no está disponible."
+ },
+ "Estratégia da campanha": {
+  "en-US": "Campaign strategy",
+  "es-ES": "Estrategia de la campaña"
+ },
+ "Etapa do funil": {
+  "en-US": "Funnel step",
+  "es-ES": "Etapa del embudo"
+ },
+ "Etapas da compra": {
+  "en-US": "Purchase steps",
+  "es-ES": "Etapas de la compra"
+ },
+ "Etapas do checkout": {
+  "en-US": "Checkout steps",
+  "es-ES": "Etapas del checkout"
+ },
+ "Eventos preparados com deduplicação por pedido. O disparo depende do checkout e consentimento reais.": {
+  "en-US": "Events prepared with order deduplication. Sending depends on real checkout and consent.",
+  "es-ES": "Eventos preparados con deduplicación por pedido. El envío depende del checkout y del consentimiento reales."
+ },
+ "Evolução de assinaturas ativas": {
+  "en-US": "Active subscription trends",
+  "es-ES": "Evolución de las suscripciones activas"
+ },
+ "Ex.: Operação principal": {
+  "en-US": "E.g. Main operation",
+  "es-ES": "Ej.: Operación principal"
+ },
+ "Excluir notificação": {
+  "en-US": "Delete notification",
+  "es-ES": "Eliminar notificación"
+ },
+ "Excluir produto com segurança": {
+  "en-US": "Safely delete product",
+  "es-ES": "Eliminar producto de forma segura"
+ },
+ "Fechar ajuda": {
+  "en-US": "Close help",
+  "es-ES": "Cerrar ayuda"
+ },
+ "Fechar busca": {
+  "en-US": "Close search",
+  "es-ES": "Cerrar búsqueda"
+ },
+ "Fechar confirmação": {
+  "en-US": "Close confirmation",
+  "es-ES": "Cerrar confirmación"
+ },
+ "Fechar detalhes": {
+  "en-US": "Close details",
+  "es-ES": "Cerrar detalles"
+ },
+ "Fechar mais módulos": {
+  "en-US": "Close more modules",
+  "es-ES": "Cerrar más módulos"
+ },
+ "Fechar módulos": {
+  "en-US": "Close modules",
+  "es-ES": "Cerrar módulos"
+ },
+ "Fechar propriedades": {
+  "en-US": "Close properties",
+  "es-ES": "Cerrar propiedades"
+ },
+ "Ferramentas do editor": {
+  "en-US": "Editor tools",
+  "es-ES": "Herramientas del editor"
+ },
+ "Filtrar clientes por status": {
+  "en-US": "Filter customers by status",
+  "es-ES": "Filtrar clientes por estado"
+ },
+ "Filtrar por período": {
+  "en-US": "Filter by period",
+  "es-ES": "Filtrar por período"
+ },
+ "Filtrar por status": {
+  "en-US": "Filter by status",
+  "es-ES": "Filtrar por estado"
+ },
+ "Filtrar produtos por status": {
+  "en-US": "Filter products by status",
+  "es-ES": "Filtrar productos por estado"
+ },
+ "Filtrar submissões": {
+  "en-US": "Filter submissions",
+  "es-ES": "Filtrar solicitudes"
+ },
+ "Foto de perfil": {
+  "en-US": "Profile photo",
+  "es-ES": "Foto de perfil"
+ },
+ "Funil": {
+  "en-US": "Funnel",
+  "es-ES": "Embudo"
+ },
+ "Funil direto": {
+  "en-US": "Direct funnel",
+  "es-ES": "Embudo directo"
+ },
+ "Idioma do aplicativo": {
+  "en-US": "App language",
+  "es-ES": "Idioma de la aplicación"
+ },
+ "Indicadores do dashboard": {
+  "en-US": "Dashboard indicators",
+  "es-ES": "Indicadores del panel"
+ },
+ "Indicadores globais": {
+  "en-US": "Global indicators",
+  "es-ES": "Indicadores globales"
+ },
+ "Indicadores, análises e relacionamento com clientes.": {
+  "en-US": "Indicators, analytics and customer relationships.",
+  "es-ES": "Indicadores, análisis y relación con clientes."
+ },
+ "Informações legais do checkout": {
+  "en-US": "Checkout legal information",
+  "es-ES": "Información legal del checkout"
+ },
+ "Informe o valor e, se quiser, o método.": {
+  "en-US": "Enter the amount and optionally the method.",
+  "es-ES": "Introduce el importe y, si quieres, el método."
+ },
+ "Integração de rastreamento": {
+  "en-US": "Tracking integration",
+  "es-ES": "Integración de seguimiento"
+ },
+ "Integrações": {
+  "en-US": "Integrations",
+  "es-ES": "Integraciones"
+ },
+ "Intervalo": {
+  "en-US": "Interval",
+  "es-ES": "Intervalo"
+ },
+ "Janela de execução": {
+  "en-US": "Execution window",
+  "es-ES": "Ventana de ejecución"
+ },
+ "Jornada pós-compra explícita; cobrança em um clique não está habilitada sem gateway oficial.": {
+  "en-US": "Explicit post-purchase journey; one-click billing is not enabled without an official gateway.",
+  "es-ES": "Recorrido poscompra explícito; el cobro con un clic no está habilitado sin un gateway oficial."
+ },
+ "Jornada vertical de premiações": {
+  "en-US": "Vertical awards journey",
+  "es-ES": "Recorrido vertical de premios"
+ },
+ "Link": {
+  "en-US": "Link",
+  "es-ES": "Enlace"
+ },
+ "Links": {
+  "en-US": "Links",
+  "es-ES": "Enlaces"
+ },
+ "Links copiáveis, acessos e conversões.": {
+  "en-US": "Shareable links, visits and conversions.",
+  "es-ES": "Enlaces para copiar, visitas y conversiones."
+ },
+ "Links de pagamento": {
+  "en-US": "Payment links",
+  "es-ES": "Enlaces de pago"
+ },
+ "Mais filtros": {
+  "en-US": "More filters",
+  "es-ES": "Más filtros"
+ },
+ "Mapa mundial de vendas ao vivo": {
+  "en-US": "Live world sales map",
+  "es-ES": "Mapa mundial de ventas en vivo"
+ },
+ "Marcos de faturamento da sua trajetória.": {
+  "en-US": "Revenue milestones throughout your journey.",
+  "es-ES": "Hitos de facturación de tu trayectoria."
+ },
+ "Mensagem da notificação": {
+  "en-US": "Notification message",
+  "es-ES": "Mensaje de la notificación"
+ },
+ "Menu do perfil": {
+  "en-US": "Profile menu",
+  "es-ES": "Menú del perfil"
+ },
+ "Modo de envio": {
+  "en-US": "Sending mode",
+  "es-ES": "Modo de envío"
+ },
+ "Moeda do dashboard": {
+  "en-US": "Dashboard currency",
+  "es-ES": "Moneda del panel"
+ },
+ "Moedas": {
+  "en-US": "Currencies",
+  "es-ES": "Monedas"
+ },
+ "Métodos": {
+  "en-US": "Methods",
+  "es-ES": "Métodos"
+ },
+ "Métodos exibidos pelas capabilities do gateway": {
+  "en-US": "Methods shown according to gateway capabilities",
+  "es-ES": "Métodos mostrados según las capacidades del gateway"
+ },
+ "Nada na fila": {
+  "en-US": "Nothing queued",
+  "es-ES": "Nada en la cola"
+ },
+ "Navegação do Social": {
+  "en-US": "Social navigation",
+  "es-ES": "Navegación de Social"
+ },
+ "Navegação móvel do Social": {
+  "en-US": "Mobile social navigation",
+  "es-ES": "Navegación móvil de Social"
+ },
+ "Navegação principal": {
+  "en-US": "Main navigation",
+  "es-ES": "Navegación principal"
+ },
+ "Navegação principal mobile": {
+  "en-US": "Main mobile navigation",
+  "es-ES": "Navegación principal móvil"
+ },
+ "Nenhum checkout": {
+  "en-US": "No checkouts",
+  "es-ES": "No hay checkouts"
+ },
+ "Nenhum produto encontrado": {
+  "en-US": "No products found",
+  "es-ES": "No se encontraron productos"
+ },
+ "Nenhum produtor encontrado": {
+  "en-US": "No producers found",
+  "es-ES": "No se encontraron productores"
+ },
+ "Nenhuma conversa ainda": {
+  "en-US": "No conversations yet",
+  "es-ES": "Aún no hay conversaciones"
+ },
+ "Nenhuma integração": {
+  "en-US": "No integrations",
+  "es-ES": "No hay integraciones"
+ },
+ "Nenhuma notificação nesta categoria.": {
+  "en-US": "No notifications in this category.",
+  "es-ES": "No hay notificaciones en esta categoría."
+ },
+ "Nenhuma publicação encontrada": {
+  "en-US": "No posts found",
+  "es-ES": "No se encontraron publicaciones"
+ },
+ "Nenhuma submissão para este filtro.": {
+  "en-US": "No submissions for this filter.",
+  "es-ES": "No hay solicitudes para este filtro."
+ },
+ "Nenhuma venda encontrada": {
+  "en-US": "No sales found",
+  "es-ES": "No se encontraron ventas"
+ },
+ "Nome do preset": {
+  "en-US": "Preset name",
+  "es-ES": "Nombre del preset"
+ },
+ "Nome, e-mail ou país...": {
+  "en-US": "Name, email or country...",
+  "es-ES": "Nombre, correo o país..."
+ },
+ "Nome, país, cidade ou produto...": {
+  "en-US": "Name, country, city or product...",
+  "es-ES": "Nombre, país, ciudad o producto..."
+ },
+ "Notificações recentes": {
+  "en-US": "Recent notifications",
+  "es-ES": "Notificaciones recientes"
+ },
+ "Novas interações aparecerão aqui.": {
+  "en-US": "New interactions will appear here.",
+  "es-ES": "Las nuevas interacciones aparecerán aquí."
+ },
+ "Não lida": {
+  "en-US": "Unread",
+  "es-ES": "Sin leer"
+ },
+ "Não mostrar novamente": {
+  "en-US": "Do not show again",
+  "es-ES": "No mostrar de nuevo"
+ },
+ "Ofertas complementares com relações validadas no banco.": {
+  "en-US": "Complementary offers with database-validated relationships.",
+  "es-ES": "Ofertas complementarias con relaciones validadas en la base de datos."
+ },
+ "Ordenação": {
+  "en-US": "Sort by",
+  "es-ES": "Ordenación"
+ },
+ "Order Bumps": {
+  "en-US": "Order Bumps",
+  "es-ES": "Order Bumps"
+ },
+ "Outros módulos": {
+  "en-US": "Other modules",
+  "es-ES": "Otros módulos"
+ },
+ "Paginação de afiliados": {
+  "en-US": "Affiliate pagination",
+  "es-ES": "Paginación de afiliados"
+ },
+ "Paginação de assinaturas": {
+  "en-US": "Subscription pagination",
+  "es-ES": "Paginación de suscripciones"
+ },
+ "Participações e permissões restritas ao produto; nenhum acesso financeiro geral é concedido.": {
+  "en-US": "Product-scoped roles and permissions; no general financial access is granted.",
+  "es-ES": "Participaciones y permisos restringidos al producto; no se concede acceso financiero general."
+ },
+ "Países": {
+  "en-US": "Countries",
+  "es-ES": "Países"
+ },
+ "Perfil do cliente": {
+  "en-US": "Customer profile",
+  "es-ES": "Perfil del cliente"
+ },
+ "Perfil não encontrado": {
+  "en-US": "Profile not found",
+  "es-ES": "Perfil no encontrado"
+ },
+ "Personalize o visual, publique e compartilhe um link de compra.": {
+  "en-US": "Customize the design, publish and share a purchase link.",
+  "es-ES": "Personaliza el diseño, publica y comparte un enlace de compra."
+ },
+ "Personalize sua conta, preferências e recursos do dispositivo.": {
+  "en-US": "Customize your account, preferences and device features.",
+  "es-ES": "Personaliza tu cuenta, preferencias y funciones del dispositivo."
+ },
+ "Período da visão geral": {
+  "en-US": "Overview period",
+  "es-ES": "Período de la vista general"
+ },
+ "Período do dashboard": {
+  "en-US": "Dashboard period",
+  "es-ES": "Período del panel"
+ },
+ "Período do histórico": {
+  "en-US": "History period",
+  "es-ES": "Período del historial"
+ },
+ "Pesquisar pessoas e publicações": {
+  "en-US": "Search people and posts",
+  "es-ES": "Buscar personas y publicaciones"
+ },
+ "Prazo da oferta": {
+  "en-US": "Offer deadline",
+  "es-ES": "Plazo de la oferta"
+ },
+ "Preset de layout": {
+  "en-US": "Layout preset",
+  "es-ES": "Preset de diseño"
+ },
+ "Programa de afiliados": {
+  "en-US": "Affiliate program",
+  "es-ES": "Programa de afiliados"
+ },
+ "Programar sequência": {
+  "en-US": "Schedule sequence",
+  "es-ES": "Programar secuencia"
+ },
+ "Programação": {
+  "en-US": "Scheduling",
+  "es-ES": "Programación"
+ },
+ "Progresso da próxima premiação": {
+  "en-US": "Next award progress",
+  "es-ES": "Progreso del próximo premio"
+ },
+ "Progresso da sequência": {
+  "en-US": "Sequence progress",
+  "es-ES": "Progreso de la secuencia"
+ },
+ "Progresso do prazo": {
+  "en-US": "Deadline progress",
+  "es-ES": "Progreso del plazo"
+ },
+ "Propriedades do bloco": {
+  "en-US": "Block properties",
+  "es-ES": "Propiedades del bloque"
+ },
+ "Próxima página": {
+  "en-US": "Next page",
+  "es-ES": "Página siguiente"
+ },
+ "Próxima página de clientes": {
+  "en-US": "Next customer page",
+  "es-ES": "Página siguiente de clientes"
+ },
+ "Próxima página de vendas": {
+  "en-US": "Next sales page",
+  "es-ES": "Página siguiente de ventas"
+ },
+ "Próximo banner": {
+  "en-US": "Next banner",
+  "es-ES": "Banner siguiente"
+ },
+ "Publicação indisponível": {
+  "en-US": "Post unavailable",
+  "es-ES": "Publicación no disponible"
+ },
+ "Página anterior": {
+  "en-US": "Previous page",
+  "es-ES": "Página anterior"
+ },
+ "Página anterior de clientes": {
+  "en-US": "Previous customer page",
+  "es-ES": "Página anterior de clientes"
+ },
+ "Página anterior de vendas": {
+  "en-US": "Previous sales page",
+  "es-ES": "Página anterior de ventas"
+ },
+ "Quantidade e intervalo": {
+  "en-US": "Quantity and interval",
+  "es-ES": "Cantidad e intervalo"
+ },
+ "Quantidades rápidas": {
+  "en-US": "Quick quantities",
+  "es-ES": "Cantidades rápidas"
+ },
+ "R$ 0,00": {
+  "en-US": "R$ 0,00",
+  "es-ES": "R$ 0,00"
+ },
+ "Ranking em formação": {
+  "en-US": "Ranking in progress",
+  "es-ES": "Clasificación en formación"
+ },
+ "Rastreamento e pixels": {
+  "en-US": "Tracking and pixels",
+  "es-ES": "Seguimiento y píxeles"
+ },
+ "Receita recorrente e saúde dos planos.": {
+  "en-US": "Recurring revenue and plan health.",
+  "es-ES": "Ingresos recurrentes y estado de los planes."
+ },
+ "Reduzir velocidade": {
+  "en-US": "Decrease speed",
+  "es-ES": "Reducir velocidad"
+ },
+ "Regras validadas no banco; o browser nunca escolhe o desconto final.": {
+  "en-US": "Rules validated in the database; the browser never decides the final discount.",
+  "es-ES": "Reglas validadas en la base de datos; el navegador nunca decide el descuento final."
+ },
+ "Relatórios": {
+  "en-US": "Reports",
+  "es-ES": "Informes"
+ },
+ "Remover mídia": {
+  "en-US": "Remove media",
+  "es-ES": "Eliminar medio"
+ },
+ "Repita seu e-mail": {
+  "en-US": "Repeat your email",
+  "es-ES": "Repite tu correo electrónico"
+ },
+ "Repostar": {
+  "en-US": "Repost",
+  "es-ES": "Republicar"
+ },
+ "Resultados de navegação": {
+  "en-US": "Navigation results",
+  "es-ES": "Resultados de navegación"
+ },
+ "Revise a visualização e confirme o destino.": {
+  "en-US": "Review the preview and confirm the destination.",
+  "es-ES": "Revisa la vista previa y confirma el destino."
+ },
+ "Saldos, repasses e extrato local da operação.": {
+  "en-US": "Balances, payouts and the operation's local statement.",
+  "es-ES": "Saldos, transferencias y extracto local de la operación."
+ },
+ "Saldos, repasses, extrato e saques da operação.": {
+  "en-US": "Balances, payouts, statements and withdrawals.",
+  "es-ES": "Saldos, transferencias, extractos y retiros de la operación."
+ },
+ "Salvar configuração": {
+  "en-US": "Save settings",
+  "es-ES": "Guardar configuración"
+ },
+ "Selecionar todas as assinaturas visíveis": {
+  "en-US": "Select all visible subscriptions",
+  "es-ES": "Seleccionar todas las suscripciones visibles"
+ },
+ "Selecione uma conversa": {
+  "en-US": "Select a conversation",
+  "es-ES": "Selecciona una conversación"
+ },
+ "Sem alterações registradas": {
+  "en-US": "No changes recorded",
+  "es-ES": "No hay cambios registrados"
+ },
+ "Seções de Produtos": {
+  "en-US": "Product sections",
+  "es-ES": "Secciones de Productos"
+ },
+ "Seções de assinaturas": {
+  "en-US": "Subscription sections",
+  "es-ES": "Secciones de suscripciones"
+ },
+ "Seções de notificações": {
+  "en-US": "Notification sections",
+  "es-ES": "Secciones de notificaciones"
+ },
+ "Seções de verificação": {
+  "en-US": "Verification sections",
+  "es-ES": "Secciones de verificación"
+ },
+ "Sobre a comissão": {
+  "en-US": "About the commission",
+  "es-ES": "Sobre la comisión"
+ },
+ "Solicitação recebida": {
+  "en-US": "Request received",
+  "es-ES": "Solicitud recibida"
+ },
+ "Som do sistema": {
+  "en-US": "System sound",
+  "es-ES": "Sonido del sistema"
+ },
+ "Sphex Members": {
+  "en-US": "Sphex Members",
+  "es-ES": "Sphex Members"
+ },
+ "Sua jornada de reconhecimento por faturamento.": {
+  "en-US": "Your journey of revenue recognition.",
+  "es-ES": "Tu recorrido de reconocimiento por facturación."
+ },
+ "Suas mensagens são privadas para os participantes.": {
+  "en-US": "Your messages are private to the participants.",
+  "es-ES": "Tus mensajes son privados para los participantes."
+ },
+ "Tabela": {
+  "en-US": "Table",
+  "es-ES": "Tabla"
+ },
+ "Tente outro nome ou username.": {
+  "en-US": "Try another name or username.",
+  "es-ES": "Prueba con otro nombre o nombre de usuario."
+ },
+ "Tente outros termos de busca.": {
+  "en-US": "Try different search terms.",
+  "es-ES": "Prueba otros términos de búsqueda."
+ },
+ "Texto inteligente": {
+  "en-US": "Smart text",
+  "es-ES": "Texto inteligente"
+ },
+ "Tipo da notificação": {
+  "en-US": "Notification type",
+  "es-ES": "Tipo de notificación"
+ },
+ "Tipo de pessoa": {
+  "en-US": "Person type",
+  "es-ES": "Tipo de persona"
+ },
+ "Tipo do valor": {
+  "en-US": "Amount type",
+  "es-ES": "Tipo de importe"
+ },
+ "Tipos de vendas aprovadas": {
+  "en-US": "Approved sale types",
+  "es-ES": "Tipos de ventas aprobadas"
+ },
+ "Tudo em dia": {
+  "en-US": "All up to date",
+  "es-ES": "Todo al día"
+ },
+ "Título da notificação": {
+  "en-US": "Notification title",
+  "es-ES": "Título de la notificación"
+ },
+ "URLs persistentes com parâmetros de campanha preservados.": {
+  "en-US": "Persistent URLs with campaign parameters preserved.",
+  "es-ES": "URL persistentes con parámetros de campaña conservados."
+ },
+ "Uma cobrança por compra": {
+  "en-US": "One charge per purchase",
+  "es-ES": "Un cobro por compra"
+ },
+ "Unidade do intervalo": {
+  "en-US": "Interval unit",
+  "es-ES": "Unidad del intervalo"
+ },
+ "Valor da notificação": {
+  "en-US": "Notification amount",
+  "es-ES": "Importe de la notificación"
+ },
+ "Vendas ao Vivo": {
+  "en-US": "Live Sales",
+  "es-ES": "Ventas en vivo"
+ },
+ "Ver premiações": {
+  "en-US": "View awards",
+  "es-ES": "Ver premios"
+ },
+ "Visitas ainda não disponíveis": {
+  "en-US": "Visits not available yet",
+  "es-ES": "Visitas aún no disponibles"
+ },
+ "Visualizar como": {
+  "en-US": "View as",
+  "es-ES": "Ver como"
+ },
+ "Visão geral de relatórios": {
+  "en-US": "Reports overview",
+  "es-ES": "Vista general de informes"
+ },
+ "Visão geral financeira": {
+  "en-US": "Financial overview",
+  "es-ES": "Vista general financiera"
+ },
+ "afiliado@exemplo.com": {
+  "en-US": "afiliado@exemplo.com",
+  "es-ES": "afiliado@exemplo.com"
+ },
+ "https://": {
+  "en-US": "https://",
+  "es-ES": "https://"
+ },
+ "https://...": {
+  "en-US": "https://...",
+  "es-ES": "https://..."
+ },
+ "voce@exemplo.com": {
+  "en-US": "voce@exemplo.com",
+  "es-ES": "voce@exemplo.com"
+ },
+ "{count} não lidas": {
+  "en-US": "{count} unread",
+  "es-ES": "{count} sin leer"
+ },
+ "Áreas de Relatórios": {
+  "en-US": "Report areas",
+  "es-ES": "Áreas de Informes"
+ },
+ "Áreas do Financeiro": {
+  "en-US": "Finance areas",
+  "es-ES": "Áreas de Finanzas"
+ },
+ "A IA prepara um conjunto limitado antes do primeiro envio. Se não estiver disponível, as variações locais serão usadas.": {
+  "en-US": "AI prepares a limited set before the first send. If unavailable, local variations are used.",
+  "es-ES": "La IA prepara un conjunto limitado antes del primer envío. Si no está disponible, se usan variaciones locales."
+ },
+ "A próxima venda aparecerá automaticamente.": {
+  "en-US": "The next sale will appear automatically.",
+  "es-ES": "La próxima venta aparecerá automáticamente."
+ },
+ "ALCANÇADA": {
+  "en-US": "ACHIEVED",
+  "es-ES": "ALCANZADA"
+ },
+ "ATIVIDADE RECENTE": {
+  "en-US": "RECENT ACTIVITY",
+  "es-ES": "ACTIVIDAD RECIENTE"
+ },
+ "Abrir ajuda": {
+  "en-US": "Open help",
+  "es-ES": "Abrir ayuda"
+ },
+ "Acesso rápido": {
+  "en-US": "Quick access",
+  "es-ES": "Acceso rápido"
+ },
+ "Acompanhe as atualizações mais recentes": {
+  "en-US": "Track the latest updates",
+  "es-ES": "Sigue las actualizaciones más recientes"
+ },
+ "Acompanhe suas vendas, resultados e recebimentos em uma única visão.": {
+  "en-US": "Track your sales, results and payouts in one place.",
+  "es-ES": "Sigue tus ventas, resultados y cobros en un solo lugar."
+ },
+ "Adicionar à vitrine": {
+  "en-US": "Add to showcase",
+  "es-ES": "Añadir al escaparate"
+ },
+ "Adicione o banner do seu produto": {
+  "en-US": "Add your product banner",
+  "es-ES": "Añade el banner de tu producto"
+ },
+ "Adicione seu vídeo de apresentação": {
+  "en-US": "Add your introduction video",
+  "es-ES": "Añade tu vídeo de presentación"
+ },
+ "Agendada": {
+  "en-US": "Scheduled",
+  "es-ES": "Programada"
+ },
+ "Agendar": {
+  "en-US": "Schedule",
+  "es-ES": "Programar"
+ },
+ "Aplicativo instalado": {
+  "en-US": "App installed",
+  "es-ES": "Aplicación instalada"
+ },
+ "Arquivar produto": {
+  "en-US": "Archive product",
+  "es-ES": "Archivar producto"
+ },
+ "As novas vendas aprovadas serão enviadas aos seus dispositivos.": {
+  "en-US": "New approved sales will be sent to your devices.",
+  "es-ES": "Las nuevas ventas aprobadas se enviarán a tus dispositivos."
+ },
+ "Ativar neste dispositivo": {
+  "en-US": "Enable on this device",
+  "es-ES": "Activar en este dispositivo"
+ },
+ "Atual": {
+  "en-US": "Current",
+  "es-ES": "Actual"
+ },
+ "Atualizando...": {
+  "en-US": "Updating...",
+  "es-ES": "Actualizando..."
+ },
+ "Atualização ao vivo": {
+  "en-US": "Live updates",
+  "es-ES": "Actualización en vivo"
+ },
+ "Atualização manual": {
+  "en-US": "Manual refresh",
+  "es-ES": "Actualización manual"
+ },
+ "BLOQUEADA": {
+  "en-US": "LOCKED",
+  "es-ES": "BLOQUEADA"
+ },
+ "CNPJ": {
+  "en-US": "CNPJ",
+  "es-ES": "CNPJ"
+ },
+ "CONQUISTA ALCANÇADA": {
+  "en-US": "ACHIEVEMENT UNLOCKED",
+  "es-ES": "LOGRO ALCANZADO"
+ },
+ "CPF": {
+  "en-US": "CPF",
+  "es-ES": "CPF"
+ },
+ "Cadastre seus produtos e acompanhe aqui o caminho até a vitrine.": {
+  "en-US": "Register your products and track their path to the showcase here.",
+  "es-ES": "Registra tus productos y sigue aquí el camino hasta el escaparate."
+ },
+ "Carregando...": {
+  "en-US": "Loading...",
+  "es-ES": "Cargando..."
+ },
+ "Comissão fixa": {
+  "en-US": "Fixed commission",
+  "es-ES": "Comisión fija"
+ },
+ "Comissão percentual": {
+  "en-US": "Percentage commission",
+  "es-ES": "Comisión porcentual"
+ },
+ "Comparação com o período anterior equivalente": {
+  "en-US": "Comparison with the equivalent previous period",
+  "es-ES": "Comparación con el período anterior equivalente"
+ },
+ "Conectando…": {
+  "en-US": "Connecting…",
+  "es-ES": "Conectando…"
+ },
+ "Conectar provedor": {
+  "en-US": "Connect provider",
+  "es-ES": "Conectar proveedor"
+ },
+ "Conecte um provedor de pagamentos. Suas vendas passam a aparecer neste painel em tempo real.": {
+  "en-US": "Connect a payment provider. Your sales will appear in this dashboard in real time.",
+  "es-ES": "Conecta un proveedor de pagos. Tus ventas aparecerán en este panel en tiempo real."
+ },
+ "Conecte-se com quem está construindo no SPHEX PAY.": {
+  "en-US": "Connect with the people building on SPHEX PAY.",
+  "es-ES": "Conecta con quienes están construyendo en SPHEX PAY."
+ },
+ "Configurado": {
+  "en-US": "Configured",
+  "es-ES": "Configurado"
+ },
+ "Configure a atividade em Configurações → Modo.": {
+  "en-US": "Configure activity in Settings → Mode.",
+  "es-ES": "Configura la actividad en Configuración → Modo."
+ },
+ "Consultar ranking": {
+  "en-US": "Check ranking",
+  "es-ES": "Consultar clasificación"
+ },
+ "Copiar link público": {
+  "en-US": "Copy public link",
+  "es-ES": "Copiar enlace público"
+ },
+ "Criar e configurar": {
+  "en-US": "Create and configure",
+  "es-ES": "Crear y configurar"
+ },
+ "Deixar de seguir": {
+  "en-US": "Unfollow",
+  "es-ES": "Dejar de seguir"
+ },
+ "Desativando…": {
+  "en-US": "Disabling…",
+  "es-ES": "Desactivando…"
+ },
+ "Desativar neste computador": {
+  "en-US": "Disable on this computer",
+  "es-ES": "Desactivar en este ordenador"
+ },
+ "Disponível no navegador": {
+  "en-US": "Available in the browser",
+  "es-ES": "Disponible en el navegador"
+ },
+ "Dispositivo atual ·": {
+  "en-US": "Current device ·",
+  "es-ES": "Dispositivo actual ·"
+ },
+ "Em execução": {
+  "en-US": "Running",
+  "es-ES": "En ejecución"
+ },
+ "Encerrar sessão": {
+  "en-US": "End session",
+  "es-ES": "Cerrar sesión"
+ },
+ "Endereço de entrega": {
+  "en-US": "Delivery address",
+  "es-ES": "Dirección de entrega"
+ },
+ "Enviando mídia…": {
+  "en-US": "Uploading media…",
+  "es-ES": "Subiendo medios…"
+ },
+ "Enviando…": {
+  "en-US": "Sending…",
+  "es-ES": "Enviando…"
+ },
+ "Enviar arquivo": {
+  "en-US": "Upload file",
+  "es-ES": "Subir archivo"
+ },
+ "Enviar notificação": {
+  "en-US": "Send notification",
+  "es-ES": "Enviar notificación"
+ },
+ "Enviar teste": {
+  "en-US": "Send test",
+  "es-ES": "Enviar prueba"
+ },
+ "Este computador está conectado.": {
+  "en-US": "This computer is connected.",
+  "es-ES": "Este ordenador está conectado."
+ },
+ "Este computador precisa ser conectado novamente.": {
+  "en-US": "This computer needs to be reconnected.",
+  "es-ES": "Este ordenador debe conectarse de nuevo."
+ },
+ "Este navegador não oferece os recursos necessários de Push.": {
+  "en-US": "This browser does not offer the required Push features.",
+  "es-ES": "Este navegador no ofrece las funciones push necesarias."
+ },
+ "Excluir definitivamente": {
+  "en-US": "Permanently delete",
+  "es-ES": "Eliminar definitivamente"
+ },
+ "Experimente outro status ou ajuste sua busca.": {
+  "en-US": "Try another status or adjust your search.",
+  "es-ES": "Prueba otro estado o ajusta la búsqueda."
+ },
+ "Exportando…": {
+  "en-US": "Exporting…",
+  "es-ES": "Exportando…"
+ },
+ "FLUXO DE VENDAS": {
+  "en-US": "SALES FLOW",
+  "es-ES": "FLUJO DE VENTAS"
+ },
+ "Final do prazo": {
+  "en-US": "Deadline end",
+  "es-ES": "Final del plazo"
+ },
+ "Gerenciar conexão": {
+  "en-US": "Manage connection",
+  "es-ES": "Gestionar conexión"
+ },
+ "Inativa": {
+  "en-US": "Inactive",
+  "es-ES": "Inactiva"
+ },
+ "Iniciar sequência": {
+  "en-US": "Start sequence",
+  "es-ES": "Iniciar secuencia"
+ },
+ "Início do prazo": {
+  "en-US": "Deadline start",
+  "es-ES": "Inicio del plazo"
+ },
+ "Link copiado": {
+  "en-US": "Link copied",
+  "es-ES": "Enlace copiado"
+ },
+ "Mídia indisponível": {
+  "en-US": "Media unavailable",
+  "es-ES": "Medio no disponible"
+ },
+ "Nenhum dispositivo ativo": {
+  "en-US": "No active devices",
+  "es-ES": "No hay dispositivos activos"
+ },
+ "Nenhum dispositivo conectado": {
+  "en-US": "No connected devices",
+  "es-ES": "No hay dispositivos conectados"
+ },
+ "Nenhum produto neste filtro": {
+  "en-US": "No products match this filter",
+  "es-ES": "No hay productos para este filtro"
+ },
+ "Notificação do sistema": {
+  "en-US": "System notification",
+  "es-ES": "Notificación del sistema"
+ },
+ "Notificações ativas": {
+  "en-US": "Notifications active",
+  "es-ES": "Notificaciones activas"
+ },
+ "Notificações desativadas": {
+  "en-US": "Notifications disabled",
+  "es-ES": "Notificaciones desactivadas"
+ },
+ "Notificações estão bloqueadas neste navegador.": {
+  "en-US": "Notifications are blocked in this browser.",
+  "es-ES": "Las notificaciones están bloqueadas en este navegador."
+ },
+ "Notificações pausadas": {
+  "en-US": "Notifications paused",
+  "es-ES": "Notificaciones pausadas"
+ },
+ "Novos produtores": {
+  "en-US": "New producers",
+  "es-ES": "Nuevos productores"
+ },
+ "O Service Worker não está disponível neste navegador.": {
+  "en-US": "Service Worker is not available in this browser.",
+  "es-ES": "Service Worker no está disponible en este navegador."
+ },
+ "O modo continua funcionando normalmente.": {
+  "en-US": "The mode continues to work normally.",
+  "es-ES": "El modo sigue funcionando normalmente."
+ },
+ "Operação pausada. Novas notificações também foram pausadas.": {
+  "en-US": "Operation paused. New notifications have also been paused.",
+  "es-ES": "Operación pausada. También se han pausado las nuevas notificaciones."
+ },
+ "PF": {
+  "en-US": "Individual",
+  "es-ES": "Persona física"
+ },
+ "PJ": {
+  "en-US": "Business",
+  "es-ES": "Persona jurídica"
+ },
+ "PRÓXIMA CONQUISTA": {
+  "en-US": "NEXT ACHIEVEMENT",
+  "es-ES": "PRÓXIMO LOGRO"
+ },
+ "PRÓXIMA META": {
+  "en-US": "NEXT GOAL",
+  "es-ES": "PRÓXIMA META"
+ },
+ "Pausada": {
+  "en-US": "Paused",
+  "es-ES": "Pausada"
+ },
+ "Pendente": {
+  "en-US": "Pending",
+  "es-ES": "Pendiente"
+ },
+ "Permitir notificações neste computador": {
+  "en-US": "Allow notifications on this computer",
+  "es-ES": "Permitir notificaciones en este ordenador"
+ },
+ "Pessoa física": {
+  "en-US": "Individual",
+  "es-ES": "Persona física"
+ },
+ "Pessoa jurídica": {
+  "en-US": "Legal entity",
+  "es-ES": "Persona jurídica"
+ },
+ "Pessoas": {
+  "en-US": "People",
+  "es-ES": "Personas"
+ },
+ "Planejamento": {
+  "en-US": "Planning",
+  "es-ES": "Planificación"
+ },
+ "Pronto": {
+  "en-US": "Ready",
+  "es-ES": "Listo"
+ },
+ "Reabrir draft": {
+  "en-US": "Reopen draft",
+  "es-ES": "Reabrir borrador"
+ },
+ "Receba as novas vendas neste computador.": {
+  "en-US": "Receive new sales on this computer.",
+  "es-ES": "Recibe las nuevas ventas en este ordenador."
+ },
+ "Reconectando": {
+  "en-US": "Reconnecting",
+  "es-ES": "Reconectando"
+ },
+ "Recorrente": {
+  "en-US": "Recurring",
+  "es-ES": "Recurrente"
+ },
+ "Registros restritos ao planejamento": {
+  "en-US": "Planning-only records",
+  "es-ES": "Registros restringidos a la planificación"
+ },
+ "Remover da vitrine": {
+  "en-US": "Remove from showcase",
+  "es-ES": "Eliminar del escaparate"
+ },
+ "Resultados projetados": {
+  "en-US": "Projected results",
+  "es-ES": "Resultados proyectados"
+ },
+ "Revisar alterações": {
+  "en-US": "Review changes",
+  "es-ES": "Revisar cambios"
+ },
+ "Revise os dados de entrega": {
+  "en-US": "Review delivery details",
+  "es-ES": "Revisa los datos de entrega"
+ },
+ "Salvando...": {
+  "en-US": "Saving...",
+  "es-ES": "Guardando..."
+ },
+ "Salvar foto": {
+  "en-US": "Save photo",
+  "es-ES": "Guardar foto"
+ },
+ "Salvar planejamento": {
+  "en-US": "Save planning",
+  "es-ES": "Guardar planificación"
+ },
+ "Salvo": {
+  "en-US": "Saved",
+  "es-ES": "Guardado"
+ },
+ "Selecione um dispositivo": {
+  "en-US": "Select a device",
+  "es-ES": "Selecciona un dispositivo"
+ },
+ "Sem participante": {
+  "en-US": "No participant",
+  "es-ES": "Sin participante"
+ },
+ "Sons desativados": {
+  "en-US": "Sounds disabled",
+  "es-ES": "Sonidos desactivados"
+ },
+ "SphexPay para desktop": {
+  "en-US": "SphexPay for desktop",
+  "es-ES": "SphexPay para escritorio"
+ },
+ "Sua próxima conquista começa com um produto": {
+  "en-US": "Your next achievement starts with a product",
+  "es-ES": "Tu próximo logro empieza con un producto"
+ },
+ "Suas referências ficam privadas e organizadas aqui.": {
+  "en-US": "Your references stay private and organized here.",
+  "es-ES": "Tus referencias permanecen privadas y organizadas aquí."
+ },
+ "Substituir arquivo": {
+  "en-US": "Replace file",
+  "es-ES": "Sustituir archivo"
+ },
+ "Série determinística de planejamento": {
+  "en-US": "Deterministic planning series",
+  "es-ES": "Serie determinista de planificación"
+ },
+ "TIMELINE DE CENÁRIO": {
+  "en-US": "SCENARIO TIMELINE",
+  "es-ES": "CRONOLOGÍA DEL ESCENARIO"
+ },
+ "Tentando…": {
+  "en-US": "Trying…",
+  "es-ES": "Intentando…"
+ },
+ "Transações persistidas no backend": {
+  "en-US": "Transactions saved in the backend",
+  "es-ES": "Transacciones guardadas en el backend"
+ },
+ "Use uma conexão HTTPS para ativar notificações.": {
+  "en-US": "Use an HTTPS connection to enable notifications.",
+  "es-ES": "Usa una conexión HTTPS para activar las notificaciones."
+ },
+ "Validando…": {
+  "en-US": "Validating…",
+  "es-ES": "Validando…"
+ },
+ "Variações automáticas ativas.": {
+  "en-US": "Automatic variations active.",
+  "es-ES": "Variaciones automáticas activas."
+ },
+ "Vendas recentes": {
+  "en-US": "Recent sales",
+  "es-ES": "Ventas recientes"
+ },
+ "Ver produção": {
+  "en-US": "View production",
+  "es-ES": "Ver producción"
+ },
+ "Ver ranking completo": {
+  "en-US": "View full ranking",
+  "es-ES": "Ver clasificación completa"
+ },
+ "Voltar ao editor": {
+  "en-US": "Back to editor",
+  "es-ES": "Volver al editor"
+ },
+ "aguardando registro": {
+  "en-US": "awaiting record",
+  "es-ES": "esperando registro"
+ },
+ "ativo": {
+  "en-US": "active",
+  "es-ES": "activo"
+ },
+ "lida": {
+  "en-US": "read",
+  "es-ES": "leída"
+ },
+ "lidas": {
+  "en-US": "read",
+  "es-ES": "leídas"
+ },
+ "produtos": {
+  "en-US": "products",
+  "es-ES": "productos"
+ },
+ "s": {
+  "en-US": "s",
+  "es-ES": "s"
+ },
+ "{{customer_name}} · {{product_name}} · {{order_id}} · {{access_url}}": {
+  "en-US": "{{customer_name}} · {{product_name}} · {{order_id}} · {{access_url}}",
+  "es-ES": "{{customer_name}} · {{product_name}} · {{order_id}} · {{access_url}}"
+ },
+ "· Editado": {
+  "en-US": "· Edited",
+  "es-ES": "· Editado"
+ },
+ "· MODO LIVE": {
+  "en-US": "· LIVE MODE",
+  "es-ES": "· MODO LIVE"
+ },
+ "· MODO TESTE": {
+  "en-US": "· TEST MODE",
+  "es-ES": "· MODO PRUEBA"
+ },
+ "Áudio ativo": {
+  "en-US": "Audio active",
+  "es-ES": "Audio activo"
+ },
+ "Áudio bloqueado ou suspenso": {
+  "en-US": "Audio blocked or suspended",
+  "es-ES": "Audio bloqueado o suspendido"
+ },
+ "Único": {
+  "en-US": "One-time",
+  "es-ES": "Único"
+ },
+ "Alternar BRL, USD e EUR": {
+  "en-US": "Switch BRL, USD and EUR",
+  "es-ES": "Alternar BRL, USD y EUR"
+ },
+ "Alternar automaticamente tipos": {
+  "en-US": "Automatically switch types",
+  "es-ES": "Alternar tipos automáticamente"
+ },
+ "Assinaturas ativas": {
+  "en-US": "Active subscriptions",
+  "es-ES": "Suscripciones activas"
+ },
+ "Assinaturas canceladas": {
+  "en-US": "Canceled subscriptions",
+  "es-ES": "Suscripciones canceladas"
+ },
+ "Assinaturas inativadas": {
+  "en-US": "Deactivated subscriptions",
+  "es-ES": "Suscripciones desactivadas"
+ },
+ "Ativar variação automática": {
+  "en-US": "Enable automatic variation",
+  "es-ES": "Activar variación automática"
+ },
+ "Atividade": {
+  "en-US": "Activity",
+  "es-ES": "Actividad"
+ },
+ "Atualizações automáticas": {
+  "en-US": "Automatic updates",
+  "es-ES": "Actualizaciones automáticas"
+ },
+ "BRL · Real": {
+  "en-US": "BRL · Real",
+  "es-ES": "BRL · Real"
+ },
+ "Bairro": {
+  "en-US": "Neighborhood",
+  "es-ES": "Barrio"
+ },
+ "Boletos": {
+  "en-US": "Boletos",
+  "es-ES": "Boletos"
+ },
+ "CEP": {
+  "en-US": "Postal code",
+  "es-ES": "Código postal"
+ },
+ "Carregando a fila": {
+  "en-US": "Loading queue",
+  "es-ES": "Cargando la cola"
+ },
+ "Carregando seu cadastro": {
+  "en-US": "Loading your registration",
+  "es-ES": "Cargando tu registro"
+ },
+ "Carregando submissão": {
+  "en-US": "Loading submission",
+  "es-ES": "Cargando solicitud"
+ },
+ "Cartões": {
+  "en-US": "Cards",
+  "es-ES": "Tarjetas"
+ },
+ "Chave privada": {
+  "en-US": "Private key",
+  "es-ES": "Clave privada"
+ },
+ "Chave pública": {
+  "en-US": "Public key",
+  "es-ES": "Clave pública"
+ },
+ "Cidade": {
+  "en-US": "City",
+  "es-ES": "Ciudad"
+ },
+ "Complemento": {
+  "en-US": "Address line 2",
+  "es-ES": "Complemento"
+ },
+ "Continuar até eu parar": {
+  "en-US": "Continue until I stop",
+  "es-ES": "Continuar hasta que lo detenga"
+ },
+ "Conversão do checkout": {
+  "en-US": "Checkout conversion",
+  "es-ES": "Conversión del checkout"
+ },
+ "Crescimento diário esperado": {
+  "en-US": "Expected daily growth",
+  "es-ES": "Crecimiento diario esperado"
+ },
+ "Data de nascimento": {
+  "en-US": "Date of birth",
+  "es-ES": "Fecha de nacimiento"
+ },
+ "Documento": {
+  "en-US": "Document",
+  "es-ES": "Documento"
+ },
+ "E-mail de suporte": {
+  "en-US": "Support email",
+  "es-ES": "Correo de soporte"
+ },
+ "EUR · Euro": {
+  "en-US": "EUR · Euro",
+  "es-ES": "EUR · Euro"
+ },
+ "Enviar para": {
+  "en-US": "Send to",
+  "es-ES": "Enviar a"
+ },
+ "Faturamento total": {
+  "en-US": "Total revenue",
+  "es-ES": "Facturación total"
+ },
+ "Faturamento-base de hoje": {
+  "en-US": "Today's base revenue",
+  "es-ES": "Facturación base de hoy"
+ },
+ "Fim do pico": {
+  "en-US": "Peak end",
+  "es-ES": "Final del pico"
+ },
+ "Frequência": {
+  "en-US": "Frequency",
+  "es-ES": "Frecuencia"
+ },
+ "Frequência das atualizações locais (segundos)": {
+  "en-US": "Local update frequency (seconds)",
+  "es-ES": "Frecuencia de actualizaciones locales (segundos)"
+ },
+ "Frequência das notificações": {
+  "en-US": "Notification frequency",
+  "es-ES": "Frecuencia de las notificaciones"
+ },
+ "Frequência máxima": {
+  "en-US": "Maximum frequency",
+  "es-ES": "Frecuencia máxima"
+ },
+ "Frequência mínima": {
+  "en-US": "Minimum frequency",
+  "es-ES": "Frecuencia mínima"
+ },
+ "Garantia": {
+  "en-US": "Guarantee",
+  "es-ES": "Garantía"
+ },
+ "Idioma da voz": {
+  "en-US": "Voice language",
+  "es-ES": "Idioma de la voz"
+ },
+ "Interromper fala ao enviar nova pergunta": {
+  "en-US": "Stop speech when sending a new question",
+  "es-ES": "Interrumpir la voz al enviar una nueva pregunta"
+ },
+ "Início do pico": {
+  "en-US": "Peak start",
+  "es-ES": "Inicio del pico"
+ },
+ "Leitura em voz alta": {
+  "en-US": "Read aloud",
+  "es-ES": "Lectura en voz alta"
+ },
+ "Ler respostas em voz alta": {
+  "en-US": "Read answers aloud",
+  "es-ES": "Leer respuestas en voz alta"
+ },
+ "Liberar após pagamento aprovado": {
+  "en-US": "Grant access after approved payment",
+  "es-ES": "Dar acceso tras el pago aprobado"
+ },
+ "Limite da sessão": {
+  "en-US": "Session limit",
+  "es-ES": "Límite de la sesión"
+ },
+ "Limite por sessão": {
+  "en-US": "Limit per session",
+  "es-ES": "Límite por sesión"
+ },
+ "Logradouro": {
+  "en-US": "Street address",
+  "es-ES": "Dirección"
+ },
+ "Maior destino": {
+  "en-US": "Top destination",
+  "es-ES": "Destino principal"
+ },
+ "Meta da sessão": {
+  "en-US": "Session goal",
+  "es-ES": "Meta de la sesión"
+ },
+ "Moeda principal": {
+  "en-US": "Primary currency",
+  "es-ES": "Moneda principal"
+ },
+ "Mostrar horário": {
+  "en-US": "Show time",
+  "es-ES": "Mostrar hora"
+ },
+ "Multiplicador do pico": {
+  "en-US": "Peak multiplier",
+  "es-ES": "Multiplicador del pico"
+ },
+ "Máximo de cobranças": {
+  "en-US": "Maximum charges",
+  "es-ES": "Máximo de cobros"
+ },
+ "Nome da empresa": {
+  "en-US": "Company name",
+  "es-ES": "Nombre de la empresa"
+ },
+ "Nome do produto": {
+  "en-US": "Product name",
+  "es-ES": "Nombre del producto"
+ },
+ "Nome público do produtor": {
+  "en-US": "Producer's public name",
+  "es-ES": "Nombre público del productor"
+ },
+ "Novos assinantes": {
+  "en-US": "New subscribers",
+  "es-ES": "Nuevos suscriptores"
+ },
+ "Não repetir valores iguais": {
+  "en-US": "Do not repeat identical amounts",
+  "es-ES": "No repetir importes iguales"
+ },
+ "Número": {
+  "en-US": "Number",
+  "es-ES": "Número"
+ },
+ "Parcelamento máximo": {
+  "en-US": "Maximum installments",
+  "es-ES": "Máximo de cuotas"
+ },
+ "Países alcançados": {
+  "en-US": "Countries reached",
+  "es-ES": "Países alcanzados"
+ },
+ "Permitir assinatura": {
+  "en-US": "Allow subscriptions",
+  "es-ES": "Permitir suscripción"
+ },
+ "Permitir microfone": {
+  "en-US": "Allow microphone",
+  "es-ES": "Permitir micrófono"
+ },
+ "Pix": {
+  "en-US": "Pix",
+  "es-ES": "Pix"
+ },
+ "Produto(s)": {
+  "en-US": "Product(s)",
+  "es-ES": "Producto(s)"
+ },
+ "Programa ativado": {
+  "en-US": "Program enabled",
+  "es-ES": "Programa activado"
+ },
+ "Página de vendas": {
+  "en-US": "Sales page",
+  "es-ES": "Página de ventas"
+ },
+ "Quantidade inicial": {
+  "en-US": "Initial quantity",
+  "es-ES": "Cantidad inicial"
+ },
+ "Remover após chargeback": {
+  "en-US": "Remove after chargeback",
+  "es-ES": "Eliminar tras un contracargo"
+ },
+ "Remover após reembolso": {
+  "en-US": "Remove after refund",
+  "es-ES": "Eliminar tras un reembolso"
+ },
+ "Remover em assinatura inadimplente": {
+  "en-US": "Remove for overdue subscription",
+  "es-ES": "Eliminar en suscripción en mora"
+ },
+ "Ritmo das premiações": {
+  "en-US": "Awards pace",
+  "es-ES": "Ritmo de los premios"
+ },
+ "Seed determinística": {
+  "en-US": "Deterministic seed",
+  "es-ES": "Semilla determinista"
+ },
+ "Tags (separadas por vírgula)": {
+  "en-US": "Tags (comma-separated)",
+  "es-ES": "Etiquetas (separadas por comas)"
+ },
+ "Taxa de adesão": {
+  "en-US": "Adoption rate",
+  "es-ES": "Tasa de adhesión"
+ },
+ "Taxa de chargeback": {
+  "en-US": "Chargeback rate",
+  "es-ES": "Tasa de contracargos"
+ },
+ "Taxa de reembolso": {
+  "en-US": "Refund rate",
+  "es-ES": "Tasa de reembolsos"
+ },
+ "Teste grátis (dias)": {
+  "en-US": "Free trial (days)",
+  "es-ES": "Prueba gratuita (días)"
+ },
+ "Ticket desejado": {
+  "en-US": "Target average order value",
+  "es-ES": "Importe medio deseado"
+ },
+ "UF": {
+  "en-US": "State",
+  "es-ES": "Provincia/estado"
+ },
+ "URL da página": {
+  "en-US": "Page URL",
+  "es-ES": "URL de la página"
+ },
+ "USD · Dólar": {
+  "en-US": "USD · Dollar",
+  "es-ES": "USD · Dólar"
+ },
+ "Valor movimentado": {
+  "en-US": "Processed amount",
+  "es-ES": "Importe procesado"
+ },
+ "Valor máximo": {
+  "en-US": "Maximum amount",
+  "es-ES": "Importe máximo"
+ },
+ "Variar automaticamente": {
+  "en-US": "Vary automatically",
+  "es-ES": "Variar automáticamente"
+ },
+ "Velocidade da fala": {
+  "en-US": "Speech rate",
+  "es-ES": "Velocidad de la voz"
+ },
+ "Vendas ao vivo": {
+  "en-US": "Live sales",
+  "es-ES": "Ventas en vivo"
+ },
+ "Vendas aprovadas": {
+  "en-US": "Approved sales",
+  "es-ES": "Ventas aprobadas"
+ },
+ "Vendas pagas": {
+  "en-US": "Paid sales",
+  "es-ES": "Ventas pagadas"
+ },
+ "Vendas recentes no dashboard": {
+  "en-US": "Recent sales on the dashboard",
+  "es-ES": "Ventas recientes en el panel"
+ },
+ "Volume": {
+  "en-US": "Volume",
+  "es-ES": "Volumen"
+ },
+ "Volume da voz": {
+  "en-US": "Voice volume",
+  "es-ES": "Volumen de la voz"
+ },
+ "Áudio da inteligência artificial": {
+  "en-US": "AI audio",
+  "es-ES": "Audio de la inteligencia artificial"
+ },
+ "Último ponto do relatório": {
+  "en-US": "Last report point",
+  "es-ES": "Último punto del informe"
+ },
+ "Modo claro": {
+  "en-US": "Light mode",
+  "es-ES": "Modo claro"
+ },
+ "Modo escuro": {
+  "en-US": "Dark mode",
+  "es-ES": "Modo oscuro"
+ },
+ "Seguir preferência do sistema": {
+  "en-US": "Follow system preference",
+  "es-ES": "Seguir preferencia del sistema"
+ },
+ "Perfil": {
+  "en-US": "Profile",
+  "es-ES": "Perfil"
+ },
+ "Empresa": {
+  "en-US": "Company",
+  "es-ES": "Empresa"
+ },
+ "Aplicativo": {
+  "en-US": "App",
+  "es-ES": "Aplicación"
+ },
+ "Sons e voz": {
+  "en-US": "Sounds and voice",
+  "es-ES": "Sonidos y voz"
+ },
+ "Segurança": {
+  "en-US": "Security",
+  "es-ES": "Seguridad"
+ },
+ "Dados bancários": {
+  "en-US": "Bank details",
+  "es-ES": "Datos bancarios"
+ },
+ "Integrações futuras": {
+  "en-US": "Future integrations",
+  "es-ES": "Integraciones futuras"
+ },
+ "Dados": {
+  "en-US": "Data",
+  "es-ES": "Datos"
+ },
+ "Idioma": {
+  "en-US": "Language",
+  "es-ES": "Idioma"
+ },
+ "Padrão do dispositivo": {
+  "en-US": "Device default",
+  "es-ES": "Predeterminado del dispositivo"
+ },
+ "Competição": {
+  "en-US": "Competition",
+  "es-ES": "Competición"
+ },
+ "Verificação": {
+  "en-US": "Verification",
+  "es-ES": "Verificación"
+ },
+ "Operação": {
+  "en-US": "Operation",
+  "es-ES": "Operación"
+ },
+ "Crescimento": {
+  "en-US": "Growth",
+  "es-ES": "Crecimiento"
+ },
+ "Conta": {
+  "en-US": "Account",
+  "es-ES": "Cuenta"
+ },
+ "Destaque": {
+  "en-US": "Featured",
+  "es-ES": "Destacado"
+ },
+ "Verificando conexão": {
+  "en-US": "Checking connection",
+  "es-ES": "Verificando conexión"
+ },
+ "Conta de pagamentos conectada": {
+  "en-US": "Payment account connected",
+  "es-ES": "Cuenta de pagos conectada"
+ },
+ "Revise sua conexão": {
+  "en-US": "Review your connection",
+  "es-ES": "Revisa tu conexión"
+ },
+ "Nenhuma conexão ainda": {
+  "en-US": "No connection yet",
+  "es-ES": "Aún no hay conexión"
+ },
+ "Configure seus recebimentos": {
+  "en-US": "Set up your payouts",
+  "es-ES": "Configura tus cobros"
+ },
+ "Últimos 7 dias": {
+  "en-US": "Last 7 days",
+  "es-ES": "Últimos 7 días"
+ },
+ "Organize suas ofertas": {
+  "en-US": "Organize your offers",
+  "es-ES": "Organiza tus ofertas"
+ },
+ "Gerencie produtos, checkouts e links de pagamento.": {
+  "en-US": "Manage products, checkouts and payment links.",
+  "es-ES": "Gestiona productos, checkouts y enlaces de pago."
+ },
+ "Acompanhe seus resultados": {
+  "en-US": "Track your results",
+  "es-ES": "Sigue tus resultados"
+ },
+ "Consulte vendas, receitas e relatórios em uma visão clara.": {
+  "en-US": "View sales, revenue and reports clearly.",
+  "es-ES": "Consulta ventas, ingresos e informes de forma clara."
+ },
+ "Revise sua conexão e acompanhe seu financeiro.": {
+  "en-US": "Review your connection and track your finances.",
+  "es-ES": "Revisa tu conexión y sigue tus finanzas."
+ },
+ "Período selecionado": {
+  "en-US": "Selected period",
+  "es-ES": "Período seleccionado"
+ },
+ "Aprovado": {
+  "en-US": "Approved",
+  "es-ES": "Aprobado"
+ },
+ "Recusado": {
+  "en-US": "Declined",
+  "es-ES": "Rechazado"
+ },
+ "Reembolsado": {
+  "en-US": "Refunded",
+  "es-ES": "Reembolsado"
+ },
+ "Em análise": {
+  "en-US": "Under review",
+  "es-ES": "En revisión"
+ },
+ "Em atraso": {
+  "en-US": "Overdue",
+  "es-ES": "En mora"
+ },
+ "Processando": {
+  "en-US": "Processing",
+  "es-ES": "Procesando"
+ },
+ "Ativo": {
+  "en-US": "Active",
+  "es-ES": "Activo"
+ },
+ "Pausado": {
+  "en-US": "Paused",
+  "es-ES": "Pausado"
+ },
+ "Arquivado": {
+  "en-US": "Archived",
+  "es-ES": "Archivado"
+ },
+ "Rascunho": {
+  "en-US": "Draft",
+  "es-ES": "Borrador"
+ },
+ "Cancelado": {
+  "en-US": "Canceled",
+  "es-ES": "Cancelado"
+ },
+ "Inadimplente": {
+  "en-US": "Overdue",
+  "es-ES": "En mora"
+ },
+ "Não foi possível carregar os produtos. Verifique a conexão e tente novamente.": {
+  "en-US": "Unable to load products. Check your connection and try again.",
+  "es-ES": "No se pudieron cargar los productos. Revisa tu conexión e inténtalo de nuevo."
+ },
+ "Alertas de novo acesso": {
+  "en-US": "New login alerts",
+  "es-ES": "Alertas de nuevos accesos"
+ },
+ "Bloqueio por inatividade": {
+  "en-US": "Inactivity lock",
+  "es-ES": "Bloqueo por inactividad"
+ },
+ "Não foi possível validar o acesso administrativo.": {
+  "en-US": "Unable to validate administrative access.",
+  "es-ES": "No se pudo validar el acceso administrativo."
+ },
+ "Nada por aqui": {
+  "en-US": "Nothing here yet",
+  "es-ES": "Aún no hay nada aquí"
+ },
+ "Nenhum registro encontrado": {
+  "en-US": "No records found",
+  "es-ES": "No se encontraron registros"
+ },
+ "Carregando": {
+  "en-US": "Loading",
+  "es-ES": "Cargando"
+ },
+ "{count} não lida": {
+  "en-US": "{count} unread",
+  "es-ES": "{count} sin leer"
+ }
+}

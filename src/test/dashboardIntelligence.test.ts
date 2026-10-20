@@ -1,5 +1,6 @@
 import { describe,expect,it } from 'vitest'
 import { awardProgress,deriveDashboardKpis,periodRevenueLabel,rebalanceChart } from '../lib/dashboardIntelligence'
+import {periodBounds as analyticsBounds,periodOptions} from '../services/analyticsService'
 import type { DashboardKpis } from '../types'
 import { nextAwardProgress } from '../services/awardProgressService'
 import { dedupeSalesById,selectDashboardSales } from '../services/dashboardDataSource'
@@ -12,8 +13,11 @@ describe('inteligência do dashboard',()=>{
   ['today','Faturamento de hoje'],
   ['7d','Faturamento dos últimos 7 dias'],
   ['30d','Faturamento dos últimos 30 dias'],
+  ['90d','Faturamento dos últimos 90 dias'],
   ['custom','Faturamento do período selecionado']
  ] as const)('usa o título correto para %s',(preset,label)=>expect(periodRevenueLabel({preset})).toBe(label))
+
+ it('preserva o período de 90 dias ao abrir outros módulos',()=>{expect(periodOptions.some(([preset])=>preset==='90d')).toBe(true);const {start,end}=analyticsBounds({preset:'90d'},new Date(2026,9,20,12));expect(start).toEqual(new Date(2026,6,23));expect(end).toEqual(new Date(2026,9,20,23,59,59,999))})
 
  it('recalcula vendas e ticket ao editar faturamento',()=>{
   const result=deriveDashboardKpis(current,{revenue:200000})

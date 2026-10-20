@@ -42,6 +42,7 @@ export function periodBounds(period:PeriodFilter,now=new Date()){
  const start=new Date(`${endKey}T00:00:00-03:00`)
  if(period.preset==='7d')start.setDate(start.getDate()-6)
  else if(period.preset==='30d')start.setDate(start.getDate()-29)
+ else if(period.preset==='90d')start.setDate(start.getDate()-89)
  else if(period.preset==='custom'&&period.from)start.setTime(new Date(`${period.from}T00:00:00-03:00`).getTime())
  return{start,end}
 }
@@ -55,6 +56,7 @@ export function periodTitle(period:PeriodFilter){
  if(period.preset==='today')return'Faturamento de hoje'
  if(period.preset==='7d')return'Faturamento dos últimos 7 dias'
  if(period.preset==='30d')return'Faturamento dos últimos 30 dias'
+ if(period.preset==='90d')return'Faturamento dos últimos 90 dias'
  return'Faturamento do período selecionado'
 }
 

@@ -1,3 +1,4 @@
+import {T} from '../../i18n'
 import type {CSSProperties,ReactNode} from 'react'
 import {Package,ArrowUpRight} from 'lucide-react'
 import {CheckoutMedia} from './CheckoutMedia'
@@ -15,7 +16,7 @@ export function CheckoutTemplateElement({element,template,fallback='sidebar',chi
 export function CheckoutTemplateBanner({block,product}:{block:CheckoutBlock;product:PublishedCheckout['product']}){
  if(safeCheckoutUrl(block.props.url))return <CheckoutMedia block={block}/>
  if(safeCheckoutUrl(product.imageUrl))return <CheckoutMedia block={{...block,props:{...block.props,url:product.imageUrl!,mediaKind:'image',alt:product.name}}}/>
- return <div className="co-template-banner"><div className="co-template-banner-copy"><span>{product.producerDisplayName||'SPHEXPAY'} · OFERTA SELECIONADA</span><h2>{product.name}</h2><p>{product.description||'Confira os detalhes da sua compra e continue com segurança.'}</p></div><div className="co-template-banner-art" aria-hidden="true"><i/><div><Package/><ArrowUpRight/></div><i/></div></div>
+ return <div className="co-template-banner"><div className="co-template-banner-copy"><span>{product.producerDisplayName||'SPHEXPAY'}<T> · OFERTA SELECIONADA</T></span><h2>{product.name}</h2><p>{product.description||'Confira os detalhes da sua compra e continue com segurança.'}</p></div><div className="co-template-banner-art" aria-hidden="true"><i/><div><Package/><ArrowUpRight/></div><i/></div></div>
 }
 export function CheckoutTemplateTimer({block,template,preview}:{block:CheckoutBlock;template?:CheckoutTemplate;preview:boolean}){
  const key=block.props.elementKey==='countdown_deal'?'countdown_deal':'timer',options=template?.config.element_options[key],style=template?.config.timer.style||providedCheckoutTemplate.config.timer.style

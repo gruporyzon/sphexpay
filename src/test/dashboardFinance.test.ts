@@ -9,6 +9,7 @@ describe('inteligência financeira do Dashboard',()=>{
  it('retorna o título de Hoje',()=>expect(periodTitle({preset:'today'})).toBe('Faturamento de hoje'))
  it('retorna o título de 7 dias',()=>expect(periodTitle({preset:'7d'})).toBe('Faturamento dos últimos 7 dias'))
  it('retorna o título de 30 dias',()=>expect(periodTitle({preset:'30d'})).toBe('Faturamento dos últimos 30 dias'))
+ it('inclui os 90 dias completos no novo filtro',()=>{const bounds=periodBounds({preset:'90d'},new Date('2026-10-20T15:00:00Z'));expect(bounds.start.toISOString()).toBe('2026-07-23T03:00:00.000Z');expect(bounds.end.toISOString()).toBe('2026-10-21T02:59:59.999Z');expect(periodTitle({preset:'90d'})).toBe('Faturamento dos últimos 90 dias')})
  it('retorna o título personalizado',()=>expect(periodTitle({preset:'custom',from:'2026-07-01',to:'2026-07-10'})).toBe('Faturamento do período selecionado'))
  it('usa exatamente as datas personalizadas',()=>{const bounds=periodBounds({preset:'custom',from:'2026-07-02',to:'2026-07-11'});expect(bounds.start.toISOString()).toContain('2026-07-02');expect(bounds.end.toISOString()).toContain('2026-07-12T02:59:59')})
  it('mantém a soma da série igual ao total determinístico',()=>{const points=generatePeriodSeries(scenario,{preset:'today'});expect(points.reduce((sum,point)=>sum+point.revenueCents,0)).toBe(deriveScenarioMetrics(scenario).approvedRevenueCents)})

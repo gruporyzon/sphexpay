@@ -1,0 +1,17 @@
+{
+  "cases": 0,
+  "results": [],
+  "interactions": [
+    "24 sales combinations: animated periods/currencies, status menu, keyboard, cancel, custom dates, bounds and focus",
+    "assinaturas sliding selection",
+    "social sliding selection",
+    "vitrine sliding selection",
+    "financeiro sliding selection",
+    "Product filter shares the animated listbox",
+    "Product modal opens and select Escape preserves dialog",
+    "Module navigation keeps its sliding indicator and changes the page",
+    "Touch selection and advanced period panel on mobile",
+    "Reduced motion disables selection transitions and menu animation"
+  ],
+  "errors": []
+}

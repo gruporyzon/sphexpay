@@ -1,3 +1,4 @@
+import {T} from '../../i18n'
 import {useCallback,useEffect,useState} from 'react'
 import {useNavigate,useParams} from 'react-router-dom'
 import {AlertCircle,ArrowRight,Check,Clock3,Landmark,LoaderCircle,RefreshCw,ShieldCheck} from 'lucide-react'
@@ -18,9 +19,9 @@ export function StripeConnectCard(){
  const load=useCallback(async()=>{setLoading(true);setError('');try{setStatus(await stripeConnectService.status())}catch(e){setError(e instanceof Error?e.message:'Não foi possível consultar sua conta de pagamentos.')}finally{setLoading(false)}},[])
  useEffect(()=>{void load()},[load])
  const start=async()=>{if(busy)return;setBusy(true);setError('');try{if(!status.connected)await stripeConnectService.createAccount();const {url}=await stripeConnectService.onboarding();window.location.assign(url)}catch(e){setError(e instanceof Error?e.message:'Não foi possível iniciar a configuração.');setBusy(false)}}
- if(loading)return <Card className="stripe-connect-card stripe-connect-loading" role="status"><LoaderCircle className="spin"/><span>Consultando configuração de recebimentos...</span></Card>
+ if(loading)return <Card className="stripe-connect-card stripe-connect-loading" role="status"><LoaderCircle className="spin"/><span><T>Consultando configuração de recebimentos...</T></span></Card>
  const state=content[status.onboardingStatus],Icon=state.Icon
- return <Card className={`stripe-connect-card is-${status.onboardingStatus}`}><div className="stripe-connect-icon"><Icon/></div><div className="stripe-connect-copy"><span>STRIPE CONNECT{status.mode==='test'?' · MODO TESTE':status.mode==='live'?' · MODO LIVE':''}</span><h2>{state.title}</h2><p>{state.text}</p>{status.connected&&<dl><div><dt>Pagamentos</dt><dd>{status.chargesEnabled?<><Check/> Ativos</>:status.detailsSubmitted?'Em análise':'Pendentes'}</dd></div><div><dt>Repasses</dt><dd>{status.payoutsEnabled?<><Check/> Ativos</>:status.detailsSubmitted?'Em análise':'Pendentes'}</dd></div></dl>}{error&&<p className="stripe-connect-error" role="alert">{error}</p>}</div><div className="stripe-connect-actions"><Button variant="primary" disabled={busy} onClick={()=>void start()}>{busy?<LoaderCircle className="spin"/>:<RefreshCw/>}{state.action}<ArrowRight/></Button><small>Você será direcionado ao ambiente seguro da Stripe.</small></div></Card>
+ return <Card className={`stripe-connect-card is-${status.onboardingStatus}`}><div className="stripe-connect-icon"><Icon/></div><div className="stripe-connect-copy"><span><T>STRIPE CONNECT</T><T>{status.mode==='test'?' · MODO TESTE':status.mode==='live'?' · MODO LIVE':''}</T></span><h2>{state.title}</h2><p>{state.text}</p>{status.connected&&<dl><div><dt><T>Pagamentos</T></dt><dd>{status.chargesEnabled?<><Check/><T> Ativos</T></>:status.detailsSubmitted?'Em análise':'Pendentes'}</dd></div><div><dt><T>Repasses</T></dt><dd>{status.payoutsEnabled?<><Check/><T> Ativos</T></>:status.detailsSubmitted?'Em análise':'Pendentes'}</dd></div></dl>}{error&&<p className="stripe-connect-error" role="alert">{error}</p>}</div><div className="stripe-connect-actions"><Button variant="primary" disabled={busy} onClick={()=>void start()}>{busy?<LoaderCircle className="spin"/>:<RefreshCw/>}{state.action}<ArrowRight/></Button><small><T>Você será direcionado ao ambiente seguro da Stripe.</T></small></div></Card>
 }
 
 export function StripeConnectRedirect(){
@@ -35,5 +36,5 @@ export function StripeConnectRedirect(){
   }catch(e){if(active)setError(e instanceof Error?e.message:'Não foi possível concluir o retorno da Stripe.')}}
   void run();return()=>{active=false}
  },[mode,navigate])
- return <section className="stripe-connect-return"><Card>{error?<><AlertCircle/><h2>Não foi possível continuar</h2><p role="alert">{error}</p><Button onClick={()=>navigate('/app/financeiro',{replace:true})}>Voltar ao Financeiro</Button></>:<><LoaderCircle className="spin"/><h2>{message}</h2><p>Aguarde enquanto confirmamos sua configuração com segurança.</p></>}</Card></section>
+ return <section className="stripe-connect-return"><Card>{error?<><AlertCircle/><h2><T>Não foi possível continuar</T></h2><p role="alert">{error}</p><Button onClick={()=>navigate('/app/financeiro',{replace:true})}><T>Voltar ao Financeiro</T></Button></>:<><LoaderCircle className="spin"/><h2>{message}</h2><p><T>Aguarde enquanto confirmamos sua configuração com segurança.</T></p></>}</Card></section>
 }
