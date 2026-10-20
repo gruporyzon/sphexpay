@@ -106,3 +106,19 @@
 .reference-header-preview svg{width:14px;height:14px}
 .mobile-opacity-control>span,.mobile-opacity-control small{display:flex;justify-content:space-between;gap:12px}
 .mobile-opacity-control>span{font-size:12px}.mobile-opacity-control input{width:100%;margin:14px 0 7px;accent-color:var(--text)}.mobile-opacity-control small{color:var(--muted);font-size:10px}
+
+/* Existing module search remains available in help and through Ctrl/Cmd + K. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help-panel[hidden]{display:none}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search{position:relative;margin:14px 0;min-width:0;max-width:100%}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .top-search{width:100%;max-width:100%;min-width:0;height:auto;display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .top-search>svg{position:static;transform:none;width:15px;height:15px;flex:0 0 15px;color:var(--muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .top-search input{height:auto;padding:0;box-shadow:none;min-width:0;width:100%;border:0;outline:0;background:transparent;color:var(--text);font:400 12px/20px SphexDashboard,Arial,sans-serif}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .top-search:focus-within{border-color:var(--line-strong);box-shadow:0 0 0 2px #8882}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .top-search kbd{display:none}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-results{position:absolute;z-index:1;top:calc(100% + 6px);left:0;right:0;max-height:220px;overflow:auto;padding:8px;border:1px solid var(--line-strong);border-radius:12px;background:var(--panel);box-shadow:var(--shadow-lg)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-results header{padding:2px 5px 7px;font-size:10px;color:var(--muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result{display:flex;align-items:center;gap:8px;width:100%;padding:10px 6px;border:0;border-radius:8px;background:transparent;text-align:left;color:var(--text);font-size:12px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result:hover{background:var(--panel-2)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result>span{display:grid;gap:2px;flex:1;min-width:0}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result small{font-size:9px;color:var(--muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-help .workspace-search-result>svg{width:14px;height:14px;flex:0 0 14px}

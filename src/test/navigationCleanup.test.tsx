@@ -36,6 +36,10 @@ describe('cabeçalho único da área autenticada',()=>{
   expect(within(panel).getByRole('button',{name:'Fechar ajuda'})).toHaveFocus()
   await user.keyboard('{Escape}');expect(screen.queryByRole('dialog')).not.toBeInTheDocument();expect(trigger).toHaveFocus()
  })
+ it('preserva a busca rápida de módulos pelo atalho de teclado',async()=>{
+  renderLayout();const user=userEvent.setup();await user.keyboard('{Control>}k{/Control}');expect(screen.getByRole('dialog',{name:'Ajuda SphexPay'})).toBeVisible()
+  const input=screen.getByRole('searchbox',{name:'Buscar módulos'});await user.click(input);await user.type(input,'produtos');await user.click(screen.getByRole('button',{name:'Abrir Produtos'}));expect(screen.getByText('Produtos atuais')).toBeVisible();expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+ })
  it('fecha ajuda após navegar para um módulo',async()=>{
   renderLayout();const user=userEvent.setup();await user.click(screen.getByRole('button',{name:'Abrir ajuda'}))
   await user.click(screen.getByRole('link',{name:'Gerenciar produtos e checkouts'}))

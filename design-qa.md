@@ -22,7 +22,8 @@ O resultado passa na revisão visual do dashboard e da navegação solicitada, c
 2. **Bloqueado — P2:** regras antigas centralizavam a saudação, empilhavam os filtros e acrescentavam uma linha de ações antes dos cartões. Corrigidos o alinhamento e a direção dos filtros; atualização manual e ferramentas administrativas passaram para “Mais filtros”. Evidência: `comparison-initial.jpg` e `comparison-second.jpg`.
 3. **Bloqueado — P2:** o cartão de conexão começava cerca de 7 px abaixo da referência e o bloco de progresso tinha altura menor. Ajustados espaçamento da saudação, altura da navegação, progresso de 100 px e cabeçalho do ranking de 53 px. Evidência posterior: `comparison-final.jpg` e os três primeiros focos.
 4. **Bloqueado — P2:** as métricas estavam aproximadamente 7 px mais altas que os cartões da referência por excesso de margem interna. Reduzidas as margens do valor. Receita medida no navegador: 103,34 px de altura. Nova captura e comparação: `mobile-metrics.png` e `focus-metrics-final.jpg`.
-5. **Passou:** recaptura após as correções, sem diferenças P0/P1/P2 acionáveis no escopo comparado. Demais diferenças são adaptações esperadas ou limites de origem, abaixo.
+5. **Bloqueado — P2:** a largura legada da busca fazia o campo ultrapassar o painel de ajuda. Limitados campo e contêiner à largura do painel e removidos posicionamento e padding herdados. Comparação do estado expandido: `help-search.png` e `help-search-fixed.png` no diretório local de análise.
+6. **Passou:** recaptura após as correções, sem diferenças P0/P1/P2 acionáveis no escopo comparado. Demais diferenças são adaptações esperadas ou limites de origem, abaixo.
 
 ## Superfícies obrigatórias
 
@@ -37,12 +38,12 @@ O resultado passa na revisão visual do dashboard e da navegação solicitada, c
 - Menu percorrível horizontalmente; teclado com setas, Home e End; roda do mouse; apenas uma rota ativa, inclusive subrotas de Produtos.
 - Menu inferior e sidebar ausentes do shell renderizado.
 - Alternância Claro/Black, filtros 7/30/90 dias, moeda BRL/EUR/USD e “Mais filtros”. O novo período de 90 dias também é reconhecido pelos seletores compartilhados e pela análise dos demais módulos.
-- Ajuda abre, fecha com Escape e devolve foco; links navegam para módulos reais.
+- Ajuda abre, fecha com Escape e devolve foco; links navegam para módulos reais. A busca de módulos foi preservada no painel de ajuda, incluindo Ctrl/Cmd + K.
 - Perfil e notificações continuam no cabeçalho. Editor e planejamento continuam condicionados à autorização administrativa existente.
 - Verificados Produtos e Preferências com o novo shell. Estado sem backend do catálogo mostra mensagem de erro, sem dados comerciais fabricados.
 - Animações de entrada, estados ativos, hover, progresso e valores; movimento reduzido respeitado.
 - Logs do navegador examinados: nenhuma exceção da aplicação observada no dashboard local. Mensagens da extensão do navegador foram distinguidas de erros do produto.
-- 103 testes em 15 arquivos aprovados, incluindo navegação, acesso administrativo, filtro de 90 dias, moeda, layout, perfil e proteção de rotas.
+- 104 testes em 15 arquivos aprovados, incluindo navegação, acesso administrativo, filtro de 90 dias, moeda, layout, perfil e proteção de rotas.
 - TypeScript e ESLint aprovados; build Vite aprovado. Aviso de tamanho de chunks permanece, sem erro de compilação.
 - A tentativa da suíte completa encontrou testes antigos da página pública (`publicEntry` e `publicSecuritySeo`) incompatíveis com a landing já existente e foi interrompida. A bateria de integração antiga também usa seletores da sidebar removida. Não se declara a suíte completa aprovada.
 
