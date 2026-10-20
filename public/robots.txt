@@ -3,4 +3,4 @@ Allow: /
 Disallow: /app
 Disallow: /onboarding
 
-Sitemap: https://sphexpay.vercel.app/sitemap.xml
+Sitemap: https://www.sphexpay.com.br/sitemap.xml

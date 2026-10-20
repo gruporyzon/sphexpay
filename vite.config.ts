@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  server: { host: '0.0.0.0', port: 4175, strictPort: true },
+  server: { host: '0.0.0.0', port: 4175, strictPort: true, allowedHosts: ['terminal.local'] },
   test: { environment: 'jsdom', setupFiles: './src/test/setup.ts', css: true, testTimeout: 15000 },
   build: {
     rollupOptions: {

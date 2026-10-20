@@ -9,7 +9,7 @@
       "destination": "/api/payments/webhook?stripeAction=checkout"
     },
     {
-      "source": "/((?!api/|assets/|branding/|favicon/|icons/|manifest.webmanifest|robots.txt|sitemap.xml|sw.js|offline.html).*)",
+      "source": "/((?!api/|assets/|gateway/|brand/|premiacoes/|landing-reference/|branding/|favicon/|icons/|manifest.webmanifest|robots.txt|sitemap.xml|sw.js|offline.html).*)",
       "destination": "/index.html"
     }
   ],
