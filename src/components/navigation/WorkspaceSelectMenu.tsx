@@ -25,13 +25,14 @@ export function WorkspaceSelectMenu(){
  const {pathname}=useLocation(),locale=useAppLocale(state=>state.locale),id=useId()
  const [menu,setMenu]=useState<Menu|null>(null),current=useRef<Menu|null>(null),panel=useRef<HTMLDivElement>(null)
  const [position,setPosition]=useState({left:0,top:0,width:220,maxHeight:280,above:false,ready:false})
- const search=useRef({text:'',at:0})
+ const search=useRef({text:'',at:0}),revealActive=useRef(true)
  const close=useCallback(()=>{
   const previous=current.current
   if(previous)for(const attribute of managedAttributes){const value=previous.attributes[attribute];if(value===null)previous.select.removeAttribute(attribute);else previous.select.setAttribute(attribute,value)}
   current.current=null;setMenu(null)
  },[])
- const activate=useCallback((next:Menu)=>{
+ const activate=useCallback((next:Menu,reveal=true)=>{
+  revealActive.current=reveal
   current.current=next;setMenu(next)
   next.select.setAttribute('aria-expanded','true');next.select.setAttribute('aria-controls',id)
   if(next.active>=0)next.select.setAttribute('aria-activedescendant',`${id}-${next.active}`)
@@ -122,12 +123,20 @@ export function WorkspaceSelectMenu(){
   window.addEventListener('resize',schedule);document.addEventListener('scroll',schedule,true);window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule)
   return()=>{cancelAnimationFrame(frame);resize.disconnect();window.removeEventListener('resize',schedule);document.removeEventListener('scroll',schedule,true);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule)}
  },[anchorSelect,close])
- useLayoutEffect(()=>{panel.current?.querySelector<HTMLElement>(`[data-highlighted=true]`)?.scrollIntoView?.({block:'nearest'})},[menu?.active])
+ useLayoutEffect(()=>{
+  if(!menu||!position.ready||!revealActive.current)return
+  const container=panel.current,item=container?.querySelector<HTMLElement>('[data-highlighted=true]')
+  if(!container?.clientHeight||!item)return
+  // Reveal keyboard choices inside the menu without scrolling its dialog or the page.
+  const top=item.offsetTop-6,bottom=item.offsetTop+item.offsetHeight+6
+  if(top<container.scrollTop)container.scrollTop=Math.max(0,top)
+  else if(bottom>container.scrollTop+container.clientHeight)container.scrollTop=bottom-container.clientHeight
+ },[menu,position.ready,position.maxHeight])
  if(!menu)return null
  return createPortal(<div ref={panel} id={id} role="listbox" aria-label={menu.label} className="workspace-select-menu" data-above={position.above} style={{left:position.left,top:position.top,width:position.width,maxHeight:position.maxHeight,visibility:position.ready?'visible':'hidden'}} onPointerDown={event=>event.preventDefault()}>
   {menu.options.map((option,index)=><div key={option.index}>
    {option.group&&option.group!==menu.options[index-1]?.group&&<div className="workspace-select-group" role="presentation">{option.group}</div>}
-   <div role="option" id={`${id}-${option.index}`} aria-selected={menu.select.selectedIndex===option.index} aria-disabled={option.disabled||undefined} data-highlighted={menu.active===option.index} onPointerMove={()=>{if(!option.disabled&&current.current?.active!==option.index)activate({...menu,active:option.index})}} onClick={()=>commit(option.index)}><span>{option.label}</span><Check aria-hidden="true"/></div>
+   <div role="option" id={`${id}-${option.index}`} aria-selected={menu.select.selectedIndex===option.index} aria-disabled={option.disabled||undefined} data-highlighted={menu.active===option.index} onPointerMove={event=>{if(event.pointerType!=='touch'&&!option.disabled&&current.current?.active!==option.index)activate({...menu,active:option.index},false)}} onClick={()=>commit(option.index)}><span>{option.label}</span><Check aria-hidden="true"/></div>
   </div>)}
  </div>,document.body)
 }
