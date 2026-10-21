@@ -41,14 +41,14 @@ const faqs = [
   },
 ] as const
 
-export function PublicFaq() {
+export function PublicFaq({ sectionId = 'ajuda' }: { sectionId?: string }) {
   const [open, setOpen] = useState<number | null>(0)
   const [showAll, setShowAll] = useState(false)
   const visibleFaqs = showAll ? faqs : faqs.slice(0, INITIAL_FAQ_COUNT)
   const remaining = faqs.length - INITIAL_FAQ_COUNT
 
   return (
-    <section className="spx-faq-section" id="ajuda" aria-labelledby="spx-faq-title">
+    <section className="spx-faq-section" id={sectionId} aria-labelledby="spx-faq-title">
       <div className="spx-faq-container">
         <header className="spx-faq-copy">
           <span className="spx-faq-label" data-motion>

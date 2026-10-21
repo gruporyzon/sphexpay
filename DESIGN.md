@@ -1,99 +1,65 @@
 ---
-version: 1
+version: 2
 name: SphexPay
-description: Sistema visual da SphexPay — branco, preto e laranja; premium, tecnológico e minimalista, com modo claro e escuro completos. Tokens extraídos de `src/index.css` (fonte da verdade). Este arquivo documenta; não substitui o CSS.
+description: Sistema visual da SphexPay — preto, branco e azul; premium, tecnológico e minimalista. Superfície pública (landing e fluxo de entrada) escura com acento azul; painel (/app) monocromático com modo claro e escuro completos. Os tokens vêm do CSS (fonte da verdade); este arquivo documenta, não substitui.
 
-colors:
-  light:
-    bg: "#f5f5f2"
-    bg-elevated: "#fafaf8"
-    panel: "#ffffff"
-    panel-2: "#f7f7f4"
-    panel-3: "#efefeb"
-    text: "#171717"
-    text-strong: "#090909"
-    muted: "#686864"
-    muted-2: "#8b8b85"
-    line: "#e3e3de"
-    line-strong: "#c9c9c2"
-    orange: "#f15a24"
-    orange-hover: "#d94a17"
-    orange-active: "#c43d11"
-    orange-soft: "#fff0e9"
-    success: "#137a4f"
-    warning: "#9a5b08"
-    danger: "#b8322a"
-    info: "#315e9e"
-  dark:
-    bg: "#030405"
-    bg-elevated: "#08090b"
-    panel: "#0a0b0d"
-    panel-2: "#0f1113"
-    panel-3: "#17191c"
-    text: "#eceeed"
-    text-strong: "#ffffff"
-    muted: "#9a9da2"
-    muted-2: "#6f7379"
-    line: "rgba(255,255,255,.065)"
-    line-strong: "rgba(255,255,255,.13)"
-    orange: "#ff6a2f"
-    orange-hover: "#ff7b45"
-    orange-active: "#e95722"
-    orange-soft: "rgba(255,106,47,.105)"
-    positive: "#40d9a0"
-    negative: "#ff6b72"
-    warning: "#f4bd5c"
-    info: "#70b8ff"
+public:
+  source: src/gateway-landing.css, src/features/signup/signupFlow.css
+  font: "SphexGraphik, Arial, sans-serif"
+  colors:
+    bg: "#090909"
+    surface: "#111111"
+    surface-hover: "#161616"
+    line: "#262626"
+    line-strong: "#3d3d3d"
+    text: "#f4f4f4"
+    muted: "#a0a0a0"
+    blue: "#0080ff"
+    blue-hover: "#168bff"
+    blue-line: "#60acff"
+    focus: "#8cc5ff"
+  aura: "radial #38b8ff → #135fff → #1246ed, faixa #132268 → #1d51ff → #53ddff (desfocada, animada)"
+  button-primary: "fundo #0080ff, borda #60acff, raio 7px, sombra interna clara no topo e azul escura na base"
+  button-outline: "fundo #090909, borda #3d3d3d, sombra interna clara de 1px"
 
-typography:
-  fontFamily: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
-
-radius: { xs: 7px, sm: 10px, md: 13px, lg: 18px, xl: 24px, pill: 999px }
-spacing: [4px, 8px, 12px, 16px, 20px, 24px, 32px, 40px, 48px]
-motion:
-  fast: 160ms
-  base: 240ms
-  slow: 420ms
-  ease: "cubic-bezier(.2,0,0,1)"
-  ease-enter: "cubic-bezier(.22,1,.36,1)"
-container: 1600px
+workspace:
+  source: src/workspace.css, src/workspace-modules.css
+  font: "SphexDashboard (Raleway variável), Arial, sans-serif"
+  light: { bg: "#ffffff", panel: "#ffffff", panel-2: "#f2f2f2", line: "#e2e2e2", line-strong: "#b7b7b7", text-strong: "#000000", muted: "#525252" }
+  dark: { bg: "#000000", panel: "#0a0a0a", panel-2: "#141414", line: "#2b2b2b", line-strong: "#727272", text-strong: "#ffffff", muted: "#b0b0b0" }
 ---
 
 # SphexPay — Design
 
-Regras permanentes em `AGENTS.md` têm prioridade sobre este arquivo.
+As regras permanentes em `AGENTS.md` têm prioridade sobre este arquivo.
 
 ## Princípios
 
-- Identidade em branco, preto e laranja. O laranja é o único acento de marca: usar em ação primária, foco, estado ativo e destaques pontuais — nunca como fundo de grandes áreas.
-- Visual premium, tecnológico e minimalista: superfícies neutras, linhas finas, sombras suaves, muito espaço em branco.
-- Modo claro e escuro completos. Toda cor nova entra como token nos dois temas (`:root` e `:root[data-theme=dark]`), nunca hex solto em componente.
+- Identidade em preto, branco e azul. O azul `#0080ff` é o acento de marca da superfície pública: ação primária, foco, progresso e destaques pontuais. Nunca como fundo de grandes áreas, exceto a aura.
+- O painel (`/app`) é monocromático: o acento é o próprio preto ou branco do tema (`--orange` nos tokens legados do workspace aponta para preto ou branco). Cores semânticas só para status.
+- Visual premium, tecnológico e minimalista: superfícies neutras, linhas finas, sombras suaves, muito espaço.
+- O painel mantém os modos claro e escuro completos. A superfície pública (landing, cadastro, confirmação de e-mail e questionário inicial) é sempre escura, como a landing.
+- Toda cor nova entra como token, nunca como hex solto em componente.
 - Ícones vetoriais profissionais (SVG, traço consistente). Nunca emojis.
 - Responsivo sempre: validar em 320, 375, 768, 1024, 1440 e 1920 px.
 
-## Cores
+## Movimento
 
-Usar os tokens CSS (`var(--orange)`, `var(--panel)`, `var(--line)`, `var(--muted)` etc.), não os valores. Tons derivados com `color-mix(in srgb, var(--orange) N%, var(--panel))`, como o código já faz.
-
-- Texto sobre laranja: branco.
-- Estados semânticos (sucesso, alerta, erro, info) só para status — não decorativos.
-
-## Superfícies e profundidade
-
-- Hierarquia `bg` → `panel` → `panel-2` → `panel-3`.
-- Bordas: `--line` padrão, `--line-strong` para hover e separação forte.
-- Sombras do tema (`--shadow-xs` a `--shadow-lg`); no escuro elas incluem um brilho interno de 1px no topo.
+- Entradas com `cubic-bezier(.22,1,.36,1)`, de 0,4 a 0,7 s, subindo de 10 a 16 px; listas em cascata de 40 a 50 ms.
+- Botões sobem 2 px no hover; o primário ganha brilho azul.
+- Tudo respeita `prefers-reduced-motion`.
 
 ## Tipografia
 
-- Inter como família padrão; números financeiros com `font-variant-numeric: tabular-nums`.
+- Pública: SphexGraphik, peso 400/500, `letter-spacing:-.02em`; títulos com -.035em.
+- Painel: SphexDashboard; números com `font-variant-numeric: lining-nums tabular-nums`.
 - Um único `h1` por página.
 
-## Componentes
+## Componentes do fluxo de entrada
 
-- Botão primário: fundo `--orange`, texto branco, hover `--orange-hover`, pressionado `--orange-active`, foco com anel laranja translúcido (`--spx-focus`).
-- Cards/painéis: `--panel`, borda `--line`, raio `--radius-md` a `--radius-lg`.
-- Inputs: fundo `--panel`, borda `--line`, foco em laranja.
+- Campo: caixa com o rótulo dentro (12 px, cinza) e o valor abaixo (16 px). No foco, borda azul e anel `rgba(0,128,255,.28)`.
+- Opção de questionário: cartão de 52 px com rádio circular. Quando marcada, borda `#3f9bff`, fundo azul translúcido e ponto azul.
+- Progresso: trilho de 3 px com preenchimento em degradê azul e brilho, mais os pontos de etapa.
 
 ## Conteúdo
 

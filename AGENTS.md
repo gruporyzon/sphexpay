@@ -1,7 +1,7 @@
 # Regras permanentes do projeto
 
 - O produto se chama SphexPay.
-- A identidade usa branco, preto e laranja.
+- A identidade usa preto, branco e azul (`#0080ff`): superfície pública escura com acento azul; painel monocromático com modo claro e escuro — ver `DESIGN.md`.
 - O visual deve ser premium, tecnológico e minimalista.
 - Nunca usar emojis.
 - Utilizar ícones vetoriais profissionais.
