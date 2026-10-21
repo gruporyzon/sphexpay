@@ -63,13 +63,17 @@ documentos — só nome, tipo de pessoa, quantidade de documentos e o link da fi
 
 - [x] CSP bloqueante (`Content-Security-Policy`) em todo o site, sem `unsafe-eval` (zod em modo
       `jitless`). Verificado sem violações nas páginas públicas e no checkout em 21/10/2026.
-- [ ] Stripe → Webhooks → endpoint das contas conectadas (`/api/payments/webhook`): incluir os
+- [x] Stripe → Webhooks → endpoint das contas conectadas (`/api/stripe/webhook`): incluir os
       eventos `payment_intent.processing`, `payment_intent.canceled`,
       `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`,
       `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` e
-      `customer.subscription.deleted` (Pix, boleto e assinaturas dependem deles).
-- [ ] Concluir a ativação do Stripe Connect da plataforma e só então definir
-      `STRIPE_LIVE_PAYMENTS_ENABLED=true`, depois de uma compra real de teste reembolsada.
+      `customer.subscription.deleted` (Pix, boleto e assinaturas dependem deles). Feito em 21/10/2026
+      (endpoint `we_1UNeRx6TbhQ9ChuadmcDCoDH`, 15 eventos).
+- [x] Stripe Connect da plataforma ativo (a plataforma já cria contas de vendedor) e
+      `STRIPE_LIVE_PAYMENTS_ENABLED=true` desde 21/10/2026. A cobrança real só acontece para
+      vendedor com KYC aprovado na SphexPay **e** conta Stripe com cobranças habilitadas.
+- [ ] Primeira compra real de teste (valor baixo) seguida de reembolso, para validar venda,
+      notificação, webhook e repasse ponta a ponta.
 - [ ] Tornar MFA obrigatório para contas com papel `admin`.
 - [x] `npm audit fix` + revalidar `npm run test` / `npm run build`.
 - [ ] Obter o AOC (Attestation of Compliance) PCI do parceiro processador.

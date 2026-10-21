@@ -23,8 +23,7 @@ Checklist completo e atualizável em `docs/SECURITY-SETUP.md`. Resumo do que ain
 
 - [ ] Habilitar MFA TOTP no Supabase (Authentication) — sem isso o card de 2FA falha.
 - [ ] `PAYMENT_WEBHOOK_SECRET` só quando integrar um parceiro processador real (fica vazio até lá).
-- [ ] Stripe: incluir no webhook das contas conectadas os eventos de Pix, boleto e assinatura (lista em `docs/SECURITY-SETUP.md`).
-- [ ] Stripe: concluir a ativação do Connect da plataforma; só depois ligar `STRIPE_LIVE_PAYMENTS_ENABLED` e fazer uma compra real de teste reembolsada.
+- [ ] Fazer a primeira compra real de teste (valor baixo) e reembolsar — cobranças reais já estão ligadas desde 21/10/2026.
 - [ ] Colar os templates de e-mail no Supabase (Authentication → Emails) e configurar o SMTP da Resend — ver `docs/EMAIL-TEMPLATES.md`.
 - [ ] Cadastrar `RESEND_API_KEY` e `TEAM_NOTIFY_EMAIL` nos Secrets das Edge Functions do Supabase (avisos internos de novas contas e KYC — ver `docs/SECURITY-SETUP.md`).
 - [ ] KYC: definir política de retenção dos documentos antes de produção (migration e Edge Functions já aplicadas).
