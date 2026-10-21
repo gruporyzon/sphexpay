@@ -1,9 +1,11 @@
 // Avisos por e-mail via Resend: para a equipe SphexPay e para o próprio usuário.
 //
 // Eventos: 'onboarding' (questionário inicial concluído → aviso à equipe + boas-vindas ao
-// usuário) e 'kyc_submitted' (verificação enviada → aviso à equipe + confirmação de
-// recebimento ao usuário). O usuário autenticado só dispara avisos sobre a própria conta,
-// e cada e-mail é enviado uma única vez (tabela team_notifications).
+// usuário), 'kyc_submitted' (verificação enviada → aviso à equipe + confirmação de
+// recebimento ao usuário) e 'award_requested' (pedido de premiação → endereço de entrega
+// para a equipe de envio; o usuário recebe a notificação no painel). O usuário autenticado
+// só dispara avisos sobre a própria conta, e cada e-mail é enviado uma única vez (tabela
+// team_notifications).
 // O e-mail de KYC é mínimo: nada de CPF/CNPJ, nascimento, endereço ou documentos — esses
 // ficam apenas na fila de verificação (/app/verificacao). Ver docs/DATA-CLASSIFICATION.md.
 //
@@ -52,7 +54,7 @@ Deno.serve(async request=>{
  let body:Record<string,unknown>
  try{body=await request.json()}catch{return json({code:'INVALID_PAYLOAD'},400)}
  const event=String(body.event||'')
- if(event!=='onboarding'&&event!=='kyc_submitted')return json({code:'UNKNOWN_EVENT'},400)
+ if(event!=='onboarding'&&event!=='kyc_submitted'&&event!=='award_requested')return json({code:'UNKNOWN_EVENT'},400)
  if(!resendKey)return json({code:'NOTIFY_NOT_CONFIGURED'},503)
 
  const admin=createClient(url,serviceRole,{auth:{persistSession:false,autoRefreshToken:false}})
@@ -98,6 +100,25 @@ Deno.serve(async request=>{
    ],
    reason:'Você recebeu este e-mail porque criou uma conta na SphexPay com este endereço.'
   }))
+ }else if(event==='award_requested'){
+  const awardId=String(body.award_id||'')
+  const {data:award,error}=await admin.from('award_requests').select('id,award_id,status,address,updated_at').eq('user_id',user.id).eq('award_id',awardId).maybeSingle()
+  if(error)return json({code:'STORAGE_ERROR'},503)
+  if(!award||award.status!=='requested')return json({code:'NOT_FOUND'},404)
+  const address=(award.address||{}) as Record<string,string>
+  results.team=await send('award_requested',`${award.id}:${award.updated_at}`,to,`Premiação solicitada: Sphex ${String(award.award_id).toUpperCase()} · ${String(meta.full_name||user.email||'cadastro')}`,emailHtml('Pedido de premiação','Um vendedor solicitou a plaquinha de premiação. Confira o endereço de entrega abaixo.',[
+   ...account,
+   ['Premiação',`Sphex ${String(award.award_id).toUpperCase()}`],
+   ['Destinatário',String(address.recipient||'—')],
+   ['Telefone de entrega',String(address.phone||'—')],
+   ['Endereço',`${address.street||''}, ${address.number||''}${address.complement?` · ${address.complement}`:''}`],
+   ['Bairro',String(address.district||'—')],
+   ['Cidade/UF',`${address.city||''}/${address.state||''}`],
+   ['CEP',String(address.postalCode||'—')],
+   ['País',String(address.country||'—')],
+   ['Referência',String(address.reference||'—')],
+   ['Atualizado em',dateBR(award.updated_at)]
+  ]))
  }else{
   const {data:profile,error}=await admin.from('kyc_profiles').select('person_type,legal_name,company_name,status,submitted_at').eq('user_id',user.id).maybeSingle()
   if(error)return json({code:'STORAGE_ERROR'},503)
