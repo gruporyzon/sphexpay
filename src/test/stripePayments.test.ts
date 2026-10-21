@@ -189,6 +189,70 @@ describe('pagamentos Stripe',()=>{
   await processStripeEvent(database,{...event('payment_intent.canceled'),id:'evt_canceled'},stripe)
   expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_status:'declined',p_method:'boleto'}))
  })
+ it('cria assinatura mensal só com cartão e taxa percentual da plataforma',async()=>{
+  const {database,stripe,tables}=fixture()
+  Object.assign(tables.product_offers[0],{billing_type:'subscription',billing_interval:'quarter'});tables.product_payment_settings[0].enabled_methods=['card','pix']
+  tables.stripe_connected_accounts[0].stripe_capabilities={card_payments:'active',pix_payments:'active'}
+  stripe.accounts.retrieve.mockResolvedValue({id:'acct_seller',capabilities:{card_payments:'active',pix_payments:'active'},metadata:{sphex_user_id:'seller'},charges_enabled:true,payouts_enabled:true,details_submitted:true})
+  expect(await checkoutPaymentAvailability(database,checkoutId,stripe)).toMatchObject({paymentMethods:['card'],billingType:'subscription',billingInterval:'quarter'})
+  await createCheckout(database,input(),stripe)
+  const [args]=stripe.checkout.sessions.create.mock.calls.at(-1)
+  expect(args).toMatchObject({mode:'subscription',payment_method_types:['card'],subscription_data:{application_fee_percent:1,metadata:{sphex_seller_id:'seller'}},line_items:[{price_data:{unit_amount:10000,recurring:{interval:'month',interval_count:3}}}]})
+  expect(args.payment_intent_data).toBeUndefined()
+  expect(tables.stripe_checkout_orders[0]).toMatchObject({billing_type:'subscription',billing_interval:'quarter'})
+ })
+ describe('eventos de assinatura',()=>{
+  const setup=()=>{
+   const f=fixture()
+   f.tables.stripe_checkout_orders.push({...order(),session_id:'cs_sub',billing_type:'subscription',billing_interval:'month'})
+   const subscription:any={id:'sub_1',status:'active',livemode:false,canceled_at:null,metadata:{sphex_order_id:order().id,sphex_seller_id:'seller',sphex_product_id:'product'},items:{data:[{current_period_end:1790000000}]}}
+   const invoice:any={id:'in_1',status:'paid',amount_paid:10000,amount_due:10000,currency:'brl',livemode:false,parent:{subscription_details:{subscription:'sub_1'}},payments:{data:[{payment:{type:'payment_intent',payment_intent:'pi_inv'}}]}}
+   f.stripe.subscriptions={retrieve:vi.fn(async()=>subscription)}
+   f.stripe.invoices={retrieve:vi.fn(async()=>invoice)}
+   f.stripe.checkout.sessions.retrieve=vi.fn(async()=>({id:'cs_sub',mode:'subscription',client_reference_id:order().id,subscription:'sub_1'}))
+   f.stripe.paymentIntents.retrieve=vi.fn(async()=>({id:'pi_inv',status:'succeeded',amount:10000,application_fee_amount:100,metadata:{},latest_charge:{id:'ch_inv',amount_refunded:0}}))
+   return{...f,subscription,invoice}
+  }
+  const invoiceEvent=(type='invoice.paid')=>({id:`evt_${type}`,type,account:'acct_seller',created:1788540000,livemode:false,data:{object:{id:'in_1',parent:{subscription_details:{subscription:'sub_1'}}}}})
+  it('registra cada fatura paga como venda da assinatura',async()=>{
+   const {database,stripe}=setup()
+   await processStripeEvent(database,invoiceEvent(),stripe)
+   expect(stripe.invoices.retrieve).toHaveBeenCalledWith('in_1',{expand:['payments']},{stripeAccount:'acct_seller'})
+   expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_subscription_invoice',expect.objectContaining({p_subscription:'sub_1',p_invoice:'in_1',p_intent:'pi_inv',p_status:'approved',p_amount:10000,p_fee:100,p_subscription_status:'active',p_period_end:new Date(1790000000000).toISOString()}))
+  })
+  it('registra falha de cobrança como recusada',async()=>{
+   const {database,stripe,invoice}=setup();invoice.status='open'
+   stripe.paymentIntents.retrieve.mockResolvedValue({id:'pi_inv',status:'requires_payment_method',amount:10000,application_fee_amount:100,metadata:{},latest_charge:null})
+   await processStripeEvent(database,invoiceEvent('invoice.payment_failed'),stripe)
+   expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_subscription_invoice',expect.objectContaining({p_status:'declined'}))
+  })
+  it('ignora assinatura criada fora da SphexPay e recusa valores divergentes',async()=>{
+   const {database,stripe,subscription,invoice}=setup()
+   subscription.metadata={}
+   expect(await processStripeEvent(database,invoiceEvent(),stripe)).toEqual({ignored:true})
+   subscription.metadata={sphex_order_id:order().id,sphex_seller_id:'seller',sphex_product_id:'product'};invoice.amount_paid=5000
+   await expect(processStripeEvent(database,invoiceEvent(),stripe)).rejects.toThrow('STRIPE_PAYMENT_MISMATCH')
+   invoice.amount_paid=10000;stripe.paymentIntents.retrieve.mockResolvedValue({id:'pi_inv',status:'succeeded',amount:10000,application_fee_amount:300,metadata:{},latest_charge:null})
+   await expect(processStripeEvent(database,invoiceEvent(),stripe)).rejects.toThrow('STRIPE_PAYMENT_MISMATCH')
+   expect(database.rpc).not.toHaveBeenCalled()
+  })
+  it('recusa sessão que não criou esta assinatura',async()=>{
+   const {database,stripe}=setup()
+   stripe.checkout.sessions.retrieve.mockResolvedValue({id:'cs_sub',mode:'subscription',client_reference_id:order().id,subscription:'sub_outra'})
+   await expect(processStripeEvent(database,invoiceEvent(),stripe)).rejects.toThrow('STRIPE_SESSION_MISMATCH')
+  })
+  it('atualiza o status quando a assinatura é cancelada',async()=>{
+   const {database,stripe,subscription}=setup();Object.assign(subscription,{status:'canceled',canceled_at:1789000000})
+   await processStripeEvent(database,{id:'evt_del',type:'customer.subscription.deleted',account:'acct_seller',created:1789000000,livemode:false,data:{object:{id:'sub_1'}}},stripe)
+   expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_subscription_status',expect.objectContaining({p_status:'canceled',p_cancelled_at:new Date(1789000000000).toISOString(),p_subscription:'sub_1'}))
+  })
+  it('aplica reembolso de fatura pela venda já registrada',async()=>{
+   const {database,stripe}=setup()
+   stripe.paymentIntents.retrieve.mockResolvedValue({id:'pi_inv',status:'succeeded',amount:10000,metadata:{},latest_charge:{id:'ch_inv',amount_refunded:10000}})
+   await processStripeEvent(database,{id:'evt_ref',type:'charge.refunded',account:'acct_seller',created:1789000000,livemode:false,data:{object:{id:'ch_inv',payment_intent:'pi_inv'}}},stripe)
+   expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_invoice_refund',expect.objectContaining({p_intent:'pi_inv',p_refunded:10000}))
+  })
+ })
  it('bloqueia live sem ativação explícita e taxa ausente',async()=>{
   const {database,stripe,tables}=fixture();tables.stripe_connected_accounts[0].stripe_mode='live';vi.stubEnv('STRIPE_SECRET_KEY','sk_live_fixture');vi.stubEnv('STRIPE_LIVE_PAYMENTS_ENABLED','false')
   await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'LIVE_PAYMENTS_DISABLED'})
