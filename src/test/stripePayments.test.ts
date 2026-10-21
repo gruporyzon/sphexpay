@@ -18,7 +18,7 @@ function fixture(){
   product_offers:[{id:'offer',product_id:'product',seller_id:'seller',status:'active',deleted_at:null,price_cents:10000,currency:'BRL',billing_type:'one_time',installments:1}],
   product_payment_settings:[{product_id:'product',seller_id:'seller',enabled_methods:['card']}],
   stripe_connected_accounts:[{stripe_mode:'test',user_id:'seller',stripe_account_id:'acct_seller',stripe_account_type:'express',stripe_charges_enabled:true,stripe_payouts_enabled:true}],
-  stripe_checkout_orders:[],stripe_webhook_events:[]
+  stripe_checkout_orders:[],stripe_webhook_events:[],kyc_profiles:[{user_id:'seller',status:'approved'}]
  }
  const database={rpc:vi.fn(async()=>({data:{duplicate:false},error:null})),from:vi.fn((table:string)=>{
   const filters:((row:any)=>boolean)[]=[];let patch:any
@@ -68,7 +68,7 @@ describe('pagamentos Stripe',()=>{
  })
  it('desabilita cartão sem depender da disponibilidade da Stripe',async()=>{
   const {database,stripe,tables}=fixture();tables.products[0].id=checkoutId;tables.product_payment_settings[0].product_id=checkoutId
-  expect(await configureProductPayments(database,{id:'seller'},{productId:checkoutId,enabled:false},stripe)).toEqual({enabled:false})
+  expect(await configureProductPayments(database,{id:'seller'},{productId:checkoutId,enabled:false},stripe)).toEqual({enabled:false,method:'card',methods:[]})
   expect(stripe.accounts.retrieve).not.toHaveBeenCalled()
  })
  it('não oferece cartão desabilitado pelo vendedor',async()=>{
@@ -147,6 +147,48 @@ describe('pagamentos Stripe',()=>{
   tables.product_offers[0].seller_id='seller';tables.product_offers[0].status='paused'
   await expect(createCheckout(database,input(),stripe)).rejects.toThrow();expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
  })
+ it('exige verificação (KYC) aprovada para cobrar em produção',async()=>{
+  vi.stubEnv('STRIPE_SECRET_KEY','sk_live_fixture');vi.stubEnv('STRIPE_LIVE_PAYMENTS_ENABLED','true')
+  const {database,stripe,tables}=fixture();Object.assign(tables.stripe_connected_accounts[0],{stripe_mode:'live',stripe_capabilities:{card_payments:'active'}});tables.kyc_profiles[0].status='pending'
+  await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'SELLER_VERIFICATION_PENDING'})
+  expect(await checkoutPaymentAvailability(database,checkoutId,stripe)).toMatchObject({paymentAvailable:false,paymentMessage:'O vendedor ainda está concluindo a verificação da conta.'})
+  expect(stripe.checkout.sessions.create).not.toHaveBeenCalled();expect(tables.stripe_checkout_orders).toHaveLength(0)
+  tables.kyc_profiles.length=0
+  await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'SELLER_VERIFICATION_PENDING'})
+ })
+ it('oferece Pix e boleto só quando habilitados, ativos na Stripe e em reais',async()=>{
+  const {database,stripe,tables}=fixture()
+  tables.product_payment_settings[0].enabled_methods=['card','pix','boleto']
+  stripe.accounts.retrieve.mockResolvedValue({id:'acct_seller',capabilities:{card_payments:'active',pix_payments:'active',boleto_payments:'inactive'},metadata:{sphex_user_id:'seller'},charges_enabled:true,payouts_enabled:true,details_submitted:true})
+  tables.stripe_connected_accounts[0].stripe_capabilities={card_payments:'active',pix_payments:'active'}
+  expect(await checkoutPaymentAvailability(database,checkoutId,stripe)).toMatchObject({paymentAvailable:true,paymentMethods:['card','pix']})
+  await createCheckout(database,input(),stripe)
+  expect(stripe.checkout.sessions.create).toHaveBeenCalledWith(expect.objectContaining({payment_method_types:['card','pix'],payment_method_options:{pix:{expires_after_seconds:1800}}}),expect.anything())
+ })
+ it('aceita oferta só com Pix e recusa Pix fora de reais',async()=>{
+  // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
+  const {usableMethods}=await import('../../server/stripe/payments.js')
+  const caps={card_payments:'active',pix_payments:'active',boleto_payments:'active'}
+  expect(usableMethods(['pix'],caps,{currency:'BRL',price_cents:10000})).toEqual(['pix'])
+  expect(usableMethods(['pix','boleto'],caps,{currency:'USD',price_cents:10000})).toEqual([])
+  expect(usableMethods(['boleto'],caps,{currency:'BRL',price_cents:400})).toEqual([])
+  expect(usableMethods(['card','pix','boleto'],{card_payments:'active'},{currency:'BRL',price_cents:10000})).toEqual(['card'])
+ })
+ it('liga Pix no produto só quando o Pix está ativo na conta Stripe',async()=>{
+  const {database,stripe,tables}=fixture();tables.stripe_connected_accounts[0].stripe_capabilities={card_payments:'active'};tables.products[0].id=checkoutId;tables.product_payment_settings[0].product_id=checkoutId
+  await expect(configureProductPayments(database,{id:'seller'},{productId:checkoutId,enabled:true,method:'pix'},stripe)).rejects.toMatchObject({code:'PAYMENT_METHOD_NOT_ACTIVE'})
+  stripe.accounts.retrieve.mockResolvedValue({id:'acct_seller',capabilities:{card_payments:'active',pix_payments:'active'},metadata:{sphex_user_id:'seller'},charges_enabled:true,payouts_enabled:true,details_submitted:true})
+  expect(await configureProductPayments(database,{id:'seller'},{productId:checkoutId,enabled:true,method:'pix'},stripe)).toEqual({enabled:true,method:'pix',methods:['card','pix']})
+ })
+ it('registra o método do pagamento e trata Pix ou boleto expirado como recusado',async()=>{
+  const {database,stripe,tables,intent}=fixture();tables.stripe_checkout_orders.push({...order(),session_id:'cs_sale'})
+  intent.latest_charge={id:'ch_sale',amount_refunded:0,payment_method_details:{type:'pix'}}
+  await processStripeEvent(database,event('checkout.session.async_payment_succeeded'),stripe)
+  expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_status:'approved',p_method:'pix'}))
+  Object.assign(intent,{status:'canceled',latest_charge:null,payment_method_types:['boleto']})
+  await processStripeEvent(database,{...event('payment_intent.canceled'),id:'evt_canceled'},stripe)
+  expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_status:'declined',p_method:'boleto'}))
+ })
  it('bloqueia live sem ativação explícita e taxa ausente',async()=>{
   const {database,stripe,tables}=fixture();tables.stripe_connected_accounts[0].stripe_mode='live';vi.stubEnv('STRIPE_SECRET_KEY','sk_live_fixture');vi.stubEnv('STRIPE_LIVE_PAYMENTS_ENABLED','false')
   await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'LIVE_PAYMENTS_DISABLED'})
@@ -159,19 +201,19 @@ describe('pagamentos Stripe',()=>{
  })
  it.each(['payment_intent.succeeded','charge.succeeded','checkout.session.completed'])('normaliza %s para o mesmo PaymentIntent',async type=>{
   const {database,stripe,tables}=fixture();tables.stripe_checkout_orders.push({...order(),session_id:'cs_sale'});await processStripeEvent(database,event(type),stripe)
-  expect(database.rpc).toHaveBeenCalledWith('apply_stripe_payment',expect.objectContaining({p_intent:'pi_sale',p_charge:'ch_sale',p_status:'approved',p_account:'acct_seller'}))
+  expect(database.rpc).toHaveBeenCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_intent:'pi_sale',p_charge:'ch_sale',p_status:'approved',p_account:'acct_seller'}))
  })
  it('registra recusa a partir do estado atual da Stripe',async()=>{
   const {database,stripe,tables,intent}=fixture();tables.stripe_checkout_orders.push({...order(),session_id:'cs_sale'});intent.status='requires_payment_method';intent.last_payment_error={code:'card_declined'}
   await processStripeEvent(database,event('payment_intent.payment_failed'),stripe)
-  expect(database.rpc).toHaveBeenCalledWith('apply_stripe_payment',expect.objectContaining({p_status:'declined'}))
+  expect(database.rpc).toHaveBeenCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_status:'declined'}))
  })
  it('registra reembolso total e parcial sem inventar reembolso total',async()=>{
   const {database,stripe,tables,intent}=fixture();tables.stripe_checkout_orders.push({...order(),session_id:'cs_sale'});intent.latest_charge.amount_refunded=500
   await processStripeEvent(database,event('charge.refunded'),stripe)
-  expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment',expect.objectContaining({p_status:'approved',p_refunded:500}))
+  expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_status:'approved',p_refunded:500}))
   intent.latest_charge.amount_refunded=10000;await processStripeEvent(database,event('charge.refunded'),stripe)
-  expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment',expect.objectContaining({p_status:'refunded'}))
+  expect(database.rpc).toHaveBeenLastCalledWith('apply_stripe_payment_v2',expect.objectContaining({p_status:'refunded'}))
  })
  it('ignora duplicata persistida sem consultar ou processar pagamento',async()=>{
   const {database,stripe,tables}=fixture();tables.stripe_webhook_events.push({event_id:'evt_sale'})

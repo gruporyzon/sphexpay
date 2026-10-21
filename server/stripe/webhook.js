@@ -1,7 +1,10 @@
 import {getStripe,getStripeMode} from './client.js'
 import {retrieveAndSync} from './connect.js'
 
-const paymentEvents=new Set(['payment_intent.succeeded','payment_intent.payment_failed','charge.succeeded','charge.failed','charge.refunded','checkout.session.completed'])
+// Pix e boleto são assíncronos: o pagamento confirma depois (processing → succeeded) ou expira (canceled).
+const paymentEvents=new Set(['payment_intent.succeeded','payment_intent.payment_failed','payment_intent.processing','payment_intent.canceled','charge.succeeded','charge.failed','charge.refunded','checkout.session.completed','checkout.session.async_payment_succeeded','checkout.session.async_payment_failed'])
+const METHODS=new Set(['card','pix','boleto'])
+const methodOf=(charge,intent)=>{const type=charge?.payment_method_details?.type||(intent.payment_method_types?.length===1?intent.payment_method_types[0]:null);return METHODS.has(type)?type:'card'}
 const id=value=>typeof value==='string'?value:value?.id
 export async function readRawBody(request){
  // Read the stream without accessing Vercel's parsed request.body getter.
@@ -48,10 +51,10 @@ export async function processStripeEvent(database,event,stripe=getStripe()){
  if(!order.session_id)throw new Error('STRIPE_SESSION_PENDING')
  const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:event.account})
  if(session.id!==order.session_id||session.mode!=='payment'||session.client_reference_id!==order.id||id(session.payment_intent)!==intent.id)throw new Error('STRIPE_SESSION_MISMATCH')
- let status=intent.status==='succeeded'?'approved':intent.status==='requires_payment_method'&&intent.last_payment_error?'declined':'pending'
+ let status=intent.status==='succeeded'?'approved':intent.status==='canceled'||(intent.status==='requires_payment_method'&&intent.last_payment_error)?'declined':'pending'
  const refunded=charge?.amount_refunded||0
  if(refunded===order.amount_cents)status='refunded'
- const {data,error}=await database.rpc('apply_stripe_payment',{p_order_id:order.id,p_event_id:event.id,p_event_type:event.type,p_account:event.account,p_intent:intent.id,p_charge:id(intent.latest_charge)||null,p_status:status,p_refunded:refunded,p_occurred_at:new Date(event.created*1000).toISOString()})
+ const {data,error}=await database.rpc('apply_stripe_payment_v2',{p_order_id:order.id,p_event_id:event.id,p_event_type:event.type,p_account:event.account,p_intent:intent.id,p_charge:id(intent.latest_charge)||null,p_status:status,p_refunded:refunded,p_occurred_at:new Date(event.created*1000).toISOString(),p_method:methodOf(charge,intent)})
  if(error)throw new Error('STRIPE_PERSISTENCE_FAILED')
  return data
 }

@@ -3,7 +3,25 @@ import {ConnectError,configuredAppUrl,findConnection,retrieveAndSync} from './co
 import {getStripe,getStripeMode} from './client.js'
 
 const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
+const one=async query=>{const {data,error}=await query.maybeSingle();if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar o pagamento.');return data}
 const unavailable=()=>new ConnectError('CHECKOUT_UNAVAILABLE',409,'Esta oferta não está disponível para pagamento.')
+export const PAYMENT_METHODS=['card','pix','boleto']
+// Pix e boleto só em reais e dentro dos limites da Stripe Brasil (Pix: R$ 0,50 até ~US$ 3.000;
+// boleto: R$ 5,00 a R$ 49.999,99). Cada método precisa estar ativo na conta conectada.
+export function usableMethods(enabled,capabilities,offer){
+ const on=new Set(enabled||[]),caps=capabilities||{},brl=offer.currency==='BRL',amount=offer.price_cents
+ return PAYMENT_METHODS.filter(method=>on.has(method)&&(
+  method==='card'?caps.card_payments==='active':
+  method==='pix'?brl&&caps.pix_payments==='active'&&amount>=50&&amount<=1500000:
+  brl&&caps.boleto_payments==='active'&&amount>=500&&amount<=4999999))
+}
+// Cobrança real (live) só para vendedor com verificação (KYC) aprovada.
+async function kycApproved(database,sellerId){
+ if(getStripeMode()!=='live')return true
+ const profile=await one(database.from('kyc_profiles').select('status').eq('user_id',sellerId))
+ return profile?.status==='approved'
+}
+const kycPending=()=>new ConnectError('SELLER_VERIFICATION_PENDING',409,'O vendedor ainda está concluindo a verificação da conta. Tente novamente mais tarde.')
 export function validateCheckoutId(value){
  if(!z.uuid().safeParse(value).success)throw new ConnectError('INVALID_CHECKOUT_INPUT',400,'Informe um checkout válido.')
  return value
@@ -18,7 +36,6 @@ export function validateCheckoutInput(input){
  if(!result.success)throw new ConnectError('INVALID_CHECKOUT_INPUT',400,'Informe checkout e dados do comprador válidos. Valores e contas são definidos pelo servidor.')
  return result.data
 }
-const one=async query=>{const {data,error}=await query.maybeSingle();if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar o pagamento.');return data}
 export function checkoutPublishableKey(){
  const key=(process.env.VITE_STRIPE_PUBLISHABLE_KEY||process.env.STRIPE_PUBLISHABLE_KEY||'').trim()
  if(!key.startsWith(`pk_${getStripeMode()}_`))throw new ConnectError('STRIPE_PUBLIC_KEY_MISMATCH',503,'O formulário seguro de pagamento ainda precisa ser configurado pelo vendedor.')
@@ -42,33 +59,37 @@ export async function loadOffer(database,checkoutId){
  const p=await one(database.from('products').select('id,name,seller_id,currency').eq('id',c.product_id).eq('seller_id',c.seller_id).eq('status','active').eq('active',true).is('deleted_at',null))
  const o=await one(database.from('product_offers').select('*').eq('id',v.offer_id).eq('product_id',c.product_id).eq('seller_id',c.seller_id).eq('status','active').is('deleted_at',null))
  const settings=await one(database.from('product_payment_settings').select('enabled_methods').eq('product_id',c.product_id).eq('seller_id',c.seller_id))
- if(!settings?.enabled_methods?.includes('card'))throw unavailable()
+ if(!settings?.enabled_methods?.some(method=>PAYMENT_METHODS.includes(method)))throw unavailable()
  if(!p||!o||o.billing_type!=='one_time'||o.installments!==1||o.setup_fee_cents||!Number.isSafeInteger(o.price_cents)||o.price_cents<=0||o.price_cents>99999999||!['BRL','USD','EUR'].includes(o.currency)||o.currency!==p.currency)throw unavailable()
- return{c,p,o}
+ return{c,p,o,settings}
 }
 export async function checkoutPaymentAvailability(database,checkoutId,stripe){
- const {c,p,o}=await loadOffer(database,checkoutId)
- let mode='',paymentAvailable=false,embeddedAvailable=false
+ const {c,p,o,settings}=await loadOffer(database,checkoutId)
+ let mode='',paymentAvailable=false,embeddedAvailable=false,methods=[],verified=true
  try{
   mode=getStripeMode()
   feeConfiguration(o.price_cents)
   const account=await findConnection(database,c.seller_id)
-  const eligible=Boolean(account?.stripe_charges_enabled&&account?.stripe_payouts_enabled&&account?.stripe_capabilities?.card_payments==='active'&&(mode!=='live'||process.env.STRIPE_LIVE_PAYMENTS_ENABLED==='true'))
+  verified=await kycApproved(database,c.seller_id)
+  const eligible=Boolean(verified&&account?.stripe_charges_enabled&&account?.stripe_payouts_enabled&&usableMethods(settings.enabled_methods,account?.stripe_capabilities,o).length&&(mode!=='live'||process.env.STRIPE_LIVE_PAYMENTS_ENABLED==='true'))
   if(eligible){
    const current=await retrieveAndSync(database,c.seller_id,account,stripe||getStripe())
-   paymentAvailable=Boolean(current.stripe_charges_enabled&&current.stripe_payouts_enabled&&current.stripe_capabilities?.card_payments==='active')
+   methods=usableMethods(settings.enabled_methods,current.stripe_capabilities,o)
+   paymentAvailable=Boolean(current.stripe_charges_enabled&&current.stripe_payouts_enabled&&methods.length)
   }
   embeddedAvailable=paymentAvailable&&Boolean(checkoutPublishableKey())
  }catch{/* Presentation remains available when the processor isn't configured. */}
- return{productName:p.name,amountCents:o.price_cents,currency:o.currency,mode,paymentAvailable,embeddedAvailable,paymentMessage:embeddedAvailable?'':'O vendedor ainda precisa habilitar o pagamento desta oferta.'}
+ return{productName:p.name,amountCents:o.price_cents,currency:o.currency,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
 }
 export async function createCheckout(database,input,stripe=getStripe()){
  const value=validateCheckoutInput(input)
- const {c,p,o}=await loadOffer(database,value.checkoutId)
+ const {c,p,o,settings}=await loadOffer(database,value.checkoutId)
  const connection=await findConnection(database,c.seller_id)
  if(!connection)throw unavailable()
+ if(!await kycApproved(database,c.seller_id))throw kycPending()
  const current=await retrieveAndSync(database,c.seller_id,connection,stripe)
- if(!current.stripe_charges_enabled||!current.stripe_payouts_enabled||current.stripe_capabilities?.card_payments!=='active')throw unavailable()
+ const methods=usableMethods(settings.enabled_methods,current.stripe_capabilities,o)
+ if(!current.stripe_charges_enabled||!current.stripe_payouts_enabled||!methods.length)throw unavailable()
  // Live charging is a deliberate, separate release decision.
  if(getStripeMode()==='live'&&process.env.STRIPE_LIVE_PAYMENTS_ENABLED!=='true')throw new ConnectError('LIVE_PAYMENTS_DISABLED',503,'Pagamentos de produção ainda não foram habilitados.')
  const {fee,rule}=feeConfiguration(o.price_cents)
@@ -81,7 +102,8 @@ export async function createCheckout(database,input,stripe=getStripe()){
  if(order.session_id){const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:order.stripe_account_id});return checkoutPresentation(session,order,publishableKey)}
  if(!order.checkout_origin||!Number.isFinite(new Date(order.created_at).getTime())||Date.now()-new Date(order.created_at).getTime()>23*3600000)throw new ConnectError('PAYMENT_RECONCILIATION_REQUIRED',409,'Esta tentativa precisa ser reconciliada antes de continuar.')
  const origin=order.checkout_origin,metadata={sphex_order_id:order.id,sphex_product_id:order.product_id,sphex_seller_id:order.seller_id}
- const session=await stripe.checkout.sessions.create({mode:'payment',payment_method_types:['card'],customer_email:order.buyer_email,client_reference_id:order.id,metadata,
+ const session=await stripe.checkout.sessions.create({mode:'payment',payment_method_types:methods,
+  ...(methods.some(method=>method!=='card')?{payment_method_options:{...(methods.includes('pix')?{pix:{expires_after_seconds:1800}}:{}),...(methods.includes('boleto')?{boleto:{expires_after_days:3}}:{})}}:{}),customer_email:order.buyer_email,client_reference_id:order.id,metadata,
   line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents,product_data:{name:order.product_name}}}],
   payment_intent_data:{metadata,receipt_email:order.buyer_email,...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
   ...(uiMode==='elements'?{ui_mode:'elements',return_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`}:{success_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${origin}/pay/${order.checkout_id}?result=cancelled`})
@@ -105,9 +127,9 @@ export async function checkoutSessionStatus(database,checkoutId,sessionId,stripe
 }
 
 export async function configureProductPayments(database,user,input,stripe){
- const parsed=z.object({productId:z.uuid(),enabled:z.boolean()}).strict().safeParse(input)
+ const parsed=z.object({productId:z.uuid(),enabled:z.boolean(),method:z.enum(PAYMENT_METHODS).optional()}).strict().safeParse(input)
  if(!parsed.success)throw new ConnectError('INVALID_PAYMENT_SETTINGS',400,'Configuração de pagamento inválida.')
- const {productId,enabled}=parsed.data
+ const {productId,enabled}=parsed.data,method=parsed.data.method||'card'
  const product=await one(database.from('products').select('id').eq('id',productId).eq('seller_id',user.id).is('deleted_at',null))
  if(!product)throw new ConnectError('PRODUCT_NOT_FOUND',404,'Produto não encontrado.')
  let current
@@ -116,10 +138,11 @@ export async function configureProductPayments(database,user,input,stripe){
   if(!connection)throw unavailable()
   current=await retrieveAndSync(database,user.id,connection,stripe||getStripe())
   if(!current.stripe_charges_enabled||!current.stripe_payouts_enabled||current.stripe_capabilities?.card_payments!=='active')throw unavailable()
+  if(method!=='card'&&current.stripe_capabilities?.[`${method}_payments`]!=='active')throw new ConnectError('PAYMENT_METHOD_NOT_ACTIVE',409,`Ative o ${method==='pix'?'Pix':'boleto'} na sua conta Stripe (Configurações → Métodos de pagamento) e tente novamente.`)
  }
  const existing=await one(database.from('product_payment_settings').select('enabled_methods,capabilities').eq('product_id',productId).eq('seller_id',user.id))
- const methods=[...new Set([...(existing?.enabled_methods||[]).filter(method=>method!=='card'),...(enabled?['card']:[])])]
+ const methods=[...new Set([...(existing?.enabled_methods||[]).filter(item=>item!==method),...(enabled?[method]:[])])]
  const {error}=await database.from('product_payment_settings').upsert({product_id:productId,seller_id:user.id,enabled_methods:methods,capabilities:{...existing?.capabilities,...(current?{stripe:current.stripe_capabilities}:{})},updated_at:new Date().toISOString()},{onConflict:'product_id'})
  if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível salvar os métodos de pagamento.')
- return{enabled}
+ return{enabled,method,methods}
 }
