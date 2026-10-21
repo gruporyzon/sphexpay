@@ -1,14 +1,12 @@
 import { useState,type FormEvent } from 'react'
 import { Link,useLocation,useNavigate } from 'react-router-dom'
-import { Mail } from 'lucide-react'
-import { AuthLayout } from '../../components/auth/AuthLayout'
-import { PasswordField } from '../../components/auth/PasswordField'
+import { ArrowRight } from 'lucide-react'
 import { SocialLoginButtons } from '../../components/auth/SocialLoginButtons'
-import { AuthNotice } from '../../components/auth/AuthError'
 import { TwoFactorChallenge } from '../../components/auth/TwoFactorChallenge'
 import { supabaseUnavailableMessage } from '../../lib/supabase'
 import { authMessage,authService,mfaService,setSessionPersistence } from '../../services/authService'
 import { useAuth } from '../../hooks/useAuth'
+import { FlowField,FlowNotice,FlowPasswordField,FlowShell } from '../../features/signup/FlowShell'
 
 export default function LoginPage(){
  const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[remember,setRemember]=useState(true),[error,setError]=useState(''),[loading,setLoading]=useState(false)
@@ -50,13 +48,38 @@ export default function LoginPage(){
  }
 
  if(mfaStep){
-  return <AuthLayout eyebrow="VERIFICACAO EM DUAS ETAPAS"><h1>Confirme que é você</h1><p className="auth-subtitle">Sua conta está protegida com verificação em duas etapas.</p>
-   <TwoFactorChallenge
-    onVerified={async()=>{await refreshAssurance?.();goToApp(pendingDestination)}}
-    onCancel={()=>{setMfaStep(false);setPassword('')}}
-   />
-  </AuthLayout>
+  return <FlowShell back={{to:'/',label:'Voltar para o início'}}>
+   <div className="spx-flow-step">
+    <span className="spx-flow-eyebrow">Verificação em duas etapas</span>
+    <h1>Confirme que é você</h1>
+    <p className="spx-flow-subtitle">Sua conta está protegida com verificação em duas etapas.</p>
+    <div className="spx-flow-mfa">
+     <TwoFactorChallenge
+      onVerified={async()=>{await refreshAssurance?.();goToApp(pendingDestination)}}
+      onCancel={()=>{setMfaStep(false);setPassword('')}}
+     />
+    </div>
+   </div>
+  </FlowShell>
  }
 
- return <AuthLayout><h1>Bem-vindo de volta</h1><p className="auth-subtitle">Acesse sua conta SphexPay para acompanhar seus resultados.</p><SocialLoginButtons onError={setError}/><div className="auth-divider"><span>ou continue com e-mail</span></div><form className="auth-form" onSubmit={submit} noValidate><label className="auth-field" htmlFor="login-email"><span>E-mail</span><div className="field-control"><Mail/><input id="login-email" name="email" type="email" value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" inputMode="email" required aria-required="true"/></div></label><PasswordField label="Senha" value={password} onChange={setPassword}/><div className="auth-options"><label><input type="checkbox" checked={remember} onChange={e=>setRemember(e.target.checked)}/> Manter sessão neste dispositivo</label><Link to="/recuperar-senha">Esqueci minha senha</Link></div><AuthNotice message={error}/><button className="auth-submit" disabled={loading} aria-busy={loading}>{loading?'Validando acesso...':'Entrar'}</button></form><p className="auth-switch">Ainda não possui uma conta? <Link to="/criar-conta">Criar conta</Link></p></AuthLayout>
+ return <FlowShell back={{to:'/',label:'Voltar para o início'}}>
+  <div className="spx-flow-step">
+   <h1>Bem-vindo de volta</h1>
+   <p className="spx-flow-subtitle">Acesse sua conta SphexPay para acompanhar seus resultados.</p>
+   <form className="spx-flow-form" onSubmit={submit} noValidate>
+    <FlowField index={0} id="login-email" name="email" label="E-mail" required type="email" value={email} onChange={setEmail} autoComplete="email" inputMode="email" placeholder="seu@email.com"/>
+    <FlowPasswordField index={1} label="Senha" required value={password} onChange={setPassword} autoComplete="current-password" placeholder="Sua senha"/>
+    <div className="spx-flow-options-row">
+     <label className="spx-flow-consent"><input type="checkbox" checked={remember} onChange={event=>setRemember(event.target.checked)}/><span>Manter sessão neste dispositivo</span></label>
+     <Link to="/recuperar-senha">Esqueci minha senha</Link>
+    </div>
+    <FlowNotice message={error}/>
+    <button className="spx-flow-button full" disabled={loading} aria-busy={loading}>{loading?<><span className="spx-flow-spinner" aria-hidden="true"/>Validando acesso...</>:<>Entrar <ArrowRight aria-hidden="true"/></>}</button>
+   </form>
+   <div className="spx-flow-divider"><span>ou</span></div>
+   <SocialLoginButtons onError={setError}/>
+   <p className="spx-flow-switch">Ainda não possui uma conta? <Link to="/criar-conta">Criar conta</Link></p>
+  </div>
+ </FlowShell>
 }
