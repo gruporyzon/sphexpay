@@ -10,7 +10,7 @@ describe('e-mails SphexPay',()=>{
   const html=readFileSync(`supabase/templates/${name}.html`,'utf8')
   expect(html).toBe(renderEmail(authTemplates[name as keyof typeof authTemplates].content))
   expect(Buffer.byteLength(html)).toBeLessThan(GMAIL_CLIP_BYTES/10)
-  expect(html).toContain('https://sphexpay.com.br/brand/email-logo-white.png')
+  expect(html).toContain('https://www.sphexpay.com.br/brand/email-logo-white.png')
   expect(html).toContain('#0080ff')
   expect(html).toContain('Sphex<b style="font-weight:600">Pay</b>')
   expect(html).toContain(name==='reauthentication'?'{{ .Token }}':'{{ .ConfirmationURL }}')

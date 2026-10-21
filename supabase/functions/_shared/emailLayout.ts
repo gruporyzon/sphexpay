@@ -8,7 +8,7 @@
 // supabase/templates/. Os templates do Supabase recebem marcadores Go como
 // {{ .ConfirmationURL }} — por isso `href` e textos aceitam esses marcadores crus.
 
-export const EMAIL_SITE='https://sphexpay.com.br'
+export const EMAIL_SITE='https://www.sphexpay.com.br'
 const LOGO=`${EMAIL_SITE}/brand/email-logo-white.png`
 const FONT="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
 const C={bg:'#050505',card:'#111111',cardLine:'#222222',text:'#f4f4f4',muted:'#a0a0a0',faint:'#6f6f6f',blue:'#0080ff',blueLine:'#60acff',soft:'#0b1a33'}

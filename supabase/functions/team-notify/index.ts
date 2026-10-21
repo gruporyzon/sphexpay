@@ -15,7 +15,7 @@ import {escapeHtml as escapeEmail,renderEmail,EMAIL_SITE} from '../_shared/email
 
 const corsHeaders={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS'}
 const json=(body:Record<string,unknown>,status=200)=>Response.json(body,{status,headers:corsHeaders})
-const APP_URL='https://sphexpay.com.br'
+const APP_URL='https://www.sphexpay.com.br'
 
 const LABELS:Record<string,Record<string,string>>={
  business_type:{infoprodutos:'Infoprodutos',loja_virtual:'Loja virtual',dropshipping:'Dropshipping',nutra:'Nutra / Suplementos',saas:'SaaS / Software',servicos:'Serviços',produtos_fisicos:'Produtos físicos',comecando:'Ainda estou começando'},
