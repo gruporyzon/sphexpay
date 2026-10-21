@@ -1,0 +1,24 @@
+SphexPay
+
+(https://www.sphexpay.com.br)
+
+Alteração de e-mail
+
+Confirme seu novo e-mail.
+
+Recebemos um pedido para alterar o e-mail da sua conta SphexPay de {{ .Email }} para {{ .NewEmail }}.
+Confirme a alteração para que os próximos acessos e avisos usem o novo endereço.
+Confirmar alteração → ({{ .ConfirmationURL }})
+
+Se você não pediu esta alteração, não clique no botão e troque sua senha pelo painel.
+
+Se o botão não funcionar, copie e cole este endereço no navegador:
+{{ .ConfirmationURL }} ({{ .ConfirmationURL }})
+
+Central de ajuda (https://www.sphexpay.com.br/#ajuda) · Termos de uso (https://www.sphexpay.com.br/termos) · Privacidade (https://www.sphexpay.com.br/privacidade)
+
+Você recebeu este e-mail porque uma ação foi solicitada na sua conta SphexPay. Se não foi você, ignore esta mensagem.
+
+A SphexPay nunca pede sua senha por e-mail, telefone ou mensagem.
+
+© SphexPay · sphexpay.com.br

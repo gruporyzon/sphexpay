@@ -1,0 +1,24 @@
+SphexPay
+
+(https://www.sphexpay.com.br)
+
+Confirmação de e-mail
+
+Sua conta está quase pronta.
+
+Que bom ter você na SphexPay. Para ativar sua conta e continuar o cadastro, confirme que este endereço é seu.
+Depois da confirmação, você responde algumas perguntas rápidas sobre o seu negócio e já acessa o painel.
+Confirmar meu e-mail → ({{ .ConfirmationURL }})
+
+Por segurança, este link expira em breve e só pode ser usado uma vez.
+
+Se o botão não funcionar, copie e cole este endereço no navegador:
+{{ .ConfirmationURL }} ({{ .ConfirmationURL }})
+
+Central de ajuda (https://www.sphexpay.com.br/#ajuda) · Termos de uso (https://www.sphexpay.com.br/termos) · Privacidade (https://www.sphexpay.com.br/privacidade)
+
+Você recebeu este e-mail porque uma conta SphexPay foi criada com este endereço. Se não foi você, ignore esta mensagem.
+
+A SphexPay nunca pede sua senha por e-mail, telefone ou mensagem.
+
+© SphexPay · sphexpay.com.br

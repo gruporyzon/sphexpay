@@ -5,7 +5,11 @@
 // Exige usuário autenticado com app_metadata.role === 'admin'. As leituras dos
 // arquivos são sempre por URL assinada de curta duração gerada com service_role.
 
-import {createClient} from 'npm:@supabase/supabase-js@2'
+import {createClient,type SupabaseClient} from 'npm:@supabase/supabase-js@2.110.8'
+import {kycEmail} from '../_shared/kycEmail.ts'
+import {sendEmail} from '../_shared/sendEmail.ts'
+
+declare const EdgeRuntime:{waitUntil(task:Promise<unknown>):void}
 
 const corsHeaders={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS'}
 const json=(body:Record<string,unknown>,status=200)=>Response.json(body,{status,headers:corsHeaders})
@@ -20,7 +24,7 @@ const SIGNED_URL_TTL=300
 
 const clampReason=(value:unknown)=>typeof value==='string'?value.trim().slice(0,2000):''
 
-async function recordEvent(admin:ReturnType<typeof createClient>,eventType:string,actorId:string,metadata:Record<string,unknown>){
+async function recordEvent(admin:SupabaseClient,eventType:string,actorId:string,metadata:Record<string,unknown>){
  try{await admin.from('security_audit_log').insert({event_type:eventType,actor_id:actorId,metadata})}catch{/* auditoria não bloqueia a decisão */}
 }
 
@@ -41,7 +45,38 @@ Deno.serve(async request=>{
  const admin=createClient(url,serviceRole,{auth:{persistSession:false,autoRefreshToken:false}})
  const action=String(body.action||'')
 
+ // Avisos pendentes sobrevivem a falhas do provedor. A próxima visita da equipe
+ // à fila ou uma chamada administrativa dispatch_emails retoma os envios.
+ const dispatchEmails=async()=>{
+  const apiKey=Deno.env.get('RESEND_API_KEY')
+  if(!apiKey)return {status:'not_configured',sent:0}
+  const {data:jobs,error}=await admin.rpc('claim_kyc_emails',{p_limit:5})
+  if(error)return {status:'queue_unavailable',sent:0}
+  let sent=0
+  for(const job of jobs||[]){
+   try{
+    const {data:current,error:currentError}=await admin.from(job.target==='document'?'kyc_documents':'kyc_profiles').select('status,reviewed_at').eq(job.target==='document'?'id':'user_id',job.target_id).maybeSingle()
+    if(currentError)throw new Error('REVIEW_LOOKUP_FAILED')
+    if(!current||current.status!==job.decision||new Date(current.reviewed_at).getTime()!==new Date(job.reviewed_at).getTime()){
+     await admin.from('kyc_email_outbox').update({status:'cancelled'}).eq('id',job.id)
+     continue
+    }
+    const {data:{user:recipient},error:userError}=await admin.auth.admin.getUserById(job.user_id)
+    if(userError||!recipient?.email)throw new Error('RECIPIENT_UNAVAILABLE')
+    const email=kycEmail(job)
+    const result=await sendEmail({apiKey,from:Deno.env.get('TEAM_NOTIFY_FROM')||'SphexPay <notificacoes@sphexpay.com.br>',to:[recipient.email],subject:email.subject,html:email.html,text:email.text,idempotencyKey:`kyc-review/${job.id}`})
+    await admin.from('kyc_email_outbox').update(result.ok?{status:'sent',sent_at:new Date().toISOString()}:{status:result.retryable&&job.attempts<8?'pending':'failed',available_at:new Date(Date.now()+Math.min(3600000,60000*2**job.attempts)).toISOString()}).eq('id',job.id)
+    if(result.ok)sent++
+   }catch{
+    await admin.from('kyc_email_outbox').update({status:job.attempts<8?'pending':'failed',available_at:new Date(Date.now()+300000).toISOString()}).eq('id',job.id)
+   }
+  }
+  return {status:'processed',sent}
+ }
+ if(action==='dispatch_emails')return json({ok:true,emailDelivery:await dispatchEmails()})
+
  if(action==='list'){
+  EdgeRuntime.waitUntil(dispatchEmails())
   const status=String(body.status||'')
   let query=admin.from('kyc_profiles').select(PROFILE_FIELDS)
   if(status&&LIST_STATUS.has(status))query=query.eq('status',status)
@@ -90,7 +125,8 @@ Deno.serve(async request=>{
    if(error)return json({code:'KYC_STORAGE_ERROR'},503)
    if(!data)return json({code:'NOT_FOUND'},404)
    await recordEvent(admin,'kyc.document_reviewed',user.id,{documentId:data.id,userId:data.user_id,docType:data.doc_type,decision})
-   return json({ok:true,document:data})
+   EdgeRuntime.waitUntil(dispatchEmails())
+   return json({ok:true,document:data,emailDelivery:{status:'queued'}})
   }
 
   if(body.target==='profile'){
@@ -105,7 +141,8 @@ Deno.serve(async request=>{
    if(error)return json({code:'KYC_STORAGE_ERROR'},503)
    if(!data)return json({code:'NOT_FOUND'},404)
    await recordEvent(admin,'kyc.profile_reviewed',user.id,{userId:data.user_id,personType:data.person_type,decision})
-   return json({ok:true,profile:data})
+   EdgeRuntime.waitUntil(dispatchEmails())
+   return json({ok:true,profile:data,emailDelivery:{status:'queued'}})
   }
 
   return json({code:'INVALID_TARGET'},400)

@@ -4,7 +4,7 @@
 // Depois, copie cada HTML e assunto para Supabase → Authentication → Emails → Templates
 // (ou use os caminhos já configurados em supabase/config.toml no ambiente local).
 import { mkdirSync,writeFileSync } from 'node:fs'
-import { renderEmail } from '../supabase/functions/_shared/emailLayout.ts'
+import { renderEmail,emailText } from '../supabase/functions/_shared/emailLayout.ts'
 
 const reasonAccount='Você recebeu este e-mail porque uma ação foi solicitada na sua conta SphexPay. Se não foi você, ignore esta mensagem.'
 
@@ -87,15 +87,35 @@ export const authTemplates={
  }
 }
 
+export const securityTemplates=Object.fromEntries([
+ ['password_changed','Sua senha foi alterada','A senha da sua conta SphexPay foi alterada. Se reconhece esta ação, nenhuma outra confirmação é necessária.'],
+ ['email_changed','Seu e-mail foi alterado','O endereço de e-mail da sua conta SphexPay foi alterado.'],
+ ['phone_changed','Seu telefone foi alterado','O número de telefone vinculado à sua conta SphexPay foi alterado.'],
+ ['identity_linked','Método de acesso adicionado','Um método de acesso foi vinculado à sua conta SphexPay.'],
+ ['identity_unlinked','Método de acesso removido','Um método de acesso foi removido da sua conta SphexPay.'],
+ ['mfa_factor_enrolled','Verificação em duas etapas adicionada','Um método de verificação em duas etapas foi adicionado à sua conta SphexPay.'],
+ ['mfa_factor_unenrolled','Verificação em duas etapas removida','Um método de verificação em duas etapas foi removido da sua conta SphexPay.']
+].map(([name,title,message])=>[name,{subject:`${title} — SphexPay`,content:{preheader:message,eyebrow:'Segurança da conta',title:`${title}.`,paragraphs:[message,'Se você não reconhece esta alteração, acesse a SphexPay pelo endereço oficial, revise sua segurança e entre em contato com o suporte.'],button:{label:'Revisar minha conta',href:'https://www.sphexpay.com.br/app/configuracoes'},note:'Este aviso não solicita senha, código de segurança nem envio de documentos por e-mail.',reason:'Você recebeu este aviso de segurança porque houve uma alteração na sua conta SphexPay.'}}]))
+export const allAuthTemplates={...authTemplates,...securityTemplates}
+
 const isMain=import.meta.url===`file://${process.argv[1]}`
 if(isMain){
  mkdirSync('supabase/templates',{recursive:true})
  const index=[]
- for(const [name,{subject,content}] of Object.entries(authTemplates)){
+ for(const [name,{subject,content}] of Object.entries(allAuthTemplates)){
   const html=renderEmail(content)
   writeFileSync(`supabase/templates/${name}.html`,html)
+  writeFileSync(`supabase/templates/${name}.txt`,emailText(html))
   index.push(`${name}: ${subject} (${(Buffer.byteLength(html)/1024).toFixed(1)} KB)`)
  }
- writeFileSync('supabase/templates/SUBJECTS.md',`# Assuntos dos e-mails de Auth\n\nGerado por \`scripts/build-email-templates.mjs\`. Copie para Supabase → Authentication → Emails → Templates.\n\n${Object.entries(authTemplates).map(([name,{subject}])=>`- **${name}**: ${subject}`).join('\n')}\n`)
+ writeFileSync('supabase/templates/SUBJECTS.md',`# Assuntos dos e-mails de Auth\n\nGerado por \`scripts/build-email-templates.mjs\`. Copie para Supabase → Authentication → Emails → Templates.\n\n${Object.entries(allAuthTemplates).map(([name,{subject}])=>`- **${name}**: ${subject}`).join('\n')}\n`)
+ const config={}
+ for(const [name,{subject,content}] of Object.entries(allAuthTemplates)){
+  const key=name in authTemplates?name:`${name}_notification`
+  config[`mailer_subjects_${key}`]=subject
+  config[`mailer_templates_${key}_content`]=renderEmail(content)
+  if(name in securityTemplates)config[`mailer_notifications_${name}_enabled`]=true
+ }
+ writeFileSync('supabase/templates/auth-config.json',JSON.stringify(config,null,2)+'\n')
  console.log(index.join('\n'))
 }
