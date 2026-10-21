@@ -158,6 +158,22 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   dígitos. Não há saque manual: a Stripe repassa automaticamente para a conta cadastrada
   no onboarding; a troca de conta ou de agenda é feita no painel da Stripe.
 
+### Webhooks de saída (Integrações)
+
+- Tabelas `seller_webhooks` e `webhook_deliveries` com RLS forçada: o dono lê (o segredo **não**
+  está entre as colunas liberadas) e remove; criação e edição só pelas RPCs
+  `create_seller_webhook`, `update_seller_webhook`, `reveal_seller_webhook_secret` e
+  `send_test_seller_webhook` (máx. 10 webhooks; teste limitado a 1 a cada 30 s).
+- URL: só `https://` público — sem IP literal, `localhost`, domínios internos
+  (`.local`, `.internal`…), credenciais na URL ou porta diferente de 443
+  (`webhook_url_allowed`). Reduz SSRF a partir do banco.
+- Envio pelo banco (`pg_net`) a cada minuto (`pg_cron`, job `dispatch-seller-webhooks`), com
+  `X-SphexPay-Signature: v1=HMAC-SHA256(segredo, "<timestamp>.<corpo>")`, timeout de 5 s e até
+  7 tentativas com espera crescente. Corpo e resposta do endpoint não são guardados além do
+  necessário; entregas concluídas são apagadas após 30 dias (`prune-webhook-deliveries`).
+- O payload leva apenas dados da própria venda do vendedor (valor, produto, nome de exibição
+  do comprador, método). Nenhum dado de cartão.
+
 ## 10. Inventário de segredos
 
 | Segredo | Onde vive | Acesso | Rotação |
