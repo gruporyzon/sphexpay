@@ -61,9 +61,15 @@ documentos — só nome, tipo de pessoa, quantidade de documentos e o link da fi
 
 ## Antes de produção (pagamentos reais)
 
-- [ ] Promover a CSP de `Content-Security-Policy-Report-Only` para `Content-Security-Policy`
-      em `vercel.json`, após confirmar zero violações legítimas no app rodando. Ajustar
-      `connect-src` com a URL exata do projeto Supabase.
+- [x] CSP bloqueante (`Content-Security-Policy`) em todo o site, sem `unsafe-eval` (zod em modo
+      `jitless`). Verificado sem violações nas páginas públicas e no checkout em 21/10/2026.
+- [ ] Stripe → Webhooks → endpoint das contas conectadas (`/api/payments/webhook`): incluir os
+      eventos `payment_intent.processing`, `payment_intent.canceled`,
+      `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`,
+      `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` e
+      `customer.subscription.deleted` (Pix, boleto e assinaturas dependem deles).
+- [ ] Concluir a ativação do Stripe Connect da plataforma e só então definir
+      `STRIPE_LIVE_PAYMENTS_ENABLED=true`, depois de uma compra real de teste reembolsada.
 - [ ] Tornar MFA obrigatório para contas com papel `admin`.
 - [x] `npm audit fix` + revalidar `npm run test` / `npm run build`.
 - [ ] Obter o AOC (Attestation of Compliance) PCI do parceiro processador.
