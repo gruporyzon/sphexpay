@@ -21,7 +21,7 @@ export const competitionService={
  subscribe(onChange:()=>void):RealtimeChannel|null{
   if(!supabase)return null
   return supabase.channel(`competition:${competitionConfig.id}`)
-   .on('postgres_changes',{event:'*',schema:'public',table:'competition_participants'},onChange)
+   .on('postgres_changes',{event:'*',schema:'public',table:'payment_transactions'},onChange)
    .subscribe()
  },
  disconnect(channel:RealtimeChannel|null){if(channel&&supabase)void supabase.removeChannel(channel)}
