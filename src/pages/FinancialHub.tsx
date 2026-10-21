@@ -3,16 +3,14 @@ import {useAppLocale} from '../i18n/localeStore'
 import {T} from '../i18n'
 import {useMemo} from 'react'
 import {NavLink,Outlet,useLocation} from 'react-router-dom'
-import {CalendarDays,Download,Landmark,LockKeyhole,WalletCards} from 'lucide-react'
-import {Card,PageTitle,StatusBadge} from '../components/ui'
-import {EditableValue} from '../components/common/EditableValue'
+import {CalendarDays,Download,Landmark,RotateCcw,TrendingUp,WalletCards} from 'lucide-react'
+import {Card,Empty,Loading,PageTitle,StateMessage,StatusBadge} from '../components/ui'
 import {PeriodSelector} from '../components/common/PeriodSelector'
 import {StripeConnectCard} from '../components/finance/StripeConnectCard'
 import {KycStatusNotice} from '../features/kyc/KycStatusNotice'
-import {filterSales} from '../services/analyticsService'
-import {downloadCsv,money,shortDate} from '../lib/utils'
-import {useDemoStore} from '../store/useDemoStore'
-import {withdrawalMoney} from '../services/withdrawalService'
+import {balanceFor,buildLedger,centsMoney,ledgerCsv,summarizeTransactions} from '../features/finance/financeSummary'
+import {useFinanceData} from '../features/finance/useFinanceData'
+import {downloadCsv,shortDate} from '../lib/utils'
 
 export default function FinancialHub(){useAppLocale(state=>state.locale);
  const {pathname}=useLocation(),withdrawalsActive=pathname.endsWith('/saques')
@@ -20,8 +18,27 @@ export default function FinancialHub(){useAppLocale(state=>state.locale);
 }
 
 export function FinancialOverview(){useAppLocale(state=>state.locale);
- const s=useDemoStore(),sales=useMemo(()=>filterSales(s.sales,s.period),[s.sales,s.period])
- const ledger=useMemo(()=>[...s.withdrawals.map(x=>({date:x.date,description:x.status==='Concluído'?'Saque concluído':'Saque solicitado',type:'Débito',value:-x.amount,formatted:`- ${withdrawalMoney(Math.round(x.amount*100),x.currency||'BRL')}`,status:x.status})),...sales.filter(x=>x.status==='Aprovado').map(x=>({date:x.date,description:`Venda · ${x.product}`,type:'Entrada',value:x.amount-x.fee,formatted:money(x.amount-x.fee),status:'Concluído'}))].sort((a,b)=>b.date.localeCompare(a.date)),[s.withdrawals,sales])
- const cards=[['Disponível',s.available,WalletCards,'available'],['Saldo futuro',s.pending,CalendarDays,'pending'],['Valores bloqueados',2840,LockKeyhole,''],['Taxas no período',sales.reduce((a,x)=>a+x.fee,0),Landmark,'']] as const
- return <section className="financial-page" aria-label={uiText("Visão geral financeira")}><KycStatusNotice/><StripeConnectCard/><div className="financial-overview-actions"><PeriodSelector/><button className="btn" onClick={()=>downloadCsv('extrato.csv',ledger)}><Download size={16}/><T> Exportar extrato</T></button></div><div className="financial-balance-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">{cards.map(([label,value,Icon,key])=><Card className="financial-balance-card p-5" key={label}><Icon size={19} className="orange mb-4"/><span className="label"><T>{label}</T></span><b className="text-xl financial-money">{money(value)}</b>{key==='pending'&&<EditableValue label={label} value={value} currency onSave={next=>s.updateMetrics({pending:next})}/>}</Card>)}</div><Card className="financial-ledger-card"><div className="p-5 border-b border-[var(--line)]"><b><T>Histórico financeiro</T></b></div><div className="table-wrap"><table className="table"><thead><tr><th><T>Data</T></th><th><T>Descrição</T></th><th><T>Tipo</T></th><th><T>Status</T></th><th><T>Valor líquido</T></th></tr></thead><tbody>{ledger.map((x,i)=><tr key={`${x.date}-${i}`}><td>{shortDate(x.date)}</td><td>{x.description}</td><td>{x.type}</td><td><StatusBadge status={x.status}/></td><td className={`font-bold financial-money ${x.value<0?'text-red-500':'text-emerald-600'}`}>{x.formatted}</td></tr>)}</tbody></table></div></Card></section>
+ const {bounds,transactions,transactionsError,finance,financeError,financeLoading,reload}=useFinanceData()
+ const summary=useMemo(()=>summarizeTransactions(transactions||[]),[transactions])
+ const ledger=useMemo(()=>buildLedger(transactions||[],finance?.payouts||[],bounds),[transactions,finance,bounds])
+ const connected=Boolean(finance?.connected),balance=(value:number)=>financeLoading?'...':connected?centsMoney(value):'—'
+ const cards=[
+  ['Disponível',balance(balanceFor(finance?.balance.available)),WalletCards,'Saldo na Stripe pronto para o próximo repasse.'],
+  ['Saldo futuro',balance(balanceFor(finance?.balance.pending)),CalendarDays,'Vendas aprovadas aguardando liberação da Stripe.'],
+  ['Vendas líquidas no período',transactions?centsMoney(summary.netCents):'...',TrendingUp,`${summary.approvedCount} ${summary.approvedCount===1?'venda aprovada':'vendas aprovadas'}`],
+  ['Taxas no período',transactions?centsMoney(summary.feesCents):'...',Landmark,'Taxa da plataforma descontada das vendas.']
+ ] as const
+ return <section className="financial-page" aria-label={uiText("Visão geral financeira")}>
+  <div className="financial-overview-actions"><PeriodSelector/><button className="btn" disabled={!ledger.length} onClick={()=>downloadCsv('extrato-sphexpay.csv',ledgerCsv(ledger))}><Download size={16}/><T> Exportar extrato</T></button></div>
+  <KycStatusNotice/><StripeConnectCard/>
+  {(transactionsError||financeError)&&<div className="mb-4"><StateMessage title={uiText('Alguns dados não carregaram')}><span>{transactionsError||financeError}</span> <button className="btn" onClick={reload}><RotateCcw size={14}/><T> Tentar novamente</T></button></StateMessage></div>}
+  {finance?.mode==='test'&&connected&&<p className="muted text-xs mb-3"><T>Ambiente de teste da Stripe: saldo e repasses abaixo não são dinheiro real.</T></p>}
+  <div className="financial-balance-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">{cards.map(([label,value,Icon,hint])=><Card className="financial-balance-card p-5" key={label}><Icon size={19} className="orange mb-4"/><span className="label"><T>{label}</T></span><b className="text-xl financial-money">{value}</b><small className="muted text-xs block mt-1"><T>{hint}</T></small></Card>)}</div>
+  {(summary.refundedCount>0||summary.chargebackCount>0)&&<p className="muted text-xs mb-4"><T>No período: </T>{summary.refundedCount}<T> reembolso(s) somando </T>{centsMoney(summary.refundedCents)}<T> e </T>{summary.chargebackCount}<T> contestação(ões) somando </T>{centsMoney(summary.chargebackCents)}.</p>}
+  <Card className="financial-ledger-card"><div className="p-5 border-b border-[var(--line)]"><b><T>Histórico financeiro</T></b></div>
+   {transactions===null?<Loading label="Carregando extrato"/>:ledger.length===0?<Empty title={uiText('Nenhuma movimentação no período')} text={uiText('Vendas aprovadas, reembolsos e repasses aparecem aqui assim que acontecerem.')}/>:
+   <div className="table-wrap"><table className="table"><thead><tr><th><T>Data</T></th><th><T>Descrição</T></th><th><T>Tipo</T></th><th><T>Status</T></th><th><T>Valor</T></th></tr></thead><tbody>{ledger.map(row=><tr key={`${row.type}-${row.id}`}><td>{shortDate(row.date)}</td><td>{row.description}</td><td><T>{row.type}</T></td><td><StatusBadge status={row.status}/></td><td className={`font-bold financial-money ${!row.affectsBalance?'muted':row.amountCents<0?'text-red-500':'text-emerald-600'}`}>{row.amountCents<0?`- ${centsMoney(-row.amountCents,row.currency)}`:centsMoney(row.amountCents,row.currency)}</td></tr>)}</tbody></table></div>}
+  </Card>
+  <p className="muted text-xs mt-4"><T>Somente vendas reais aprovadas entram no extrato. Os repasses são feitos pela Stripe para a conta bancária cadastrada.</T>{summary.otherCurrencies.length?<> <T>Totais em reais; vendas em outras moedas aparecem no extrato.</T></>:null}</p>
+ </section>
 }
