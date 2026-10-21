@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { describe,expect,it } from 'vitest'
 
 const read=(path:string)=>readFileSync(resolve(process.cwd(),path),'utf8')
-const auth=read('src/services/authService.ts'),callback=read('src/pages/auth/AuthCallbackPage.tsx'),supabase=read('src/lib/supabase.ts'),html=read('index.html'),landing=read('src/pages/public/LandingPage.tsx'),css=read('src/public.css')
+const auth=read('src/services/authService.ts'),callback=read('src/pages/auth/AuthCallbackPage.tsx'),supabase=read('src/lib/supabase.ts'),html=read('index.html'),landing=read('src/pages/public/LandingPage.tsx')+read('src/pages/public/GatewayLanding.tsx'),gatewayCss=read('src/gateway-landing.css'),css=read('src/public.css')
 
 describe('segurança, SEO e responsividade pública',()=>{
  it('preserva os redirects Supabase existentes',()=>{
@@ -22,16 +22,17 @@ describe('segurança, SEO e responsividade pública',()=>{
   expect(html).toContain('property="og:title"')
   expect(html).toContain('name="twitter:card"')
   expect(html).toContain('<meta name="theme-color" content="#000000"')
-  expect(html).toContain('Sua operação no ritmo do próximo nível')
+  expect(html).toContain('<title>SphexPay — Um novo nível para o seu negócio</title>')
+  expect(html).toContain('<link rel="canonical" href="https://www.sphexpay.com.br/" />')
   expect(read('public/robots.txt')).toContain('sitemap.xml')
-  expect(read('public/sitemap.xml')).toContain('https://sphexpay.vercel.app/')
+  expect(read('public/sitemap.xml')).toContain('https://www.sphexpay.com.br/criar-conta')
  })
- it('usa direção pública clara e composição própria de celular e notificações',()=>{
-  expect(landing).toContain('landing landing-v2')
-  expect(landing).toContain('<PublicOperationalExperience/>')
-  expect(css).toContain('Public landing v2 — original light editorial direction for SphexPay.')
-  expect(css).toContain('background:var(--pv2-paper)')
-  expect(css).toContain('.public-phone-stage')
+ it('usa a direção escura do gateway com acento azul na entrada pública',()=>{
+  expect(landing).toContain("export { default } from './GatewayLanding'")
+  expect(landing).toContain('className="spx-gateway"')
+  expect(gatewayCss).toContain('--gw-bg:#090909')
+  expect(gatewayCss).toContain('--gw-blue:#0080ff')
+  expect(gatewayCss).toContain('color-scheme:dark')
  })
  it('mantém o hero final compacto, profundo e responsivo',()=>{
   const finalHero=css.slice(css.indexOf('/* Premium compact hero — final public cascade. */'))

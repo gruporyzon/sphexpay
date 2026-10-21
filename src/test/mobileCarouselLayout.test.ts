@@ -46,8 +46,8 @@ describe('layout mobile do carrossel e da competição',()=>{
  })
  it('organiza controles acessíveis em uma faixa própria e oferece swipe',()=>{
   expect(css).toContain('.overview-controls>button{width:44px;height:44px')
-  expect(carousel).toContain('aria-label="Banner anterior"')
-  expect(carousel).toContain('aria-label="Próximo banner"')
+  expect(carousel).toContain('aria-label={uiText("Banner anterior")}')
+  expect(carousel).toContain('aria-label={uiText("Próximo banner")}')
   expect(carousel).toContain('onTouchStart=')
   expect(carousel).toContain('onTouchEnd=')
  })
