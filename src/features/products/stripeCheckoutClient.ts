@@ -1,6 +1,7 @@
 import {loadStripe} from '@stripe/stripe-js/pure'
 import type {Stripe} from '@stripe/stripe-js'
 import type {CheckoutBuyer} from './CheckoutExperience'
+import { recordCheckoutEvent } from './checkoutAnalytics'
 
 export type Session={clientSecret:string;sessionId:string;accountId:string;publishableKey:string;amountCents:number;currency:string;completed?:boolean}
 
@@ -21,6 +22,7 @@ export async function reserveInlineCheckout(checkoutId:string,buyer:CheckoutBuye
  const promise=(async()=>{
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000)
   try{
+   recordCheckoutEvent(checkoutId,'checkout_started')
    const response=await fetch('/api/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({checkoutId,requestKey:attempt.key,uiMode:'elements',buyer})})
    const data=await response.json()
    if(!response.ok){if(data.code==='CHECKOUT_CLOSED'){memoryAttempts.delete(storageKey);remember(storageKey,null)}throw new Error(data.message||'Não foi possível preparar o pagamento. Tente novamente.')}
