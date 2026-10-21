@@ -1,0 +1,22 @@
+SphexPay
+
+(https://www.sphexpay.com.br)
+
+Convite
+
+Você foi convidado para a SphexPay.
+
+Uma conta foi preparada para você na SphexPay, a plataforma que reúne checkout, produtos e acompanhamento de vendas em um só lugar.
+Aceite o convite para criar sua senha e acessar o painel.
+Aceitar convite → ({{ .ConfirmationURL }})
+
+Se o botão não funcionar, copie e cole este endereço no navegador:
+{{ .ConfirmationURL }} ({{ .ConfirmationURL }})
+
+Central de ajuda (https://www.sphexpay.com.br/#ajuda) · Termos de uso (https://www.sphexpay.com.br/termos) · Privacidade (https://www.sphexpay.com.br/privacidade)
+
+Você recebeu este e-mail porque alguém convidou este endereço para a SphexPay. Se não reconhece o convite, ignore esta mensagem.
+
+A SphexPay nunca pede sua senha por e-mail, telefone ou mensagem.
+
+© SphexPay · sphexpay.com.br

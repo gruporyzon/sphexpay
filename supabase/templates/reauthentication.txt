@@ -1,0 +1,21 @@
+SphexPay
+
+(https://www.sphexpay.com.br)
+
+Confirmação de segurança
+
+Confirme que é você.
+
+Para concluir uma ação sensível na sua conta, informe o código abaixo na SphexPay.
+Seu código
+{{ .Token }}
+
+O código expira em poucos minutos. Se você não está realizando nenhuma alteração, troque sua senha.
+
+Central de ajuda (https://www.sphexpay.com.br/#ajuda) · Termos de uso (https://www.sphexpay.com.br/termos) · Privacidade (https://www.sphexpay.com.br/privacidade)
+
+Você recebeu este e-mail porque uma ação foi solicitada na sua conta SphexPay. Se não foi você, ignore esta mensagem.
+
+A SphexPay nunca pede sua senha por e-mail, telefone ou mensagem.
+
+© SphexPay · sphexpay.com.br

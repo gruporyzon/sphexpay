@@ -12,8 +12,9 @@
 // Segredos: RESEND_API_KEY, TEAM_NOTIFY_EMAIL (um ou mais e-mails separados por vírgula),
 // TEAM_NOTIFY_FROM opcional (padrão: SphexPay <notificacoes@sphexpay.com.br>).
 
-import {createClient} from 'npm:@supabase/supabase-js@2'
-import {escapeHtml as escapeEmail,renderEmail,EMAIL_SITE} from '../_shared/emailLayout.ts'
+import {createClient} from 'npm:@supabase/supabase-js@2.110.8'
+import {sendEmail} from '../_shared/sendEmail.ts'
+import {escapeHtml as escapeEmail,renderEmail,emailText,EMAIL_SITE} from '../_shared/emailLayout.ts'
 
 const corsHeaders={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type','Access-Control-Allow-Methods':'POST, OPTIONS'}
 const json=(body:Record<string,unknown>,status=200)=>Response.json(body,{status,headers:corsHeaders})
@@ -33,9 +34,7 @@ const label=(group:string,value:unknown)=>LABELS[group]?.[String(value)]??String
 const dateBR=(iso:unknown)=>{const date=new Date(String(iso));return Number.isNaN(date.getTime())?'—':date.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})}
 
 function emailHtml(title:string,intro:string,rows:[string,string][],cta?:{label:string;href:string}){
- const body=rows.map(([key,value])=>`<tr><td style="padding:10px 0;border-bottom:1px solid #e8e8e8;color:#6b6b6b;font-size:13px;width:44%">${escapeHtml(key)}</td><td style="padding:10px 0;border-bottom:1px solid #e8e8e8;color:#111;font-size:14px">${escapeHtml(value)}</td></tr>`).join('')
- const button=cta?`<p style="margin:28px 0 0"><a href="${escapeHtml(cta.href)}" style="display:inline-block;background:#0080ff;color:#fff;text-decoration:none;padding:12px 22px;border-radius:7px;font-size:14px">${escapeHtml(cta.label)}</a></p>`:''
- return `<!doctype html><html lang="pt-BR"><body style="margin:0;background:#f4f4f4;font-family:Arial,Helvetica,sans-serif"><div style="max-width:560px;margin:0 auto;padding:32px 20px"><div style="background:#090909;color:#fff;padding:20px 24px;border-radius:12px 12px 0 0;font-size:18px;letter-spacing:-.02em">Sphex<b>Pay</b></div><div style="background:#fff;padding:28px 24px;border-radius:0 0 12px 12px"><h1 style="margin:0 0 8px;font-size:20px;color:#111">${escapeHtml(title)}</h1><p style="margin:0 0 20px;color:#555;font-size:14px;line-height:1.5">${escapeHtml(intro)}</p><table style="width:100%;border-collapse:collapse">${body}</table>${button}</div><p style="color:#999;font-size:11px;text-align:center;margin-top:16px">Aviso interno automático da SphexPay.</p></div></body></html>`
+ return renderEmail({preheader:intro,eyebrow:'Aviso para a equipe',title:escapeHtml(title),paragraphs:[escapeHtml(intro)],facts:rows.map(([label,value])=>({label,value})),button:cta,reason:'Aviso interno automático da SphexPay. Dados destinados à equipe responsável.'})
 }
 
 Deno.serve(async request=>{
@@ -67,8 +66,8 @@ Deno.serve(async request=>{
   if(!recipients.length)return 'skipped'
   const {data:reserved,error:reserveError}=await admin.from('team_notifications').insert({user_id:user.id,kind,ref}).select('id').maybeSingle()
   if(reserveError)return reserveError.code==='23505'?'duplicate':'failed'
-  const response=await fetch('https://api.resend.com/emails',{method:'POST',headers:{'Authorization':`Bearer ${resendKey}`,'Content-Type':'application/json'},body:JSON.stringify({from,to:recipients,subject:subject.replace(/[\r\n\t]+/g,' ').slice(0,180),html})}).catch(()=>null)
-  if(!response||!response.ok){await admin.from('team_notifications').delete().eq('id',reserved!.id);return 'failed'}
+  const response=await sendEmail({apiKey:resendKey,from,to:recipients,subject,html,text:emailText(html),idempotencyKey:`team-notify/${kind}/${user.id}/${ref}`})
+  if(!response.ok){await admin.from('team_notifications').delete().eq('id',reserved!.id);return 'failed'}
   return 'sent'
  }
  const userEmail=user.email?[user.email]:[]
@@ -137,7 +136,7 @@ Deno.serve(async request=>{
    preheader:'Seus dados e documentos chegaram. Nossa equipe já vai analisar.',
    eyebrow:'Verificação recebida',
    title:'Recebemos seus documentos.',
-   paragraphs:[`Sua verificação foi enviada em ${escapeEmail(dateBR(profile.submitted_at))} e está na fila de análise da nossa equipe.`,'Assim que a análise terminar, você recebe o resultado no painel. Se precisarmos de algum ajuste, vamos indicar exatamente o que corrigir.'],
+   paragraphs:[`Sua verificação foi enviada em ${escapeEmail(dateBR(profile.submitted_at))} e está na fila de análise da nossa equipe.`,'Assim que a análise terminar, você recebe uma atualização por e-mail e pode consultar o resultado no painel. Se precisarmos de algum ajuste, vamos indicar exatamente o que corrigir.'],
    button:{label:'Acompanhar verificação',href:`${EMAIL_SITE}/app/verificacao`},
    note:'Seus documentos ficam guardados em ambiente privado e são acessados apenas pela equipe de verificação.',
    reason:'Você recebeu este e-mail porque enviou uma verificação de conta na SphexPay.'

@@ -1,0 +1,1302 @@
+{
+  "browser": "153.0.8010.0",
+  "cases": 144,
+  "results": [
+    {
+      "name": "confirmation",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 320,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 320,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 375,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 375,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 768,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 768,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 1440,
+      "colorScheme": "light",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "confirmation",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "recovery",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "magic_link",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_change",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "invite",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "reauthentication",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "password_changed",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "email_changed",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "phone_changed",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_linked",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "identity_unlinked",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_enrolled",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "mfa_factor_unenrolled",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_approved",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_rejected",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "profile_needs_more_info",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_approved",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    },
+    {
+      "name": "document_rejected",
+      "width": 1440,
+      "colorScheme": "dark",
+      "overflow": false,
+      "logo": true,
+      "heading": 1,
+      "button": true
+    }
+  ]
+}

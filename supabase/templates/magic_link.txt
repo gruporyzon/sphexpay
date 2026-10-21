@@ -1,0 +1,23 @@
+SphexPay
+
+(https://www.sphexpay.com.br)
+
+Acesso seguro
+
+Seu acesso está a um clique.
+
+Use o botão abaixo para entrar na sua conta SphexPay. O link é pessoal e funciona uma única vez.
+Entrar na SphexPay → ({{ .ConfirmationURL }})
+
+Se você não tentou entrar agora, ignore este e-mail. Ninguém acessa sua conta sem este link.
+
+Se o botão não funcionar, copie e cole este endereço no navegador:
+{{ .ConfirmationURL }} ({{ .ConfirmationURL }})
+
+Central de ajuda (https://www.sphexpay.com.br/#ajuda) · Termos de uso (https://www.sphexpay.com.br/termos) · Privacidade (https://www.sphexpay.com.br/privacidade)
+
+Você recebeu este e-mail porque uma ação foi solicitada na sua conta SphexPay. Se não foi você, ignore esta mensagem.
+
+A SphexPay nunca pede sua senha por e-mail, telefone ou mensagem.
+
+© SphexPay · sphexpay.com.br

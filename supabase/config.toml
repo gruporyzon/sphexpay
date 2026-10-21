@@ -464,3 +464,38 @@ content_path = "./supabase/templates/invite.html"
 subject = "Seu código de segurança SphexPay"
 content_path = "./supabase/templates/reauthentication.html"
 
+
+[auth.email.notification.password_changed]
+enabled = true
+subject = "Sua senha foi alterada — SphexPay"
+content_path = "./supabase/templates/password_changed.html"
+
+[auth.email.notification.email_changed]
+enabled = true
+subject = "Seu e-mail foi alterado — SphexPay"
+content_path = "./supabase/templates/email_changed.html"
+
+[auth.email.notification.phone_changed]
+enabled = true
+subject = "Seu telefone foi alterado — SphexPay"
+content_path = "./supabase/templates/phone_changed.html"
+
+[auth.email.notification.identity_linked]
+enabled = true
+subject = "Método de acesso adicionado — SphexPay"
+content_path = "./supabase/templates/identity_linked.html"
+
+[auth.email.notification.identity_unlinked]
+enabled = true
+subject = "Método de acesso removido — SphexPay"
+content_path = "./supabase/templates/identity_unlinked.html"
+
+[auth.email.notification.mfa_factor_enrolled]
+enabled = true
+subject = "Verificação em duas etapas adicionada — SphexPay"
+content_path = "./supabase/templates/mfa_factor_enrolled.html"
+
+[auth.email.notification.mfa_factor_unenrolled]
+enabled = true
+subject = "Verificação em duas etapas removida — SphexPay"
+content_path = "./supabase/templates/mfa_factor_unenrolled.html"

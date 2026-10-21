@@ -8,3 +8,10 @@ Gerado por `scripts/build-email-templates.mjs`. Copie para Supabase → Authenti
 - **email_change**: Confirme a troca de e-mail da sua conta SphexPay
 - **invite**: Você foi convidado para a SphexPay
 - **reauthentication**: Seu código de segurança SphexPay
+- **password_changed**: Sua senha foi alterada — SphexPay
+- **email_changed**: Seu e-mail foi alterado — SphexPay
+- **phone_changed**: Seu telefone foi alterado — SphexPay
+- **identity_linked**: Método de acesso adicionado — SphexPay
+- **identity_unlinked**: Método de acesso removido — SphexPay
+- **mfa_factor_enrolled**: Verificação em duas etapas adicionada — SphexPay
+- **mfa_factor_unenrolled**: Verificação em duas etapas removida — SphexPay
