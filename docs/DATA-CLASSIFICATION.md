@@ -28,6 +28,7 @@ nenhuma camada da SphexPay — e não deve haver.
 | Fator TOTP / secret de MFA | Restrito | Supabase Auth | Gerenciado pelo Supabase; nunca trafega pelo nosso backend |
 | Dados bancários do vendedor | Confidencial | Somente na Stripe (cadastro feito no onboarding Stripe) | A SphexPay exibe só nome do banco e 4 últimos dígitos, lidos sob demanda pela API da Stripe; nada é gravado |
 | Endereço de entrega de premiação (destinatário, telefone, endereço) | Confidencial | `award_requests.address` | RLS: só o dono lê; escrita só via RPC `request_award` (confere faturamento elegível). Enviado por e-mail interno à equipe de envio (`team-notify`) |
+| Webhooks do vendedor (URL, eventos, segredo de assinatura) e histórico de entregas | Confidencial | `seller_webhooks`, `webhook_deliveries` | RLS: dono lê (segredo só via RPC do dono) e remove; escrita só por RPC e pelo envio no banco |
 | Notificações do vendedor | Interno | `user_notifications` | RLS: dono lê, marca como lida/arquiva e apaga; criação só por triggers do banco |
 | Métricas, clientes, vendas, saldos demonstrativos | Interno (fictício) | `localStorage` | Somente o dispositivo |
 
