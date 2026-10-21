@@ -10,8 +10,8 @@
 :root[data-top-surface=app] .internal-app-shell [data-selection-motion=ready]>:is(button,a):is(.active,[aria-pressed=true],[aria-selected=true],[aria-current=page]){background:transparent!important;color:var(--reference-primary-text);box-shadow:none;}
 :root[data-top-surface=app] .internal-app-shell .reference-navigation[data-selection-motion=ready]>.active{color:var(--text);}
 :root[data-top-surface=app] .internal-app-shell [data-selection-motion=ready]>:is(button,a).active::after{display:none;}
-:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary){transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .16s var(--workspace-ease);-webkit-tap-highlight-color:transparent;}
-:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary):active:not(:disabled){transform:scale(.97);}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference :is(button,a.btn,a[role=button],summary):not(:where(.studio-canvas *,.checkout-public *,.checkout-experience *,.co *)){transition:background .18s ease,color .18s ease,border-color .18s ease,box-shadow .18s ease,transform .16s var(--workspace-ease);-webkit-tap-highlight-color:transparent;}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference :is(button,a.btn,a[role=button],summary):not(:where(.studio-canvas *,.checkout-public *,.checkout-experience *,.co *)):active:not(:disabled):not([aria-disabled=true]){transform:scale(.97);}
 :root[data-top-surface=app] :is(.internal-app-shell,.modal-surface,.pv2-wizard,.affiliate-drawer) :is(button,a,input,select,textarea,summary):focus-visible{outline:2px solid var(--text);outline-offset:3px;}
 :root[data-top-surface=app] .internal-app-shell .social-tabs{padding:4px;border:1px solid var(--line);border-radius:99px;gap:4px;}
 :root[data-top-surface=app] .internal-app-shell .social-tabs button{border-radius:99px;}
@@ -64,7 +64,7 @@
 }
 @media(prefers-reduced-motion:reduce){
  :root[data-top-surface=app] .workspace-select-chevron{transition:none;}
- :root[data-top-surface=app] .internal-app-shell [data-selection-motion]::before,:root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary),:root[data-top-surface=app] .workspace-select-menu,:root[data-top-surface=app] .workspace-select-menu [role=option]{animation:none!important;transition:none!important;}
- :root[data-top-surface=app] .internal-app-shell :is(button,a[role=button],summary):active{transform:none;}
+ :root[data-top-surface=app] .internal-app-shell [data-selection-motion]::before,:root[data-top-surface=app] .internal-app-shell.workspace-reference :is(button,a.btn,a[role=button],summary):not(:where(.studio-canvas *,.checkout-public *,.checkout-experience *,.co *)),:root[data-top-surface=app] .workspace-select-menu,:root[data-top-surface=app] .workspace-select-menu [role=option]{animation:none!important;transition:none!important;}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference :is(button,a.btn,a[role=button],summary):not(:where(.studio-canvas *,.checkout-public *,.checkout-experience *,.co *)):is(:hover,:active){transform:none!important;}
  :root[data-top-surface=app] :is(.workspace-language-menu,.profile-menu,.dropdown,.notification-dropdown),:root[data-top-surface=app] .internal-app-shell .reference-custom-period[open]>div,:root[data-top-surface=app] .internal-app-shell .subscriptions-multiselect[open]>div{animation:none;}
 }

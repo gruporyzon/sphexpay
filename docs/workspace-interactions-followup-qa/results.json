@@ -1,0 +1,335 @@
+{
+  "cases": 36,
+  "results": [
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "pt-BR",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "en-US",
+      "originalY": 1046,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "locale": "es-ES",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "en-US",
+      "originalY": 1046,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "locale": "es-ES",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "locale": "pt-BR",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "locale": "en-US",
+      "originalY": 1046,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "locale": "es-ES",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "locale": "en-US",
+      "originalY": 1046,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "locale": "es-ES",
+      "originalY": 1060,
+      "before": 4694,
+      "after": 4474,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "locale": "es-ES",
+      "originalY": 894,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "locale": "es-ES",
+      "originalY": 894,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "locale": "es-ES",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "locale": "es-ES",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "locale": "es-ES",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "locale": "es-ES",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1920,
+      "theme": "light",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1920,
+      "theme": "light",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1920,
+      "theme": "light",
+      "locale": "es-ES",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1920,
+      "theme": "dark",
+      "locale": "pt-BR",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1920,
+      "theme": "dark",
+      "locale": "en-US",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    },
+    {
+      "width": 1920,
+      "theme": "dark",
+      "locale": "es-ES",
+      "originalY": 842,
+      "before": 3094,
+      "after": 2874,
+      "pressed": "matrix(0.97, 0, 0, 0.97, 0, 0)"
+    }
+  ],
+  "interactions": [
+    "Existing KYC reminder opens and dismisses through its own UI",
+    "Long menus: initial selection, keyboard, wheel, touch, hover, form values and focus without page jumps",
+    "Link button press feedback and reduced motion"
+  ],
+  "errors": []
+}

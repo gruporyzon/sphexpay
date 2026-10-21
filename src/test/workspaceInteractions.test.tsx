@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {MemoryRouter} from 'react-router-dom'
-import {act,render,screen,within} from '@testing-library/react'
+import {act,fireEvent,render,screen,within} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {beforeEach,describe,expect,it,vi} from 'vitest'
 import {WorkspaceSelectMenu} from '../components/navigation/WorkspaceSelectMenu'
@@ -64,5 +64,23 @@ describe('seletores compartilhados do workspace',()=>{
  it('não despacha outra alteração ao confirmar o valor já selecionado',async()=>{
   mount();const change=vi.fn(),select=screen.getByRole('combobox');select.addEventListener('change',change)
   const user=userEvent.setup();await user.click(select);await user.click(within(screen.getByRole('listbox')).getByRole('option',{name:'Todos'}));expect(change).not.toHaveBeenCalled()
+ })
+ it('revela opções por teclado rolando somente a lista, inclusive ao repetir Home',async()=>{
+  mount();const user=userEvent.setup(),select=screen.getByRole('combobox')
+  await user.click(select);const list=screen.getByRole('listbox'),options=within(list).getAllByRole('option')
+  Object.defineProperty(list,'clientHeight',{value:100})
+  options.forEach((option,index)=>{Object.defineProperty(option,'offsetTop',{value:6+index*90});Object.defineProperty(option,'offsetHeight',{value:40})})
+  await user.keyboard('{End}');expect(list.scrollTop).toBe(132);expect(select).toHaveValue('all')
+  expect(document.documentElement.scrollTop).toBe(0)
+  await user.keyboard('{Home}');expect(list.scrollTop).toBe(0)
+  list.scrollTop=80;await user.keyboard('{Home}');expect(list.scrollTop).toBe(0)
+ })
+ it('permite rolar com toque e passar o mouse sem reposicionar a lista',async()=>{
+  mount();const user=userEvent.setup(),select=screen.getByRole('combobox')
+  await user.click(select);const list=screen.getByRole('listbox'),option=within(list).getByRole('option',{name:'Pendentes'})
+  list.scrollTop=55;const initial=select.getAttribute('aria-activedescendant')
+  const touch=new Event('pointermove',{bubbles:true});Object.defineProperty(touch,'pointerType',{value:'touch'});fireEvent(option,touch)
+  expect(select).toHaveAttribute('aria-activedescendant',initial);expect(list.scrollTop).toBe(55)
+  await user.hover(option);expect(select).toHaveAttribute('aria-activedescendant',option.id);expect(list.scrollTop).toBe(55)
  })
 })
