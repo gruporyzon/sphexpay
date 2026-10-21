@@ -5,6 +5,7 @@ import { afterAll,beforeAll,beforeEach,describe,expect,it } from 'vitest'
 // Executa a migration real contra Postgres (PGlite) com stubs mínimos das tabelas existentes.
 const migration=readFileSync('supabase/migrations/20261021031119_awards_and_notifications_schema.sql','utf8')
 const followUp=readFileSync('supabase/migrations/20261021031916_notifications_no_commercial.sql','utf8')
+const admin=readFileSync('supabase/migrations/20261021040634_award_admin.sql','utf8')
 const seller='11111111-1111-4111-8111-111111111111',other='22222222-2222-4222-8222-222222222222'
 let db:PGlite
 const as=async(user:string|null,sql:string,params:unknown[]=[])=>{
@@ -17,7 +18,7 @@ const notes=async()=>(await db.query<{title:string;description:string;detail_pat
 beforeAll(async()=>{
  db=new PGlite()
  await db.exec(`create role anon;create role authenticated;create role service_role bypassrls;
- create schema auth;create table auth.users(id uuid primary key);
+ create schema auth;create table auth.users(id uuid primary key,email text,raw_user_meta_data jsonb default '{}');
  create function auth.uid() returns uuid language sql as $$ select nullif(current_setting('test.uid',true),'')::uuid $$;
  create table public.payment_transactions(transaction_id text primary key,user_id uuid,product_name text,product_name_snapshot text,status text,amount_cents bigint,currency text);
  create table public.kyc_profiles(user_id uuid primary key,status text);
@@ -25,6 +26,8 @@ beforeAll(async()=>{
  await db.query('insert into auth.users values ($1),($2)',[seller,other])
  await db.exec(migration)
  await db.exec(followUp)
+ await db.exec(`create function public.is_dashboard_admin() returns boolean language sql stable as $$ select current_setting('test.admin',true)='1' $$`)
+ await db.exec(admin)
 },30000)
 afterAll(async()=>{await db?.close()})
 beforeEach(async()=>{await db.exec('delete from public.user_notifications;delete from public.award_requests;delete from public.payment_transactions;delete from public.kyc_profiles')})
@@ -85,5 +88,21 @@ describe('premiações e notificações no banco',()=>{
   expect(migration).toMatch(/grant update \(read_at, archived_at\) on public\.user_notifications to authenticated;/)
   expect(migration).not.toMatch(/grant[^;]*insert[^;]*to authenticated/i)
   expect(migration).toMatch(/revoke all on function public\.notify_user\([^)]*\) from public, anon, authenticated;/)
+ })
+ it('só a equipe (admin) lista pedidos e muda o status, que notifica o vendedor',async()=>{
+  await sale('t-adm',1000000)
+  await as(seller,`select public.request_award('10k',$1::jsonb)`,[JSON.stringify(address)])
+  await db.exec(`select set_config('test.admin','0',false)`)
+  await expect(as(seller,'select * from public.admin_list_award_requests()')).rejects.toThrow(/ADMIN_REQUIRED/)
+  const id=(await db.query<{id:string}>('select id from public.award_requests')).rows[0].id
+  await expect(as(seller,`select public.admin_update_award_request($1,'shipped','BR123')`,[id])).rejects.toThrow(/ADMIN_REQUIRED/)
+  await db.exec(`select set_config('test.admin','1',false)`)
+  const rows=(await as(other,`select * from public.admin_list_award_requests('requested')`)).rows as {award_id:string;address:{city:string}}[]
+  expect(rows).toHaveLength(1);expect(rows[0].address.city).toBe('São Paulo')
+  await as(other,`select public.admin_update_award_request($1,'shipped',' BR123 ')`,[id])
+  expect((await db.query<{status:string;tracking_code:string}>('select status,tracking_code from public.award_requests')).rows[0]).toEqual({status:'shipped',tracking_code:'BR123'})
+  expect((await notes()).find(row=>row.title==='Premiação enviada')?.description).toBe('Sphex 10K · rastreio BR123')
+  await expect(as(other,`select public.admin_update_award_request($1,'perdido',null)`,[id])).rejects.toThrow(/INVALID_STATUS/)
+  await db.exec(`select set_config('test.admin','0',false)`)
  })
 })

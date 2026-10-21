@@ -6,6 +6,7 @@ import type { ShippingAddress } from '../types'
 export type AwardRequestState='requested'|'preparing'|'shipped'|'delivered'|'cancelled'
 export type StoredAwardRequest={id:string;awardId:string;status:AwardRequestState;address:ShippingAddress;trackingCode:string|null;requestedAt:string;updatedAt:string}
 export type AwardJourney={revenueCents:number;requests:StoredAwardRequest[]}
+export type AdminAwardRequest=StoredAwardRequest&{sellerName:string;sellerEmail:string}
 
 export const AWARD_STATUS_LABEL:Record<AwardRequestState,string>={requested:'Solicitação recebida',preparing:'Em preparação',shipped:'Enviada',delivered:'Entregue',cancelled:'Cancelada'}
 
@@ -35,5 +36,16 @@ export const awardService={
   // Aviso à equipe de envio: best-effort, o pedido já está salvo.
   try{await supabase.functions.invoke('team-notify',{body:{event:'award_requested',award_id:awardId}})}catch{/* best-effort */}
   return fromRow(data as Record<string,unknown>)
+ },
+ async adminList(status?:AwardRequestState):Promise<AdminAwardRequest[]>{
+  if(!supabase)throw new Error('A conexão com o servidor não está disponível.')
+  const {data,error}=await supabase.rpc('admin_list_award_requests',status?{p_status:status}:{})
+  if(error)throw new Error('Não foi possível carregar os pedidos de premiação.')
+  return((data||[]) as Record<string,unknown>[]).map(row=>({...fromRow(row),sellerName:String(row.seller_name||''),sellerEmail:String(row.seller_email||'')}))
+ },
+ async adminUpdate(id:string,status:AwardRequestState,trackingCode:string){
+  if(!supabase)throw new Error('A conexão com o servidor não está disponível.')
+  const {error}=await supabase.rpc('admin_update_award_request',{p_id:id,p_status:status,p_tracking_code:trackingCode})
+  if(error)throw new Error('Não foi possível atualizar o pedido.')
  }
 }

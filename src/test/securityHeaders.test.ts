@@ -24,8 +24,10 @@ describe('cabeçalhos de segurança da Vercel',()=>{
   expect(policy).toContain('payment=()')
   expect(policy).toContain('microphone=(self)')
  })
- it('publica CSP em modo report-only com fontes restritas e Supabase liberado',()=>{
-  const csp=header('/(.*)','Content-Security-Policy-Report-Only')||''
+ it('aplica CSP bloqueante em todo o site com fontes restritas e Supabase liberado',()=>{
+  const csp=header('/(.*)','Content-Security-Policy')||''
+  expect(header('/(.*)','Content-Security-Policy-Report-Only')).toBeUndefined()
+  expect(csp).not.toContain('unsafe-eval')
   expect(csp).toContain("default-src 'self'")
   expect(csp).toContain("frame-ancestors 'none'")
   expect(csp).toContain("object-src 'none'")
