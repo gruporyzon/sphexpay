@@ -3,6 +3,12 @@ import {supabase} from '../lib/supabase'
 export type StripeOnboardingStatus='not_connected'|'pending'|'in_review'|'requirements_due'|'enabled'
 export type StripeConnectStatus={mode:'test'|'live';onboardingComplete:boolean;connected:boolean;accountId?:string;detailsSubmitted:boolean;chargesEnabled:boolean;payoutsEnabled:boolean;onboardingStatus:StripeOnboardingStatus;requirements:{currentlyDue:string[];eventuallyDue:string[]}}
 
+export type StripeAmount={amountCents:number;currency:string}
+export type StripePayoutStatus='paid'|'pending'|'in_transit'|'canceled'|'failed'
+export type StripePayout={id:string;amountCents:number;currency:string;status:StripePayoutStatus;automatic:boolean;createdAt:string|null;arrivalDate:string|null;failureMessage:string|null;destination:{bankName:string|null;last4:string|null}|null}
+export type StripePayoutSchedule={interval:'manual'|'daily'|'weekly'|'monthly'|null;delayDays:number|null;weeklyAnchor:string|null;monthlyAnchor:number|null}
+export type StripeConnectFinance={mode:'test'|'live';connected:boolean;payoutsEnabled:boolean;balance:{available:StripeAmount[];pending:StripeAmount[]};schedule:StripePayoutSchedule|null;payouts:StripePayout[]}
+
 const authenticatedFetch=async(path:string,init?:RequestInit)=>{
  if(!supabase)throw new Error('A autenticação não está disponível neste ambiente.')
  const {data:{session}}=await supabase.auth.getSession()
@@ -16,6 +22,7 @@ const authenticatedFetch=async(path:string,init?:RequestInit)=>{
 export const stripeConnectService={
  configureProductPayments:(productId:string,enabled:boolean)=>authenticatedFetch('/api/stripe/connect/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId,enabled})}) as Promise<{enabled:boolean}>,
  status:()=>authenticatedFetch('/api/stripe/connect/status') as Promise<StripeConnectStatus>,
+ finance:()=>authenticatedFetch('/api/stripe/connect/status?view=finance') as Promise<StripeConnectFinance>,
  createAccount:()=>authenticatedFetch('/api/stripe/connect/account',{method:'POST'}) as Promise<StripeConnectStatus>,
  onboarding:()=>authenticatedFetch('/api/stripe/connect/onboarding',{method:'POST'}) as Promise<{url:string}>
 }

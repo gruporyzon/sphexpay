@@ -148,6 +148,16 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   `security_audit_log`.
 - Classificação dos dados: ver `docs/DATA-CLASSIFICATION.md`.
 
+### Saldo e repasses (Financeiro → Saques)
+
+- `GET /api/stripe/connect/status?view=finance` (`server/stripe/finance.js`) — somente
+  leitura, exige Bearer token Supabase e usa a conta conectada do próprio usuário
+  (`findConnection` + checagem de `metadata.sphex_user_id`). Consulta `balance`, `payouts`
+  e a agenda de repasses com o cabeçalho `Stripe-Account`.
+- A resposta é filtrada: do banco de destino saem apenas nome do banco e os 4 últimos
+  dígitos. Não há saque manual: a Stripe repassa automaticamente para a conta cadastrada
+  no onboarding; a troca de conta ou de agenda é feita no painel da Stripe.
+
 ## 10. Inventário de segredos
 
 | Segredo | Onde vive | Acesso | Rotação |
