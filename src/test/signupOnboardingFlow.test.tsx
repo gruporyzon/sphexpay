@@ -74,7 +74,7 @@ describe('lembrete de verificação no painel',()=>{
   const user=userEvent.setup();renderAt(<KycCompletionPrompt/>,'/app')
   const dialog=await screen.findByRole('dialog',{name:'Conclua sua verificação'})
   expect(dialog).toHaveAttribute('aria-modal','true')
-  expect(screen.getByRole('button',{name:/Concluir verificação/})).toHaveFocus()
+  await waitFor(()=>expect(screen.getByRole('button',{name:/Concluir verificação/})).toHaveFocus())
   await user.click(screen.getByRole('button',{name:/Concluir verificação/}))
   expect(screen.getByTestId('where')).toHaveTextContent('/app/verificacao')
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
