@@ -148,6 +148,19 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   `security_audit_log`.
 - Classificação dos dados: ver `docs/DATA-CLASSIFICATION.md`.
 
+### Métodos de pagamento e liberação após verificação
+
+- Checkout aceita cartão, Pix e boleto (`server/stripe/payments.js`). Cada método só entra na
+  sessão da Stripe se estiver habilitado no produto **e** ativo na conta conectada
+  (`card_payments`, `pix_payments`, `boleto_payments`); Pix e boleto só em BRL e dentro dos
+  limites da Stripe Brasil. CPF/CNPJ do boleto é coletado pela própria Stripe — não passa nem
+  fica na SphexPay.
+- Em produção (`sk_live_`), a sessão só é criada se `kyc_profiles.status = 'approved'` do
+  vendedor; sem verificação aprovada, o checkout mostra que o vendedor está em verificação.
+- Pix e boleto são assíncronos: o webhook trata `payment_intent.processing`,
+  `payment_intent.canceled` (expirou → recusado) e `checkout.session.async_payment_*`, e grava o
+  método real via `apply_stripe_payment_v2` (a versão antiga segue como atalho para cartão).
+
 ### Saldo e repasses (Financeiro → Saques)
 
 - `GET /api/stripe/connect/status?view=finance` (`server/stripe/finance.js`) — somente

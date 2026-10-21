@@ -20,7 +20,7 @@ const authenticatedFetch=async(path:string,init?:RequestInit)=>{
 }
 
 export const stripeConnectService={
- configureProductPayments:(productId:string,enabled:boolean)=>authenticatedFetch('/api/stripe/connect/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId,enabled})}) as Promise<{enabled:boolean}>,
+ configureProductPayments:(productId:string,enabled:boolean,method:'card'|'pix'|'boleto'='card')=>authenticatedFetch('/api/stripe/connect/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId,enabled,method})}) as Promise<{enabled:boolean;method:string;methods:string[]}>,
  status:()=>authenticatedFetch('/api/stripe/connect/status') as Promise<StripeConnectStatus>,
  finance:()=>authenticatedFetch('/api/stripe/connect/status?view=finance') as Promise<StripeConnectFinance>,
  createAccount:()=>authenticatedFetch('/api/stripe/connect/account',{method:'POST'}) as Promise<StripeConnectStatus>,
