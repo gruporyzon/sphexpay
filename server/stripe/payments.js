@@ -8,8 +8,11 @@ const unavailable=()=>new ConnectError('CHECKOUT_UNAVAILABLE',409,'Esta oferta n
 export const PAYMENT_METHODS=['card','pix','boleto']
 // Pix e boleto só em reais e dentro dos limites da Stripe Brasil (Pix: R$ 0,50 até ~US$ 3.000;
 // boleto: R$ 5,00 a R$ 49.999,99). Cada método precisa estar ativo na conta conectada.
+// Assinatura recorrente: cobrança automática só por cartão (Pix Automático não existe para
+// empresas no Brasil; boleto exigiria fatura manual a cada ciclo).
+export const RECURRING={month:{interval:'month',interval_count:1},quarter:{interval:'month',interval_count:3},semester:{interval:'month',interval_count:6},year:{interval:'year',interval_count:1}}
 export function usableMethods(enabled,capabilities,offer){
- const on=new Set(enabled||[]),caps=capabilities||{},brl=offer.currency==='BRL',amount=offer.price_cents
+ const on=new Set(offer.billing_type==='subscription'?(enabled||[]).filter(method=>method==='card'):enabled||[]),caps=capabilities||{},brl=offer.currency==='BRL',amount=offer.price_cents
  return PAYMENT_METHODS.filter(method=>on.has(method)&&(
   method==='card'?caps.card_payments==='active':
   method==='pix'?brl&&caps.pix_payments==='active'&&amount>=50&&amount<=1500000:
@@ -60,7 +63,7 @@ export async function loadOffer(database,checkoutId){
  const o=await one(database.from('product_offers').select('*').eq('id',v.offer_id).eq('product_id',c.product_id).eq('seller_id',c.seller_id).eq('status','active').is('deleted_at',null))
  const settings=await one(database.from('product_payment_settings').select('enabled_methods').eq('product_id',c.product_id).eq('seller_id',c.seller_id))
  if(!settings?.enabled_methods?.some(method=>PAYMENT_METHODS.includes(method)))throw unavailable()
- if(!p||!o||o.billing_type!=='one_time'||o.installments!==1||o.setup_fee_cents||!Number.isSafeInteger(o.price_cents)||o.price_cents<=0||o.price_cents>99999999||!['BRL','USD','EUR'].includes(o.currency)||o.currency!==p.currency)throw unavailable()
+ if(!p||!o||!['one_time','subscription'].includes(o.billing_type)||(o.billing_type==='subscription'&&!RECURRING[o.billing_interval])||o.installments!==1||o.setup_fee_cents||!Number.isSafeInteger(o.price_cents)||o.price_cents<=0||o.price_cents>99999999||!['BRL','USD','EUR'].includes(o.currency)||o.currency!==p.currency)throw unavailable()
  return{c,p,o,settings}
 }
 export async function checkoutPaymentAvailability(database,checkoutId,stripe){
@@ -79,7 +82,7 @@ export async function checkoutPaymentAvailability(database,checkoutId,stripe){
   }
   embeddedAvailable=paymentAvailable&&Boolean(checkoutPublishableKey())
  }catch{/* Presentation remains available when the processor isn't configured. */}
- return{productName:p.name,amountCents:o.price_cents,currency:o.currency,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
+ return{productName:p.name,amountCents:o.price_cents,currency:o.currency,billingType:o.billing_type,billingInterval:o.billing_type==='subscription'?o.billing_interval:null,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
 }
 export async function createCheckout(database,input,stripe=getStripe()){
  const value=validateCheckoutInput(input)
@@ -94,19 +97,25 @@ export async function createCheckout(database,input,stripe=getStripe()){
  if(getStripeMode()==='live'&&process.env.STRIPE_LIVE_PAYMENTS_ENABLED!=='true')throw new ConnectError('LIVE_PAYMENTS_DISABLED',503,'Pagamentos de produção ainda não foram habilitados.')
  const {fee,rule}=feeConfiguration(o.price_cents)
  const uiMode=value.uiMode||'hosted',publishableKey=uiMode==='elements'?checkoutPublishableKey():undefined
- const snapshot={request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name}
+ const snapshot={request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
  const {error}=await database.from('stripe_checkout_orders').upsert(snapshot,{onConflict:'request_key',ignoreDuplicates:true})
  if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível reservar o pagamento.')
  const order=await one(database.from('stripe_checkout_orders').select('*').eq('request_key',value.requestKey))
- if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode)throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
+ if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode||(order.billing_type||'one_time')!==o.billing_type)throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
  if(order.session_id){const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:order.stripe_account_id});return checkoutPresentation(session,order,publishableKey)}
  if(!order.checkout_origin||!Number.isFinite(new Date(order.created_at).getTime())||Date.now()-new Date(order.created_at).getTime()>23*3600000)throw new ConnectError('PAYMENT_RECONCILIATION_REQUIRED',409,'Esta tentativa precisa ser reconciliada antes de continuar.')
  const origin=order.checkout_origin,metadata={sphex_order_id:order.id,sphex_product_id:order.product_id,sphex_seller_id:order.seller_id}
- const session=await stripe.checkout.sessions.create({mode:'payment',payment_method_types:methods,
+ const returnUrls={...(uiMode==='elements'?{ui_mode:'elements',return_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`}:{success_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${origin}/pay/${order.checkout_id}?result=cancelled`})}
+ const session=order.billing_type==='subscription'
+  ?await stripe.checkout.sessions.create({mode:'subscription',payment_method_types:['card'],customer_email:order.buyer_email,client_reference_id:order.id,metadata,
+   line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents,recurring:RECURRING[order.billing_interval],product_data:{name:order.product_name}}}],
+   subscription_data:{metadata,...(order.fee_cents?{application_fee_percent:Number(order.fee_rule.slice(4))/100}:{})},
+   ...returnUrls},{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
+  :await stripe.checkout.sessions.create({mode:'payment',payment_method_types:methods,
   ...(methods.some(method=>method!=='card')?{payment_method_options:{...(methods.includes('pix')?{pix:{expires_after_seconds:1800}}:{}),...(methods.includes('boleto')?{boleto:{expires_after_days:3}}:{})}}:{}),customer_email:order.buyer_email,client_reference_id:order.id,metadata,
   line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents,product_data:{name:order.product_name}}}],
   payment_intent_data:{metadata,receipt_email:order.buyer_email,...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
-  ...(uiMode==='elements'?{ui_mode:'elements',return_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`}:{success_url:`${origin}/pay/${order.checkout_id}?result=returned&session_id={CHECKOUT_SESSION_ID}`,cancel_url:`${origin}/pay/${order.checkout_id}?result=cancelled`})
+  ...returnUrls
  },{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
  const saved=await database.from('stripe_checkout_orders').update({session_id:session.id,updated_at:new Date().toISOString()}).eq('id',order.id)
  if(saved.error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível concluir a reserva. Tente novamente.')
@@ -122,7 +131,7 @@ export async function checkoutSessionStatus(database,checkoutId,sessionId,stripe
  const connection=await findConnection(database,order.seller_id)
  if(!connection||connection.stripe_account_id!==order.stripe_account_id)throw unavailable()
  const session=await stripe.checkout.sessions.retrieve(sessionId,{},{stripeAccount:order.stripe_account_id})
- if(session.id!==order.session_id||session.mode!=='payment'||session.client_reference_id!==order.id||session.amount_total!==order.amount_cents||session.currency!==order.currency.toLowerCase()||Boolean(session.livemode)!==(getStripeMode()==='live'))throw new ConnectError('CHECKOUT_SESSION_MISMATCH',409,'Não foi possível verificar este pagamento.')
+ if(session.id!==order.session_id||session.mode!==((order.billing_type||'one_time')==='subscription'?'subscription':'payment')||session.client_reference_id!==order.id||session.amount_total!==order.amount_cents||session.currency!==order.currency.toLowerCase()||Boolean(session.livemode)!==(getStripeMode()==='live'))throw new ConnectError('CHECKOUT_SESSION_MISMATCH',409,'Não foi possível verificar este pagamento.')
  return{status:order.status==='refunded'?'refunded':session.payment_status==='paid'&&session.status==='complete'?'paid':session.status==='expired'?'expired':'pending',recorded:order.status==='approved'||order.status==='refunded'}
 }
 

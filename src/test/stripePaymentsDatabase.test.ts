@@ -25,6 +25,8 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20260909010000_stripe_connect_modes.sql'))
  await db.exec(read('supabase/migrations/20261006025244_stripe_checkout_elements.sql'))
  await db.exec(read('supabase/migrations/20261006184000_stripe_sandbox_financial_isolation.sql'))
+ await db.exec(read('supabase/migrations/20261021033948_stripe_payment_method.sql'))
+ await db.exec(read('supabase/migrations/20261021034747_stripe_subscriptions.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -108,6 +110,61 @@ describe('migration Stripe executada em PostgreSQL',()=>{
   for(const role of ['anon','authenticated']){
    const rows=(await db.query<any>(`select has_table_privilege($1,'stripe_checkout_orders','INSERT') as writable,has_function_privilege($1,'reserve_stripe_account(uuid,jsonb)','EXECUTE') as callable`,[role])).rows
    expect(rows[0]).toEqual({writable:false,callable:false})
+  }
+ })
+})
+
+describe('Pix, boleto e assinaturas no PostgreSQL',()=>{
+ const sub=async(event:string,invoice:string,status='approved',account='acct_seller',subscription='sub_1')=>(await db.query<{result:any}>(
+  "select apply_stripe_subscription_invoice($1,$2,'invoice.paid',$3,$4,$5,'pi_'||$5,'ch_'||$5,$6,10000,100,'2026-09-05T12:00:00Z','2026-10-05T12:00:00Z','active') as result",[order,event,account,subscription,invoice,status])).rows[0].result
+ const asSubscription=()=>db.query("update stripe_checkout_orders set billing_type='subscription',billing_interval='month' where id=$1",[order])
+ it('grava o método real do pagamento e mantém o atalho de cartão',async()=>{
+  await db.query("select apply_stripe_payment_v2($1,'evt_pix','payment_intent.succeeded','acct_seller','pi_pix','ch_pix','approved',0,'2026-09-04T12:00:00Z','pix')",[order])
+  expect((await db.query<any>('select payment_method,status from payment_transactions')).rows).toEqual([{payment_method:'pix',status:'approved'}])
+  await db.query("update stripe_checkout_orders set payment_intent_id=null where id=$1",[order])
+  await db.query("truncate payment_transactions,payment_transaction_events,financial_event_outbox,stripe_webhook_events")
+  await db.query("select apply_stripe_payment_v2($1,'evt_x','payment_intent.succeeded','acct_seller','pi_x','ch_x','approved',0,'2026-09-04T12:00:00Z','cripto')",[order])
+  expect((await db.query<any>('select payment_method from payment_transactions')).rows[0].payment_method).toBe('card')
+ })
+ it('cria uma venda por fatura paga, com os dados da assinatura, sem duplicar eventos',async()=>{
+  await asSubscription()
+  expect(await sub('evt_inv1','in_1')).toMatchObject({duplicate:false})
+  expect(await sub('evt_inv1','in_1')).toMatchObject({duplicate:true})
+  await sub('evt_inv2','in_2')
+  const rows=(await db.query<any>("select status,amount_cents,fee_cents,metadata->>'subscription_id' as sub,metadata->>'subscription_status' as st,metadata->>'invoice_id' as inv from payment_transactions order by metadata->>'invoice_id'")).rows
+  expect(rows).toEqual([{status:'approved',amount_cents:10000,fee_cents:100,sub:'sub_1',st:'active',inv:'in_1'},{status:'approved',amount_cents:10000,fee_cents:100,sub:'sub_1',st:'active',inv:'in_2'}])
+  expect((await db.query<any>("select count(*)::int as n from financial_event_outbox where event_type='sale_approved'")).rows[0].n).toBe(2)
+  expect((await db.query<any>('select status,subscription_id from stripe_checkout_orders')).rows[0]).toEqual({status:'approved',subscription_id:'sub_1'})
+ })
+ it('recusa fatura de outra assinatura, valor diferente ou pedido avulso',async()=>{
+  await expect(sub('evt_a','in_a')).rejects.toThrow(/STRIPE_IDENTITY_MISMATCH/)
+  await asSubscription();await sub('evt_b','in_b')
+  await expect(sub('evt_c','in_c','approved','acct_seller','sub_outra')).rejects.toThrow(/STRIPE_IDENTITY_MISMATCH/)
+  await expect(db.query("select apply_stripe_subscription_invoice($1,'evt_d','invoice.paid','acct_seller','sub_1','in_d','pi_d',null,'approved',999,0,now(),null,'active')",[order])).rejects.toThrow(/STRIPE_INVALID_STATUS/)
+  expect((await db.query<any>("select count(*)::int as n from stripe_webhook_events where event_id in ('evt_a','evt_c','evt_d')")).rows[0].n).toBe(0)
+ })
+ it('fatura falha não desfaz venda aprovada e cancelamento atualiza todas as faturas',async()=>{
+  await asSubscription();await sub('evt_1','in_1')
+  await db.query("select apply_stripe_subscription_invoice($1,'evt_1b','invoice.payment_failed','acct_seller','sub_1','in_1','pi_in_1',null,'declined',10000,100,now(),null,'past_due')",[order])
+  expect((await db.query<any>("select status from payment_transactions")).rows[0].status).toBe('approved')
+  await db.query("select apply_stripe_subscription_status('evt_del','customer.subscription.deleted','acct_seller',$1,'sub_1','canceled',null,'2026-10-01T00:00:00Z')",[order])
+  const meta=(await db.query<any>("select metadata->>'subscription_status' as st,metadata->>'cancelled_at' as c from payment_transactions")).rows[0]
+  expect(meta.st).toBe('canceled');expect(meta.c).toMatch(/^2026-10-01/)
+ })
+ it('reembolso total de uma fatura marca só essa venda como reembolsada',async()=>{
+  await asSubscription();await sub('evt_1','in_1');await sub('evt_2','in_2')
+  expect(await db.query("select apply_stripe_invoice_refund('evt_r','charge.refunded','acct_seller','pi_in_1',10000,now()) as r").then(r=>(r.rows[0] as any).r)).toMatchObject({status:'refunded'})
+  expect((await db.query<any>("select metadata->>'invoice_id' as inv,status from payment_transactions order by 1")).rows).toEqual([{inv:'in_1',status:'refunded'},{inv:'in_2',status:'approved'}])
+  expect(await db.query("select apply_stripe_invoice_refund('evt_r2','charge.refunded','acct_outra','pi_in_2',10000,now()) as r").then(r=>(r.rows[0] as any).r)).toEqual({ignored:true})
+ })
+ it('assinatura de teste não gera receita',async()=>{
+  await db.query("update stripe_checkout_orders set billing_type='subscription',billing_interval='month',stripe_account_id='acct_test' where id=$1",[order])
+  expect(await sub('evt_t','in_t','approved','acct_test')).toMatchObject({test:true})
+  expect((await db.query<any>('select count(*)::int as n from payment_transactions')).rows[0].n).toBe(0)
+ })
+ it('funções novas não podem ser chamadas pelo cliente',async()=>{
+  for(const role of ['anon','authenticated'])for(const fn of ['apply_stripe_payment_v2(uuid,text,text,text,text,text,text,bigint,timestamptz,text)','apply_stripe_subscription_invoice(uuid,text,text,text,text,text,text,text,text,bigint,bigint,timestamptz,timestamptz,text)','apply_stripe_subscription_status(text,text,text,uuid,text,text,timestamptz,timestamptz)','apply_stripe_invoice_refund(text,text,text,text,bigint,timestamptz)']){
+   expect((await db.query<any>('select has_function_privilege($1,$2,\'EXECUTE\') as ok',[role,fn])).rows[0].ok,`${role} ${fn}`).toBe(false)
   }
  })
 })

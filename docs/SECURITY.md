@@ -161,6 +161,19 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   `payment_intent.canceled` (expirou → recusado) e `checkout.session.async_payment_*`, e grava o
   método real via `apply_stripe_payment_v2` (a versão antiga segue como atalho para cartão).
 
+### Assinatura recorrente
+
+- Oferta com `billing_type = 'subscription'` cria Checkout em `mode: subscription` na conta
+  conectada, só com cartão, com `application_fee_percent` da mesma regra de taxa (`fee_rule`).
+- Webhook: `invoice.paid` / `invoice.payment_failed` geram uma venda por fatura
+  (`apply_stripe_subscription_invoice`); `customer.subscription.updated/deleted` atualizam o
+  status (`apply_stripe_subscription_status`); `charge.refunded` de fatura marca só aquela venda
+  (`apply_stripe_invoice_refund`). Antes de gravar, o servidor relê assinatura, fatura,
+  pagamento e a sessão de Checkout na Stripe e confere pedido, conta, vendedor, produto, valor e
+  taxa (tolerância de 1 centavo pelo arredondamento percentual).
+- Assinaturas criadas fora da SphexPay (sem `sphex_order_id`) são ignoradas. Em modo teste nada
+  vira receita.
+
 ### Saldo e repasses (Financeiro → Saques)
 
 - `GET /api/stripe/connect/status?view=finance` (`server/stripe/finance.js`) — somente
