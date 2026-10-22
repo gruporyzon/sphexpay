@@ -1,5 +1,5 @@
 import {supabase} from '../../lib/supabase'
-import type {Affiliate,AffiliateFilters,AffiliatePage,AffiliateProduct,AffiliateProductOption,AffiliateStatus} from './types'
+import type {Affiliate,AffiliateFilters,AffiliateInput,AffiliateLinkInput,AffiliatePage,AffiliateProduct,AffiliateProductOption,AffiliateStatus} from './types'
 
 const fields='id,public_id,name,email,status,joined_at'
 const client=()=>{if(!supabase)throw new Error('SUPABASE_UNAVAILABLE');return supabase}
@@ -35,6 +35,28 @@ export const affiliateService={
   if(affiliateIds.length){const {data:links,error:linksError}=await client().from('affiliate_products').select('id,affiliate_id,product_id,commission_type,commission_value,currency,products(name)').eq('merchant_id',merchantId).in('affiliate_id',affiliateIds).order('created_at');if(linksError)throw linksError;productMap=(links||[]).reduce((map,row)=>{const id=String(row.affiliate_id),list=map.get(id)||[];list.push(fromProduct(row as unknown as Record<string,unknown>));map.set(id,list);return map},new Map<string,AffiliateProduct[]>())}
   return{items:rows.map(row=>fromRow(row,productMap.get(String(row.id))||[])),count:count||0,page,pageSize}
  },
- async products():Promise<AffiliateProductOption[]>{const merchantId=await currentMerchant(),{data,error}=await client().from('products').select('id,name').eq('seller_id',merchantId).is('deleted_at',null).order('name').limit(500);if(error)throw error;return(data||[]).map(row=>({id:String(row.id),name:String(row.name)}))},
- async all(filters:AffiliateFilters){const first=await this.list(filters,1,500),items=[...first.items];for(let page=2;items.length<first.count;page+=1){const next=await this.list(filters,page,500);items.push(...next.items);if(!next.items.length)break}return items}
+ async products():Promise<AffiliateProductOption[]>{const merchantId=await currentMerchant(),{data,error}=await client().from('products').select('id,name,currency').eq('seller_id',merchantId).is('deleted_at',null).order('name').limit(500);if(error)throw error;return(data||[]).map(row=>({id:String(row.id),name:String(row.name),currency:(['BRL','USD','EUR'].includes(String(row.currency))?row.currency:'BRL') as 'BRL'|'USD'|'EUR'}))},
+ async all(filters:AffiliateFilters){const first=await this.list(filters,1,500),items=[...first.items];for(let page=2;items.length<first.count;page+=1){const next=await this.list(filters,page,500);items.push(...next.items);if(!next.items.length)break}return items},
+ // Cadastro e vínculos: escrita direta sob RLS (o vendedor só altera os próprios afiliados).
+ async save(input:AffiliateInput,id?:string):Promise<{id:string;publicId:string}>{
+  const merchantId=await currentMerchant(),row={name:input.name.trim(),email:input.email.trim()?input.email.trim().toLowerCase():null,status:input.status}
+  const query=id?client().from('affiliates').update(row).eq('id',id).eq('merchant_id',merchantId):client().from('affiliates').insert({...row,merchant_id:merchantId})
+  const {data,error}=await query.select('id,public_id').single()
+  if(error)throw new Error(error.code==='23505'?'Já existe um afiliado com este e-mail.':'Não foi possível salvar o afiliado.')
+  return{id:String(data.id),publicId:String(data.public_id)}
+ },
+ async saveProduct(affiliateId:string,link:AffiliateLinkInput){
+  const merchantId=await currentMerchant()
+  const {data,error}=await client().from('affiliate_products').upsert({merchant_id:merchantId,affiliate_id:affiliateId,product_id:link.productId,commission_type:link.commissionType,commission_value:link.commissionValue,currency:link.currency},{onConflict:'affiliate_id,product_id'}).select('id').single()
+  if(error||!data)throw new Error('Não foi possível vincular o produto.')
+  return String(data.id)
+ },
+ async removeProduct(linkId:string){
+  const merchantId=await currentMerchant(),{error}=await client().from('affiliate_products').delete().eq('id',linkId).eq('merchant_id',merchantId)
+  if(error)throw new Error('Não foi possível remover o produto.')
+ },
+ async remove(id:string){
+  const merchantId=await currentMerchant(),{error}=await client().from('affiliates').delete().eq('id',id).eq('merchant_id',merchantId)
+  if(error)throw new Error('Não foi possível excluir o afiliado.')
+ }
 }

@@ -205,6 +205,13 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   pelo webhook (`invoice.paid|payment_failed|voided|marked_uncollectible` com
   `sphex_charge_id`) via `apply_custom_charge_invoice` (só `service_role`), que confere conta,
   fatura e valor e não gera receita para contas de teste.
+- Afiliados: o checkout aceita `affiliateCode` (`AFF-...`, validado por regex). O servidor só
+  atribui se o afiliado for do mesmo vendedor, estiver `active`, tiver o produto vinculado e
+  não for o próprio comprador (e-mail igual); a comissão é calculada no servidor e limitada
+  ao valor da venda (constraint). Código inválido não bloqueia a compra. Relatório por
+  `my_affiliate_sales` e baixa da comissão por `set_affiliate_commission_paid` (só pedidos
+  aprovados do próprio vendedor; tabela `affiliate_commission_payments` com RLS, dono só lê).
+  A SphexPay não paga o afiliado: o vendedor paga fora e registra aqui.
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

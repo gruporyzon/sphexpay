@@ -2,7 +2,7 @@ import {z} from 'zod'
 import {ConnectError,configuredAppUrl,findConnection,retrieveAndSync} from './connect.js'
 import {getStripe,getStripeMode} from './client.js'
 
-const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
+const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),affiliateCode:z.string().regex(/^AFF-[A-Z0-9]{6,20}$/).optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
 const one=async query=>{const {data,error}=await query.maybeSingle();if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar o pagamento.');return data}
 const unavailable=()=>new ConnectError('CHECKOUT_UNAVAILABLE',409,'Esta oferta não está disponível para pagamento.')
 export const PAYMENT_METHODS=['card','pix','boleto']
@@ -28,6 +28,22 @@ const kycPending=()=>new ConnectError('SELLER_VERIFICATION_PENDING',409,'O vende
 export function validateCheckoutId(value){
  if(!z.uuid().safeParse(value).success)throw new ConnectError('INVALID_CHECKOUT_INPUT',400,'Informe um checkout válido.')
  return value
+}
+// Afiliado do link (?ref=AFF-...): precisa estar ativo, ser do mesmo vendedor e ter o produto
+// vinculado. Código inválido não bloqueia a compra, só não gera comissão. Autoindicação
+// (mesmo e-mail do comprador) não gera comissão.
+export async function resolveAffiliate(database,{sellerId,productId,code,buyerEmail,amountCents,currency}){
+ if(!code)return null
+ const affiliate=await one(database.from('affiliates').select('id,email,status').eq('merchant_id',sellerId).eq('public_id',code))
+ if(!affiliate||affiliate.status!=='active')return null
+ if(affiliate.email&&affiliate.email.trim().toLowerCase()===buyerEmail.trim().toLowerCase())return null
+ const link=await one(database.from('affiliate_products').select('commission_type,commission_value,currency').eq('merchant_id',sellerId).eq('affiliate_id',affiliate.id).eq('product_id',productId))
+ if(!link)return null
+ const value=Number(link.commission_value)
+ if(!Number.isFinite(value)||value<0)return null
+ const cents=link.commission_type==='percentage'?Math.floor(amountCents*Math.min(value,100)/100):link.currency===currency?Math.trunc(value):null
+ if(cents===null)return null
+ return{affiliateId:affiliate.id,commissionCents:Math.min(cents,amountCents)}
 }
 export function feeConfiguration(amount){
  const raw=process.env.STRIPE_PLATFORM_FEE_BPS
@@ -97,7 +113,8 @@ export async function createCheckout(database,input,stripe=getStripe()){
  if(getStripeMode()==='live'&&process.env.STRIPE_LIVE_PAYMENTS_ENABLED!=='true')throw new ConnectError('LIVE_PAYMENTS_DISABLED',503,'Pagamentos de produção ainda não foram habilitados.')
  const {fee,rule}=feeConfiguration(o.price_cents)
  const uiMode=value.uiMode||'hosted',publishableKey=uiMode==='elements'?checkoutPublishableKey():undefined
- const snapshot={request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
+ const affiliate=await resolveAffiliate(database,{sellerId:c.seller_id,productId:p.id,code:value.affiliateCode,buyerEmail:value.buyer.email,amountCents:o.price_cents,currency:o.currency})
+ const snapshot={...(affiliate?{affiliate_id:affiliate.affiliateId,affiliate_commission_cents:affiliate.commissionCents}:{}),request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
  const {error}=await database.from('stripe_checkout_orders').upsert(snapshot,{onConflict:'request_key',ignoreDuplicates:true})
  if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível reservar o pagamento.')
  const order=await one(database.from('stripe_checkout_orders').select('*').eq('request_key',value.requestKey))
