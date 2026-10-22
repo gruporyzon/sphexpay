@@ -234,6 +234,21 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   (`referral_commission_bps` = 10% da taxa) por 12 meses, só vendas live aprovadas. Quem indica
   vê só o primeiro nome do indicado e valores. Pagamento mensal registrado pela equipe
   (`admin_referral_month` / `admin_mark_referral_paid`, exigem `is_dashboard_admin`).
+- Equipe com 3 cargos (`team_members`, RLS forçada, sem acesso direto): o dono convida por
+  e-mail com cargo fixo (`admin`, `finance`, `support`). O convite é um código aleatório de uso
+  único; o banco guarda só o `sha256`, vale 7 dias e só é aceito pela conta cujo e-mail no JWT é
+  o convidado. Máximo de 20 pessoas. Remover acesso zera o código e encerra a leitura na hora.
+  - `team_can(dono, permissão)` é a única regra de cargo no banco; o servidor repete o mesmo mapa
+    em `server/security/teamAccess.js` para `?view=finance|disputes&seller=`.
+  - Políticas novas só de SELECT e permissivas (somam às do dono): `payment_transactions`,
+    `products` (vendas) e `custom_charges` (financeiro). Nenhuma de INSERT/UPDATE/DELETE.
+  - Por isso toda leitura do cliente nessas tabelas filtra a conta explicitamente (`user_id` /
+    `seller_id`): o catálogo (`productServiceV2.list/get`) usa sempre o próprio id, e as
+    cobranças usam a conta ativa. Sem esse filtro o colaborador veria dados misturados.
+  - As RPCs `seller_*` recebem `p_seller` (nulo = própria conta) e conferem `team_can`; as
+    antigas `my_*` viraram atalhos com nulo. Só `support` e `admin` atualizam envio.
+  - Ficam só com o dono: reembolso (servidor usa a conta do próprio usuário), cobrança, conta
+    Stripe, verificação, catálogo, afiliados, integrações, indicações e segurança.
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

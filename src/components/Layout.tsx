@@ -15,6 +15,8 @@ import { WorkspaceSidebar } from './navigation/WorkspaceSidebar'
 import { WorkspaceSelectMenu } from './navigation/WorkspaceSelectMenu'
 import { KycCompletionPrompt } from '../features/kyc/KycCompletionPrompt'
 import { referralService } from '../services/referralService'
+import { MemberRouteGuard,WorkspaceSwitcher } from '../features/team/WorkspaceSwitcher'
+import { useWorkspaceStore } from '../store/useWorkspaceStore'
 
 export function Layout({ navigationRoot = '/app' }: { navigationRoot?: string }) {
   useNotificationAudio()
@@ -28,13 +30,13 @@ export function Layout({ navigationRoot = '/app' }: { navigationRoot?: string })
   useEffect(()=>{if(typeof matchMedia!=='function')return;const media=matchMedia('(min-width:1100px)'),sync=()=>setWide(media.matches);sync();media.addEventListener?.('change',sync);return()=>media.removeEventListener?.('change',sync)},[])
   const opacity = useDemoStore(state => state.preferences.mobileNavigation.opacity)
   const name = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Conta SphexPay'
-  const logout = async (destination: 'home' | 'login' = 'home') => { try { await signOut() } finally { navigate(destination === 'login' ? '/entrar' : '/', { replace: true }) } }
+  const logout = async (destination: 'home' | 'login' = 'home') => { useWorkspaceStore.getState().setWorkspace(null); try { await signOut() } finally { navigate(destination === 'login' ? '/entrar' : '/', { replace: true }) } }
   return <div className={`app-shell internal-app-shell workspace-reference${wide?' has-sidebar':''}`}>
     <LocaleDocument/><WorkspaceSelectMenu/><KycCompletionPrompt/><a className="reference-skip" href="#workspace-content"><T>Ir para o conteúdo</T></a>
     <header className="reference-topbar" style={{'--header-opacity':.82+Math.max(0,Math.min(100,opacity))*.0016} as React.CSSProperties}>
       <div className="reference-brand-row"><SphexPayLogo showName priority adaptiveTheme wordmarkText="SphexPay"/><div className="reference-header-actions"><LanguagePicker/><NotificationBell/><ProfileMenu name={name} email={user?.email} onSignOut={logout}/></div></div>
     </header>
     <WorkspaceTopNavigation navigationRoot={navigationRoot}/>
-    <div className="workspace-body">{wide&&<WorkspaceSidebar navigationRoot={navigationRoot}/>}<main id="workspace-content" className="internal-page-content reference-page" tabIndex={-1}><Outlet/></main></div><WorkspaceHelp/>
+    <div className="workspace-body">{wide&&<WorkspaceSidebar navigationRoot={navigationRoot}/>}<main id="workspace-content" className="internal-page-content reference-page" tabIndex={-1}><WorkspaceSwitcher navigationRoot={navigationRoot}/><MemberRouteGuard navigationRoot={navigationRoot}><Outlet/></MemberRouteGuard></main></div><WorkspaceHelp/>
   </div>
 }

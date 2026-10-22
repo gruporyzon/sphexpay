@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { CreditCard, Home, LayoutGrid, Link2, Settings } from 'lucide-react'
 import { competitionNavigation, navigationItems } from '../../config/navigation'
+import { useActiveSeller } from '../../hooks/useActiveSeller'
+import { memberCanOpen } from '../../lib/teamAccess'
 
 const dashboard = navigationItems.find(item=>item.id==='dashboard')!
 const workspaceTopItems = [
@@ -16,7 +18,7 @@ const workspaceTopItems = [
   {id:'settings',label:'Configurações',path:'/app/configuracoes',icon:Settings},
 ]
 export function WorkspaceTopNavigation({navigationRoot='/app'}:{navigationRoot?:string}){
- const {t}=useTranslation()
+ const {t}=useTranslation(),role=useActiveSeller().workspace?.role
 
  const nav=useRef<HTMLElement>(null),{pathname}=useLocation()
  useEffect(()=>{
@@ -34,7 +36,7 @@ export function WorkspaceTopNavigation({navigationRoot='/app'}:{navigationRoot?:
   if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return
   const links=[...event.currentTarget.querySelectorAll<HTMLAnchorElement>('a')],index=links.indexOf(document.activeElement as HTMLAnchorElement)
   if(index<0)return;event.preventDefault();const target=event.key==='Home'?0:event.key==='End'?links.length-1:(index+(event.key==='ArrowRight'?1:-1)+links.length)%links.length;links[target]?.focus()
- }}>{workspaceTopItems.map(item=>{
+ }}>{workspaceTopItems.filter(item=>item.id==='home'||memberCanOpen(role,item.path)).map(item=>{
   const path=item.path.replace(/^\/app/,navigationRoot)
   const active=item.id==='home'?false:item.id==='products'?appPath==='/app/produtos':item.exact?appPath===item.path:appPath===item.path||appPath.startsWith(`${item.path}/`)
   return <Link key={item.id} to={path} aria-current={active?'page':undefined} className={`reference-nav-item${active?' active':''}`}><item.icon aria-hidden="true"/><span>{t(item.label)}</span></Link>

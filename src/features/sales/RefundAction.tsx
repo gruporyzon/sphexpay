@@ -6,11 +6,13 @@ import { StateMessage } from '../../components/ui'
 import { formatCents } from '../../lib/currencyFormat'
 import type { FinancialTransaction } from '../../lib/dashboardFinance'
 import { stripeConnectService } from '../../services/stripeConnectService'
+import { useActiveSeller } from '../../hooks/useActiveSeller'
 
 // Reembolso total pela Stripe. A venda só muda para "Reembolsada" quando o webhook confirma.
 export function RefundAction({sale,onRequested}:{sale:FinancialTransaction;onRequested?:()=>void}){useAppLocale(state=>state.locale)
- const [confirming,setConfirming]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[done,setDone]=useState(false)
- if(sale.demo||sale.status!=='approved'||!sale.transactionId.startsWith('stripe:'))return null
+ const {member}=useActiveSeller(),[confirming,setConfirming]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(''),[done,setDone]=useState(false)
+ // Reembolso é só do dono da conta, nunca de colaborador.
+ if(member||sale.demo||sale.status!=='approved'||!sale.transactionId.startsWith('stripe:'))return null
  const submit=async()=>{
   setBusy(true);setError('')
   try{await stripeConnectService.refund(sale.transactionId);setDone(true);setConfirming(false);onRequested?.()}

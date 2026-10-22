@@ -5,7 +5,7 @@ import {useEffect,useMemo,useRef,useState,type ReactNode} from 'react'
 import {CalendarDays,ChevronDown,ChevronLeft,ChevronRight,Download,Info,Search,SlidersHorizontal} from 'lucide-react'
 import {Line,LineChart,ResponsiveContainer,Tooltip as ChartTooltip,XAxis,YAxis} from 'recharts'
 import {Button,Skeleton} from '../../components/ui'
-import {useAuth} from '../../hooks/useAuth'
+import {useActiveSeller} from '../../hooks/useActiveSeller'
 import {monthlyRecurringCents,subscriptionService} from './subscriptionService'
 import type {SubscriptionDataset,SubscriptionProduct,SubscriptionRecord,SubscriptionStatus} from './types'
 import './subscriptions.css'
@@ -29,7 +29,7 @@ const percent=(current:number,previous:number)=>previous===0?(current===0?0:100)
 const csvCell=(value:string)=>`"${value.replace(/"/g,'""')}"`
 
 export default function SubscriptionsPage(){useAppLocale(state=>state.locale);
- const {user}=useAuth(),[tab,setTab]=useState<Tab>('overview'),[data,setData]=useState(emptyData),[loading,setLoading]=useState(true),[error,setError]=useState(false)
+ const user={id:useActiveSeller().sellerId},[tab,setTab]=useState<Tab>('overview'),[data,setData]=useState(emptyData),[loading,setLoading]=useState(true),[error,setError]=useState(false)
  useEffect(()=>{let active=true;setLoading(true);setError(false);if(!user?.id){setLoading(false);return}subscriptionService.load(user.id).then(value=>{if(active)setData(value)}).catch(()=>{if(active)setError(true)}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[user?.id])
  return <section className="subscriptions-page page-enter" aria-labelledby="subscriptions-title">
   <header className="subscriptions-heading"><h1 id="subscriptions-title"><T>Assinaturas</T></h1></header>

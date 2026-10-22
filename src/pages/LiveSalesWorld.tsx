@@ -1,4 +1,5 @@
 import {translate as uiText} from '../i18n'
+import { useActiveSeller } from '../hooks/useActiveSeller'
 import {useAppLocale} from '../i18n/localeStore'
 import {T} from '../i18n'
 import { useEffect,useMemo,useState } from 'react'
@@ -6,7 +7,6 @@ import { Activity,ArrowUpRight,Globe2,MapPin,Radio,Trophy } from 'lucide-react'
 import { Bar,BarChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis } from 'recharts'
 import { Card,PageTitle } from '../components/ui'
 import { WorldSalesMap } from '../components/live-sales/WorldSalesMap'
-import { useAuth } from '../hooks/useAuth'
 import { useLiveSales } from '../hooks/useLiveSales'
 import { convertDemoCents } from '../demo/demoSimulationEngine'
 import { formatCents } from '../lib/currencyFormat'
@@ -17,7 +17,7 @@ import type { PeriodFilter } from '../types'
 const today:PeriodFilter={preset:'today'}
 
 export default function LiveSalesWorld(){useAppLocale(state=>state.locale);
- const {user}=useAuth(),mode=useDashboardData(),live=useLiveSales(user?.id,today),[clock,setClock]=useState(Date.now())
+ const {sellerId}=useActiveSeller(),mode=useDashboardData(),live=useLiveSales(sellerId,today),[clock,setClock]=useState(Date.now())
  useEffect(()=>{const timer=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(timer)},[])
  const events=useMemo(()=>live.sales.filter(transaction=>transaction.demo).map(globalEventFromTransaction),[live.sales])
  const approved=events.filter(event=>event.transaction.status==='approved')

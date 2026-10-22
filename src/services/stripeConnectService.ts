@@ -1,4 +1,5 @@
 import {supabase} from '../lib/supabase'
+import { activeSeller } from '../store/useWorkspaceStore'
 
 export type StripeOnboardingStatus='not_connected'|'pending'|'in_review'|'requirements_due'|'enabled'
 export type StripeConnectStatus={mode:'test'|'live';onboardingComplete:boolean;connected:boolean;accountId?:string;detailsSubmitted:boolean;chargesEnabled:boolean;payoutsEnabled:boolean;onboardingStatus:StripeOnboardingStatus;requirements:{currentlyDue:string[];eventuallyDue:string[]}}
@@ -15,6 +16,7 @@ export type CustomCharge={id:string;customerName:string;customerEmail:string;des
 export type CustomChargeInput={requestKey:string;customerName:string;customerEmail:string;description:string;amountCents:number;methods:('card'|'pix'|'boleto')[];dueDays:number}
 export type StripeRefundResult={refundId:string;status:string;amountCents:number;currency:string}
 
+const sellerQuery=()=>{const seller=activeSeller();return seller?`&seller=${encodeURIComponent(seller)}`:''}
 const authenticatedFetch=async(path:string,init?:RequestInit)=>{
  if(!supabase)throw new Error('A autenticação não está disponível neste ambiente.')
  const {data:{session}}=await supabase.auth.getSession()
@@ -28,8 +30,8 @@ const authenticatedFetch=async(path:string,init?:RequestInit)=>{
 export const stripeConnectService={
  configureProductPayments:(productId:string,enabled:boolean,method:'card'|'pix'|'boleto'='card')=>authenticatedFetch('/api/stripe/connect/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId,enabled,method})}) as Promise<{enabled:boolean;method:string;methods:string[]}>,
  status:()=>authenticatedFetch('/api/stripe/connect/status') as Promise<StripeConnectStatus>,
- finance:()=>authenticatedFetch('/api/stripe/connect/status?view=finance') as Promise<StripeConnectFinance>,
- disputes:()=>authenticatedFetch('/api/stripe/connect/status?view=disputes') as Promise<{mode:'test'|'live';disputes:StripeDispute[]}>,
+ finance:()=>authenticatedFetch(`/api/stripe/connect/status?view=finance${sellerQuery()}`) as Promise<StripeConnectFinance>,
+ disputes:()=>authenticatedFetch(`/api/stripe/connect/status?view=disputes${sellerQuery()}`) as Promise<{mode:'test'|'live';disputes:StripeDispute[]}>,
  refund:(transactionId:string)=>authenticatedFetch('/api/stripe/connect/status?action=refund',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({transactionId})}) as Promise<StripeRefundResult>,
  createCharge:(input:CustomChargeInput)=>authenticatedFetch('/api/stripe/connect/status?action=charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(input)}) as Promise<CustomCharge>,
  voidCharge:(chargeId:string)=>authenticatedFetch('/api/stripe/connect/status?action=void-charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chargeId})}) as Promise<CustomCharge>,

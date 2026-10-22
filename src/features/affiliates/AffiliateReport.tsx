@@ -9,6 +9,7 @@ import { downloadCsv,shortDate } from '../../lib/utils'
 import { periodBounds } from '../../services/analyticsService'
 import { affiliateReportService,type AffiliateSale } from '../../services/affiliateReportService'
 import { useDemoStore } from '../../store/useDemoStore'
+import { useActiveSeller } from '../../hooks/useActiveSeller'
 import { methodLabel } from '../finance/financeSummary'
 
 const STATUS:Record<string,string>={approved:'Aprovada',refunded:'Reembolsada',chargeback:'Contestada',pending:'Pendente',declined:'Recusada'}
@@ -17,7 +18,7 @@ const brl=(cents:number)=>formatCents(cents,'BRL')
 // Desempenho dos afiliados e comissões. A comissão é paga pelo vendedor ao afiliado fora da
 // SphexPay; aqui ele marca o que já pagou. Reembolso e contestação zeram a comissão.
 export function AffiliateReport(){useAppLocale(state=>state.locale)
- const period=useDemoStore(state=>state.period),bounds=useMemo(()=>periodBounds(period),[period])
+ const {member}=useActiveSeller(),period=useDemoStore(state=>state.period),bounds=useMemo(()=>periodBounds(period),[period])
  const [items,setItems]=useState<AffiliateSale[]|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(''),[filter,setFilter]=useState<'all'|'due'|'paid'>('all')
  const load=useCallback(()=>{setItems(null);setError('');affiliateReportService.sales(bounds.start,bounds.end).then(setItems).catch(reason=>{setItems([]);setError(reason instanceof Error?reason.message:'Não foi possível carregar as vendas dos afiliados.')})},[bounds])
  useEffect(()=>{load()},[load])
@@ -38,10 +39,10 @@ export function AffiliateReport(){useAppLocale(state=>state.locale)
    <Card className="p-5 mb-4"><b className="flex items-center gap-2"><Trophy size={16}/><T>Top afiliados</T></b>
     {ranking.length?<ol className="grid gap-2 mt-3">{ranking.map((item,index)=><li key={item.code} className="flex flex-wrap justify-between gap-2 text-sm"><span>{index+1}. <b>{item.name}</b> <span className="muted">{item.code}</span></span><span>{brl(item.soldCents)} · {item.sales} <T>{item.sales===1?'venda':'vendas'}</T> · <T>comissão </T>{brl(item.commissionCents)}</span></li>)}</ol>:<p className="muted text-sm mt-2"><T>Nenhum afiliado com venda aprovada no período.</T></p>}</Card>
    <Card><div className="customers-toolbar"><select className="input" aria-label={uiText('Filtrar comissões')} value={filter} onChange={event=>setFilter(event.target.value as typeof filter)}><option value="all">{uiText('Todas as vendas')}</option><option value="due">{uiText('Comissão a pagar')}</option><option value="paid">{uiText('Comissão paga')}</option></select>
-    <button className="btn" disabled={!dueIds.length||Boolean(busy)} onClick={()=>void toggle(dueIds,true)}><CheckCircle2 size={15}/><T> Marcar todas como pagas</T></button></div>
+    {!member&&<button className="btn" disabled={!dueIds.length||Boolean(busy)} onClick={()=>void toggle(dueIds,true)}><CheckCircle2 size={15}/><T> Marcar todas como pagas</T></button>}</div>
     <div className="table-wrap"><table className="table"><caption className="sr-only"><T>Vendas realizadas por afiliados</T></caption><thead><tr><th><T>Cliente</T></th><th><T>Afiliado</T></th><th><T>Produto</T></th><th><T>Status</T></th><th><T>Total</T></th><th><T>Comissão</T></th><th><T>Paga ao afiliado</T></th></tr></thead>
      <tbody>{rows.map(item=><tr key={item.orderId}><td><b>{item.buyerName}</b><p className="muted text-[11px]">{shortDate(item.occurredAt)} · {uiText(methodLabel(item.paymentMethod))}</p></td><td>{item.affiliateName}<p className="muted text-[11px]">{item.affiliatePublicId}</p></td><td>{item.productName}</td><td><span className="badge"><T>{STATUS[item.status]||item.status}</T></span></td><td>{formatCents(item.amountCents,item.currency as 'BRL')}</td><td><b>{formatCents(item.commissionCents,item.currency as 'BRL')}</b></td>
-      <td>{item.status==='approved'&&item.commissionCents>0?<label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={Boolean(item.commissionPaidAt)} disabled={busy.includes(item.orderId)} onChange={event=>void toggle([item.orderId],event.target.checked)} aria-label={`${uiText('Comissão paga a')} ${item.affiliateName}`}/>{item.commissionPaidAt?shortDate(item.commissionPaidAt):''}</label>:<span className="muted">-</span>}</td></tr>)}</tbody></table>
+      <td>{item.status==='approved'&&item.commissionCents>0?<label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={Boolean(item.commissionPaidAt)} disabled={member||busy.includes(item.orderId)} onChange={event=>void toggle([item.orderId],event.target.checked)} aria-label={`${uiText('Comissão paga a')} ${item.affiliateName}`}/>{item.commissionPaidAt?shortDate(item.commissionPaidAt):''}</label>:<span className="muted">-</span>}</td></tr>)}</tbody></table>
      {!rows.length&&<Empty title={uiText('Nenhuma venda de afiliado')} text={uiText('Cadastre afiliados em Afiliados, vincule produtos e compartilhe o link. As vendas aparecem aqui.')}/>}</div></Card></>}
  </section>
 }
