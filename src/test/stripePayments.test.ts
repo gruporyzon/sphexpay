@@ -18,15 +18,15 @@ function fixture(){
   product_offers:[{id:'offer',product_id:'product',seller_id:'seller',status:'active',deleted_at:null,price_cents:10000,currency:'BRL',billing_type:'one_time',installments:1}],
   product_payment_settings:[{product_id:'product',seller_id:'seller',enabled_methods:['card']}],
   stripe_connected_accounts:[{stripe_mode:'test',user_id:'seller',stripe_account_id:'acct_seller',stripe_account_type:'express',stripe_charges_enabled:true,stripe_payouts_enabled:true}],
-  stripe_checkout_orders:[],stripe_webhook_events:[],kyc_profiles:[{user_id:'seller',status:'approved'}]
+  stripe_checkout_orders:[],stripe_webhook_events:[],kyc_profiles:[{user_id:'seller',status:'approved'}],shipping_rates:[]
  }
  const database={rpc:vi.fn(async()=>({data:{duplicate:false},error:null})),from:vi.fn((table:string)=>{
   const filters:((row:any)=>boolean)[]=[];let patch:any
   const rows=()=>tables[table].filter(row=>filters.every(f=>f(row)))
-  const q:any={select:()=>q,eq:(key:string,value:any)=>{filters.push(row=>row[key]===value);return q},is:(key:string,value:any)=>{filters.push(row=>row[key]===value);return q},
+  const q:any={select:()=>q,order:()=>q,limit:()=>q,eq:(key:string,value:any)=>{filters.push(row=>row[key]===value);return q},is:(key:string,value:any)=>{filters.push(row=>row[key]===value);return q},
    update:(value:any)=>{patch=value;return q},upsert:(value:any,options:any)=>{if(!tables[table].some(row=>row[options.onConflict]===value[options.onConflict]))tables[table].push({...order(),...value});return q},
    maybeSingle:async()=>({data:rows()[0]||null,error:null}),single:async()=>{rows().forEach(row=>Object.assign(row,patch));return{data:rows()[0],error:null}},
-   then:(resolve:any)=>{if(patch)rows().forEach(row=>Object.assign(row,patch));return Promise.resolve({data:null,error:null}).then(resolve)}}
+   then:(resolve:any)=>{if(patch)rows().forEach(row=>Object.assign(row,patch));return Promise.resolve({data:patch?null:rows(),error:null}).then(resolve)}}
   return q
  })}
  const intent:any={id:'pi_sale',metadata:{sphex_order_id:order().id,sphex_seller_id:'seller',sphex_product_id:'product'},amount:10000,currency:'brl',application_fee_amount:100,status:'succeeded',livemode:false,latest_charge:{id:'ch_sale',amount_refunded:0}}
@@ -74,6 +74,29 @@ describe('pagamentos Stripe',()=>{
  it('não oferece cartão desabilitado pelo vendedor',async()=>{
   const {database,stripe,tables}=fixture();tables.product_payment_settings[0].enabled_methods=[]
   await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'CHECKOUT_UNAVAILABLE'});expect(stripe.checkout.sessions.create).not.toHaveBeenCalled()
+ })
+ it('produto físico com frete: cobra produto e frete, guarda o endereço e confere a escolha',async()=>{
+  const {database,stripe,tables}=fixture()
+  tables.products[0].product_type='physical'
+  tables.shipping_rates.push({id:'55555555-5555-4555-8555-555555555555',seller_id:'seller',name:'Padrão',price_cents:2000,min_order_cents:0,active:true},{id:'66666666-6666-4666-8666-666666666666',seller_id:'seller',name:'Só acima de R$ 500',price_cents:0,min_order_cents:50000,active:true})
+  const availability=await checkoutPaymentAvailability(database,checkoutId,stripe)
+  expect(availability.shippingRequired).toBe(true);expect(availability.shippingRates.map((rate:any)=>rate.id)).toEqual(['55555555-5555-4555-8555-555555555555'])
+  await expect(createCheckout(database,input(),stripe)).rejects.toMatchObject({code:'INVALID_SHIPPING'})
+  const address={postalCode:'01310100',street:'Av. Paulista',number:'1000',district:'Bela Vista',city:'São Paulo',state:'SP'}
+  await expect(createCheckout(database,{...input(),shipping:{rateId:'66666666-6666-4666-8666-666666666666',address}},stripe)).rejects.toMatchObject({code:'INVALID_SHIPPING'})
+  await createCheckout(database,{...input(),shipping:{rateId:'55555555-5555-4555-8555-555555555555',address}},stripe)
+  const saved=tables.stripe_checkout_orders[0]
+  expect(saved).toMatchObject({amount_cents:12000,shipping_cents:2000,fee_cents:120,fulfillment_status:'pending'})
+  expect(saved.shipping_address).toMatchObject({recipient:'Comprador Teste',postalCode:'01310-100',state:'SP',country:'BR'})
+  const args=stripe.checkout.sessions.create.mock.calls[0][0]
+  expect(args.line_items.map((item:any)=>item.price_data.unit_amount)).toEqual([10000,2000])
+  expect(args.payment_intent_data.shipping.address).toMatchObject({postal_code:'01310-100',state:'SP',country:'BR'})
+  await expect(createCheckout(database,{...input(),shipping:{rateId:'55555555-5555-4555-8555-555555555555',address:{...address,state:'XX'}}},stripe)).rejects.toMatchObject({code:'INVALID_CHECKOUT_INPUT'})
+ })
+ it('produto físico sem frete cadastrado continua vendendo sem entrega',async()=>{
+  const {database,stripe,tables}=fixture();tables.products[0].product_type='physical'
+  await createCheckout(database,input(),stripe)
+  expect(tables.stripe_checkout_orders[0]).toMatchObject({amount_cents:10000});expect(tables.stripe_checkout_orders[0].shipping_address).toBeUndefined()
  })
  it('cria direct charge usando apenas preço, produto e conta do banco',async()=>{
   const {database,stripe,tables}=fixture();await createCheckout(database,input(),stripe)
@@ -333,4 +356,5 @@ describe('assinatura oficial e payload bruto',()=>{
   Object.defineProperty(request,'body',{get(){throw new Error('Parsed body accessed')}})
   const {database}=fixture(),res=response();await stripeWebhookHandler(request,res,()=>database,()=>sdk);expect(res.statusCode).toBe(200)
  })
+
 })

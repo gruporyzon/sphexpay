@@ -212,6 +212,13 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   `my_affiliate_sales` e baixa da comissão por `set_affiliate_commission_paid` (só pedidos
   aprovados do próprio vendedor; tabela `affiliate_commission_payments` com RLS, dono só lê).
   A SphexPay não paga o afiliado: o vendedor paga fora e registra aqui.
+- Produtos físicos: `shipping_rates` com RLS forçada (dono lê e escreve os próprios). O checkout
+  só lista fretes ativos de produto `physical` publicado (`get_checkout_shipping_rates`, anon). Na
+  criação do pagamento, o servidor exige frete válido do próprio vendedor e endereço completo
+  (CEP, UF da lista oficial), recalcula o total (produto + frete) e a taxa, e envia o frete como
+  item separado; o webhook continua conferindo o total do pedido. Endereço guardado no pedido
+  (`shipping_address`) e visível só ao vendedor (`my_shipments`); `update_shipment` aceita só os
+  status previstos e rastreio com caracteres seguros.
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

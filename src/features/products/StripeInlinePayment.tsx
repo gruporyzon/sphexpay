@@ -8,22 +8,25 @@ import type {CheckoutBuyer,CheckoutPaymentParts} from './CheckoutExperience'
 import type {CheckoutDesign} from './checkoutService'
 import {reserveInlineCheckout,paymentClient} from './stripeCheckoutClient'
 import type {Session} from './stripeCheckoutClient'
+import type {ShippingRateOption} from './checkoutShipping'
 
-type Props={checkoutId:string;buyer:CheckoutBuyer;mode:string;price:number;currency:string;design:CheckoutDesign;render:(parts:CheckoutPaymentParts)=>ReactNode;onComplete:(sessionId:string)=>void}
-export function StripeInlinePayment({checkoutId,buyer,mode,price,currency,design,render,onComplete}:Props){
+type Props={shippingRates?:ShippingRateOption[];checkoutId:string;buyer:CheckoutBuyer;mode:string;price:number;currency:string;design:CheckoutDesign;render:(parts:CheckoutPaymentParts)=>ReactNode;onComplete:(sessionId:string)=>void}
+export function StripeInlinePayment({shippingRates,checkoutId,buyer,mode,price,currency,design,render,onComplete}:Props){
+ const shippingKey=JSON.stringify(buyer.shipping||null)
  const [session,setSession]=useState<Session|null>(null),[stripe,setStripe]=useState<Stripe|null>(null),[error,setError]=useState(''),[retry,setRetry]=useState(0)
  useEffect(()=>{
   let active=true;setSession(null);setError('')
-  reserveInlineCheckout(checkoutId,{name:buyer.name,email:buyer.email},mode).then(async data=>{
+  const shipping=JSON.parse(shippingKey) as CheckoutBuyer['shipping']|null,shippingCents=shippingRates?.find(rate=>rate.id===shipping?.rateId)?.priceCents||0
+  reserveInlineCheckout(checkoutId,{name:buyer.name,email:buyer.email,...(shipping?{shipping}:{})},mode).then(async data=>{
    if(!active)return
    if(data.completed){onComplete(data.sessionId);return}
-   if(data.amountCents!==price||data.currency!==currency)throw new Error('O valor da oferta foi alterado. Atualize a página para revisar antes de pagar.')
+   if(data.amountCents!==price+shippingCents||data.currency!==currency)throw new Error('O valor da oferta foi alterado. Atualize a página para revisar antes de pagar.')
    const client=await paymentClient(data)
    if(!client)throw new Error('Não foi possível carregar a Stripe. Tente novamente.')
    if(active){setStripe(client);setSession(data)}
   }).catch(e=>{if(active)setError(e instanceof Error?e.message:'Não foi possível carregar o pagamento.')})
   return()=>{active=false}
- },[checkoutId,buyer.name,buyer.email,mode,price,currency,retry,onComplete])
+ },[checkoutId,buyer.name,buyer.email,shippingKey,shippingRates,mode,price,currency,retry,onComplete])
  const options=useMemo(()=>session?{clientSecret:session.clientSecret,elementsOptions:{appearance:{theme:design.text==='#f8fafc'||design.text==='#f5f5f5'?'night' as const:'stripe' as const,variables:{colorPrimary:design.primary,colorBackground:design.card,colorText:design.text,fontFamily:'Inter, system-ui, sans-serif',borderRadius:`${Math.min(16,Math.max(0,design.radius))}px`}}}}:null,[session,design.primary,design.card,design.text,design.radius])
  if(!session||!options||!stripe)return render({fields:<div className="co-stripe-state" role={error?'alert':'status'}>{error?<><p>{error}</p><button type="button" className="co-stripe-retry" onClick={()=>setRetry(n=>n+1)}><RotateCcw/><T> Tentar novamente</T></button></>:<><LoaderCircle className="spin"/><p><T>Preparando o formulário seguro…</T></p></>}</div>,action:<button type="button" className={`co-action co-action-${design.buttonStyle} co-action-shape-${design.buttonShape||'rounded'}`} disabled><T>Preparando pagamento…</T></button>})
  return <CheckoutElementsProvider stripe={stripe} options={options}><StripePaymentFields render={render} sessionId={session.sessionId} design={design} onComplete={onComplete}/></CheckoutElementsProvider>

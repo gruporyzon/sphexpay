@@ -8,3 +8,10 @@
 @container(max-width:720px){.co-brand .sphexpay-theme-mark{width:20px;height:28px}}
 
 .co-eyebrow,.co-total strong{color:var(--co-accent,var(--co-primary))}
+.co-shipping{margin:28px 0 0;padding:0;border:0;min-width:0}
+.co-shipping legend{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:650;letter-spacing:-.02em}.co-shipping legend svg{width:18px;height:18px;color:var(--co-primary)}
+.co-shipping-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px}.co-shipping-grid label{margin-top:16px}
+.co-shipping select{display:block;width:100%;height:56px;border:1px solid var(--co-line);border-radius:calc(var(--co-radius)*.55);background:var(--co-card);color:var(--co-text);padding:0 14px;margin-top:8px;font:inherit;font-size:15px}
+.co-shipping select:focus{outline:0;border-color:var(--co-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--co-primary) 12%,transparent)}
+.co-shipping-rates{display:grid;gap:10px;margin-top:18px}.co-shipping-rates .co-method{cursor:pointer;margin:0;font-size:13px}.co-shipping-rates input{display:inline-block;width:18px;height:18px;margin:0;padding:0;border:0;box-shadow:none;accent-color:var(--co-primary);flex:none}.co-shipping-rates strong{margin-left:auto;white-space:nowrap}.co-shipping-rates span{color:var(--co-muted);font-weight:400;font-size:12px}
+@media(max-width:520px){.co-shipping-grid{grid-template-columns:1fr}}

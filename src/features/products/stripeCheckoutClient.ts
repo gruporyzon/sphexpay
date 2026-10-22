@@ -34,7 +34,7 @@ export async function reserveInlineCheckout(checkoutId:string,buyer:CheckoutBuye
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000)
   try{
    recordCheckoutEvent(checkoutId,'checkout_started')
-   const response=await fetch('/api/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({checkoutId,requestKey:attempt.key,uiMode:'elements',buyer,affiliateCode:affiliateCodeFor(checkoutId)})})
+   const response=await fetch('/api/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({checkoutId,requestKey:attempt.key,uiMode:'elements',buyer:{name:buyer.name,email:buyer.email},...(buyer.shipping?{shipping:{rateId:buyer.shipping.rateId,address:{...buyer.shipping.address,complement:buyer.shipping.address.complement||undefined}}}:{}),affiliateCode:affiliateCodeFor(checkoutId)})})
    const data=await response.json()
    if(!response.ok){if(data.code==='CHECKOUT_CLOSED'){memoryAttempts.delete(storageKey);remember(storageKey,null)}throw new Error(data.message||'Não foi possível preparar o pagamento. Tente novamente.')}
    if(typeof data.sessionId!=='string'||!data.sessionId.startsWith('cs_'))throw new Error('A sessão de pagamento não pôde ser validada.')
