@@ -20,3 +20,9 @@ export function useActiveSeller(){
   can:(permission:TeamPermission)=>!member||roleCan(workspace?.role,permission)
  }
 }
+
+// Telas do catálogo gravam na conta ativa: o Administrador edita os produtos de quem convidou.
+export function useCatalogUser(){
+ const {sellerId}=useActiveSeller()
+ return{user:sellerId?{id:sellerId}:null}
+}
