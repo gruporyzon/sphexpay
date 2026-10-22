@@ -116,10 +116,10 @@ describe('eventos financeiros confirmados no servidor',()=>{
   expect(formatMoney(1765,'EUR')).toContain('17,65')
   const {client}=fakeClient([subscription('one')])
   const sendNotification=vi.fn(async(_subscription:unknown,payload:string)=>{
-   expect(JSON.parse(payload)).toMatchObject({type:'sale_approved',title:'Venda aprovada!',body:expect.stringContaining('17,65')})
+   expect(JSON.parse(payload)).toMatchObject({type:'sale_approved',title:'Venda aprovada!',body:expect.stringMatching(/^Valor: .*197,00$/)})
    return{statusCode:201}
   })
-  const result=await notifyConfirmedFinancialEvent({client,userId:'user-1',eventId:'sale-1',type:'sale_approved',currency:'BRL',commissionMinor:1765,pushClient:{sendNotification}})
+  const result=await notifyConfirmedFinancialEvent({client,userId:'user-1',eventId:'sale-1',type:'sale_approved',currency:'BRL',commissionMinor:1765,amountMinor:19700,pushClient:{sendNotification}})
   expect(result.success).toBe(true)
  })
 })

@@ -99,7 +99,7 @@ describe('gerador manual de notificações',()=>{
 
  it('aplica comissão, valor da venda, valor recebido ou nenhum valor',()=>{
   expect(notificationContent('sale_approved','commission').body).toBe('Sua comissão: {valor}')
-  expect(notificationContent('sale_approved','sale').body).toBe('Valor da venda: {valor}')
+  expect(notificationContent('sale_approved','sale').body).toBe('Valor: {valor}')
   expect(notificationContent('sale_approved','received').body).toBe('Valor recebido: {valor}')
   expect(notificationContent('sale_approved','none').body).not.toContain('{valor}')
  })

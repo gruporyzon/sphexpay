@@ -21,7 +21,7 @@ export const formatMoney=(minor,currency='BRL')=>new Intl.NumberFormat(currency=
 export async function notifyConfirmedFinancialEvent({client,userId,eventId,type,currency='BRL',commissionMinor,amountMinor,metadata,pushClient}){
  const format=formats[type]
  if(!format)throw Object.assign(new Error('UNSUPPORTED_FINANCIAL_EVENT'),{code:'UNSUPPORTED_FINANCIAL_EVENT'})
- const product=typeof metadata?.productName==='string'?metadata.productName.trim():''
- const body=format.kind==='declined'?'Confira os detalhes da transação.':format.kind==='withdrawal'?`Valor enviado: ${formatMoney(amountMinor,currency)}`:format.kind==='sale'?`${product||'Produto'} • Sua comissão: ${formatMoney(commissionMinor,currency)}`:`Sua comissão: ${formatMoney(commissionMinor,currency)}`
+ // Padrão dos gateways: só o status no título e o valor da venda no texto.
+ const body=format.kind==='declined'?'Confira os detalhes da transação.':format.kind==='withdrawal'?`Valor enviado: ${formatMoney(amountMinor,currency)}`:`Valor: ${formatMoney(Number.isSafeInteger(amountMinor)?amountMinor:commissionMinor,currency)}`
  return sendPushToUser({client,userId,eventId,type,title:format.title,body,route:metadata?.route||format.route,metadata,pushClient})
 }

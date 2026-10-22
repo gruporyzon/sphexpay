@@ -42,7 +42,7 @@ const historyKey='sphexpay_manual_push_history_v4'
 const legacyHistoryKey='sphexpay_manual_push_history_v3'
 const initialDraft:ManualNotificationDraft={
  ...manualNotificationTemplates.sale_approved,notificationType:'sale_approved',value:'',
- valueKind:'commission',currency:'BRL',customer:'',method:'',route:'/app',
+ valueKind:'sale',currency:'BRL',customer:'',method:'',route:'/app',
  icon:'/icons/sphexpay-app-192.png',showTime:true
 }
 const initialProgress:SequenceProgress={id:'',status:'idle',planned:1,attempted:0,notificationSuccess:0,notificationFailure:0,deviceDeliveries:0,deviceFailures:0,expiredDevices:0,remaining:1,nextAt:null,interruptionReason:null}
