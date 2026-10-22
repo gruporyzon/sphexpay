@@ -5,12 +5,14 @@ import {ArrowLeft,LoaderCircle,RotateCcw} from 'lucide-react'
 import {checkoutService,type PublishedCheckout} from './checkoutService'
 import {CheckoutExperience} from './CheckoutExperience'
 import {StripeInlinePayment,StripeCheckoutConfirmation} from './StripeInlinePayment'
-import {clearInlineCheckoutAttempt} from './stripeCheckoutClient'
+import {affiliateCodeFor,clearInlineCheckoutAttempt} from './stripeCheckoutClient'
 
 const RECURRING_LABEL:Record<string,string>={month:'por mês',quarter:'a cada 3 meses',semester:'a cada 6 meses',year:'por ano'}
 
 export default function StripePaymentPage(){
  const {checkoutId=''}=useParams(),[params,setParams]=useSearchParams(),[checkout,setCheckout]=useState<PublishedCheckout|null>(null),[error,setError]=useState(''),[loading,setLoading]=useState(true),[retry,setRetry]=useState(0),[available,setAvailable]=useState(false),[paymentMessage,setPaymentMessage]=useState('Verificando as opções de pagamento…'),[mode,setMode]=useState(''),[billingInterval,setBillingInterval]=useState<string|null>(null)
+ // Guarda o código do afiliado já na chegada, mesmo que a compra aconteça depois.
+ useEffect(()=>{affiliateCodeFor(checkoutId)},[checkoutId])
  useEffect(()=>{let active=true;const controller=new AbortController();setLoading(true);setError('');setCheckout(null);setAvailable(false);setMode('');setPaymentMessage('Verificando as opções de pagamento…')
   if(!/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i.test(checkoutId)){setError('Link de checkout inválido. Peça um novo link ao vendedor.');setLoading(false);return}
   checkoutService.getPublished(checkoutId).then(data=>{if(active){setCheckout(data);setLoading(false);recordCheckoutEvent(checkoutId,'page_view')}}).catch(()=>{if(active){setError('Este checkout está indisponível, pausado ou não foi publicado. Peça um novo link ao vendedor.');setLoading(false)}})

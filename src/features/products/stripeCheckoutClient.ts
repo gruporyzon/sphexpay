@@ -11,6 +11,17 @@ const uuid=/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i
 function stored(key:string){try{return JSON.parse(sessionStorage.getItem(key)||'null')}catch{return null}}
 function remember(key:string,value:unknown){try{sessionStorage.setItem(key,JSON.stringify(value))}catch{/* Retries still share a request while the page remains open. */}}
 const memoryAttempts=new Map<string,{signature:string;key:string}>()
+// Código do afiliado (?ref=AFF-...): o último link clicado vale por 30 dias neste navegador.
+const AFFILIATE_CODE=/^AFF-[A-Z0-9]{6,20}$/,AFFILIATE_TTL=30*86400000
+export function affiliateCodeFor(checkoutId:string,search=typeof location==='undefined'?'':location.search):string|undefined{
+ const key=`sphex-affiliate:${checkoutId}`,fromUrl=new URLSearchParams(search).get('ref')?.trim().toUpperCase()
+ try{
+  if(fromUrl&&AFFILIATE_CODE.test(fromUrl)){localStorage.setItem(key,JSON.stringify({code:fromUrl,at:Date.now()}));return fromUrl}
+  const saved=JSON.parse(localStorage.getItem(key)||'null') as {code?:string;at?:number}|null
+  if(saved?.code&&AFFILIATE_CODE.test(saved.code)&&Date.now()-(saved.at||0)<AFFILIATE_TTL)return saved.code
+ }catch{/* Sem armazenamento: vale só o link atual. */}
+ return fromUrl&&AFFILIATE_CODE.test(fromUrl)?fromUrl:undefined
+}
 export async function reserveInlineCheckout(checkoutId:string,buyer:CheckoutBuyer,mode:string):Promise<Session>{
  const storageKey=`stripe-elements-attempt:${mode}:${checkoutId}`
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(buyer)))
@@ -23,7 +34,7 @@ export async function reserveInlineCheckout(checkoutId:string,buyer:CheckoutBuye
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000)
   try{
    recordCheckoutEvent(checkoutId,'checkout_started')
-   const response=await fetch('/api/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({checkoutId,requestKey:attempt.key,uiMode:'elements',buyer})})
+   const response=await fetch('/api/stripe/checkout',{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({checkoutId,requestKey:attempt.key,uiMode:'elements',buyer,affiliateCode:affiliateCodeFor(checkoutId)})})
    const data=await response.json()
    if(!response.ok){if(data.code==='CHECKOUT_CLOSED'){memoryAttempts.delete(storageKey);remember(storageKey,null)}throw new Error(data.message||'Não foi possível preparar o pagamento. Tente novamente.')}
    if(typeof data.sessionId!=='string'||!data.sessionId.startsWith('cs_'))throw new Error('A sessão de pagamento não pôde ser validada.')

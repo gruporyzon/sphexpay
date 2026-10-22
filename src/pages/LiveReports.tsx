@@ -4,7 +4,7 @@ import {T} from '../i18n'
 import { useMemo,useState } from 'react'
 import { NavLink,useLocation } from 'react-router-dom'
 import { Area,AreaChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis } from 'recharts'
-import { Download,FileBarChart,RotateCcw,ShoppingCart,Target,Users } from 'lucide-react'
+import { Download,FileBarChart,Handshake,RotateCcw,ShoppingCart,Target,Users } from 'lucide-react'
 import { Card,Empty,Loading,PageTitle,StateMessage } from '../components/ui'
 import { PeriodSelector } from '../components/common/PeriodSelector'
 import { breakdownBy,centsMoney,methodLabel,revenueSeries,summarizeTransactions } from '../features/finance/financeSummary'
@@ -13,7 +13,8 @@ import { downloadCsv,money } from '../lib/utils'
 const STATUS:Record<string,string>={approved:'Aprovado',pending:'Pendente',declined:'Recusado',refunded:'Reembolsado',chargeback:'Contestado'}
 import DemoAwareCustomers from './DemoCustomers'
 import { AbandonedCheckouts } from '../features/customers/RealCustomers'
-export default function ReportsModule(){useAppLocale(state=>state.locale);const {pathname}=useLocation(),customersActive=pathname.includes('/clientes'),cartsActive=pathname.includes('/carrinhos');return <div className="page-enter reports-module"><PageTitle title={uiText("Relatórios")} subtitle={uiText("Indicadores, análises e relacionamento com clientes.")}/><nav className="reports-module-tabs" aria-label={uiText("Áreas de Relatórios")} role="tablist"><NavLink end to="/app/relatorios" role="tab" aria-selected={!customersActive&&!cartsActive}><FileBarChart/><T> Visão geral</T></NavLink><NavLink to="/app/relatorios/clientes" role="tab" aria-selected={customersActive}><Users/><T> Clientes</T></NavLink><NavLink to="/app/relatorios/carrinhos" role="tab" aria-selected={cartsActive}><ShoppingCart/><T> Carrinhos abandonados</T></NavLink></nav>{customersActive?<DemoAwareCustomers/>:cartsActive?<AbandonedCheckouts/>:<ReportsOverview/>}</div>}
+import { AffiliateReport } from '../features/affiliates/AffiliateReport'
+export default function ReportsModule(){useAppLocale(state=>state.locale);const {pathname}=useLocation(),customersActive=pathname.includes('/clientes'),cartsActive=pathname.includes('/carrinhos'),affiliatesActive=pathname.includes('/afiliados');return <div className="page-enter reports-module"><PageTitle title={uiText("Relatórios")} subtitle={uiText("Indicadores, análises e relacionamento com clientes.")}/><nav className="reports-module-tabs" aria-label={uiText("Áreas de Relatórios")} role="tablist"><NavLink end to="/app/relatorios" role="tab" aria-selected={!customersActive&&!cartsActive&&!affiliatesActive}><FileBarChart/><T> Visão geral</T></NavLink><NavLink to="/app/relatorios/clientes" role="tab" aria-selected={customersActive}><Users/><T> Clientes</T></NavLink><NavLink to="/app/relatorios/carrinhos" role="tab" aria-selected={cartsActive}><ShoppingCart/><T> Carrinhos abandonados</T></NavLink><NavLink to="/app/relatorios/afiliados" role="tab" aria-selected={affiliatesActive}><Handshake/><T> Afiliados</T></NavLink></nav>{customersActive?<DemoAwareCustomers/>:cartsActive?<AbandonedCheckouts/>:affiliatesActive?<AffiliateReport/>:<ReportsOverview/>}</div>}
 
 export function ReportsOverview(){useAppLocale(state=>state.locale)
  const {bounds,transactions,transactionsError,reload}=useFinanceData({stripe:false}),[view,setView]=useState<'revenue'|'sales'>('revenue')

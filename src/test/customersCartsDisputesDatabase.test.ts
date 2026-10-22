@@ -29,6 +29,8 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20261021034747_stripe_subscriptions.sql'))
  await db.exec(read('supabase/migrations/20261022041720_customers_carts_disputes.sql'))
  await db.exec(read('supabase/migrations/20261022050000_custom_charges.sql'))
+ await db.exec(read('supabase/migrations/20260831223000_affiliates_v1.sql').replace('create extension if not exists pgcrypto;',''))
+ await db.exec(read('supabase/migrations/20261022060000_affiliate_attribution.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -37,7 +39,7 @@ beforeAll(async()=>{
 },30000)
 afterAll(async()=>{await db?.close()})
 beforeEach(async()=>{
- await db.exec('truncate custom_charges,stripe_webhook_events,stripe_checkout_orders,payment_transaction_events,financial_event_outbox,payment_transactions,stripe_account_requests')
+ await db.exec('truncate affiliate_commission_payments,custom_charges,stripe_webhook_events,stripe_checkout_orders,payment_transaction_events,financial_event_outbox,payment_transactions,stripe_account_requests')
  await db.query(`insert into stripe_checkout_orders(id,request_key,checkout_id,product_id,seller_id,stripe_account_id,offer_id,product_name,amount_cents,currency,fee_cents,fee_rule,buyer_email,buyer_name)
  values($1,$1,$2,$3,$4,'acct_seller',$5,'Produto',10000,'BRL',100,'bps:100','buyer@example.test','Comprador')`,[order,checkout,product,seller,offer])
 })
@@ -110,5 +112,33 @@ describe('cobranças personalizadas no banco',()=>{
   expect(sql).toMatch(/grant select on public\.custom_charges to authenticated;/)
   expect(sql).not.toMatch(/grant[^;]*(insert|update|delete)[^;]*custom_charges[^;]*to authenticated/i)
   expect(sql).toMatch(/revoke all on function public\.apply_custom_charge_invoice\([^)]*\) from public,anon,authenticated;/)
+ })
+})
+
+describe('afiliados no banco',()=>{
+ const affiliate='99999999-9999-4999-8999-999999999999'
+ const setup=async()=>{
+  await db.query("insert into affiliates(id,merchant_id,public_id,name,status) values($1,$2,'AFF-TESTE123','Bruno','active') on conflict do nothing",[affiliate,seller])
+  await db.query('update stripe_checkout_orders set affiliate_id=$1,affiliate_commission_cents=3000 where id=$2',[affiliate,order])
+ }
+ it('lista a venda com comissão só enquanto aprovada e só para o dono',async()=>{
+  await setup();await apply(order,'evt_a1','approved','pi_sale')
+  const rows=await as<{commission_cents:number;affiliate_name:string}>("select * from my_affiliate_sales(now()-interval '1 day',now()+interval '1 day')")
+  expect(rows).toHaveLength(1);expect(rows[0].affiliate_name).toBe('Bruno');expect(Number(rows[0].commission_cents)).toBe(3000)
+  await expect(db.query("select * from my_affiliate_sales(now()-interval '1 day',now())")).rejects.toThrow(/AUTH_REQUIRED/)
+  await db.query("update payment_transactions set status='refunded',refunded_at=now()")
+  expect(Number((await as<{commission_cents:number}>("select * from my_affiliate_sales(now()-interval '1 day',now()+interval '1 day')"))[0].commission_cents)).toBe(0)
+ })
+ it('marca comissão paga apenas em pedido aprovado do próprio vendedor',async()=>{
+  await setup();await apply(order,'evt_a2','approved','pi_sale')
+  expect((await as<{n:number}>(`select set_affiliate_commission_paid(array['${order}']::uuid[],true) as n`))[0].n).toBe(1)
+  expect((await as<{paid:string|null}>("select commission_paid_at as paid from my_affiliate_sales(now()-interval '1 day',now()+interval '1 day')"))[0].paid).not.toBeNull()
+  expect((await as<{n:number}>(`select set_affiliate_commission_paid(array['${order}']::uuid[],false) as n`))[0].n).toBe(1)
+  await db.exec(`select set_config('test.uid','${second}',false)`)
+  expect((await db.query<{n:number}>(`select set_affiliate_commission_paid(array['${order}']::uuid[],true) as n`)).rows[0].n).toBe(0)
+  await db.exec(`select set_config('test.uid','',false)`)
+ })
+ it('impede comissão maior que a venda',async()=>{
+  await expect(db.query('update stripe_checkout_orders set affiliate_commission_cents=999999 where id=$1',[order])).rejects.toThrow()
  })
 })
