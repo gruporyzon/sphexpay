@@ -249,3 +249,33 @@
 .workspace-switcher-text{flex:1 1 220px;min-width:0}
 .workspace-switcher-select{width:auto;max-width:100%;min-height:36px;padding-block:6px}
 @media (max-width:640px){.workspace-switcher-select{width:100%}}
+
+/* Lembretes de faturamento (Configurações > Notificações). */
+.revenue-reminders{display:grid;gap:16px;margin:0 0 24px;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--text)}
+.revenue-reminders-head{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+.revenue-reminders-head>svg{width:20px;height:20px;margin-top:2px}
+.revenue-reminders-head h3{font-size:16px;font-weight:700}
+.revenue-reminders-head p{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.5}
+.revenue-reminders-switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;white-space:nowrap}
+.revenue-reminders-switch input{width:18px;height:18px;accent-color:var(--text)}
+.revenue-reminders-group{display:grid;gap:8px;border:0;padding:0;margin:0;min-width:0}
+.revenue-reminders-group:disabled{opacity:.5}
+.revenue-reminders-group legend{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.revenue-reminders-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.revenue-reminders-options label{display:grid;gap:4px;padding:12px;border:1px solid var(--line);border-radius:12px;cursor:pointer;background:var(--bg)}
+.revenue-reminders-options label.active{border-color:var(--text)}
+.revenue-reminders-options input,.revenue-reminders-hours input{position:absolute;opacity:0;pointer-events:none}
+.revenue-reminders-options label:has(input:focus-visible),.revenue-reminders-hours label:has(input:focus-visible){outline:2px solid var(--text);outline-offset:2px}
+.revenue-reminders-options small{color:var(--muted);font-size:12px;line-height:1.4}
+.revenue-reminders-hours{display:flex;flex-wrap:wrap;gap:8px}
+.revenue-reminders-hours label{position:relative;min-width:64px;padding:8px 12px;text-align:center;border:1px solid var(--line);border-radius:999px;cursor:pointer;font-size:13px;font-weight:600;background:var(--bg)}
+.revenue-reminders-hours label.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.revenue-reminders-preview{display:grid;gap:8px;padding:12px;border-radius:12px;background:var(--panel-2)}
+.revenue-reminders-preview-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.revenue-reminders-preview-head select{width:auto;min-height:32px;padding-block:4px}
+.revenue-reminders-card{padding:10px 12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+.revenue-reminders-card b{font-size:13px}
+.revenue-reminders-card p{font-size:13px;color:var(--muted);margin-top:2px}
+.revenue-reminders-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.revenue-reminders-saved{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--success,var(--text))}
+@media (max-width:640px){.revenue-reminders{padding:16px}.revenue-reminders-head{grid-template-columns:auto 1fr}.revenue-reminders-switch{grid-column:1/-1}.revenue-reminders-options{grid-template-columns:1fr}}

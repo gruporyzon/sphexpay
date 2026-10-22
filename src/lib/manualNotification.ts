@@ -6,11 +6,11 @@ export type NotificationIntervalUnit=IntervalUnit
 export interface ManualNotificationDraft{notificationType:ManualNotificationType;title:string;body:string;value:string;valueKind:ManualValueKind;currency:ManualCurrency;customer:string;method:string;route:string;icon:string;showTime:boolean}
 type Template={label:string;title:string;body:string}
 export const manualNotificationTemplates:Record<ManualNotificationType,Template>={
- sale_approved:{label:'Venda aprovada',title:'Venda aprovada!',body:'Sua comissão: {valor}'},
- sale_pending:{label:'Venda pendente',title:'Venda pendente',body:'Pagamento de {valor} aguardando confirmação.'},
+ sale_approved:{label:'Venda aprovada',title:'Venda aprovada!',body:'Valor: {valor}'},
+ sale_pending:{label:'Venda pendente',title:'Venda pendente',body:'Valor: {valor}'},
  pix_generated:{label:'Pix gerado',title:'Pix gerado',body:'Pagamento de {valor} aguardando confirmação.'},
- pix_paid:{label:'Pix pago',title:'Venda aprovada — Pix',body:'Sua comissão: {valor}'},
- credit_card_approved:{label:'Cartão aprovado',title:'Venda aprovada — Cartão',body:'Sua comissão: {valor}'},
+ pix_paid:{label:'Pix pago',title:'Venda aprovada — Pix',body:'Valor: {valor}'},
+ credit_card_approved:{label:'Cartão aprovado',title:'Venda aprovada — Cartão',body:'Valor: {valor}'},
  credit_card_refused:{label:'Cartão recusado',title:'Cartão recusado',body:'O pagamento de {valor} não foi aprovado.'},
  boleto_generated:{label:'Boleto gerado',title:'Boleto gerado',body:'Boleto de {valor} aguardando pagamento.'},
  boleto_paid:{label:'Boleto pago',title:'Boleto pago!',body:'Pagamento de {valor} confirmado.'},
@@ -57,7 +57,8 @@ export function formatEstimatedDuration(milliseconds:number){
 }
 const valueLine=(kind:ManualValueKind,amount:string)=>{
  if(kind==='none')return''
- return`${valueKindLabels[kind]}: ${amount}`
+ // Venda no padrão dos gateways: só "Valor: R$ 197,00".
+ return`${kind==='sale'?'Valor':valueKindLabels[kind]}: ${amount}`
 }
 export function notificationContent(type:ManualNotificationType,kind:ManualValueKind='commission',method=''){
  const template=manualNotificationTemplates[type],amount='{valor}',line=valueLine(kind,amount)

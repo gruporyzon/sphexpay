@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { pushConfiguration, serviceRoleKey, supabaseUrl } from '../../server/push/config.js'
 import { sendPushToUser } from '../../server/push/send-service.js'
+import { handleAutomatic,isAutomaticRequest } from '../../server/push/automatic.js'
 
 const clean=value=>typeof value==='string'?value.trim():''
 const safeText=(value,max)=>clean(value).slice(0,max)
@@ -15,6 +16,17 @@ export default async function handler(request,response){
  const configuration=pushConfiguration()
  if(!configuration.vapidConfigured)return response.status(503).json({success:false,code:'VAPID_NOT_CONFIGURED',message:'O envio Push não está configurado.'})
  if(!configuration.storageConfigured)return response.status(503).json({success:false,code:'SUPABASE_SERVER_CREDENTIALS_MISSING',message:'O armazenamento server-side não está configurado.'})
+ // Avisos automáticos (venda real e lembretes de faturamento) chamados pelo banco com o token
+ // interno do Vault; não usam sessão de usuário.
+ const automaticToken=clean(request.headers['x-sphex-notify'])
+ if(automaticToken){
+  const automaticClient=createClient(supabaseUrl(),serviceRoleKey())
+  if(!await isAutomaticRequest(automaticClient,automaticToken))return response.status(401).json({success:false,code:'UNAUTHORIZED'})
+  let automaticInput
+  try{automaticInput=typeof request.body==='string'?JSON.parse(request.body):request.body||{}}catch{return response.status(400).json({success:false,code:'INVALID_PAYLOAD'})}
+  const result=await handleAutomatic(automaticClient,automaticInput).catch(()=>({status:500,body:{success:false,code:'AUTOMATIC_PUSH_FAILED'}}))
+  return response.status(result.status).json(result.body)
+ }
  const token=clean(String(request.headers.authorization||'').replace(/^Bearer\s+/i,''))
  if(!token)return response.status(401).json({success:false,code:'UNAUTHORIZED',message:'Sessão inválida. Entre novamente.'})
  const client=createClient(supabaseUrl(),serviceRoleKey())

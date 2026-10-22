@@ -290,6 +290,24 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
 - O payload leva apenas dados da própria venda do vendedor (valor, produto, nome de exibição
   do comprador, método). Nenhum dado de cartão.
 
+### Avisos automáticos (venda real e lembretes de faturamento)
+
+- Gatilho `payment_transactions_push`: quando uma venda Stripe vira `approved` ou `pending`, o
+  banco chama `public.sphex_notify` (pg_net, assíncrono, depois do commit). Qualquer falha no
+  aviso é engolida no gatilho: nunca bloqueia nem desfaz a venda.
+- Agendador `revenue-reminders` (pg_cron, toda hora cheia) chama o mesmo caminho; o servidor
+  calcula o horário de Brasília e só envia nos horários do vendedor (padrão 0h, 8h, 12h, 15h, 18h
+  e 20h). `revenue_reminder_log` garante um envio por vendedor e horário.
+- Destino: `https://www.sphexpay.com.br/api/push/send` com o cabeçalho `x-sphex-notify`. O valor
+  é o segredo `sphex_notify_token` do Vault, gerado dentro do banco (64 hex) e nunca exposto. O
+  servidor confere com `sphex_notify_token_ok` (execução só para `service_role`); sem token
+  válido responde 401 e cai no fluxo normal de sessão.
+- Conteúdo: venda = só "Venda aprovada!"/"Venda pendente" e "Valor: R$ …"; lembrete = total de
+  vendas aprovadas em reais, de produção, do dia de Brasília (`revenue_reminder_targets`, só
+  `service_role`). Nada de nome de comprador, e-mail ou produto no aviso.
+- Preferências em `revenue_reminder_settings` (RLS forçada, cada pessoa só a própria linha;
+  horários limitados à lista fixa por `check`).
+
 ## 10. Inventário de segredos
 
 | Segredo | Onde vive | Acesso | Rotação |
@@ -301,6 +319,7 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
 | `OPENAI_API_KEY` | Env da Vercel (server) | `server/notifications/*` | Trimestral + on-incident |
 | `STRIPE_SECRET_KEY` | Env da Vercel (server) | `server/stripe/*` | Rotacionar no dashboard da Stripe + on-incident. Nunca no frontend. |
 | `STRIPE_WEBHOOK_SECRET` | Env da Vercel (server) | Webhook oficial Stripe | Rotacionar com a destination correspondente e validar entrega. |
+| `sphex_notify_token` | Vault do Supabase (gerado no banco) | `sphex_notify` (banco) e `sphex_notify_token_ok` (só `service_role`) | Apagar o segredo e reaplicar a migration `20261022140000` gera outro |
 | `SECURITY_AUDIT_IP_SALT` | Env da Vercel (server) | `server/security/auditLog.js` | Não rotacionar sem migração (invalida correlação de hashes antigos) |
 
 Regras: nunca no frontend, nunca no repositório (`.env` e `.env.*` estão no `.gitignore`;
