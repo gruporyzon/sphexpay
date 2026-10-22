@@ -35,6 +35,7 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20261022070000_shipping_and_fulfillment.sql'))
  await db.exec(`create table product_coupons(id uuid primary key,uses_count integer not null default 0,updated_at timestamptz)`)
  await db.exec(read('supabase/migrations/20261022080000_checkout_coupons.sql'))
+ await db.exec(read('supabase/migrations/20261022110000_team_members.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -191,5 +192,51 @@ describe('cupons no banco',()=>{
  })
  it('não aceita desconto negativo',async()=>{
   await expect(db.query('update stripe_checkout_orders set discount_cents=-1 where id=$1',[order])).rejects.toThrow()
+ })
+})
+
+describe('equipe com cargos no banco',()=>{
+ const member='dddddddd-dddd-4ddd-8ddd-dddddddddddd'
+ const asUser=async<T,>(user:string,email:string,sql:string,params:unknown[]=[])=>{await db.exec(`select set_config('test.uid','${user}',false);select set_config('test.email','${email}',false)`);try{return(await db.query<T>(sql,params)).rows}finally{await db.exec(`select set_config('test.uid','',false);select set_config('test.email','',false)`)}}
+ const invite=async(role:string)=>{await db.exec('delete from team_members');return(await asUser<{t:string}>(seller,'dono@x.com','select invite_team_member($1,$2) as t',['Equipe@X.com',role]))[0].t}
+ beforeAll(async()=>{
+  await db.exec(`create or replace function auth.jwt() returns jsonb language sql as $$ select jsonb_build_object('email',nullif(current_setting('test.email',true),'')) $$`)
+  await db.query('insert into auth.users values($1) on conflict do nothing',[member])
+ })
+ it('convite só vale para o e-mail convidado e dentro de 7 dias',async()=>{
+  const token=await invite('support')
+  await expect(asUser(member,'outro@x.com','select accept_team_invite($1)',[token])).rejects.toThrow(/INVITE_EMAIL_MISMATCH/)
+  await db.query("update team_members set invited_at=now()-interval '8 days'")
+  await expect(asUser(member,'equipe@x.com','select accept_team_invite($1)',[token])).rejects.toThrow(/INVITE_EXPIRED/)
+  await db.query('update team_members set invited_at=now()')
+  expect((await asUser<{o:string}>(member,'equipe@x.com','select accept_team_invite($1) as o',[token]))[0].o).toBe(seller)
+  await expect(asUser(member,'equipe@x.com','select accept_team_invite($1)',[token])).rejects.toThrow(/INVITE_NOT_FOUND/)
+  await expect(asUser(seller,'dono@x.com','select invite_team_member($1,$2)',['dono@x.com','admin'])).rejects.toThrow(/SELF_INVITE/)
+ })
+ it('suporte vê clientes e atualiza envio; financeiro vê relatórios mas não mexe em envio',async()=>{
+  await db.query("insert into shipping_rates(id,seller_id,name,price_cents) values('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',$1,'Padrão',2000)",[seller])
+  await db.query(`update stripe_checkout_orders set shipping_cents=2000,amount_cents=12000,shipping_address='{"recipient":"C","postalCode":"01310-100","street":"R","number":"1","district":"B","city":"SP","state":"SP"}' where id=$1`,[order])
+  await apply(order,'evt_team','approved','pi_sale')
+  let token=await invite('support');await asUser(member,'equipe@x.com','select accept_team_invite($1)',[token])
+  expect(await asUser(member,'equipe@x.com','select * from seller_customers($1)',[seller])).toHaveLength(1)
+  await asUser(member,'equipe@x.com',`select seller_update_shipment($1,'${order}','shipped','BR1')`,[seller])
+  await expect(asUser(member,'equipe@x.com',"select * from seller_affiliate_sales($1,now()-interval '1 day',now())",[seller])).rejects.toThrow(/FORBIDDEN/)
+  token=await invite('finance');await asUser(member,'equipe@x.com','select accept_team_invite($1)',[token])
+  expect(await asUser(member,'equipe@x.com',"select * from seller_affiliate_sales($1,now()-interval '1 day',now())",[seller])).toHaveLength(0)
+  await expect(asUser(member,'equipe@x.com',`select seller_update_shipment($1,'${order}','delivered',null)`,[seller])).rejects.toThrow(/FORBIDDEN/)
+ })
+ it('removido ou estranho não acessa nada',async()=>{
+  const token=await invite('admin');await asUser(member,'equipe@x.com','select accept_team_invite($1)',[token])
+  const id=(await db.query<{id:string}>('select id from team_members')).rows[0].id
+  await asUser(seller,'dono@x.com','select update_team_member($1,null,true)',[id])
+  await expect(asUser(member,'equipe@x.com','select * from seller_customers($1)',[seller])).rejects.toThrow(/FORBIDDEN/)
+  await expect(asUser(second,'x@x.com','select * from seller_customers($1)',[seller])).rejects.toThrow(/FORBIDDEN/)
+  await expect(asUser(member,'equipe@x.com','select update_team_member($1,$2,false)',[id,'admin'])).rejects.toThrow(/MEMBER_NOT_FOUND/)
+ })
+ it('regras da equipe só somam leitura e a escrita fica nas funções',()=>{
+  const sql=read('supabase/migrations/20261022110000_team_members.sql')
+  expect(sql).toMatch(/revoke all on public\.team_members from anon,authenticated;/)
+  expect(sql.match(/create policy [a-z_]+_team_read on public\.[a-z_]+ for select/g)).toHaveLength(3)
+  expect(sql).not.toMatch(/create policy [^;]*for (insert|update|delete|all)/i)
  })
 })

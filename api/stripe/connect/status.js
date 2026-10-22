@@ -5,6 +5,7 @@ import {createCustomCharge,voidCustomCharge} from '../../../server/stripe/charge
 import {consumeRateLimit} from '../../../server/security/rateLimit.js'
 import {recordSecurityEvent} from '../../../server/security/auditLog.js'
 import {clientIp} from '../../../server/security/clientIp.js'
+import {resolveWorkspace} from '../../../server/security/teamAccess.js'
 import {ConnectError,authenticate,fail,findConnection,parseJsonBody,retrieveAndSync,safeStatus,serverDatabase,tokenFrom} from '../../../server/stripe/connect.js'
 
 // Um único handler para o painel (limite de funções da Vercel): status da conta, finanças,
@@ -29,8 +30,9 @@ export default async function handler(request,response){
    if(request.query?.action==='void-charge')return response.status(200).json({success:true,...await voidCustomCharge(database,user,input)})
    return response.status(200).json({success:true,...await configureProductPayments(database,user,input)})
   }
-  if(request.query?.view==='finance')return response.status(200).json({success:true,...await loadConnectedFinance(database,user)})
-  if(request.query?.view==='disputes')return response.status(200).json({success:true,...await listDisputes(database,user)})
+  // Leitura da conta de quem convidou (?seller=) só para colaborador ativo com o cargo certo.
+  if(request.query?.view==='finance')return response.status(200).json({success:true,...await loadConnectedFinance(database,await resolveWorkspace(database,user,request.query?.seller,'finance.read'))})
+  if(request.query?.view==='disputes')return response.status(200).json({success:true,...await listDisputes(database,await resolveWorkspace(database,user,request.query?.seller,'disputes.read'))})
   const connection=await findConnection(database,user.id,true);if(!connection)return response.status(200).json({success:true,...safeStatus(null)});const current=await retrieveAndSync(database,user.id,connection);return response.status(200).json({success:true,...safeStatus(current)})}catch(error){
   if(request.method==='GET'){
    if(['CONNECT_STORAGE_ERROR','SERVER_NOT_CONFIGURED','STRIPE_NOT_CONFIGURED'].includes(error?.code))return fail(response,new ConnectError(error.code,500,'Não foi possível atualizar a configuração de pagamentos.'))

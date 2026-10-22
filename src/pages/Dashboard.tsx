@@ -1,4 +1,5 @@
 import {T} from '../i18n'
+import { useActiveSeller } from '../hooks/useActiveSeller'
 import { useCallback,useEffect,useMemo,useState,type ReactNode } from 'react'
 import { ArrowDownRight,BadgeDollarSign,CircleDollarSign,CreditCard,Percent,ReceiptText,ShieldAlert,Wallet } from 'lucide-react'
 import { Card } from '../components/ui'
@@ -30,7 +31,8 @@ export default function Dashboard(){
  const layoutEditor=useDashboardLayout(user?.id)
  const {period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
  const [mode,setMode]=useState<'production'|'planning'>('production'),[rates,setRates]=useState<ExchangeRate[]>([]),[rateError,setRateError]=useState(false)
- const live=useLiveSales(user?.id,period),planner=useScenarioPlanner(user?.id,Boolean(admin))
+ const {sellerId}=useActiveSeller()
+ const live=useLiveSales(sellerId,period),planner=useScenarioPlanner(user?.id,Boolean(admin))
  useEffect(()=>{let active=true;dashboardService.loadRates().then(value=>{if(active)setRates(value)}).catch(()=>{if(active)setRateError(true)});return()=>{active=false}},[])
  useEffect(()=>{if(!admin&&mode==='planning')setMode('production')},[admin,mode])
 

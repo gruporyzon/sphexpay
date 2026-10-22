@@ -1,4 +1,5 @@
 import {translate as uiText} from '../i18n'
+import { useActiveSeller } from '../hooks/useActiveSeller'
 import {useAppLocale} from '../i18n/localeStore'
 import {T} from '../i18n'
 import { useEffect,useMemo,useState } from 'react'
@@ -8,7 +9,6 @@ import { Card,Empty,Modal,PageTitle,SearchBox } from '../components/ui'
 import { DashboardCurrencySelector,DashboardPeriodFilter } from '../components/dashboard/DashboardControls'
 import { RealtimeStatus } from '../components/dashboard/RealtimeStatus'
 import { ConvertedMoney } from '../components/dashboard/ConvertedMoney'
-import { useAuth } from '../hooks/useAuth'
 import { useDashboardCurrency } from '../hooks/useDashboardCurrency'
 import { useDashboardPeriod } from '../hooks/useDashboardPeriod'
 import { useLiveSales } from '../hooks/useLiveSales'
@@ -27,9 +27,10 @@ import { downloadCsv } from '../lib/utils'
 const demoRates:ExchangeRate[]=Object.entries(demoExchangeRates).filter(([currency])=>currency!=='BRL').flatMap(([currency,rate])=>[{baseCurrency:currency as 'USD'|'EUR',quoteCurrency:'BRL',rate:1/rate,source:'taxa de referência',observedAt:new Date().toISOString()},{baseCurrency:'BRL',quoteCurrency:currency as 'USD'|'EUR',rate,source:'taxa de referência',observedAt:new Date().toISOString()}])
 
 export default function LiveSales(){useAppLocale(state=>state.locale);
- const {user}=useAuth(),{period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
+ const {period,setPeriod}=useDashboardPeriod(),{currency,setCurrency}=useDashboardCurrency()
  const navigate=useNavigate(),{transactionId}=useParams(),[searchParams]=useSearchParams(),requestedId=transactionId||searchParams.get('evento')
- const live=useLiveSales(user?.id,period),[rates,setRates]=useState<ExchangeRate[]>([]),[query,setQuery]=useState(''),[status,setStatus]=useState('all'),[method,setMethod]=useState('all'),[product,setProduct]=useState('all'),[page,setPage]=useState(1),[detail,setDetail]=useState<FinancialTransaction|null>(null),pageSize=10
+ const {sellerId}=useActiveSeller()
+ const live=useLiveSales(sellerId,period),[rates,setRates]=useState<ExchangeRate[]>([]),[query,setQuery]=useState(''),[status,setStatus]=useState('all'),[method,setMethod]=useState('all'),[product,setProduct]=useState('all'),[page,setPage]=useState(1),[detail,setDetail]=useState<FinancialTransaction|null>(null),pageSize=10
  useEffect(()=>{if(live.demo)return;let active=true;dashboardService.loadRates().then(value=>{if(active)setRates(value)}).catch(()=>{});return()=>{active=false}},[live.demo])
  const effectiveRates=live.demo?demoRates:rates
  const tab=searchParams.get('aba')==='contestacoes'?'disputes':searchParams.get('aba')==='encomendas'?'shipments':'sales'

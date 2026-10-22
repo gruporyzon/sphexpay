@@ -1,5 +1,5 @@
 import {useCallback,useEffect,useMemo,useState} from 'react'
-import {useAuth} from '../../hooks/useAuth'
+import {useActiveSeller} from '../../hooks/useActiveSeller'
 import type {FinancialTransaction} from '../../lib/dashboardFinance'
 import {periodBounds} from '../../services/analyticsService'
 import {dashboardService} from '../../services/dashboardService'
@@ -8,7 +8,7 @@ import {useDemoStore} from '../../store/useDemoStore'
 
 // Vendas reais do período selecionado e, opcionalmente, saldo e repasses da Stripe.
 export function useFinanceData({stripe=true}:{stripe?:boolean}={}){
- const userId=useAuth().user?.id,period=useDemoStore(state=>state.period)
+ const userId=useActiveSeller().sellerId,period=useDemoStore(state=>state.period)
  const bounds=useMemo(()=>periodBounds(period),[period])
  const [transactions,setTransactions]=useState<FinancialTransaction[]|null>(null),[transactionsError,setTransactionsError]=useState('')
  const [finance,setFinance]=useState<StripeConnectFinance|null>(null),[financeError,setFinanceError]=useState(''),[financeLoading,setFinanceLoading]=useState(stripe)

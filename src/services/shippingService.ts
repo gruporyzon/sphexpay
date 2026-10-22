@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { activeSeller } from '../store/useWorkspaceStore'
 
 // Fretes do vendedor (escrita direta sob RLS) e encomendas pagas com endereço de entrega.
 export type ShippingRate={id:string;name:string;carrier:string;priceCents:number;minOrderCents:number;deliveryDaysMin:number|null;deliveryDaysMax:number|null;active:boolean}
@@ -27,12 +28,12 @@ export const shippingService={
  },
  async removeRate(id:string){const {error}=await client().from('shipping_rates').delete().eq('id',id);if(error)throw new Error('Não foi possível excluir o frete.')},
  async shipments():Promise<Shipment[]>{
-  const {data,error}=await client().rpc('my_shipments')
+  const {data,error}=await client().rpc('seller_shipments',{p_seller:activeSeller()})
   if(error)throw new Error('Não foi possível carregar as encomendas.')
   return((data||[]) as Record<string,unknown>[]).map(row=>{const address=(row.shipping_address||{}) as Record<string,unknown>;return{orderId:String(row.order_id),buyerName:String(row.buyer_name||''),buyerEmail:String(row.buyer_email||''),productName:String(row.product_name||''),amountCents:Number(row.amount_cents)||0,shippingCents:Number(row.shipping_cents)||0,currency:String(row.currency||'BRL'),orderStatus:String(row.order_status||''),address:{recipient:String(address.recipient||''),postalCode:String(address.postalCode||''),street:String(address.street||''),number:String(address.number||''),complement:String(address.complement||''),district:String(address.district||''),city:String(address.city||''),state:String(address.state||'')},rateName:typeof row.shipping_rate_name==='string'?row.shipping_rate_name:null,status:(row.fulfillment_status||'pending') as FulfillmentStatus,trackingCode:typeof row.tracking_code==='string'?row.tracking_code:null,shippedAt:typeof row.shipped_at==='string'?row.shipped_at:null,deliveredAt:typeof row.delivered_at==='string'?row.delivered_at:null,createdAt:String(row.created_at)}})
  },
  async updateShipment(orderId:string,status:FulfillmentStatus,trackingCode:string){
-  const {error}=await client().rpc('update_shipment',{p_order_id:orderId,p_status:status,p_tracking_code:trackingCode})
+  const {error}=await client().rpc('seller_update_shipment',{p_seller:activeSeller(),p_order_id:orderId,p_status:status,p_tracking_code:trackingCode})
   if(error)throw new Error(error.message?.includes('INVALID_TRACKING')?'Código de rastreio inválido: use letras, números, espaço, ponto, barra ou hífen.':'Não foi possível atualizar a encomenda.')
  }
 }

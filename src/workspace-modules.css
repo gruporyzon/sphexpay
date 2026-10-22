@@ -242,3 +242,10 @@
 @media(max-width:479px){
  :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page .pv2-toolbar{grid-template-columns:minmax(0,1fr);}
 }
+
+/* Conta em uso (colaboradores): faixa discreta acima do conteúdo; tokens do tema claro e escuro. */
+.workspace-switcher{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);font-size:13px}
+.workspace-switcher.is-member{border-color:var(--line-strong);background:var(--panel-2)}
+.workspace-switcher-text{flex:1 1 220px;min-width:0}
+.workspace-switcher-select{width:auto;max-width:100%;min-height:36px;padding-block:6px}
+@media (max-width:640px){.workspace-switcher-select{width:100%}}

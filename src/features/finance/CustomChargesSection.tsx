@@ -2,6 +2,7 @@ import { useCallback,useEffect,useMemo,useState,type FormEvent } from 'react'
 import { Ban,Copy,ExternalLink,RotateCcw,Send } from 'lucide-react'
 import { T,translate as uiText } from '../../i18n'
 import { useAppLocale } from '../../i18n/localeStore'
+import { useActiveSeller } from '../../hooks/useActiveSeller'
 import { Card,Empty,Loading,StateMessage } from '../../components/ui'
 import { formatCents } from '../../lib/currencyFormat'
 import { shortDate } from '../../lib/utils'
@@ -17,6 +18,8 @@ const newKey=()=>crypto.randomUUID()
 
 // Cobrança avulsa: a Stripe envia o e-mail com o link de pagamento para o cliente.
 export function CustomChargesSection(){useAppLocale(state=>state.locale)
+ // Colaborador do financeiro só acompanha: criar e cancelar cobrança fica com o dono.
+ const {member}=useActiveSeller()
  const [items,setItems]=useState<CustomCharge[]|null>(null),[listError,setListError]=useState('')
  const [form,setForm]=useState({customerName:'',customerEmail:'',description:'',amount:'',dueDays:'3'}),[methods,setMethods]=useState<CustomCharge['methods']>(['pix','boleto','card'])
  const [requestKey,setRequestKey]=useState(newKey),[busy,setBusy]=useState(false),[error,setError]=useState(''),[sent,setSent]=useState<CustomCharge|null>(null),[working,setWorking]=useState(''),[copied,setCopied]=useState('')
@@ -38,8 +41,8 @@ export function CustomChargesSection(){useAppLocale(state=>state.locale)
  const copy=async(item:CustomCharge)=>{if(!item.hostedUrl)return;try{await navigator.clipboard.writeText(item.hostedUrl);setCopied(item.id)}catch{setCopied('')}}
  const toggle=(method:CustomCharge['methods'][number])=>setMethods(current=>current.includes(method)?current.filter(item=>item!==method):[...current,method])
  return <section aria-label={uiText('Cobranças')}><header className="financial-section-heading"><h2><T>Cobranças</T></h2><p><T>Cobre um cliente avulso. A Stripe envia o e-mail com o link para pagar por Pix, boleto ou cartão.</T></p></header>
-  <div className="grid lg:grid-cols-[380px_1fr] gap-4">
-   <Card className="p-5"><form className="grid gap-3" onSubmit={event=>void submit(event)}>
+  <div className={member?'grid gap-4':'grid lg:grid-cols-[380px_1fr] gap-4'}>
+   {!member&&<Card className="p-5"><form className="grid gap-3" onSubmit={event=>void submit(event)}>
     <b><T>Nova cobrança</T></b>
     <label><span className="label"><T>Nome do cliente</T></span><input className="input" maxLength={120} value={form.customerName} onChange={event=>setForm({...form,customerName:event.target.value})} required/></label>
     <label><span className="label"><T>E-mail do cliente</T></span><input className="input" type="email" maxLength={254} value={form.customerEmail} onChange={event=>setForm({...form,customerEmail:event.target.value})} required/></label>
@@ -51,14 +54,14 @@ export function CustomChargesSection(){useAppLocale(state=>state.locale)
     {error&&<StateMessage title={uiText('Cobrança não enviada')}><span>{error}</span></StateMessage>}
     {sent&&<StateMessage tone="success" title={uiText('Cobrança enviada')}><span><T>A Stripe enviou o link para </T>{sent.customerEmail}.</span></StateMessage>}
     <button className="btn btn-primary" type="submit" disabled={!valid||busy}><Send size={15}/><T>{busy?' Enviando...':' Enviar cobrança'}</T></button>
-   </form></Card>
+   </form></Card>}
    <div>
     <div className="report-kpis">{([['Em aberto',formatCents(totals.open,'BRL')],['Recebido',formatCents(totals.paid,'BRL')],['Cobranças',String(totals.count)]] as const).map(([label,value])=><Card key={label} className="report-kpi"><span><T>{label}</T></span><strong>{value}</strong></Card>)}</div>
     {listError&&<div className="mb-3"><StateMessage title={uiText('Atenção')}><span>{listError}</span> <button className="btn" onClick={load}><RotateCcw size={14}/><T> Tentar novamente</T></button></StateMessage></div>}
     <Card>{items===null?<Loading label="Carregando cobranças"/>:items.length===0?<Empty title={uiText('Nenhuma cobrança ainda')} text={uiText('As cobranças enviadas aparecem aqui com o status do pagamento.')}/>:
      <div className="table-wrap"><table className="table"><caption className="sr-only"><T>Cobranças</T></caption><thead><tr><th><T>Cliente</T></th><th><T>Descrição</T></th><th><T>Valor</T></th><th><T>Status</T></th><th><T>Vencimento</T></th><th><span className="sr-only"><T>Ações</T></span></th></tr></thead>
       <tbody>{items.map(item=><tr key={item.id}><td><b>{item.customerName}</b><p className="muted text-[11px]">{item.customerEmail}</p></td><td>{item.description}<p className="muted text-[11px]">{item.methods.map(method=>uiText(METHOD_LABEL[method])).join(' · ')}{item.mode==='test'?` · ${uiText('teste')}`:''}</p></td><td><b>{formatCents(item.amountCents,'BRL')}</b></td><td><span className={`badge ${TONE[item.status]}`}><T>{STATUS[item.status]}</T></span>{item.paidAt?<p className="muted text-[11px]">{shortDate(item.paidAt)}</p>:null}</td><td>{new Date(`${item.dueDate}T12:00:00`).toLocaleDateString('pt-BR')}</td>
-       <td><div className="flex gap-1">{item.hostedUrl&&<><button className="btn icon-btn" aria-label={`${uiText('Copiar link da cobrança de')} ${item.customerName}`} onClick={()=>void copy(item)}><Copy/></button><a className="btn icon-btn" href={item.hostedUrl} target="_blank" rel="noreferrer" aria-label={`${uiText('Abrir cobrança de')} ${item.customerName}`}><ExternalLink/></a></>}{item.status==='open'&&<button className="btn icon-btn" disabled={working===item.id} aria-label={`${uiText('Cancelar cobrança de')} ${item.customerName}`} onClick={()=>void cancel(item)}><Ban/></button>}</div>{copied===item.id&&<small className="muted" role="status"><T>Link copiado.</T></small>}</td></tr>)}</tbody></table></div>}</Card>
+       <td><div className="flex gap-1">{item.hostedUrl&&<><button className="btn icon-btn" aria-label={`${uiText('Copiar link da cobrança de')} ${item.customerName}`} onClick={()=>void copy(item)}><Copy/></button><a className="btn icon-btn" href={item.hostedUrl} target="_blank" rel="noreferrer" aria-label={`${uiText('Abrir cobrança de')} ${item.customerName}`}><ExternalLink/></a></>}{item.status==='open'&&!member&&<button className="btn icon-btn" disabled={working===item.id} aria-label={`${uiText('Cancelar cobrança de')} ${item.customerName}`} onClick={()=>void cancel(item)}><Ban/></button>}</div>{copied===item.id&&<small className="muted" role="status"><T>Link copiado.</T></small>}</td></tr>)}</tbody></table></div>}</Card>
    </div>
   </div>
  </section>

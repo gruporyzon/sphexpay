@@ -2,6 +2,8 @@ import { useEffect,useState } from 'react'
 import { Link,useLocation } from 'react-router-dom'
 import { BadgePercent,Gift,ChevronDown,CreditCard,Crown,FileBarChart,Handshake,Home,Landmark,LayoutDashboard,Link2,MessageCircle,Package,PanelLeftClose,PanelLeftOpen,Pin,PinOff,PlugZap,RadioTower,RefreshCcw,Send,Settings,ShieldAlert,ShieldCheck,ShoppingBag,ShoppingCart,Store,TicketPercent,Trophy,Truck,UserRoundCheck,Users,WalletCards,Bell,PackageCheck,type LucideIcon } from 'lucide-react'
 import { useTranslation } from '../../i18n'
+import { useActiveSeller } from '../../hooks/useActiveSeller'
+import { memberCanOpen } from '../../lib/teamAccess'
 
 type Item={id:string;label:string;to:string;icon:LucideIcon;exact?:boolean}
 type Group={id:string;label:string;icon:LucideIcon;items:Item[]}
@@ -33,12 +35,15 @@ export function WorkspaceSidebar({navigationRoot='/app'}:{navigationRoot?:string
  const [prefs,setPrefs]=useState<Prefs>(readPrefs),[hover,setHover]=useState(false)
  useEffect(()=>{try{localStorage.setItem(STORAGE,JSON.stringify(prefs))}catch{/* Preferência só desta sessão. */}},[prefs])
  const expanded=prefs.pinned||hover
+ // Colaborador vê só as áreas do cargo na conta de quem convidou.
+ const role=useActiveSeller().workspace?.role,allowed=(item:Item)=>item.id==='home'||memberCanOpen(role,item.to.split('?')[0],item.to.includes('?')?`?${item.to.split('?')[1]}`:'')
+ const groups=GROUPS.map(group=>({...group,items:group.items.filter(allowed)})).filter(group=>group.items.length)
  const link=(item:Item)=>{const active=item.id!=='home'&&isSidebarItemActive(item,appPath,search);return <Link key={`${item.id}:${item.to}`} to={item.to.replace(/^\/app/,navigationRoot)} aria-current={active?'page':undefined} className={`workspace-sidebar-link${active?' active':''}`} title={expanded?undefined:t(item.label)}><item.icon aria-hidden="true"/><span>{t(item.label)}</span></Link>}
  const toggleGroup=(id:string)=>setPrefs(current=>({...current,closed:current.closed.includes(id)?current.closed.filter(item=>item!==id):[...current.closed,id]}))
  return <aside className={`workspace-sidebar${expanded?' expanded':' collapsed'}${prefs.pinned?' pinned':''}`} aria-label={t('Menu lateral')} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} onFocus={()=>setHover(true)} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setHover(false)}}>
   <nav className="workspace-sidebar-scroll" aria-label={t('Navegação principal')}>
-   <div className="workspace-sidebar-group">{START.map(link)}</div>
-   {GROUPS.map(group=>{const open=!prefs.closed.includes(group.id)||group.items.some(item=>isSidebarItemActive(item,appPath,search));return <div key={group.id} className="workspace-sidebar-group">
+   <div className="workspace-sidebar-group">{START.filter(allowed).map(link)}</div>
+   {groups.map(group=>{const open=!prefs.closed.includes(group.id)||group.items.some(item=>isSidebarItemActive(item,appPath,search));return <div key={group.id} className="workspace-sidebar-group">
     <button type="button" className="workspace-sidebar-heading" aria-expanded={open} onClick={()=>toggleGroup(group.id)} title={expanded?undefined:t(group.label)}><group.icon aria-hidden="true"/><span>{t(group.label)}</span><ChevronDown aria-hidden="true" className="workspace-sidebar-chevron"/></button>
     {open&&<div className="workspace-sidebar-items">{group.items.map(link)}</div>}
    </div>})}
