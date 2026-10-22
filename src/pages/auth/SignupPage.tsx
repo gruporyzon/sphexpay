@@ -1,5 +1,6 @@
-import { useState,type FormEvent } from 'react'
-import { Link,useNavigate } from 'react-router-dom'
+import { useEffect,useState,type FormEvent } from 'react'
+import { Link,useLocation,useNavigate } from 'react-router-dom'
+import { rememberReferral } from '../../services/referralService'
 import { ArrowRight } from 'lucide-react'
 import { maskPhoneBR,onlyDigits } from '../../lib/masks'
 import { passwordScore } from '../../lib/authValidation'
@@ -34,6 +35,9 @@ export default function SignupPage(){
  const [form,setForm]=useState<Form>({name:'',email:'',phone:'',password:'',confirm:''}),[consent,setConsent]=useState(false)
  const [error,setError]=useState(''),[invalid,setInvalid]=useState<FieldKey|''>(''),[loading,setLoading]=useState(false)
  const navigate=useNavigate(),{configured}=useAuth()
+ const {search}=useLocation()
+ // Link de indicação: o código fica guardado até a conta ser criada e vinculada.
+ useEffect(()=>{rememberReferral(search)},[search])
  const change=(key:keyof Form,value:string)=>{setForm(current=>({...current,[key]:value}));if(invalid===key)setInvalid('')}
  const submit=async(event:FormEvent)=>{
   event.preventDefault()
