@@ -1,6 +1,6 @@
 import {stripeWebhookHandler} from '../../server/stripe/webhook.js'
 import {serverDatabase,fail,parseJsonBody,ConnectError} from '../../server/stripe/connect.js'
-import {createCheckout,checkoutPaymentAvailability,checkoutSessionStatus,validateCheckoutId} from '../../server/stripe/payments.js'
+import {createCheckout,checkoutPaymentAvailability,checkoutSessionStatus,previewCoupon,validateCheckoutId} from '../../server/stripe/payments.js'
 import {consumeRateLimit} from '../../server/security/rateLimit.js'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
@@ -62,6 +62,8 @@ export default async function handler(request, response) {
     validateCheckoutId(checkoutId)
     const limit=consumeRateLimit(`stripe-status:${clientIp(request)}`,{limit:90,windowMs:60000})
     if(!limit.allowed){response.setHeader('Retry-After',String(limit.retryAfterSeconds));throw new ConnectError('PAYMENT_RATE_LIMIT',429,'Aguarde alguns segundos para consultar novamente.')}
+    const coupon=parsedUrl.searchParams.get('coupon')||request.query?.coupon
+    if(coupon)return response.status(200).json(await previewCoupon(database,checkoutId,coupon))
     const sessionId=parsedUrl.searchParams.get('sessionId')||request.query?.sessionId
     if(sessionId){
      return response.status(200).json(await checkoutSessionStatus(database,checkoutId,sessionId))

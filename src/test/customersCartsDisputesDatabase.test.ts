@@ -33,6 +33,8 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20261022060000_affiliate_attribution.sql'))
  await db.exec(`alter table products add column if not exists product_type text not null default 'digital';alter table products add column if not exists deleted_at timestamptz;alter table product_checkouts add column if not exists status text not null default 'published';alter table product_checkouts add column if not exists deleted_at timestamptz;`)
  await db.exec(read('supabase/migrations/20261022070000_shipping_and_fulfillment.sql'))
+ await db.exec(`create table product_coupons(id uuid primary key,uses_count integer not null default 0,updated_at timestamptz)`)
+ await db.exec(read('supabase/migrations/20261022080000_checkout_coupons.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -173,5 +175,21 @@ describe('frete e encomendas no banco',()=>{
  })
  it('frete não pode ser maior ou igual ao total do pedido',async()=>{
   await expect(db.query('update stripe_checkout_orders set shipping_cents=amount_cents where id=$1',[order])).rejects.toThrow()
+ })
+})
+
+describe('cupons no banco',()=>{
+ const coupon='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb'
+ it('conta o uso só quando o pagamento é aprovado, uma vez',async()=>{
+  await db.query('insert into product_coupons(id) values($1) on conflict do nothing',[coupon])
+  await db.query('update product_coupons set uses_count=0')
+  await db.query('update stripe_checkout_orders set coupon_id=$1,discount_cents=1000 where id=$2',[coupon,order])
+  await apply(order,'evt_c_pending','pending','pi_sale')
+  expect((await db.query<{uses_count:number}>('select uses_count from product_coupons')).rows[0].uses_count).toBe(0)
+  await apply(order,'evt_c_ok','approved','pi_sale');await apply(order,'evt_c_ok2','approved','pi_sale')
+  expect((await db.query<{uses_count:number}>('select uses_count from product_coupons')).rows[0].uses_count).toBe(1)
+ })
+ it('não aceita desconto negativo',async()=>{
+  await expect(db.query('update stripe_checkout_orders set discount_cents=-1 where id=$1',[order])).rejects.toThrow()
  })
 })
