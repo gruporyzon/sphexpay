@@ -1,7 +1,8 @@
 import { supabase } from '../lib/supabase'
 import { activeSeller } from '../store/useWorkspaceStore'
 
-// Fretes do vendedor (escrita direta sob RLS) e encomendas pagas com endereço de entrega.
+// Fretes da conta ativa (escrita direta sob RLS; o Administrador da equipe também edita) e
+// encomendas pagas com endereço de entrega.
 export type ShippingRate={id:string;name:string;carrier:string;priceCents:number;minOrderCents:number;deliveryDaysMin:number|null;deliveryDaysMax:number|null;active:boolean}
 export type ShippingRateInput=Omit<ShippingRate,'id'>
 export type FulfillmentStatus='pending'|'preparing'|'shipped'|'delivered'|'returned'
@@ -14,7 +15,9 @@ const toRow=(input:ShippingRateInput)=>({name:input.name.trim(),carrier:input.ca
 
 export const shippingService={
  async rates():Promise<ShippingRate[]>{
-  const {data,error}=await client().from('shipping_rates').select('*').order('created_at',{ascending:false}).limit(100)
+  const db=client(),sellerId=activeSeller()||(await db.auth.getSession()).data.session?.user.id
+  if(!sellerId)throw new Error('Sua sessão expirou. Entre novamente.')
+  const {data,error}=await db.from('shipping_rates').select('*').eq('seller_id',sellerId).order('created_at',{ascending:false}).limit(100)
   if(error)throw new Error('Não foi possível carregar os fretes.')
   return((data||[]) as Record<string,unknown>[]).map(fromRate)
  },
@@ -23,7 +26,7 @@ export const shippingService={
   if(id){const {error}=await db.from('shipping_rates').update(toRow(input)).eq('id',id);if(error)throw new Error('Não foi possível salvar o frete.');return}
   const {data:{user}}=await db.auth.getUser()
   if(!user)throw new Error('Sua sessão expirou. Entre novamente.')
-  const {error}=await db.from('shipping_rates').insert({...toRow(input),seller_id:user.id})
+  const {error}=await db.from('shipping_rates').insert({...toRow(input),seller_id:activeSeller()||user.id})
   if(error)throw new Error('Não foi possível criar o frete.')
  },
  async removeRate(id:string){const {error}=await client().from('shipping_rates').delete().eq('id',id);if(error)throw new Error('Não foi possível excluir o frete.')},

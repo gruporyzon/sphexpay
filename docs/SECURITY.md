@@ -248,7 +248,28 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   - As RPCs `seller_*` recebem `p_seller` (nulo = própria conta) e conferem `team_can`; as
     antigas `my_*` viraram atalhos com nulo. Só `support` e `admin` atualizam envio.
   - Ficam só com o dono: reembolso (servidor usa a conta do próprio usuário), cobrança, conta
-    Stripe, verificação, catálogo, afiliados, integrações, indicações e segurança.
+    Stripe, verificação, afiliados, integrações, indicações e segurança.
+  - Catálogo (fase 2, `20261022130000_team_catalog`): `catalog.write` só para `admin`. Políticas
+    permissivas de escrita em `products` (INSERT/UPDATE, sem DELETE), `product_offers`,
+    `product_checkouts`, `product_coupons`, `product_order_bumps`, `product_funnel_steps`,
+    `product_funnel_settings`, `product_links` e `shipping_rates`, sempre presas a um produto da
+    mesma conta; leitura de `checkout_versions` e `checkout_analytics_events`.
+  - Continuam só do dono: coprodução e afiliados do produto (divisão de dinheiro), entrega e
+    rastreamento (guardam credenciais), formas de pagamento (servidor usa a conta Stripe do próprio
+    usuário), vitrine e exclusão definitiva. `create_product_v2` cria a entrega do colaborador
+    sempre como "apenas pagamento".
+  - Gatilho `catalog_seller_immutable` impede trocar `seller_id` de qualquer registro do catálogo
+    (quem administra duas contas não move itens entre elas).
+  - As funções de checkout (`save_checkout_draft`, `publish_checkout`, `restore_checkout_version`,
+    `set_default_checkout`) agem na conta dona do checkout e conferem `team_can`; versões e
+    histórico gravam o usuário real (`created_by`, `actor_id`; a inserção da equipe exige
+    `actor_id = auth.uid()`).
+  - Leituras do cliente no catálogo filtram a conta ativa explicitamente (produtos, cupons, fretes,
+    links via `seller_payment_links`).
+  - Armazenamento: `product_images_team_insert` (pasta da conta, cargo conferido) e
+    `checkout_media_team_insert` ({conta}/{checkout}/arquivo, checkout da conta). A regra antiga
+    `checkout_media_owner_insert` comparava a pasta com o nome do checkout e nunca liberava; a
+    nova cobre também o dono.
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

@@ -6,7 +6,7 @@ import type { TeamRole,Workspace } from '../store/useWorkspaceStore'
 export type TeamMember={id:string;email:string;role:TeamRole;status:'invited'|'active'|'expired';invitedAt:string;acceptedAt:string|null;memberName:string|null}
 export const ROLE_LABEL:Record<TeamRole,string>={admin:'Administrador',finance:'Financeiro',support:'Suporte'}
 export const ROLE_DESCRIPTION:Record<TeamRole,string>={
- admin:'Vendas, clientes, encomendas, relatórios, assinaturas, afiliados e financeiro. Não faz reembolso, cobrança nem mexe em conta e segurança.',
+ admin:'Vendas, clientes, encomendas, relatórios, assinaturas, afiliados e financeiro, e edita o catálogo (produtos, ofertas, checkouts, cupons, links e fretes). Não faz reembolso, cobrança, não exclui produto nem mexe em pagamentos, entrega, coprodução, conta e segurança.',
  finance:'Vendas, contestações, clientes, relatórios, assinaturas, afiliados e financeiro (somente leitura).',
  support:'Vendas, clientes, carrinhos e encomendas, com atualização de envio. Sem reembolsos.'
 }

@@ -5,10 +5,10 @@ import { create } from 'zustand'
 // escolhe o que mostrar.
 export type TeamRole='admin'|'finance'|'support'
 export type Workspace={ownerId:string;ownerName:string;ownerEmail:string;role:TeamRole}
-export type TeamPermission='sales.read'|'customers.read'|'shipments.write'|'disputes.read'|'reports.read'|'subscriptions.read'|'affiliates.read'|'finance.read'
+export type TeamPermission='sales.read'|'customers.read'|'shipments.write'|'disputes.read'|'reports.read'|'subscriptions.read'|'affiliates.read'|'finance.read'|'catalog.write'
 
 const ROLE_PERMISSIONS:Record<TeamRole,TeamPermission[]>={
- admin:['sales.read','customers.read','shipments.write','disputes.read','reports.read','subscriptions.read','affiliates.read','finance.read'],
+ admin:['sales.read','customers.read','shipments.write','disputes.read','reports.read','subscriptions.read','affiliates.read','finance.read','catalog.write'],
  finance:['sales.read','customers.read','disputes.read','reports.read','subscriptions.read','affiliates.read','finance.read'],
  support:['sales.read','customers.read','shipments.write']
 }

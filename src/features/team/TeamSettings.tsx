@@ -22,7 +22,7 @@ export function TeamSettings(){useAppLocale(state=>state.locale)
  const copy=async()=>{try{await navigator.clipboard.writeText(link);setCopied(true)}catch{setCopied(false)}}
  return <div className="grid gap-4">
   <div className="p-5 rounded-xl border border-[var(--line)]"><b className="flex items-center gap-2"><Users size={16} aria-hidden="true"/><T>Equipe</T></b>
-   <p className="muted text-sm mt-2"><T>Convide pessoas para ajudar na sua conta. Cada uma entra com o próprio login e só vê o que o cargo libera. Reembolsos, cobranças, conta de recebimento, verificação, integrações e segurança ficam só com você.</T></p>
+   <p className="muted text-sm mt-2"><T>Convide pessoas para ajudar na sua conta. Cada uma entra com o próprio login e só vê o que o cargo libera. Reembolsos, cobranças, conta de recebimento, verificação, integrações, coprodução e segurança ficam só com você.</T></p>
    <ul className="grid gap-1 mt-3 text-sm">{ROLES.map(item=><li key={item}><b><T>{ROLE_LABEL[item]}</T></b><span className="muted">: <T>{ROLE_DESCRIPTION[item]}</T></span></li>)}</ul>
   </div>
   <form className="p-5 rounded-xl border border-[var(--line)] grid gap-3" onSubmit={invite}>
