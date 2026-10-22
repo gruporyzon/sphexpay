@@ -228,6 +228,12 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   oferta, assinatura, valor mínimo e métodos (a sessão da Stripe fica restrita aos métodos do
   cupom). O produto nunca fica abaixo de 1,00 na moeda. A prévia (`GET ?coupon=`) usa o mesmo
   código, com rate limit. `uses_count` só sobe por trigger quando o pedido vira `approved`.
+- Indicação de vendedores: tabelas `referral_codes`, `seller_referrals` e `referral_payouts` com
+  RLS forçada e sem acesso direto do cliente; tudo por RPC. `claim_referral` só vincula conta
+  com até 7 dias, sem venda aprovada, uma vez, sem autoindicação. Comissão fixa no banco
+  (`referral_commission_bps` = 10% da taxa) por 12 meses, só vendas live aprovadas. Quem indica
+  vê só o primeiro nome do indicado e valores. Pagamento mensal registrado pela equipe
+  (`admin_referral_month` / `admin_mark_referral_paid`, exigem `is_dashboard_admin`).
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

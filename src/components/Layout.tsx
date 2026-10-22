@@ -14,12 +14,15 @@ import { WorkspaceTopNavigation } from './navigation/WorkspaceTopNavigation'
 import { WorkspaceSidebar } from './navigation/WorkspaceSidebar'
 import { WorkspaceSelectMenu } from './navigation/WorkspaceSelectMenu'
 import { KycCompletionPrompt } from '../features/kyc/KycCompletionPrompt'
+import { referralService } from '../services/referralService'
 
 export function Layout({ navigationRoot = '/app' }: { navigationRoot?: string }) {
   useNotificationAudio()
   const { signOut, user } = useAuth(), navigate = useNavigate()
   const preference=useDemoStore(state=>state.themePreference),setTheme=useDemoStore(state=>state.setTheme)
   useEffect(()=>{if(preference!=='system')return;const media=matchMedia('(prefers-color-scheme: dark)'),sync=()=>setTheme('system');media.addEventListener('change',sync);return()=>media.removeEventListener('change',sync)},[preference,setTheme])
+  // Conta nova criada por link de indicação: vincula uma vez a quem indicou.
+  useEffect(()=>{if(user?.id)void referralService.claimPending()},[user?.id])
   // Menu lateral só em telas largas; abaixo disso a navegação fica na barra superior.
   const [wide,setWide]=useState(()=>typeof matchMedia==='function'&&matchMedia('(min-width:1100px)').matches)
   useEffect(()=>{if(typeof matchMedia!=='function')return;const media=matchMedia('(min-width:1100px)'),sync=()=>setWide(media.matches);sync();media.addEventListener?.('change',sync);return()=>media.removeEventListener?.('change',sync)},[])
