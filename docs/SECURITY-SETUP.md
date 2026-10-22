@@ -68,7 +68,7 @@ documentos — só nome, tipo de pessoa, quantidade de documentos e o link da fi
       `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`,
       `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` e
       `customer.subscription.deleted` (Pix, boleto e assinaturas dependem deles). Feito em 21/10/2026
-      (endpoint `we_1UNeRx6TbhQ9ChuadmcDCoDH`, 15 eventos). Em 22/10/2026 entraram `charge.dispute.created`, `charge.dispute.updated` e `charge.dispute.closed` (contestações e MED), total de 18.
+      (endpoint `we_1UNeRx6TbhQ9ChuadmcDCoDH`, 15 eventos). Em 22/10/2026 entraram `charge.dispute.created`, `charge.dispute.updated` e `charge.dispute.closed` (contestações e MED), e `invoice.voided` e `invoice.marked_uncollectible` (cobranças personalizadas), total de 20.
 - [x] Stripe Connect da plataforma ativo (a plataforma já cria contas de vendedor) e
       `STRIPE_LIVE_PAYMENTS_ENABLED=true` desde 21/10/2026. A cobrança real só acontece para
       vendedor com KYC aprovado na SphexPay **e** conta Stripe com cobranças habilitadas.
