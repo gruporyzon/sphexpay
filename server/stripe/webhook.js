@@ -6,6 +6,8 @@ const paymentEvents=new Set(['payment_intent.succeeded','payment_intent.payment_
 const METHODS=new Set(['card','pix','boleto'])
 // Assinaturas: cada fatura paga vira uma venda; mudanças de status atualizam as faturas já registradas.
 const subscriptionEvents=new Set(['invoice.paid','invoice.payment_failed','customer.subscription.updated','customer.subscription.deleted'])
+// Contestações de cartão e devoluções Pix (MED) chegam como disputas da Stripe.
+const disputeEvents=new Set(['charge.dispute.created','charge.dispute.updated','charge.dispute.closed'])
 const iso=seconds=>Number.isFinite(seconds)?new Date(seconds*1000).toISOString():null
 const methodOf=(charge,intent)=>{const type=charge?.payment_method_details?.type||(intent.payment_method_types?.length===1?intent.payment_method_types[0]:null);return METHODS.has(type)?type:'card'}
 const id=value=>typeof value==='string'?value:value?.id
@@ -55,6 +57,18 @@ async function processSubscriptionEvent(database,event,stripe){
  if(error)throw new Error('STRIPE_PERSISTENCE_FAILED')
  return data
 }
+async function processDisputeEvent(database,event,stripe){
+ if(!event.account)return{ignored:true}
+ const connection=await one(database.from('stripe_connected_accounts').select('*').eq('stripe_account_id',event.account).eq('stripe_mode',getStripeMode()))
+ if(!connection)return{ignored:true}
+ // Estado atual da disputa, nunca só o snapshot do evento.
+ const dispute=await stripe.disputes.retrieve(event.data.object.id,{},{stripeAccount:event.account})
+ const intentId=id(dispute.payment_intent)
+ if(!intentId||Boolean(dispute.livemode)!==Boolean(event.livemode))return{ignored:true}
+ const {data,error}=await database.rpc('apply_stripe_dispute',{p_event_id:event.id,p_event_type:event.type,p_account:event.account,p_intent:intentId,p_dispute:dispute.id,p_dispute_status:String(dispute.status||''),p_reason:String(dispute.reason||'general'),p_amount:Number(dispute.amount)||0,p_due_by:iso(dispute.evidence_details?.due_by),p_occurred_at:new Date(event.created*1000).toISOString()})
+ if(error)throw new Error('STRIPE_PERSISTENCE_FAILED')
+ return data
+}
 export async function processStripeEvent(database,event,stripe=getStripe()){
  if(typeof event.livemode!=='boolean'||event.livemode!==(getStripeMode()==='live'))return{ignored:true}
  const seen=await one(database.from('stripe_webhook_events').select('event_id').eq('event_id',event.id))
@@ -71,6 +85,7 @@ export async function processStripeEvent(database,event,stripe=getStripe()){
   return{processed:true}
  }
  if(subscriptionEvents.has(event.type))return processSubscriptionEvent(database,event,stripe)
+ if(disputeEvents.has(event.type))return processDisputeEvent(database,event,stripe)
  if(!paymentEvents.has(event.type))return{ignored:true}
  if(!event.account)return{ignored:true} // Direct charges require the connected account context.
  const object=event.data.object
