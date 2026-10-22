@@ -184,6 +184,22 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   dígitos. Não há saque manual: a Stripe repassa automaticamente para a conta cadastrada
   no onboarding; a troca de conta ou de agenda é feita no painel da Stripe.
 
+### Reembolsos, contestações, clientes e carrinhos (Vendas e Relatórios)
+
+- `POST /api/stripe/connect/status?action=refund` (`server/stripe/sales.js`): reembolso total.
+  A venda é carregada por `transaction_id` **e** `user_id` do token, e o `stripe_account_id`
+  gravado na venda precisa ser o da conta conectada do próprio usuário. Só vendas `approved`,
+  dentro do prazo da Stripe (Pix 90, boleto 30, cartão 180 dias). Idempotência
+  `sphex-refund-<id>`, rate limit de 10 a cada 10 min por usuário e registro
+  `sale_refund_requested` na auditoria. Quem tem MFA verificado precisa de sessão `aal2`
+  (`requireStepUp`). O status só muda para `refunded` quando o webhook assinado confirma.
+- Webhook: `charge.dispute.created|updated|closed` consulta a disputa atual na Stripe e grava
+  via `apply_stripe_dispute` (só `service_role`): aberta → `chargeback`, ganha → volta a
+  `approved`. Contestações listadas por `GET ?view=disputes`, sempre da conta do usuário.
+- `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
+  só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
+  visível apenas para o vendedor daquela venda.
+
 ### Webhooks de saída (Integrações)
 
 - Tabelas `seller_webhooks` e `webhook_deliveries` com RLS forçada: o dono lê (o segredo **não**

@@ -4,14 +4,14 @@ import {T} from '../i18n'
 import { useMemo,useState } from 'react'
 import { Card,Empty,SearchBox } from '../components/ui'
 import { useDashboardData } from '../providers/DashboardDataProvider'
-import { EditableCustomers } from './EditableRecords'
+import { RealCustomers } from '../features/customers/RealCustomers'
 import { formatCents } from '../lib/currencyFormat'
 import { useDashboardCurrency } from '../hooks/useDashboardCurrency'
 import { convertDemoCents } from '../demo/demoSimulationEngine'
 
 export default function DemoAwareCustomers(){useAppLocale(state=>state.locale);
  const demo=useDashboardData()
- if(!demo.active)return <EditableCustomers/>
+ if(!demo.active)return <RealCustomers/>
  return <DemoCustomerList/>
 }
 function DemoCustomerList(){useAppLocale(state=>state.locale);
