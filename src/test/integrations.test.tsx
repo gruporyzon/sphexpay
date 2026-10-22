@@ -17,7 +17,7 @@ describe('Integrações',()=>{
   expect(screen.queryByText(/99,98%|API operacional|Hotmart|spx_pub/)).not.toBeInTheDocument()
   const user=userEvent.setup()
   await user.click(screen.getByRole('tab',{name:/Apps/}))
-  expect(screen.getAllByText('Via webhook')).toHaveLength(4)
+  expect(screen.getAllByText('Via webhook')).toHaveLength(8);expect(screen.getByText('Automação sem código')).toBeInTheDocument()
   expect(screen.queryByText('Conectado')).not.toBeInTheDocument()
  })
  it('cria webhook com eventos escolhidos e mostra o segredo uma vez',async()=>{

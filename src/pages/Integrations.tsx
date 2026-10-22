@@ -13,11 +13,16 @@ import { WEBHOOK_EVENTS,sellerWebhookService,type SellerWebhook,type WebhookDeli
 type Tab='Webhooks'|'Entregas'|'Apps'|'Documentação'
 const EVENT_LABEL:Record<string,string>={...Object.fromEntries(WEBHOOK_EVENTS.map(item=>[item.value,item.label])),'webhook.test':'Teste'}
 const DELIVERY:Record<WebhookDelivery['status'],{label:string;tone:'ok'|'warn'|'bad'|'info'}>={succeeded:{label:'Entregue',tone:'ok'},pending:{label:'Aguardando nova tentativa',tone:'warn'},sending:{label:'Enviando',tone:'info'},failed:{label:'Falhou',tone:'bad'}}
+// Só ferramentas que aceitam um webhook genérico com JSON; o formato do evento é o da SphexPay.
 const AUTOMATION_APPS=[
- {name:'Zapier',mark:'Z',text:'Use o gatilho "Webhooks by Zapier · Catch Hook" e cole a URL gerada pelo Zapier aqui.'},
- {name:'Make',mark:'M',text:'Crie um cenário com o módulo "Webhooks · Custom webhook" e cadastre o endereço gerado.'},
- {name:'n8n',mark:'n',text:'Adicione um nó "Webhook" (método POST) e use a URL de produção do fluxo.'},
- {name:'Pipedream',mark:'P',text:'Crie um workflow com gatilho "HTTP / Webhook" e cadastre a URL do endpoint.'}
+ {category:'Automação sem código',name:'Zapier',mark:'Z',text:'Use o gatilho "Webhooks by Zapier · Catch Hook" e cole a URL gerada pelo Zapier aqui.'},
+ {category:'Automação sem código',name:'Make',mark:'M',text:'Crie um cenário com o módulo "Webhooks · Custom webhook" e cadastre o endereço gerado.'},
+ {category:'Automação sem código',name:'Pabbly Connect',mark:'P',text:'Crie um workflow com o gatilho "Webhook" e cadastre a URL que o Pabbly gerar.'},
+ {category:'Automação sem código',name:'Albato',mark:'A',text:'Escolha o app "Webhooks" como gatilho e use a URL de recebimento gerada pelo Albato.'},
+ {category:'Código aberto',name:'n8n',mark:'n',text:'Adicione um nó "Webhook" (método POST) e use a URL de produção do fluxo.'},
+ {category:'Código aberto',name:'Activepieces',mark:'A',text:'Crie um fluxo com o gatilho "Webhook" e cadastre a URL de produção.'},
+ {category:'Desenvolvedores',name:'Pipedream',mark:'P',text:'Crie um workflow com gatilho "HTTP / Webhook" e cadastre a URL do endpoint.'},
+ {category:'Desenvolvedores',name:'Seu servidor',mark:'{}',text:'Receba o POST no seu sistema e valide a assinatura. Veja a aba Documentação.'}
 ]
 const EXAMPLE_PAYLOAD=`{
   "id": "evt_3f1c...",
@@ -118,7 +123,7 @@ function DeliveriesPanel({deliveries,webhooks,reload}:{deliveries:WebhookDeliver
 
 function AppsPanel({connect}:{connect:(name:string)=>void}){useAppLocale(state=>state.locale)
  return <section className="integration-panel"><div className="integration-section-head"><div><span className="section-eyebrow"><Link2 size={13}/><T> AUTOMAÇÕES</T></span><h2><T>Conecte por webhook</T></h2><p><T>Estas ferramentas recebem webhooks. Gere a URL nelas e cadastre aqui para levar suas vendas a planilhas, CRMs e mensagens.</T></p></div></div>
-  <div className="integration-app-grid">{AUTOMATION_APPS.map(app=><article className="integration-app-card" key={app.name}><div className="integration-app-top"><i>{app.mark}</i><Badge tone="info"><T>Via webhook</T></Badge></div><h3>{app.name}</h3><p><T>{app.text}</T></p><button className="btn btn-primary" onClick={()=>connect(app.name)}><Plus size={14}/><T> Cadastrar URL</T></button></article>)}</div>
+  {[...new Set(AUTOMATION_APPS.map(app=>app.category))].map(category=><div key={category} className="integration-app-category"><h3 className="label"><T>{category}</T></h3><div className="integration-app-grid">{AUTOMATION_APPS.filter(app=>app.category===category).map(app=><article className="integration-app-card" key={app.name}><div className="integration-app-top"><i>{app.mark}</i><Badge tone="info"><T>Via webhook</T></Badge></div><h3>{app.name}</h3><p><T>{app.text}</T></p><button className="btn btn-primary" onClick={()=>connect(app.name)}><Plus size={14}/><T> Cadastrar URL</T></button></article>)}</div></div>)}
  </section>
 }
 
