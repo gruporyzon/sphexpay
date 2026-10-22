@@ -2,7 +2,8 @@ import {z} from 'zod'
 import {ConnectError,configuredAppUrl,findConnection,retrieveAndSync} from './connect.js'
 import {getStripe,getStripeMode} from './client.js'
 
-const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),affiliateCode:z.string().regex(/^AFF-[A-Z0-9]{6,20}$/).optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
+const UF=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
+const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),affiliateCode:z.string().regex(/^AFF-[A-Z0-9]{6,20}$/).optional(),shipping:z.object({rateId:z.uuid(),address:z.object({postalCode:z.string().regex(/^\d{5}-?\d{3}$/),street:z.string().trim().min(2).max(120),number:z.string().trim().min(1).max(20),complement:z.string().trim().max(80).optional(),district:z.string().trim().min(2).max(80),city:z.string().trim().min(2).max(80),state:z.enum(UF)}).strict()}).strict().optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
 const one=async query=>{const {data,error}=await query.maybeSingle();if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar o pagamento.');return data}
 const unavailable=()=>new ConnectError('CHECKOUT_UNAVAILABLE',409,'Esta oferta não está disponível para pagamento.')
 export const PAYMENT_METHODS=['card','pix','boleto']
@@ -29,6 +30,15 @@ export function validateCheckoutId(value){
  if(!z.uuid().safeParse(value).success)throw new ConnectError('INVALID_CHECKOUT_INPUT',400,'Informe um checkout válido.')
  return value
 }
+// Produto físico, venda única e vendedor com frete ativo: o comprador escolhe frete e informa o
+// endereço. Sem frete cadastrado, o produto segue vendendo como antes (sem entrega).
+export async function shippingRatesFor(database,product,offer){
+ if(product.product_type!=='physical'||offer.billing_type!=='one_time')return[]
+ const {data,error}=await database.from('shipping_rates').select('id,name,carrier,price_cents,min_order_cents,delivery_days_min,delivery_days_max').eq('seller_id',product.seller_id).eq('active',true).order('price_cents').limit(20)
+ if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar as opções de entrega.')
+ return(data||[]).filter(rate=>offer.price_cents>=Number(rate.min_order_cents||0))
+}
+const shippingInvalid=()=>new ConnectError('INVALID_SHIPPING',400,'Escolha uma opção de entrega e informe o endereço completo.')
 // Afiliado do link (?ref=AFF-...): precisa estar ativo, ser do mesmo vendedor e ter o produto
 // vinculado. Código inválido não bloqueia a compra, só não gera comissão. Autoindicação
 // (mesmo e-mail do comprador) não gera comissão.
@@ -75,7 +85,7 @@ export async function loadOffer(database,checkoutId){
  if(!c?.published_version_id)throw unavailable()
  const v=await one(database.from('checkout_versions').select('offer_id').eq('id',c.published_version_id).eq('checkout_id',c.id).eq('seller_id',c.seller_id))
  if(!v)throw unavailable()
- const p=await one(database.from('products').select('id,name,seller_id,currency').eq('id',c.product_id).eq('seller_id',c.seller_id).eq('status','active').eq('active',true).is('deleted_at',null))
+ const p=await one(database.from('products').select('id,name,seller_id,currency,product_type').eq('id',c.product_id).eq('seller_id',c.seller_id).eq('status','active').eq('active',true).is('deleted_at',null))
  const o=await one(database.from('product_offers').select('*').eq('id',v.offer_id).eq('product_id',c.product_id).eq('seller_id',c.seller_id).eq('status','active').is('deleted_at',null))
  const settings=await one(database.from('product_payment_settings').select('enabled_methods').eq('product_id',c.product_id).eq('seller_id',c.seller_id))
  if(!settings?.enabled_methods?.some(method=>PAYMENT_METHODS.includes(method)))throw unavailable()
@@ -84,7 +94,8 @@ export async function loadOffer(database,checkoutId){
 }
 export async function checkoutPaymentAvailability(database,checkoutId,stripe){
  const {c,p,o,settings}=await loadOffer(database,checkoutId)
- let mode='',paymentAvailable=false,embeddedAvailable=false,methods=[],verified=true
+ let mode='',paymentAvailable=false,embeddedAvailable=false,methods=[],verified=true,shippingRates=[]
+ try{shippingRates=await shippingRatesFor(database,p,o)}catch{/* Sem fretes: checkout sem entrega. */}
  try{
   mode=getStripeMode()
   feeConfiguration(o.price_cents)
@@ -98,7 +109,7 @@ export async function checkoutPaymentAvailability(database,checkoutId,stripe){
   }
   embeddedAvailable=paymentAvailable&&Boolean(checkoutPublishableKey())
  }catch{/* Presentation remains available when the processor isn't configured. */}
- return{productName:p.name,amountCents:o.price_cents,currency:o.currency,billingType:o.billing_type,billingInterval:o.billing_type==='subscription'?o.billing_interval:null,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
+ return{productName:p.name,amountCents:o.price_cents,currency:o.currency,billingType:o.billing_type,billingInterval:o.billing_type==='subscription'?o.billing_interval:null,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],shippingRequired:shippingRates.length>0,shippingRates:shippingRates.map(rate=>({id:rate.id,name:rate.name,carrier:rate.carrier||null,priceCents:Number(rate.price_cents),deliveryDaysMin:rate.delivery_days_min,deliveryDaysMax:rate.delivery_days_max})),paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
 }
 export async function createCheckout(database,input,stripe=getStripe()){
  const value=validateCheckoutInput(input)
@@ -111,14 +122,23 @@ export async function createCheckout(database,input,stripe=getStripe()){
  if(!current.stripe_charges_enabled||!current.stripe_payouts_enabled||!methods.length)throw unavailable()
  // Live charging is a deliberate, separate release decision.
  if(getStripeMode()==='live'&&process.env.STRIPE_LIVE_PAYMENTS_ENABLED!=='true')throw new ConnectError('LIVE_PAYMENTS_DISABLED',503,'Pagamentos de produção ainda não foram habilitados.')
- const {fee,rule}=feeConfiguration(o.price_cents)
+ const rates=await shippingRatesFor(database,p,o)
+ let shipping=null
+ if(rates.length){
+  const rate=rates.find(item=>item.id===value.shipping?.rateId)
+  if(!rate||!value.shipping)throw shippingInvalid()
+  const address=value.shipping.address
+  shipping={rateId:rate.id,cents:Number(rate.price_cents),address:{recipient:value.buyer.name,postalCode:address.postalCode.replace(/\D/g,'').replace(/^(\d{5})(\d{3})$/,'$1-$2'),street:address.street,number:address.number,complement:address.complement||'',district:address.district,city:address.city,state:address.state,country:'BR'}}
+ }
+ const amount=o.price_cents+(shipping?.cents||0)
+ const {fee,rule}=feeConfiguration(amount)
  const uiMode=value.uiMode||'hosted',publishableKey=uiMode==='elements'?checkoutPublishableKey():undefined
  const affiliate=await resolveAffiliate(database,{sellerId:c.seller_id,productId:p.id,code:value.affiliateCode,buyerEmail:value.buyer.email,amountCents:o.price_cents,currency:o.currency})
- const snapshot={...(affiliate?{affiliate_id:affiliate.affiliateId,affiliate_commission_cents:affiliate.commissionCents}:{}),request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:o.price_cents,currency:o.currency,fee_cents:fee,fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
+ const snapshot={...(affiliate?{affiliate_id:affiliate.affiliateId,affiliate_commission_cents:affiliate.commissionCents}:{}),request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:amount,currency:o.currency,fee_cents:fee,...(shipping?{shipping_rate_id:shipping.rateId,shipping_cents:shipping.cents,shipping_address:shipping.address,fulfillment_status:'pending'}:{}),fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
  const {error}=await database.from('stripe_checkout_orders').upsert(snapshot,{onConflict:'request_key',ignoreDuplicates:true})
  if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível reservar o pagamento.')
  const order=await one(database.from('stripe_checkout_orders').select('*').eq('request_key',value.requestKey))
- if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode||(order.billing_type||'one_time')!==o.billing_type)throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
+ if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode||(order.billing_type||'one_time')!==o.billing_type||(order.shipping_rate_id||null)!==(shipping?.rateId||null)||(order.shipping_address?.postalCode||null)!==(shipping?.address.postalCode||null)||(order.shipping_address?.number||null)!==(shipping?.address.number||null))throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
  if(order.session_id){const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:order.stripe_account_id});return checkoutPresentation(session,order,publishableKey)}
  if(!order.checkout_origin||!Number.isFinite(new Date(order.created_at).getTime())||Date.now()-new Date(order.created_at).getTime()>23*3600000)throw new ConnectError('PAYMENT_RECONCILIATION_REQUIRED',409,'Esta tentativa precisa ser reconciliada antes de continuar.')
  const origin=order.checkout_origin,metadata={sphex_order_id:order.id,sphex_product_id:order.product_id,sphex_seller_id:order.seller_id}
@@ -130,8 +150,8 @@ export async function createCheckout(database,input,stripe=getStripe()){
    ...returnUrls},{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
   :await stripe.checkout.sessions.create({mode:'payment',payment_method_types:methods,
   ...(methods.some(method=>method!=='card')?{payment_method_options:{...(methods.includes('pix')?{pix:{expires_after_seconds:1800}}:{}),...(methods.includes('boleto')?{boleto:{expires_after_days:3}}:{})}}:{}),customer_email:order.buyer_email,client_reference_id:order.id,metadata,
-  line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents,product_data:{name:order.product_name}}}],
-  payment_intent_data:{metadata,receipt_email:order.buyer_email,...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
+  line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents-(order.shipping_cents||0),product_data:{name:order.product_name}}},...(order.shipping_cents?[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.shipping_cents,product_data:{name:'Frete'}}}]:[])],
+  payment_intent_data:{metadata,receipt_email:order.buyer_email,...(order.shipping_address?{shipping:{name:order.shipping_address.recipient,address:{line1:`${order.shipping_address.street}, ${order.shipping_address.number}`,line2:[order.shipping_address.complement,order.shipping_address.district].filter(Boolean).join(' · ')||undefined,city:order.shipping_address.city,state:order.shipping_address.state,postal_code:order.shipping_address.postalCode,country:'BR'}}}:{}),...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
   ...returnUrls
  },{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
  const saved=await database.from('stripe_checkout_orders').update({session_id:session.id,updated_at:new Date().toISOString()}).eq('id',order.id)

@@ -2,13 +2,14 @@ import {T} from '../i18n'
 import {translate as uiText} from '../i18n'
 import {useAppLocale} from '../i18n/localeStore'
 import { NavLink,useLocation } from 'react-router-dom'
-import { CreditCard,Link2,Package } from 'lucide-react'
+import { CreditCard,Link2,Package,Truck } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 const sections=[
  {label:'Produtos',path:'/app/produtos',icon:Package,end:true},
  {label:'Checkout',path:'/app/produtos/checkout',icon:CreditCard,end:false},
  {label:'Links de pagamento',path:'/app/produtos/links',icon:Link2,end:false},
+ {label:'Fretes',path:'/app/produtos/fretes',icon:Truck,end:false},
 ] as const
 
 export default function ProductsHub({children}:{children:ReactNode}){useAppLocale(state=>state.locale);

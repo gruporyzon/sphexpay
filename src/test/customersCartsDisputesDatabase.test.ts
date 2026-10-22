@@ -31,6 +31,8 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20261022050000_custom_charges.sql'))
  await db.exec(read('supabase/migrations/20260831223000_affiliates_v1.sql').replace('create extension if not exists pgcrypto;',''))
  await db.exec(read('supabase/migrations/20261022060000_affiliate_attribution.sql'))
+ await db.exec(`alter table products add column if not exists product_type text not null default 'digital';alter table products add column if not exists deleted_at timestamptz;alter table product_checkouts add column if not exists status text not null default 'published';alter table product_checkouts add column if not exists deleted_at timestamptz;`)
+ await db.exec(read('supabase/migrations/20261022070000_shipping_and_fulfillment.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -39,7 +41,7 @@ beforeAll(async()=>{
 },30000)
 afterAll(async()=>{await db?.close()})
 beforeEach(async()=>{
- await db.exec('truncate affiliate_commission_payments,custom_charges,stripe_webhook_events,stripe_checkout_orders,payment_transaction_events,financial_event_outbox,payment_transactions,stripe_account_requests')
+ await db.exec('truncate shipping_rates,affiliate_commission_payments,custom_charges,stripe_webhook_events,stripe_checkout_orders,payment_transaction_events,financial_event_outbox,payment_transactions,stripe_account_requests')
  await db.query(`insert into stripe_checkout_orders(id,request_key,checkout_id,product_id,seller_id,stripe_account_id,offer_id,product_name,amount_cents,currency,fee_cents,fee_rule,buyer_email,buyer_name)
  values($1,$1,$2,$3,$4,'acct_seller',$5,'Produto',10000,'BRL',100,'bps:100','buyer@example.test','Comprador')`,[order,checkout,product,seller,offer])
 })
@@ -140,5 +142,36 @@ describe('afiliados no banco',()=>{
  })
  it('impede comissão maior que a venda',async()=>{
   await expect(db.query('update stripe_checkout_orders set affiliate_commission_cents=999999 where id=$1',[order])).rejects.toThrow()
+ })
+})
+
+describe('frete e encomendas no banco',()=>{
+ const rate='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'
+ const addRate=(active=true)=>db.query("insert into shipping_rates(id,seller_id,name,price_cents,active) values($1,$2,'Padrão',2000,$3)",[rate,seller,active])
+ const ship=()=>db.query(`update stripe_checkout_orders set shipping_rate_id=$1,shipping_cents=2000,amount_cents=12000,shipping_address='{"recipient":"Comprador","postalCode":"01310-100","street":"Av. Paulista","number":"1000","district":"Bela Vista","city":"São Paulo","state":"SP"}' where id=$2`,[rate,order])
+ it('mostra fretes ativos só para produto físico publicado',async()=>{
+  await addRate();await db.query("update product_checkouts set status='published'")
+  expect((await db.query('select * from get_checkout_shipping_rates($1)',[checkout])).rows).toHaveLength(0)
+  await db.query("update products set product_type='physical'")
+  expect((await db.query('select * from get_checkout_shipping_rates($1)',[checkout])).rows).toHaveLength(1)
+  await db.query('update shipping_rates set active=false')
+  expect((await db.query('select * from get_checkout_shipping_rates($1)',[checkout])).rows).toHaveLength(0)
+  await db.query("update products set product_type='digital'");await db.query("update product_checkouts set status='draft'")
+ })
+ it('encomenda paga aparece para o dono e recebe status e rastreio validados',async()=>{
+  await addRate();await ship();await apply(order,'evt_s1','approved','pi_sale')
+  const rows=await as<{fulfillment_status:string;shipping_rate_name:string}>('select * from my_shipments()')
+  expect(rows).toHaveLength(1);expect(rows[0]).toMatchObject({fulfillment_status:'pending',shipping_rate_name:'Padrão'})
+  await as(`select update_shipment('${order}','shipped',' BR123456789BR ')`)
+  const saved=(await db.query<{fulfillment_status:string;tracking_code:string;shipped_at:string|null}>('select fulfillment_status,tracking_code,shipped_at from stripe_checkout_orders')).rows[0]
+  expect(saved).toMatchObject({fulfillment_status:'shipped',tracking_code:'BR123456789BR'});expect(saved.shipped_at).not.toBeNull()
+  await expect(as(`select update_shipment('${order}','shipped','<script>')`)).rejects.toThrow(/INVALID_TRACKING/)
+  await expect(as(`select update_shipment('${order}','perdido',null)`)).rejects.toThrow(/INVALID_STATUS/)
+  await db.exec(`select set_config('test.uid','${second}',false)`)
+  await expect(db.query(`select update_shipment('${order}','delivered',null)`)).rejects.toThrow(/ORDER_NOT_FOUND/)
+  await db.exec(`select set_config('test.uid','',false)`)
+ })
+ it('frete não pode ser maior ou igual ao total do pedido',async()=>{
+  await expect(db.query('update stripe_checkout_orders set shipping_cents=amount_cents where id=$1',[order])).rejects.toThrow()
  })
 })
