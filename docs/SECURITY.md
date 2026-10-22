@@ -66,6 +66,10 @@ Rotas `/api/*` recebem ainda `Cache-Control: no-store` e `X-Robots-Tag: noindex`
   `/app/integracoes`). Configurações **não** é protegida (é onde o MFA é gerenciado) para
   evitar lockout.
 - Contas sem MFA não são bloqueadas — o enforcement se aplica a quem optou pelo segundo fator.
+- Aparelhos conectados (**Configurações › Segurança**): `my_sessions()` lista só as sessões do
+  próprio `auth.uid()` em `auth.sessions` (aparelho, IP, último acesso, nível aal), só leitura.
+  Encerrar acesso usa apenas a API oficial `auth.signOut({scope:'others'})`; a SphexPay não
+  apaga linhas do schema `auth`. Nome de exibição via `auth.updateUser`.
 
 ## 5. Rate limiting
 
