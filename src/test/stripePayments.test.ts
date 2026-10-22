@@ -2,7 +2,7 @@ import {Readable} from 'node:stream'
 import Stripe from 'stripe'
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
-import {checkoutSessionStatus,checkoutPaymentAvailability,configureProductPayments,createCheckout,feeConfiguration,validateCheckoutInput} from '../../server/stripe/payments.js'
+import {applyCoupon,checkoutSessionStatus,checkoutPaymentAvailability,configureProductPayments,createCheckout,feeConfiguration,previewCoupon,validateCheckoutInput} from '../../server/stripe/payments.js'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
 import {processStripeEvent,stripeWebhookHandler} from '../../server/stripe/webhook.js'
 // @ts-expect-error Backend JavaScript stays outside the frontend bundle.
@@ -18,7 +18,7 @@ function fixture(){
   product_offers:[{id:'offer',product_id:'product',seller_id:'seller',status:'active',deleted_at:null,price_cents:10000,currency:'BRL',billing_type:'one_time',installments:1}],
   product_payment_settings:[{product_id:'product',seller_id:'seller',enabled_methods:['card']}],
   stripe_connected_accounts:[{stripe_mode:'test',user_id:'seller',stripe_account_id:'acct_seller',stripe_account_type:'express',stripe_charges_enabled:true,stripe_payouts_enabled:true}],
-  stripe_checkout_orders:[],stripe_webhook_events:[],kyc_profiles:[{user_id:'seller',status:'approved'}],shipping_rates:[]
+  stripe_checkout_orders:[],stripe_webhook_events:[],kyc_profiles:[{user_id:'seller',status:'approved'}],shipping_rates:[],product_coupons:[]
  }
  const database={rpc:vi.fn(async()=>({data:{duplicate:false},error:null})),from:vi.fn((table:string)=>{
   const filters:((row:any)=>boolean)[]=[];let patch:any
@@ -97,6 +97,28 @@ describe('pagamentos Stripe',()=>{
   const {database,stripe,tables}=fixture();tables.products[0].product_type='physical'
   await createCheckout(database,input(),stripe)
   expect(tables.stripe_checkout_orders[0]).toMatchObject({amount_cents:10000});expect(tables.stripe_checkout_orders[0].shipping_address).toBeUndefined()
+ })
+ it('cupom reduz o preço no servidor, restringe métodos e é recusado fora das regras',async()=>{
+  const {database,stripe,tables}=fixture()
+  const coupon:any={id:'77777777-7777-4777-8777-777777777777',product_id:'product',seller_id:'seller',code:'BEMVINDO',discount_type:'percentage',discount_value:2000,offer_ids:[],uses_count:0,total_limit:null,starts_at:null,expires_at:null,minimum_cents:null,allowed_methods:[],allow_subscription:true,status:'active',deleted_at:null,per_customer_limit:null,first_purchase_only:false}
+  tables.product_coupons.push(coupon)
+  expect(await previewCoupon(database,checkoutId,'bemvindo')).toEqual({valid:true,code:'BEMVINDO',discountCents:2000,finalCents:8000})
+  await createCheckout(database,{...input(),couponCode:'bemvindo'},stripe)
+  expect(tables.stripe_checkout_orders[0]).toMatchObject({amount_cents:8000,discount_cents:2000,coupon_id:coupon.id,fee_cents:80})
+  expect(stripe.checkout.sessions.create.mock.calls[0][0].line_items[0].price_data.unit_amount).toBe(8000)
+  await expect(previewCoupon(database,checkoutId,'NAOEXISTE')).rejects.toMatchObject({code:'COUPON_INVALID',message:'Cupom inválido.'})
+  const offer={id:'offer',price_cents:10000,billing_type:'one_time'}
+  const base={sellerId:'seller',productId:'product',offer,code:'BEMVINDO',methods:['card','pix']}
+  coupon.expires_at=new Date(Date.now()-1000).toISOString()
+  await expect(applyCoupon(database,base)).rejects.toMatchObject({message:'Este cupom expirou.'})
+  coupon.expires_at=null;coupon.total_limit=1;coupon.uses_count=1
+  await expect(applyCoupon(database,base)).rejects.toMatchObject({message:'Este cupom esgotou.'})
+  coupon.total_limit=null;coupon.allowed_methods=['pix']
+  expect((await applyCoupon(database,base)).methods).toEqual(['pix'])
+  coupon.allowed_methods=['boleto']
+  await expect(applyCoupon(database,base)).rejects.toMatchObject({code:'COUPON_INVALID'})
+  coupon.allowed_methods=[];coupon.discount_type='fixed';coupon.discount_value=9950
+  await expect(applyCoupon(database,base)).rejects.toMatchObject({code:'COUPON_INVALID'})
  })
  it('cria direct charge usando apenas preço, produto e conta do banco',async()=>{
   const {database,stripe,tables}=fixture();await createCheckout(database,input(),stripe)

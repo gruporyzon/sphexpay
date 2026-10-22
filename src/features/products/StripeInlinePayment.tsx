@@ -12,15 +12,15 @@ import type {ShippingRateOption} from './checkoutShipping'
 
 type Props={shippingRates?:ShippingRateOption[];checkoutId:string;buyer:CheckoutBuyer;mode:string;price:number;currency:string;design:CheckoutDesign;render:(parts:CheckoutPaymentParts)=>ReactNode;onComplete:(sessionId:string)=>void}
 export function StripeInlinePayment({shippingRates,checkoutId,buyer,mode,price,currency,design,render,onComplete}:Props){
- const shippingKey=JSON.stringify(buyer.shipping||null)
+ const shippingKey=JSON.stringify({shipping:buyer.shipping||null,coupon:buyer.coupon||null})
  const [session,setSession]=useState<Session|null>(null),[stripe,setStripe]=useState<Stripe|null>(null),[error,setError]=useState(''),[retry,setRetry]=useState(0)
  useEffect(()=>{
   let active=true;setSession(null);setError('')
-  const shipping=JSON.parse(shippingKey) as CheckoutBuyer['shipping']|null,shippingCents=shippingRates?.find(rate=>rate.id===shipping?.rateId)?.priceCents||0
-  reserveInlineCheckout(checkoutId,{name:buyer.name,email:buyer.email,...(shipping?{shipping}:{})},mode).then(async data=>{
+  const {shipping,coupon}=JSON.parse(shippingKey) as {shipping:CheckoutBuyer['shipping']|null;coupon:CheckoutBuyer['coupon']|null},shippingCents=shippingRates?.find(rate=>rate.id===shipping?.rateId)?.priceCents||0,discountCents=coupon?.discountCents||0
+  reserveInlineCheckout(checkoutId,{name:buyer.name,email:buyer.email,...(shipping?{shipping}:{}),...(coupon?{coupon}:{})},mode).then(async data=>{
    if(!active)return
    if(data.completed){onComplete(data.sessionId);return}
-   if(data.amountCents!==price+shippingCents||data.currency!==currency)throw new Error('O valor da oferta foi alterado. Atualize a página para revisar antes de pagar.')
+   if(data.amountCents!==price-discountCents+shippingCents||data.currency!==currency)throw new Error('O valor da oferta foi alterado. Atualize a página para revisar antes de pagar.')
    const client=await paymentClient(data)
    if(!client)throw new Error('Não foi possível carregar a Stripe. Tente novamente.')
    if(active){setStripe(client);setSession(data)}

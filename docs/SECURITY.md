@@ -219,6 +219,11 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
   item separado; o webhook continua conferindo o total do pedido. Endereço guardado no pedido
   (`shipping_address`) e visível só ao vendedor (`my_shipments`); `update_shipment` aceita só os
   status previstos e rastreio com caracteres seguros.
+- Cupons: o checkout envia só o código (`couponCode`, regex). O servidor busca o cupom do próprio
+  produto e vendedor e confere status, datas, limite total e por cliente, primeira compra,
+  oferta, assinatura, valor mínimo e métodos (a sessão da Stripe fica restrita aos métodos do
+  cupom). O produto nunca fica abaixo de 1,00 na moeda. A prévia (`GET ?coupon=`) usa o mesmo
+  código, com rate limit. `uses_count` só sobe por trigger quando o pedido vira `approved`.
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

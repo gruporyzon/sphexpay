@@ -3,7 +3,7 @@ import {ConnectError,configuredAppUrl,findConnection,retrieveAndSync} from './co
 import {getStripe,getStripeMode} from './client.js'
 
 const UF=['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']
-const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),affiliateCode:z.string().regex(/^AFF-[A-Z0-9]{6,20}$/).optional(),shipping:z.object({rateId:z.uuid(),address:z.object({postalCode:z.string().regex(/^\d{5}-?\d{3}$/),street:z.string().trim().min(2).max(120),number:z.string().trim().min(1).max(20),complement:z.string().trim().max(80).optional(),district:z.string().trim().min(2).max(80),city:z.string().trim().min(2).max(80),state:z.enum(UF)}).strict()}).strict().optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
+const inputSchema=z.object({checkoutId:z.uuid(),requestKey:z.uuid(),uiMode:z.enum(['hosted','elements']).optional(),affiliateCode:z.string().regex(/^AFF-[A-Z0-9]{6,20}$/).optional(),couponCode:z.string().trim().min(1).max(40).regex(/^[A-Za-z0-9_-]+$/).optional(),shipping:z.object({rateId:z.uuid(),address:z.object({postalCode:z.string().regex(/^\d{5}-?\d{3}$/),street:z.string().trim().min(2).max(120),number:z.string().trim().min(1).max(20),complement:z.string().trim().max(80).optional(),district:z.string().trim().min(2).max(80),city:z.string().trim().min(2).max(80),state:z.enum(UF)}).strict()}).strict().optional(),buyer:z.object({email:z.email().max(254),name:z.string().trim().min(2).max(120)}).strict()}).strict()
 const one=async query=>{const {data,error}=await query.maybeSingle();if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível consultar o pagamento.');return data}
 const unavailable=()=>new ConnectError('CHECKOUT_UNAVAILABLE',409,'Esta oferta não está disponível para pagamento.')
 export const PAYMENT_METHODS=['card','pix','boleto']
@@ -39,6 +39,41 @@ export async function shippingRatesFor(database,product,offer){
  return(data||[]).filter(rate=>offer.price_cents>=Number(rate.min_order_cents||0))
 }
 const shippingInvalid=()=>new ConnectError('INVALID_SHIPPING',400,'Escolha uma opção de entrega e informe o endereço completo.')
+// Cupom do produto: regras conferidas no servidor (status, datas, limites, oferta, assinatura,
+// valor mínimo, métodos permitidos, limite por cliente e primeira compra). O desconto reduz o
+// preço do produto; o uso só é contado quando o pagamento é aprovado (trigger no banco).
+const COUPON_REASON={invalid:'Cupom inválido.',not_started:'Este cupom ainda não está valendo.',expired:'Este cupom expirou.',limit_reached:'Este cupom esgotou.',offer_not_allowed:'Este cupom não vale para esta oferta.',subscription_not_allowed:'Este cupom não vale para assinatura.',minimum_not_met:'O valor mínimo para este cupom não foi atingido.',payment_method_not_allowed:'Este cupom não vale para as formas de pagamento disponíveis.',customer_limit:'Você já usou este cupom o número máximo de vezes.',first_purchase_only:'Este cupom é só para a primeira compra.'}
+const couponError=reason=>new ConnectError('COUPON_INVALID',409,COUPON_REASON[reason]||COUPON_REASON.invalid)
+export async function applyCoupon(database,{sellerId,productId,offer,code,buyerEmail,methods}){
+ if(!code)return null
+ const coupon=await one(database.from('product_coupons').select('*').eq('product_id',productId).eq('seller_id',sellerId).eq('code',code.trim().toUpperCase()).eq('status','active').is('deleted_at',null))
+ if(!coupon)throw couponError('invalid')
+ const now=Date.now()
+ if(coupon.starts_at&&now<new Date(coupon.starts_at).getTime())throw couponError('not_started')
+ if(coupon.expires_at&&now>=new Date(coupon.expires_at).getTime())throw couponError('expired')
+ if(coupon.total_limit&&coupon.uses_count>=coupon.total_limit)throw couponError('limit_reached')
+ if(coupon.offer_ids?.length&&!coupon.offer_ids.includes(offer.id))throw couponError('offer_not_allowed')
+ if(offer.billing_type==='subscription'&&coupon.allow_subscription===false)throw couponError('subscription_not_allowed')
+ if(coupon.minimum_cents&&offer.price_cents<Number(coupon.minimum_cents))throw couponError('minimum_not_met')
+ const allowed=coupon.allowed_methods?.length?methods.filter(method=>coupon.allowed_methods.includes(method)):methods
+ if(!allowed.length)throw couponError('payment_method_not_allowed')
+ if(buyerEmail&&(coupon.per_customer_limit||coupon.first_purchase_only)){
+  const email=buyerEmail.trim().toLowerCase()
+  if(coupon.per_customer_limit){const {count,error}=await database.from('stripe_checkout_orders').select('id',{count:'exact',head:true}).eq('coupon_id',coupon.id).eq('buyer_email',email).in('status',['approved','refunded']);if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível validar o cupom.');if((count||0)>=coupon.per_customer_limit)throw couponError('customer_limit')}
+  if(coupon.first_purchase_only){const {count,error}=await database.from('stripe_checkout_orders').select('id',{count:'exact',head:true}).eq('seller_id',sellerId).eq('buyer_email',email).in('status',['approved','refunded']);if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível validar o cupom.');if((count||0)>0)throw couponError('first_purchase_only')}
+ }
+ const value=Number(coupon.discount_value)
+ const discount=coupon.discount_type==='percentage'?Math.floor(offer.price_cents*Math.min(value,10000)/10000):Math.min(offer.price_cents,value)
+ // A Stripe exige um valor mínimo por cobrança: o produto nunca fica abaixo de R$ 1,00 / US$ 1 / € 1.
+ if(offer.price_cents-discount<100)throw couponError('invalid')
+ return{couponId:coupon.id,code:coupon.code,discountCents:discount,methods:allowed}
+}
+export async function previewCoupon(database,checkoutId,code){
+ if(typeof code!=='string'||!/^[A-Za-z0-9_-]{1,40}$/.test(code))throw couponError('invalid')
+ const {p,o,c,settings}=await loadOffer(database,checkoutId)
+ const result=await applyCoupon(database,{sellerId:c.seller_id,productId:p.id,offer:o,code,methods:settings.enabled_methods.filter(method=>PAYMENT_METHODS.includes(method))})
+ return{valid:true,code:result.code,discountCents:result.discountCents,finalCents:o.price_cents-result.discountCents}
+}
 // Afiliado do link (?ref=AFF-...): precisa estar ativo, ser do mesmo vendedor e ter o produto
 // vinculado. Código inválido não bloqueia a compra, só não gera comissão. Autoindicação
 // (mesmo e-mail do comprador) não gera comissão.
@@ -96,6 +131,8 @@ export async function checkoutPaymentAvailability(database,checkoutId,stripe){
  const {c,p,o,settings}=await loadOffer(database,checkoutId)
  let mode='',paymentAvailable=false,embeddedAvailable=false,methods=[],verified=true,shippingRates=[]
  try{shippingRates=await shippingRatesFor(database,p,o)}catch{/* Sem fretes: checkout sem entrega. */}
+ let couponsEnabled=false
+ try{const {count}=await database.from('product_coupons').select('id',{count:'exact',head:true}).eq('product_id',p.id).eq('status','active').is('deleted_at',null);couponsEnabled=(count||0)>0}catch{/* Sem cupons visíveis. */}
  try{
   mode=getStripeMode()
   feeConfiguration(o.price_cents)
@@ -109,7 +146,7 @@ export async function checkoutPaymentAvailability(database,checkoutId,stripe){
   }
   embeddedAvailable=paymentAvailable&&Boolean(checkoutPublishableKey())
  }catch{/* Presentation remains available when the processor isn't configured. */}
- return{productName:p.name,amountCents:o.price_cents,currency:o.currency,billingType:o.billing_type,billingInterval:o.billing_type==='subscription'?o.billing_interval:null,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],shippingRequired:shippingRates.length>0,shippingRates:shippingRates.map(rate=>({id:rate.id,name:rate.name,carrier:rate.carrier||null,priceCents:Number(rate.price_cents),deliveryDaysMin:rate.delivery_days_min,deliveryDaysMax:rate.delivery_days_max})),paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
+ return{productName:p.name,amountCents:o.price_cents,currency:o.currency,billingType:o.billing_type,billingInterval:o.billing_type==='subscription'?o.billing_interval:null,mode,paymentAvailable,embeddedAvailable,paymentMethods:paymentAvailable?methods:[],couponsEnabled,shippingRequired:shippingRates.length>0,shippingRates:shippingRates.map(rate=>({id:rate.id,name:rate.name,carrier:rate.carrier||null,priceCents:Number(rate.price_cents),deliveryDaysMin:rate.delivery_days_min,deliveryDaysMax:rate.delivery_days_max})),paymentMessage:embeddedAvailable?'':verified?'O vendedor ainda precisa habilitar o pagamento desta oferta.':'O vendedor ainda está concluindo a verificação da conta.'}
 }
 export async function createCheckout(database,input,stripe=getStripe()){
  const value=validateCheckoutInput(input)
@@ -122,6 +159,8 @@ export async function createCheckout(database,input,stripe=getStripe()){
  if(!current.stripe_charges_enabled||!current.stripe_payouts_enabled||!methods.length)throw unavailable()
  // Live charging is a deliberate, separate release decision.
  if(getStripeMode()==='live'&&process.env.STRIPE_LIVE_PAYMENTS_ENABLED!=='true')throw new ConnectError('LIVE_PAYMENTS_DISABLED',503,'Pagamentos de produção ainda não foram habilitados.')
+ const coupon=await applyCoupon(database,{sellerId:c.seller_id,productId:p.id,offer:o,code:value.couponCode,buyerEmail:value.buyer.email,methods})
+ const chargeMethods=coupon?coupon.methods:methods,productCents=o.price_cents-(coupon?.discountCents||0)
  const rates=await shippingRatesFor(database,p,o)
  let shipping=null
  if(rates.length){
@@ -130,15 +169,15 @@ export async function createCheckout(database,input,stripe=getStripe()){
   const address=value.shipping.address
   shipping={rateId:rate.id,cents:Number(rate.price_cents),address:{recipient:value.buyer.name,postalCode:address.postalCode.replace(/\D/g,'').replace(/^(\d{5})(\d{3})$/,'$1-$2'),street:address.street,number:address.number,complement:address.complement||'',district:address.district,city:address.city,state:address.state,country:'BR'}}
  }
- const amount=o.price_cents+(shipping?.cents||0)
+ const amount=productCents+(shipping?.cents||0)
  const {fee,rule}=feeConfiguration(amount)
  const uiMode=value.uiMode||'hosted',publishableKey=uiMode==='elements'?checkoutPublishableKey():undefined
- const affiliate=await resolveAffiliate(database,{sellerId:c.seller_id,productId:p.id,code:value.affiliateCode,buyerEmail:value.buyer.email,amountCents:o.price_cents,currency:o.currency})
- const snapshot={...(affiliate?{affiliate_id:affiliate.affiliateId,affiliate_commission_cents:affiliate.commissionCents}:{}),request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:amount,currency:o.currency,fee_cents:fee,...(shipping?{shipping_rate_id:shipping.rateId,shipping_cents:shipping.cents,shipping_address:shipping.address,fulfillment_status:'pending'}:{}),fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
+ const affiliate=await resolveAffiliate(database,{sellerId:c.seller_id,productId:p.id,code:value.affiliateCode,buyerEmail:value.buyer.email,amountCents:productCents,currency:o.currency})
+ const snapshot={...(coupon?{coupon_id:coupon.couponId,discount_cents:coupon.discountCents}:{}),...(affiliate?{affiliate_id:affiliate.affiliateId,affiliate_commission_cents:affiliate.commissionCents}:{}),request_key:value.requestKey,checkout_ui_mode:uiMode,checkout_origin:configuredAppUrl(),checkout_id:c.id,product_id:p.id,seller_id:c.seller_id,stripe_account_id:connection.stripe_account_id,offer_id:o.id,product_name:p.name,amount_cents:amount,currency:o.currency,fee_cents:fee,...(shipping?{shipping_rate_id:shipping.rateId,shipping_cents:shipping.cents,shipping_address:shipping.address,fulfillment_status:'pending'}:{}),fee_rule:rule,buyer_email:value.buyer.email,buyer_name:value.buyer.name,billing_type:o.billing_type,billing_interval:o.billing_type==='subscription'?o.billing_interval:null}
  const {error}=await database.from('stripe_checkout_orders').upsert(snapshot,{onConflict:'request_key',ignoreDuplicates:true})
  if(error)throw new ConnectError('PAYMENT_STORAGE_ERROR',503,'Não foi possível reservar o pagamento.')
  const order=await one(database.from('stripe_checkout_orders').select('*').eq('request_key',value.requestKey))
- if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode||(order.billing_type||'one_time')!==o.billing_type||(order.shipping_rate_id||null)!==(shipping?.rateId||null)||(order.shipping_address?.postalCode||null)!==(shipping?.address.postalCode||null)||(order.shipping_address?.number||null)!==(shipping?.address.number||null))throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
+ if(!order||order.checkout_id!==c.id||order.buyer_email!==value.buyer.email||order.buyer_name!==value.buyer.name||order.stripe_account_id!==connection.stripe_account_id||(order.checkout_ui_mode||'hosted')!==uiMode||(order.billing_type||'one_time')!==o.billing_type||(order.shipping_rate_id||null)!==(shipping?.rateId||null)||(order.shipping_address?.postalCode||null)!==(shipping?.address.postalCode||null)||(order.shipping_address?.number||null)!==(shipping?.address.number||null)||(order.coupon_id||null)!==(coupon?.couponId||null))throw new ConnectError('IDEMPOTENCY_CONFLICT',409,'Esta tentativa pertence a outro pedido.')
  if(order.session_id){const session=await stripe.checkout.sessions.retrieve(order.session_id,{},{stripeAccount:order.stripe_account_id});return checkoutPresentation(session,order,publishableKey)}
  if(!order.checkout_origin||!Number.isFinite(new Date(order.created_at).getTime())||Date.now()-new Date(order.created_at).getTime()>23*3600000)throw new ConnectError('PAYMENT_RECONCILIATION_REQUIRED',409,'Esta tentativa precisa ser reconciliada antes de continuar.')
  const origin=order.checkout_origin,metadata={sphex_order_id:order.id,sphex_product_id:order.product_id,sphex_seller_id:order.seller_id}
@@ -148,9 +187,9 @@ export async function createCheckout(database,input,stripe=getStripe()){
    line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents,recurring:RECURRING[order.billing_interval],product_data:{name:order.product_name}}}],
    subscription_data:{metadata,...(order.fee_cents?{application_fee_percent:Number(order.fee_rule.slice(4))/100}:{})},
    ...returnUrls},{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
-  :await stripe.checkout.sessions.create({mode:'payment',payment_method_types:methods,
-  ...(methods.some(method=>method!=='card')?{payment_method_options:{...(methods.includes('pix')?{pix:{expires_after_seconds:1800}}:{}),...(methods.includes('boleto')?{boleto:{expires_after_days:3}}:{})}}:{}),customer_email:order.buyer_email,client_reference_id:order.id,metadata,
-  line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents-(order.shipping_cents||0),product_data:{name:order.product_name}}},...(order.shipping_cents?[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.shipping_cents,product_data:{name:'Frete'}}}]:[])],
+  :await stripe.checkout.sessions.create({mode:'payment',payment_method_types:chargeMethods,
+  ...(chargeMethods.some(method=>method!=='card')?{payment_method_options:{...(chargeMethods.includes('pix')?{pix:{expires_after_seconds:1800}}:{}),...(chargeMethods.includes('boleto')?{boleto:{expires_after_days:3}}:{})}}:{}),customer_email:order.buyer_email,client_reference_id:order.id,metadata,
+  line_items:[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.amount_cents-(order.shipping_cents||0),product_data:{name:order.discount_cents?`${order.product_name} (com cupom)`:order.product_name}}},...(order.shipping_cents?[{quantity:1,price_data:{currency:order.currency.toLowerCase(),unit_amount:order.shipping_cents,product_data:{name:'Frete'}}}]:[])],
   payment_intent_data:{metadata,receipt_email:order.buyer_email,...(order.shipping_address?{shipping:{name:order.shipping_address.recipient,address:{line1:`${order.shipping_address.street}, ${order.shipping_address.number}`,line2:[order.shipping_address.complement,order.shipping_address.district].filter(Boolean).join(' · ')||undefined,city:order.shipping_address.city,state:order.shipping_address.state,postal_code:order.shipping_address.postalCode,country:'BR'}}}:{}),...(order.fee_cents?{application_fee_amount:order.fee_cents}:{})},
   ...returnUrls
  },{stripeAccount:order.stripe_account_id,idempotencyKey:`sphex-checkout-${order.id}`})
