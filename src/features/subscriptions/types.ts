@@ -1,4 +1,4 @@
-export type SubscriptionStatus='active'|'cancelled'|'inactive'
+export type SubscriptionStatus='active'|'past_due'|'cancelled'|'inactive'
 
 export interface SubscriptionRecord{
  id:string
@@ -12,6 +12,10 @@ export interface SubscriptionRecord{
  currentPeriodEnd:string|null
  cancelledAt:string|null
  statusChangedAt:string|null
+ amountCents?:number
+ currency?:string
+ billingInterval?:string|null
+ cycles?:number
 }
 
 export interface SubscriptionProduct{id:string;name:string}

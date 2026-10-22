@@ -1,13 +1,14 @@
 import {configureProductPayments} from '../../../server/stripe/payments.js'
 import {loadConnectedFinance} from '../../../server/stripe/finance.js'
 import {listDisputes,refundSale,requireStepUp} from '../../../server/stripe/sales.js'
+import {createCustomCharge,voidCustomCharge} from '../../../server/stripe/charges.js'
 import {consumeRateLimit} from '../../../server/security/rateLimit.js'
 import {recordSecurityEvent} from '../../../server/security/auditLog.js'
 import {clientIp} from '../../../server/security/clientIp.js'
 import {ConnectError,authenticate,fail,findConnection,parseJsonBody,retrieveAndSync,safeStatus,serverDatabase,tokenFrom} from '../../../server/stripe/connect.js'
 
 // Um único handler para o painel (limite de funções da Vercel): status da conta, finanças,
-// contestações (GET ?view=), métodos de pagamento do produto e reembolso (POST ?action=).
+// contestações (GET ?view=), métodos de pagamento do produto, reembolso e cobranças (POST ?action=).
 export default async function handler(request,response){
  response.setHeader('Cache-Control','no-store')
  if(!['GET','POST'].includes(request.method))return response.status(405).json({success:false,code:'METHOD_NOT_ALLOWED',message:'Método não permitido.'})
@@ -21,6 +22,11 @@ export default async function handler(request,response){
     await recordSecurityEvent(database,{eventType:'sale_refund_requested',actorId:user.id,ip:clientIp(request),userAgent:request.headers?.['user-agent'],metadata:{refund_id:result.refundId,amount_cents:result.amountCents,currency:result.currency}})
     return response.status(200).json({success:true,...result})
    }
+   if(request.query?.action==='charge'){
+    if(!consumeRateLimit(`charge:${user.id}`,{limit:20,windowMs:10*60000}).allowed)throw new ConnectError('RATE_LIMITED',429,'Muitas cobranças em sequência. Aguarde alguns minutos.')
+    return response.status(200).json({success:true,...await createCustomCharge(database,user,input)})
+   }
+   if(request.query?.action==='void-charge')return response.status(200).json({success:true,...await voidCustomCharge(database,user,input)})
    return response.status(200).json({success:true,...await configureProductPayments(database,user,input)})
   }
   if(request.query?.view==='finance')return response.status(200).json({success:true,...await loadConnectedFinance(database,user)})

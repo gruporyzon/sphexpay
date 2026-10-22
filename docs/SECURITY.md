@@ -196,6 +196,15 @@ Fluxo de cadastro e envio de documentos para compliance (`/app/verificacao`).
 - Webhook: `charge.dispute.created|updated|closed` consulta a disputa atual na Stripe e grava
   via `apply_stripe_dispute` (só `service_role`): aberta → `chargeback`, ganha → volta a
   `approved`. Contestações listadas por `GET ?view=disputes`, sempre da conta do usuário.
+- Cobrança personalizada (`server/stripe/charges.js`, `POST ?action=charge|void-charge`):
+  fatura avulsa `send_invoice` criada na conta conectada do próprio usuário, com
+  `application_fee_amount` calculado no servidor (`STRIPE_PLATFORM_FEE_BPS`) e métodos
+  conferidos contra as capabilities da conta. Em live exige KYC aprovado e
+  `STRIPE_LIVE_PAYMENTS_ENABLED`. Idempotência pelo `requestKey` (id da cobrança), limite de 20
+  a cada 10 min. Tabela `custom_charges` com RLS forçada: o dono só lê. A venda só nasce
+  pelo webhook (`invoice.paid|payment_failed|voided|marked_uncollectible` com
+  `sphex_charge_id`) via `apply_custom_charge_invoice` (só `service_role`), que confere conta,
+  fatura e valor e não gera receita para contas de teste.
 - `my_customers()` e `my_abandoned_checkouts()` (SECURITY DEFINER, `authenticated`): devolvem
   só pedidos do próprio vendedor (`auth.uid()`) e de contas `live`. O e-mail do comprador fica
   visível apenas para o vendedor daquela venda.

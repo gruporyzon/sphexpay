@@ -1,5 +1,6 @@
 import {getStripe,getStripeMode} from './client.js'
 import {retrieveAndSync} from './connect.js'
+import {processCustomChargeEvent} from './charges.js'
 
 // Pix e boleto são assíncronos: o pagamento confirma depois (processing → succeeded) ou expira (canceled).
 const paymentEvents=new Set(['payment_intent.succeeded','payment_intent.payment_failed','payment_intent.processing','payment_intent.canceled','charge.succeeded','charge.failed','charge.refunded','checkout.session.completed','checkout.session.async_payment_succeeded','checkout.session.async_payment_failed'])
@@ -7,6 +8,8 @@ const METHODS=new Set(['card','pix','boleto'])
 // Assinaturas: cada fatura paga vira uma venda; mudanças de status atualizam as faturas já registradas.
 const subscriptionEvents=new Set(['invoice.paid','invoice.payment_failed','customer.subscription.updated','customer.subscription.deleted'])
 // Contestações de cartão e devoluções Pix (MED) chegam como disputas da Stripe.
+// Cobranças personalizadas são faturas avulsas marcadas com sphex_charge_id.
+const chargeEvents=new Set(['invoice.paid','invoice.payment_failed','invoice.voided','invoice.marked_uncollectible'])
 const disputeEvents=new Set(['charge.dispute.created','charge.dispute.updated','charge.dispute.closed'])
 const iso=seconds=>Number.isFinite(seconds)?new Date(seconds*1000).toISOString():null
 const methodOf=(charge,intent)=>{const type=charge?.payment_method_details?.type||(intent.payment_method_types?.length===1?intent.payment_method_types[0]:null);return METHODS.has(type)?type:'card'}
@@ -84,6 +87,7 @@ export async function processStripeEvent(database,event,stripe=getStripe()){
   if(error)throw new Error('STRIPE_STORAGE_FAILED')
   return{processed:true}
  }
+ if(chargeEvents.has(event.type)&&event.data.object?.metadata?.sphex_charge_id)return processCustomChargeEvent(database,event,stripe)
  if(subscriptionEvents.has(event.type))return processSubscriptionEvent(database,event,stripe)
  if(disputeEvents.has(event.type))return processDisputeEvent(database,event,stripe)
  if(!paymentEvents.has(event.type))return{ignored:true}

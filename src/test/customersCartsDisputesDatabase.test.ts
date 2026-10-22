@@ -28,6 +28,7 @@ beforeAll(async()=>{
  await db.exec(read('supabase/migrations/20261021033948_stripe_payment_method.sql'))
  await db.exec(read('supabase/migrations/20261021034747_stripe_subscriptions.sql'))
  await db.exec(read('supabase/migrations/20261022041720_customers_carts_disputes.sql'))
+ await db.exec(read('supabase/migrations/20261022050000_custom_charges.sql'))
  await db.query('insert into auth.users values($1)',[seller])
  await db.query('insert into products(id,seller_id,name,price_cents) values($1,$2,$3,10000)',[product,seller,'Produto'])
  await db.query("insert into product_offers(id,product_id,seller_id,name,price_cents,billing_type) values($1,$2,$3,'Oferta',10000,'one_time')",[offer,product,seller])
@@ -36,10 +37,11 @@ beforeAll(async()=>{
 },30000)
 afterAll(async()=>{await db?.close()})
 beforeEach(async()=>{
- await db.exec('truncate stripe_webhook_events,stripe_checkout_orders,payment_transaction_events,financial_event_outbox,payment_transactions,stripe_account_requests')
+ await db.exec('truncate custom_charges,stripe_webhook_events,stripe_checkout_orders,payment_transaction_events,financial_event_outbox,payment_transactions,stripe_account_requests')
  await db.query(`insert into stripe_checkout_orders(id,request_key,checkout_id,product_id,seller_id,stripe_account_id,offer_id,product_name,amount_cents,currency,fee_cents,fee_rule,buyer_email,buyer_name)
  values($1,$1,$2,$3,$4,'acct_seller',$5,'Produto',10000,'BRL',100,'bps:100','buyer@example.test','Comprador')`,[order,checkout,product,seller,offer])
 })
+const count=async(table:string)=>Number((await db.query<{n:number}>(`select count(*)::int as n from ${table}`)).rows[0].n)
 const second='66666666-6666-4666-8666-666666666666',third='77777777-7777-4777-8777-777777777777'
 const apply=async(orderId:string,eventId:string,status:string,intent:string,account='acct_seller')=>db.query("select apply_stripe_payment_v2($1,$2,'payment_intent.succeeded',$3,$4,null,$5,0,now(),'card')",[orderId,eventId,account,intent,status])
 const as=async<T,>(sql:string)=>{await db.exec(`select set_config('test.uid','${seller}',false)`);try{return(await db.query<T>(sql)).rows}finally{await db.exec(`select set_config('test.uid','',false)`)}}
@@ -80,5 +82,33 @@ describe('clientes, carrinhos e contestações no banco',()=>{
   const sql=read('supabase/migrations/20261022041720_customers_carts_disputes.sql')
   expect(sql).toMatch(/revoke all on function public\.apply_stripe_dispute\([^)]*\) from public,anon,authenticated;/)
   expect(sql).toMatch(/grant execute on function public\.my_customers\(\) to authenticated;/)
+ })
+})
+
+describe('cobranças personalizadas no banco',()=>{
+ const charge='88888888-8888-4888-8888-888888888888'
+ const create=(mode='live')=>db.query(`insert into custom_charges(id,seller_id,stripe_account_id,stripe_mode,customer_name,customer_email,description,amount_cents,methods,fee_cents,fee_rule,due_date,invoice_id,status)
+  values($1,$2,'acct_seller',$3,'Ana','ana@exemplo.com','Mentoria',15000,array['pix','card'],150,'bps:100',current_date+3,'in_1','open')`,[charge,seller,mode])
+ const pay=(eventId:string,status='paid',amount=15000)=>db.query("select apply_custom_charge_invoice($1,$2,'invoice.paid','acct_seller','in_1','pi_c','ch_c',$3,$4,150,'pix',now()) as result",[charge,eventId,status,amount])
+ it('fatura paga vira venda aprovada uma única vez e não volta para aberta',async()=>{
+  await create()
+  await pay('evt_c1');await pay('evt_c1');await pay('evt_c2','void')
+  const sale=(await db.query<{status:string;payment_method:string;net_amount_cents:number;product_name:string}>('select status,payment_method,net_amount_cents,product_name from payment_transactions')).rows
+  expect(sale).toHaveLength(1);expect(sale[0]).toMatchObject({status:'approved',payment_method:'pix',product_name:'Mentoria'});expect(Number(sale[0].net_amount_cents)).toBe(14850)
+  expect((await db.query<{status:string}>('select status from custom_charges')).rows[0].status).toBe('paid')
+  expect(await count('financial_event_outbox')).toBe(1)
+ })
+ it('cobrança de teste não gera receita e valor divergente é recusado',async()=>{
+  await create('test');await pay('evt_t1')
+  expect(await count('payment_transactions')).toBe(0)
+  await db.exec('truncate custom_charges,stripe_webhook_events');await create()
+  await expect(pay('evt_bad','paid',100)).rejects.toThrow(/STRIPE_PAYMENT_MISMATCH/)
+ })
+ it('vendedor só lê as próprias cobranças e não escreve',()=>{
+  const sql=read('supabase/migrations/20261022050000_custom_charges.sql')
+  expect(sql).toMatch(/using \(seller_id=\(select auth\.uid\(\)\)\)/)
+  expect(sql).toMatch(/grant select on public\.custom_charges to authenticated;/)
+  expect(sql).not.toMatch(/grant[^;]*(insert|update|delete)[^;]*custom_charges[^;]*to authenticated/i)
+  expect(sql).toMatch(/revoke all on function public\.apply_custom_charge_invoice\([^)]*\) from public,anon,authenticated;/)
  })
 })

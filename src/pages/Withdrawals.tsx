@@ -2,7 +2,7 @@ import {translate as uiText} from '../i18n'
 import {useAppLocale} from '../i18n/localeStore'
 import {T} from '../i18n'
 import { CalendarClock,ExternalLink,Landmark,RotateCcw,WalletCards } from 'lucide-react'
-import { useCallback,useEffect,useState } from 'react'
+import { useCallback,useEffect,useMemo,useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card,Loading,StateMessage } from '../components/ui'
 import { PAYOUT_STATUS_LABEL,balanceFor,centsMoney,scheduleLabel } from '../features/finance/financeSummary'
@@ -20,6 +20,9 @@ export default function WithdrawalsSection(){useAppLocale(state=>state.locale);
  useEffect(()=>{load()},[load])
  const upcoming=finance?.payouts.find(item=>item.status==='pending'||item.status==='in_transit')
  const delay=finance?.schedule?.delayDays
+ const [filter,setFilter]=useState<'all'|StripePayout['status']>('all')
+ const payouts=useMemo(()=>(finance?.payouts||[]).filter(item=>filter==='all'||item.status===filter),[finance,filter])
+ const totals=useMemo(()=>{const list=finance?.payouts||[],sum=(match:(item:StripePayout)=>boolean)=>{const rows=list.filter(match);return{count:rows.length,cents:rows.filter(item=>item.currency==='BRL').reduce((total,item)=>total+item.amountCents,0)}};return[{label:'Concluídos',...sum(item=>item.status==='paid')},{label:'A caminho',...sum(item=>item.status==='pending'||item.status==='in_transit')},{label:'Com falha',...sum(item=>item.status==='failed'||item.status==='canceled')}]},[finance])
 
  return <section className="withdrawals-secure" aria-label={uiText("Saques")}><header className="financial-section-heading"><h2><T>Saques</T></h2><p><T>Repasses automáticos da Stripe para a sua conta bancária.</T></p></header>
  {loading?<Loading label="Carregando repasses"/>:error?<StateMessage title={uiText('Repasses indisponíveis')}><span>{error}</span> <button className="btn" onClick={load}><RotateCcw size={14}/><T> Tentar novamente</T></button></StateMessage>:
@@ -34,6 +37,8 @@ export default function WithdrawalsSection(){useAppLocale(state=>state.locale);
   {!finance.payoutsEnabled&&<p className="withdrawal-error" role="alert"><T>A Stripe ainda não liberou repasses para esta conta. Conclua as pendências da verificação para receber.</T></p>}
   <a className="btn" href={STRIPE_DASHBOARD} target="_blank" rel="noreferrer"><ExternalLink size={15}/><T> Alterar conta ou agenda na Stripe</T></a>
   <p className="withdrawal-notification-notice"><T>Os repasses são automáticos. Não é preciso solicitar saque.</T></p></Card>
- <Card className="withdrawal-history-card"><header><div><b><T>Histórico de repasses</T></b><span><T>Últimos repasses enviados pela Stripe para sua conta.</T></span></div></header>{finance.payouts.length?<div className="withdrawal-history-list">{finance.payouts.map(item=><article key={item.id}><div className="withdrawal-history-main"><span className={`withdrawal-status-dot ${DOT[item.status]}`}/><div><b>{centsMoney(item.amountCents,item.currency)}</b><small>{item.destination?.last4?<><T>Conta final </T>{item.destination.last4}</>:<T>Conta bancária cadastrada</T>}{item.destination?.bankName?` · ${item.destination.bankName}`:''}</small></div></div><dl><div><dt><T>Criado em</T></dt><dd>{day(item.createdAt)}</dd></div><div><dt><T>Chegada</T></dt><dd>{day(item.arrivalDate)}</dd></div><div><dt><T>Status</T></dt><dd><T>{PAYOUT_STATUS_LABEL[item.status]}</T></dd></div></dl>{item.failureMessage&&<p className="withdrawal-error">{item.failureMessage}</p>}</article>)}</div>:<div className="withdrawal-state"><Landmark/><p><T>Nenhum repasse ainda. Assim que houver saldo disponível, a Stripe envia automaticamente.</T></p></div>}</Card></div>}
+ <Card className="withdrawal-history-card"><header><div><b><T>Histórico de repasses</T></b><span><T>Últimos repasses enviados pela Stripe para sua conta.</T></span></div><select className="input withdrawal-history-filter" aria-label={uiText('Filtrar repasses por status')} value={filter} onChange={event=>setFilter(event.target.value as typeof filter)}><option value="all">{uiText('Todos')}</option>{(Object.keys(PAYOUT_STATUS_LABEL) as StripePayout['status'][]).map(status=><option key={status} value={status}>{uiText(PAYOUT_STATUS_LABEL[status])}</option>)}</select></header>
+  <div className="withdrawal-summary">{totals.map(item=><div key={item.label}><span className="label"><T>{item.label}</T></span><b>{centsMoney(item.cents)}</b><small className="muted">{item.count} <T>{item.count===1?'repasse':'repasses'}</T></small></div>)}</div>
+  {payouts.length?<div className="withdrawal-history-list">{payouts.map(item=><article key={item.id}><div className="withdrawal-history-main"><span className={`withdrawal-status-dot ${DOT[item.status]}`}/><div><b>{centsMoney(item.amountCents,item.currency)}</b><small>{item.destination?.last4?<><T>Conta final </T>{item.destination.last4}</>:<T>Conta bancária cadastrada</T>}{item.destination?.bankName?` · ${item.destination.bankName}`:''}</small></div></div><dl><div><dt><T>Criado em</T></dt><dd>{day(item.createdAt)}</dd></div><div><dt><T>Chegada</T></dt><dd>{day(item.arrivalDate)}</dd></div><div><dt><T>Status</T></dt><dd><T>{PAYOUT_STATUS_LABEL[item.status]}</T></dd></div></dl>{item.failureMessage&&<p className="withdrawal-error">{item.failureMessage}</p>}</article>)}</div>:<div className="withdrawal-state"><Landmark/><p><T>{finance.payouts.length?'Nenhum repasse com este status.':'Nenhum repasse ainda. Assim que houver saldo disponível, a Stripe envia automaticamente.'}</T></p></div>}</Card></div>}
  </section>
 }
