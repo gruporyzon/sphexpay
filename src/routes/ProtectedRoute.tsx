@@ -5,8 +5,8 @@ import { useAuth } from '../hooks/useAuth'
 
 // A abertura roda sempre que o aplicativo é aberto, mesmo com a sessão já salva. O painel monta por
 // baixo e já carrega os dados enquanto a animação termina; depois ela sai com um fade.
-export const LAUNCH_SPLASH_MS=2600
-export const LAUNCH_SPLASH_EXIT_MS=450
+export const LAUNCH_SPLASH_MS=3000
+export const LAUNCH_SPLASH_EXIT_MS=700
 let launchSplashPending=true
 
 export function ProtectedRoute(){
