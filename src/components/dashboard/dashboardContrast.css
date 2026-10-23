@@ -27,3 +27,8 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .revenue-wave-foot span{font-weight:500;color:var(--dash-muted)}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .revenue-wave-foot b{font-weight:600;color:var(--text)}
 :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .revenue-wave-chart .recharts-area-curve{stroke-width:2.8}
+/* Resumo da operação: no celular fica acima de "Receita por dia"; em telas maiores continua no fim,
+   ocupando a largura toda. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-details-grid.has-wave>.reference-operation-summary{margin:0}
+@media(min-width:768px){:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-details-grid.has-wave>.reference-operation-summary{grid-column:1/-1;order:1}}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-details-grid.has-wave>.reference-operation-summary>header{justify-content:flex-start;text-align:left}
