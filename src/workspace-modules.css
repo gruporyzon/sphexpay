@@ -279,3 +279,9 @@
 .revenue-reminders-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .revenue-reminders-saved{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--success,var(--text))}
 @media (max-width:640px){.revenue-reminders{padding:16px}.revenue-reminders-head{grid-template-columns:auto 1fr}.revenue-reminders-switch{grid-column:1/-1}.revenue-reminders-options{grid-template-columns:1fr}}
+
+/* Com o menu lateral visível, as barras de seção que repetem os itens do próprio menu ficam
+   ocultas para não aparecerem dois menus iguais. Sem o menu lateral (telas menores) elas voltam. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference.has-sidebar .products-hub>.module-tabs,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference.has-sidebar .financial-module-tabs,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference.has-sidebar .reports-module-tabs{display:none}

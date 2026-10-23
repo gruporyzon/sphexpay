@@ -2,11 +2,13 @@ import {translate as uiText} from '../i18n'
 import {useAppLocale} from '../i18n/localeStore'
 import {T} from '../i18n'
 import { CalendarClock,ExternalLink,Landmark,RotateCcw,WalletCards } from 'lucide-react'
-import { useCallback,useEffect,useMemo,useState } from 'react'
+import { useCallback,useEffect,useMemo,useRef,useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card,Loading,StateMessage } from '../components/ui'
 import { PAYOUT_STATUS_LABEL,balanceFor,centsMoney,scheduleLabel } from '../features/finance/financeSummary'
 import { stripeConnectService,type StripeConnectFinance,type StripePayout } from '../services/stripeConnectService'
+import { useOptionalDashboardData } from '../providers/DashboardDataProvider'
+import { demoFinance } from '../demo/demoFinance'
 
 // Os saques da SphexPay são repasses automáticos da Stripe: o saldo liberado vai
 // para a conta bancária que o vendedor cadastrou no onboarding, na agenda da conta.
@@ -16,7 +18,8 @@ const day=(value:string|null)=>value?new Date(value).toLocaleDateString('pt-BR')
 
 export default function WithdrawalsSection(){useAppLocale(state=>state.locale);
  const [finance,setFinance]=useState<StripeConnectFinance|null>(null),[error,setError]=useState(''),[loading,setLoading]=useState(true)
- const load=useCallback(()=>{setLoading(true);setError('');stripeConnectService.finance().then(setFinance).catch(reason=>{setFinance(null);setError(reason instanceof Error?reason.message:'Não foi possível consultar seus repasses agora.')}).finally(()=>setLoading(false))},[])
+ const demo=useOptionalDashboardData(),demoActive=Boolean(demo?.active),demoLedger=useRef(demo?.ledger);demoLedger.current=demo?.ledger
+ const load=useCallback(()=>{setLoading(true);setError('');(demoActive&&demoLedger.current?Promise.resolve(demoFinance(demoLedger.current)):stripeConnectService.finance()).then(setFinance).catch(reason=>{setFinance(null);setError(reason instanceof Error?reason.message:'Não foi possível consultar seus repasses agora.')}).finally(()=>setLoading(false))},[demoActive])
  useEffect(()=>{load()},[load])
  const upcoming=finance?.payouts.find(item=>item.status==='pending'||item.status==='in_transit')
  const delay=finance?.schedule?.delayDays

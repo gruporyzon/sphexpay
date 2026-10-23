@@ -14,7 +14,9 @@ describe('filtros compartilhados com a Visão geral',()=>{
  it('troca períodos pelos botões e informa a seleção atual',async()=>{
   render(createElement(Controls));const user=userEvent.setup(),group=screen.getByRole('group',{name:'Período do gráfico'})
   expect(within(group).getByRole('button',{name:'7 dias'})).toHaveAttribute('aria-pressed','true')
-  await user.click(within(group).getByRole('button',{name:'90 dias'}));expect(within(group).getByRole('button',{name:'90 dias'})).toHaveAttribute('aria-pressed','true')
+  await user.click(within(group).getByRole('button',{name:'30 dias'}));expect(within(group).getByRole('button',{name:'30 dias'})).toHaveAttribute('aria-pressed','true')
+  await user.click(within(group).getByRole('button',{name:'Hoje'}));expect(within(group).getByRole('button',{name:'Hoje'})).toHaveAttribute('aria-pressed','true')
+  expect(within(group).queryByRole('button',{name:'90 dias'})).not.toBeInTheDocument()
   expect(within(group).getByRole('button',{name:'7 dias'})).toHaveAttribute('aria-pressed','false')
  })
  it('mantém os presets avançados e as datas inicial/final',async()=>{
@@ -22,7 +24,7 @@ describe('filtros compartilhados com a Visão geral',()=>{
   await user.selectOptions(screen.getByRole('combobox',{name:'Período do gráfico'}),'custom')
   expect(screen.getByLabelText('Data inicial do gráfico')).toBeVisible();expect(screen.getByLabelText('Data final do gráfico')).toBeVisible()
   expect(screen.getByLabelText('Mais filtros')).toHaveTextContent('Personalizado')
-  await user.selectOptions(screen.getByRole('combobox',{name:'Período do gráfico'}),'today');expect(screen.getByLabelText('Mais filtros')).toHaveTextContent('Hoje')
+  await user.selectOptions(screen.getByRole('combobox',{name:'Período do gráfico'}),'90d');expect(screen.getByLabelText('Mais filtros')).toHaveTextContent('Últimos 90 dias')
  })
  it('troca moeda e mantém a escolha ao alterar o idioma',async()=>{
   render(createElement(Controls));const user=userEvent.setup(),group=screen.getByRole('group',{name:'Moeda de exibição'})

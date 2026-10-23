@@ -11,6 +11,7 @@ import {KycStatusNotice} from '../features/kyc/KycStatusNotice'
 import {balanceFor,buildLedger,centsMoney,ledgerCsv,summarizeTransactions} from '../features/finance/financeSummary'
 import {useFinanceData} from '../features/finance/useFinanceData'
 import {useActiveSeller} from '../hooks/useActiveSeller'
+import {useOptionalDashboardData} from '../providers/DashboardDataProvider'
 import {downloadCsv,shortDate} from '../lib/utils'
 
 export default function FinancialHub(){useAppLocale(state=>state.locale);
@@ -30,10 +31,10 @@ export function FinancialOverview(){useAppLocale(state=>state.locale);
   ['Taxas no período',transactions?centsMoney(summary.feesCents):'...',Landmark,'Taxa da plataforma descontada das vendas.']
  ] as const
  // Verificação e conta Stripe são de quem é dono; o colaborador só lê os números.
- const {member}=useActiveSeller()
+ const {member}=useActiveSeller(),demoActive=Boolean(useOptionalDashboardData()?.active)
  return <section className="financial-page" aria-label={uiText("Visão geral financeira")}>
   <div className="financial-overview-actions"><PeriodSelector/><button className="btn" disabled={!ledger.length} onClick={()=>downloadCsv('extrato-sphexpay.csv',ledgerCsv(ledger))}><Download size={16}/><T> Exportar extrato</T></button></div>
-  {!member&&<><KycStatusNotice/><StripeConnectCard/></>}
+  {!member&&!demoActive&&<><KycStatusNotice/><StripeConnectCard/></>}
   {(transactionsError||financeError)&&<div className="mb-4"><StateMessage title={uiText('Alguns dados não carregaram')}><span>{transactionsError||financeError}</span> <button className="btn" onClick={reload}><RotateCcw size={14}/><T> Tentar novamente</T></button></StateMessage></div>}
   {finance?.mode==='test'&&connected&&<p className="muted text-xs mb-3"><T>Ambiente de teste da Stripe: saldo e repasses abaixo não são dinheiro real.</T></p>}
   <div className="financial-balance-grid grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">{cards.map(([label,value,Icon,hint])=><Card className="financial-balance-card p-5" key={label}><Icon size={19} className="orange mb-4"/><span className="label"><T>{label}</T></span><b className="text-xl financial-money">{value}</b><small className="muted text-xs block mt-1"><T>{hint}</T></small></Card>)}</div>

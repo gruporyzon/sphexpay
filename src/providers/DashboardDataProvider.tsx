@@ -83,7 +83,7 @@ export function DashboardDataProvider({children}:PropsWithChildren){
  const toggle=useCallback(async()=>{
   if(!user?.id||!permission.allowed)return
   if(session?.active){stop();pushQueue.current?.stop();replace(null);return}
-  const products=await productService.list(user.id).catch(()=>[] as Product[]),next=createSession(user.id,products.filter(item=>item.active).map(productToDemo))
+  const products=await productService.list(user.id).catch(()=>[] as Product[]),next=createSession(user.id,[...products.filter(item=>item.active).map(productToDemo),...fallbackDemoProducts])
   pushQueue.current?.reset();pushQueue.current?.markKnown(next.sessionId,next.ledger);replace(next)
  },[permission.allowed,session?.active,stop,user?.id,replace])
  const applyConfig=useCallback((config:DemoConfig)=>update(value=>{const enabledNow=!value.config.pushNotifications.enabled&&config.pushNotifications.enabled;return{...value,config:{...config,preset:config.preset,pushNotifications:{...config.pushNotifications,enabledAt:enabledNow?new Date().toISOString():config.pushNotifications.enabledAt}},ledger:value.ledger.slice(0,config.memoryLimit)}}),[update])

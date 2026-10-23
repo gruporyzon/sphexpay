@@ -6430,5 +6430,1633 @@
  "{count} não lida": {
   "en-US": "{count} unread",
   "es-ES": "{count} sin leer"
+ },
+ "+ HMAC-SHA256 de": {
+  "en-US": "+ HMAC-SHA256 of",
+  "es-ES": "+ HMAC-SHA256 de"
+ },
+ "+ compras em outras moedas": {
+  "en-US": "+ purchases in other currencies",
+  "es-ES": "+ compras en otras monedas"
+ },
+ ", a taxa SphexPay é": {
+  "en-US": ", the SphexPay fee is",
+  "es-ES": ", la comisión de SphexPay es"
+ },
+ ", você não acessa esta área da conta de quem convidou. Para usar a sua própria conta, troque no seletor acima.": {
+  "en-US": ", you can't access this area of the account that invited you. To use your own account, switch in the selector above.",
+  "es-ES": ", no tienes acceso a esta área de la cuenta de quien te invitó. Para usar tu propia cuenta, cámbiala en el selector de arriba."
+ },
+ "2º lugar": {
+  "en-US": "2nd place",
+  "es-ES": "2.º puesto"
+ },
+ "3º lugar": {
+  "en-US": "3rd place",
+  "es-ES": "3.er puesto"
+ },
+ "A Stripe ainda não liberou repasses para esta conta. Conclua as pendências da verificação para receber.": {
+  "en-US": "Stripe hasn't enabled payouts for this account yet. Complete the pending verification items to get paid.",
+  "es-ES": "Stripe aún no ha habilitado las transferencias para esta cuenta. Completa los pendientes de la verificación para cobrar."
+ },
+ "A Stripe enviou o link para": {
+  "en-US": "Stripe sent the link to",
+  "es-ES": "Stripe envió el enlace a"
+ },
+ "A Stripe está devolvendo o valor ao comprador. A venda muda para Reembolsada assim que a confirmação chegar.": {
+  "en-US": "Stripe is returning the amount to the buyer. The sale changes to Refunded as soon as confirmation arrives.",
+  "es-ES": "Stripe está devolviendo el importe al comprador. La venta pasa a Reembolsada en cuanto llegue la confirmación."
+ },
+ "A caminho": {
+  "en-US": "In transit",
+  "es-ES": "En camino"
+ },
+ "A conta bancária que recebe os repasses é cadastrada e protegida pela Stripe durante a ativação dos pagamentos. A SphexPay não guarda agência nem número de conta.": {
+  "en-US": "The bank account that receives payouts is registered and protected by Stripe during payment activation. SphexPay does not store branch or account numbers.",
+  "es-ES": "La cuenta bancaria que recibe las transferencias se registra y protege en Stripe durante la activación de los pagos. SphexPay no guarda la sucursal ni el número de cuenta."
+ },
+ "A regra de taxa ainda não foi configurada pela plataforma. Nenhuma venda é cobrada enquanto isso.": {
+  "en-US": "The fee rule hasn't been configured by the platform yet. No sale is charged in the meantime.",
+  "es-ES": "La plataforma aún no ha configurado la regla de comisión. Mientras tanto, no se cobra ninguna venta."
+ },
+ "AMBIENTE DE TESTE": {
+  "en-US": "TEST MODE",
+  "es-ES": "ENTORNO DE PRUEBA"
+ },
+ "AUTOMAÇÕES": {
+  "en-US": "AUTOMATIONS",
+  "es-ES": "AUTOMATIZACIONES"
+ },
+ "Abrir Integrações": {
+  "en-US": "Open Integrations",
+  "es-ES": "Abrir Integraciones"
+ },
+ "Abrir cobrança de": {
+  "en-US": "Open charge for",
+  "es-ES": "Abrir cobro de"
+ },
+ "Abrir verificação": {
+  "en-US": "Open verification",
+  "es-ES": "Abrir verificación"
+ },
+ "Acima de R$ 500 mil": {
+  "en-US": "Over R$ 500k",
+  "es-ES": "Más de R$ 500 mil"
+ },
+ "Afiliado salvo.": {
+  "en-US": "Affiliate saved.",
+  "es-ES": "Afiliado guardado."
+ },
+ "Agenda de repasses": {
+  "en-US": "Payout schedule",
+  "es-ES": "Calendario de transferencias"
+ },
+ "Agenda de repasses:": {
+  "en-US": "Payout schedule:",
+  "es-ES": "Calendario de transferencias:"
+ },
+ "Aguardando nova tentativa": {
+  "en-US": "Waiting for retry",
+  "es-ES": "Esperando nuevo intento"
+ },
+ "Ainda estou começando": {
+  "en-US": "I'm just getting started",
+  "es-ES": "Estoy empezando"
+ },
+ "Ainda não faturo": {
+  "en-US": "No revenue yet",
+  "es-ES": "Aún no facturo"
+ },
+ "Alguns dados não carregaram": {
+  "en-US": "Some data didn't load",
+  "es-ES": "Algunos datos no se cargaron"
+ },
+ "Alterar conta na Stripe": {
+  "en-US": "Change account on Stripe",
+  "es-ES": "Cambiar cuenta en Stripe"
+ },
+ "Alterar conta ou agenda na Stripe": {
+  "en-US": "Change account or schedule on Stripe",
+  "es-ES": "Cambiar cuenta o calendario en Stripe"
+ },
+ "Ambiente de teste da Stripe: saldo e repasses abaixo não são dinheiro real.": {
+  "en-US": "Stripe test mode: the balance and payouts below are not real money.",
+  "es-ES": "Entorno de prueba de Stripe: el saldo y las transferencias de abajo no son dinero real."
+ },
+ "Aparelhos conectados": {
+  "en-US": "Connected devices",
+  "es-ES": "Dispositivos conectados"
+ },
+ "Após 7 tentativas": {
+  "en-US": "After 7 attempts",
+  "es-ES": "Tras 7 intentos"
+ },
+ "As cobranças enviadas aparecem aqui com o status do pagamento.": {
+  "en-US": "Sent charges show up here with the payment status.",
+  "es-ES": "Los cobros enviados aparecen aquí con el estado del pago."
+ },
+ "Assinatura das entregas": {
+  "en-US": "Delivery signature",
+  "es-ES": "Firma de las entregas"
+ },
+ "Assinatura renovada": {
+  "en-US": "Subscription renewed",
+  "es-ES": "Suscripción renovada"
+ },
+ "Ative seus recebimentos": {
+  "en-US": "Activate your payouts",
+  "es-ES": "Activa tus cobros"
+ },
+ "Ativo no checkout": {
+  "en-US": "Active at checkout",
+  "es-ES": "Activo en el checkout"
+ },
+ "Atualizado.": {
+  "en-US": "Updated.",
+  "es-ES": "Actualizado."
+ },
+ "Até R$ 10 mil": {
+  "en-US": "Up to R$ 10k",
+  "es-ES": "Hasta R$ 10 mil"
+ },
+ "Aumentar a conversão": {
+  "en-US": "Increase conversion",
+  "es-ES": "Aumentar la conversión"
+ },
+ "Aviso personalizado": {
+  "en-US": "Custom alert",
+  "es-ES": "Aviso personalizado"
+ },
+ "Beleza e estética": {
+  "en-US": "Beauty and aesthetics",
+  "es-ES": "Belleza y estética"
+ },
+ "Boleto": {
+  "en-US": "Boleto",
+  "es-ES": "Boleto"
+ },
+ "Boleto a partir de R$ 5,00. Cada método precisa estar ativo na sua conta Stripe. A taxa SphexPay é a mesma das vendas.": {
+  "en-US": "Boleto from R$ 5,00. Each method must be enabled in your Stripe account. The SphexPay fee is the same as for sales.",
+  "es-ES": "Boleto a partir de R$ 5,00. Cada método debe estar activo en tu cuenta de Stripe. La comisión de SphexPay es la misma que en las ventas."
+ },
+ "Boleto pago": {
+  "en-US": "Boleto paid",
+  "es-ES": "Boleto pagado"
+ },
+ "Buscar frete ou transportadora...": {
+  "en-US": "Search shipping rate or carrier...",
+  "es-ES": "Buscar tarifa de envío o transportista..."
+ },
+ "Cabeçalhos": {
+  "en-US": "Headers",
+  "es-ES": "Cabeceras"
+ },
+ "Cada entrega é um POST com JSON. Responda com status 2xx em até 5 segundos para confirmar o recebimento.": {
+  "en-US": "Each delivery is a POST with JSON. Respond with a 2xx status within 5 seconds to confirm receipt.",
+  "es-ES": "Cada entrega es un POST con JSON. Responde con un estado 2xx en un máximo de 5 segundos para confirmar la recepción."
+ },
+ "Cada venda aprovada, reembolsada ou contestada é enviada por POST para os endereços cadastrados.": {
+  "en-US": "Each approved, refunded or disputed sale is sent via POST to the registered URLs.",
+  "es-ES": "Cada venta aprobada, reembolsada o disputada se envía por POST a las direcciones registradas."
+ },
+ "Cada venda fica disponível": {
+  "en-US": "Each sale becomes available",
+  "es-ES": "Cada venta está disponible"
+ },
+ "Cadastrar URL": {
+  "en-US": "Register URL",
+  "es-ES": "Registrar URL"
+ },
+ "Cadastre afiliados em Afiliados, vincule produtos e compartilhe o link. As vendas aparecem aqui.": {
+  "en-US": "Add affiliates in Affiliates, link products and share the link. Sales show up here.",
+  "es-ES": "Registra afiliados en Afiliados, vincula productos y comparte el enlace. Las ventas aparecen aquí."
+ },
+ "Cancelar cobrança de": {
+  "en-US": "Cancel charge for",
+  "es-ES": "Cancelar cobro de"
+ },
+ "Cargo": {
+  "en-US": "Role",
+  "es-ES": "Rol"
+ },
+ "Cargo de": {
+  "en-US": "Role of",
+  "es-ES": "Rol de"
+ },
+ "Carregando aparelhos…": {
+  "en-US": "Loading devices…",
+  "es-ES": "Cargando dispositivos…"
+ },
+ "Carregando…": {
+  "en-US": "Loading…",
+  "es-ES": "Cargando…"
+ },
+ "Carrinhos abandonados": {
+  "en-US": "Abandoned carts",
+  "es-ES": "Carritos abandonados"
+ },
+ "Carrinhos indisponíveis": {
+  "en-US": "Carts unavailable",
+  "es-ES": "Carritos no disponibles"
+ },
+ "Cartão aprovado": {
+  "en-US": "Card approved",
+  "es-ES": "Tarjeta aprobada"
+ },
+ "Cartão recusado": {
+  "en-US": "Card declined",
+  "es-ES": "Tarjeta rechazada"
+ },
+ "Chargeback": {
+  "en-US": "Chargeback",
+  "es-ES": "Chargeback"
+ },
+ "Checkouts": {
+  "en-US": "Checkouts",
+  "es-ES": "Checkouts"
+ },
+ "Chegada": {
+  "en-US": "Arrival",
+  "es-ES": "Llegada"
+ },
+ "Ciclos": {
+  "en-US": "Cycles",
+  "es-ES": "Ciclos"
+ },
+ "Clientes indisponíveis": {
+  "en-US": "Customers unavailable",
+  "es-ES": "Clientes no disponibles"
+ },
+ "Cobrada pela Stripe direto na sua conta, conforme a tabela pública dela para cada método. Ela aparece descontada em cada pagamento no seu painel da Stripe.": {
+  "en-US": "Charged by Stripe directly on your account, according to its public pricing for each method. It appears deducted on each payment in your Stripe dashboard.",
+  "es-ES": "La cobra Stripe directamente en tu cuenta, según su tabla pública para cada método. Aparece descontada en cada pago en tu panel de Stripe."
+ },
+ "Cobrança enviada": {
+  "en-US": "Charge sent",
+  "es-ES": "Cobro enviado"
+ },
+ "Cobrança não enviada": {
+  "en-US": "Charge not sent",
+  "es-ES": "Cobro no enviado"
+ },
+ "Cobranças": {
+  "en-US": "Charges",
+  "es-ES": "Cobros"
+ },
+ "Cobre um cliente avulso. A Stripe envia o e-mail com o link para pagar por Pix, boleto ou cartão.": {
+  "en-US": "Charge a one-off customer. Stripe sends the email with the link to pay by Pix, Boleto or card.",
+  "es-ES": "Cobra a un cliente puntual. Stripe envía el correo con el enlace para pagar por Pix, Boleto o tarjeta."
+ },
+ "Com falha": {
+  "en-US": "Failed",
+  "es-ES": "Con error"
+ },
+ "Com reembolso": {
+  "en-US": "With refund",
+  "es-ES": "Con reembolso"
+ },
+ "Começar a vender": {
+  "en-US": "Start selling",
+  "es-ES": "Empezar a vender"
+ },
+ "Comissão (R$)": {
+  "en-US": "Commission (R$)",
+  "es-ES": "Comisión (R$)"
+ },
+ "Comissão a pagar": {
+  "en-US": "Commission due",
+  "es-ES": "Comisión por pagar"
+ },
+ "Comissão paga": {
+  "en-US": "Commission paid",
+  "es-ES": "Comisión pagada"
+ },
+ "Comissão paga a": {
+  "en-US": "Commission paid to",
+  "es-ES": "Comisión pagada a"
+ },
+ "Comissões de indicação do mês": {
+  "en-US": "Referral commissions for the month",
+  "es-ES": "Comisiones de referidos del mes"
+ },
+ "Como": {
+  "en-US": "As",
+  "es-ES": "Como"
+ },
+ "Como receber os eventos": {
+  "en-US": "How to receive events",
+  "es-ES": "Cómo recibir los eventos"
+ },
+ "Compartilhe o endereço de pagamento dos seus checkouts publicados.": {
+  "en-US": "Share the payment URL of your published checkouts.",
+  "es-ES": "Comparte la dirección de pago de tus checkouts publicados."
+ },
+ "Compartilhe seu link. As vendas dos vendedores indicados aparecem aqui.": {
+  "en-US": "Share your link. Sales from referred sellers show up here.",
+  "es-ES": "Comparte tu enlace. Las ventas de los vendedores referidos aparecen aquí."
+ },
+ "Compradores que preencheram nome e e-mail e não pagaram em até 1 hora (últimos 90 dias). Use para recuperar a venda com um contato pessoal.": {
+  "en-US": "Buyers who filled in name and email but didn't pay within 1 hour (last 90 days). Use it to recover the sale with a personal touch.",
+  "es-ES": "Compradores que rellenaron nombre y correo y no pagaron en 1 hora (últimos 90 días). Úsalo para recuperar la venta con un contacto personal."
+ },
+ "Comunidade / Evento": {
+  "en-US": "Community / Event",
+  "es-ES": "Comunidad / Evento"
+ },
+ "Concluídos": {
+  "en-US": "Completed",
+  "es-ES": "Completadas"
+ },
+ "Conectado como": {
+  "en-US": "Signed in as",
+  "es-ES": "Conectado como"
+ },
+ "Conectando dispositivo": {
+  "en-US": "Connecting device",
+  "es-ES": "Conectando dispositivo"
+ },
+ "Conecte por webhook": {
+  "en-US": "Connect via webhook",
+  "es-ES": "Conecta por webhook"
+ },
+ "Conecte sua conta de pagamentos para receber os repasses das suas vendas direto na sua conta bancária.": {
+  "en-US": "Connect your payments account to receive payouts from your sales directly in your bank account.",
+  "es-ES": "Conecta tu cuenta de pagos para recibir las transferencias de tus ventas directamente en tu cuenta bancaria."
+ },
+ "Configurar recebimentos": {
+  "en-US": "Set up payouts",
+  "es-ES": "Configurar cobros"
+ },
+ "Confirmação": {
+  "en-US": "Confirmation",
+  "es-ES": "Confirmación"
+ },
+ "Conta bancária cadastrada": {
+  "en-US": "Registered bank account",
+  "es-ES": "Cuenta bancaria registrada"
+ },
+ "Conta de recebimento": {
+  "en-US": "Payout account",
+  "es-ES": "Cuenta de cobro"
+ },
+ "Conta em ambiente de teste.": {
+  "en-US": "Account in test mode.",
+  "es-ES": "Cuenta en entorno de prueba."
+ },
+ "Conta em uso": {
+  "en-US": "Account in use",
+  "es-ES": "Cuenta en uso"
+ },
+ "Contestado": {
+  "en-US": "Disputed",
+  "es-ES": "Disputada"
+ },
+ "Contestação de cartão: envie as provas (comprovante de entrega, conversa com o cliente, termos aceitos) no painel da Stripe antes do prazo. Devolução Pix (MED): o banco decide e não é possível contestar. Responder a tempo é o que mais aumenta a chance de ganhar.": {
+  "en-US": "Card dispute: submit evidence (proof of delivery, customer conversation, accepted terms) in the Stripe dashboard before the deadline. Pix return (MED): the bank decides and it cannot be disputed. Responding on time is what most increases your chance of winning.",
+  "es-ES": "Disputa de tarjeta: envía las pruebas (comprobante de entrega, conversación con el cliente, términos aceptados) en el panel de Stripe antes del plazo. Devolución Pix (MED): decide el banco y no es posible disputarla. Responder a tiempo es lo que más aumenta la probabilidad de ganar."
+ },
+ "Contestação recebida": {
+  "en-US": "Dispute received",
+  "es-ES": "Disputa recibida"
+ },
+ "Contestações": {
+  "en-US": "Disputes",
+  "es-ES": "Disputas"
+ },
+ "Contestações indisponíveis": {
+  "en-US": "Disputes unavailable",
+  "es-ES": "Disputas no disponibles"
+ },
+ "Convidar pessoa": {
+  "en-US": "Invite person",
+  "es-ES": "Invitar persona"
+ },
+ "Convide pessoas para ajudar na sua conta. Cada uma entra com o próprio login e só vê o que o cargo libera. Reembolsos, cobranças, conta de recebimento, verificação, integrações, coprodução e segurança ficam só com você.": {
+  "en-US": "Invite people to help with your account. Each one signs in with their own login and only sees what their role allows. Refunds, charges, payout account, verification, integrations, co-production and security stay with you only.",
+  "es-ES": "Invita a personas para ayudar en tu cuenta. Cada una entra con su propio inicio de sesión y solo ve lo que permite su rol. Reembolsos, cobros, cuenta de cobro, verificación, integraciones, coproducción y seguridad quedan solo contigo."
+ },
+ "Convite criado": {
+  "en-US": "Invite created",
+  "es-ES": "Invitación creada"
+ },
+ "Convite de equipe": {
+  "en-US": "Team invite",
+  "es-ES": "Invitación de equipo"
+ },
+ "Convite não aceito": {
+  "en-US": "Invite not accepted",
+  "es-ES": "Invitación no aceptada"
+ },
+ "Copiar ID da conta": {
+  "en-US": "Copy account ID",
+  "es-ES": "Copiar ID de la cuenta"
+ },
+ "Copiar código": {
+  "en-US": "Copy code",
+  "es-ES": "Copiar código"
+ },
+ "Copiar e-mail de": {
+  "en-US": "Copy email of",
+  "es-ES": "Copiar correo de"
+ },
+ "Copiar link da cobrança de": {
+  "en-US": "Copy charge link for",
+  "es-ES": "Copiar enlace del cobro de"
+ },
+ "Copiar link de": {
+  "en-US": "Copy link for",
+  "es-ES": "Copiar enlace de"
+ },
+ "Copiar link de indicação": {
+  "en-US": "Copy referral link",
+  "es-ES": "Copiar enlace de referido"
+ },
+ "Copiar link do convite": {
+  "en-US": "Copy invite link",
+  "es-ES": "Copiar enlace de invitación"
+ },
+ "Copiar segredo": {
+  "en-US": "Copy secret",
+  "es-ES": "Copiar secreto"
+ },
+ "Copiar segredo de": {
+  "en-US": "Copy secret for",
+  "es-ES": "Copiar secreto de"
+ },
+ "Copie o link e envie para a pessoa. Ele vale por 7 dias, funciona uma única vez e só com o e-mail convidado. Por segurança, não aparece de novo.": {
+  "en-US": "Copy the link and send it to the person. It's valid for 7 days, works only once and only with the invited email. For security, it won't be shown again.",
+  "es-ES": "Copia el enlace y envíalo a la persona. Es válido durante 7 días, funciona una sola vez y solo con el correo invitado. Por seguridad, no vuelve a mostrarse."
+ },
+ "Criado em": {
+  "en-US": "Created on",
+  "es-ES": "Creado el"
+ },
+ "Criar checkout": {
+  "en-US": "Create checkout",
+  "es-ES": "Crear checkout"
+ },
+ "Crie e publique um checkout para gerar o link de pagamento do seu produto.": {
+  "en-US": "Create and publish a checkout to generate your product's payment link.",
+  "es-ES": "Crea y publica un checkout para generar el enlace de pago de tu producto."
+ },
+ "Cupom de desconto": {
+  "en-US": "Discount coupon",
+  "es-ES": "Cupón de descuento"
+ },
+ "Código de rastreio": {
+  "en-US": "Tracking code",
+  "es-ES": "Código de seguimiento"
+ },
+ "Código ou produto...": {
+  "en-US": "Code or product...",
+  "es-ES": "Código o producto..."
+ },
+ "Dados da empresa": {
+  "en-US": "Company details",
+  "es-ES": "Datos de la empresa"
+ },
+ "Dashboard": {
+  "en-US": "Dashboard",
+  "es-ES": "Panel"
+ },
+ "De R$ 10 mil a R$ 50 mil": {
+  "en-US": "R$ 10k to R$ 50k",
+  "es-ES": "De R$ 10 mil a R$ 50 mil"
+ },
+ "De R$ 100 mil a R$ 500 mil": {
+  "en-US": "R$ 100k to R$ 500k",
+  "es-ES": "De R$ 100 mil a R$ 500 mil"
+ },
+ "De R$ 50 mil a R$ 100 mil": {
+  "en-US": "R$ 50k to R$ 100k",
+  "es-ES": "De R$ 50 mil a R$ 100 mil"
+ },
+ "Demo": {
+  "en-US": "Demo",
+  "es-ES": "Demo"
+ },
+ "Desenv. pessoal": {
+  "en-US": "Personal dev.",
+  "es-ES": "Desarrollo personal"
+ },
+ "Devolver": {
+  "en-US": "Refund",
+  "es-ES": "¿Devolver"
+ },
+ "Digite o código": {
+  "en-US": "Enter the code",
+  "es-ES": "Introduce el código"
+ },
+ "Direta": {
+  "en-US": "Direct",
+  "es-ES": "Directa"
+ },
+ "Disponível para repasse": {
+  "en-US": "Available for payout",
+  "es-ES": "Disponible para transferir"
+ },
+ "Dropshipping": {
+  "en-US": "Dropshipping",
+  "es-ES": "Dropshipping"
+ },
+ "E-mail copiado.": {
+  "en-US": "Email copied.",
+  "es-ES": "Correo copiado."
+ },
+ "E-mail do cliente": {
+  "en-US": "Customer email",
+  "es-ES": "Correo del cliente"
+ },
+ "Editar afiliado": {
+  "en-US": "Edit affiliate",
+  "es-ES": "Editar afiliado"
+ },
+ "Editar cupom": {
+  "en-US": "Edit coupon",
+  "es-ES": "Editar cupón"
+ },
+ "Editar frete": {
+  "en-US": "Edit shipping rate",
+  "es-ES": "Editar tarifa de envío"
+ },
+ "Educação": {
+  "en-US": "Education",
+  "es-ES": "Educación"
+ },
+ "Encomendas": {
+  "en-US": "Shipments",
+  "es-ES": "Envíos"
+ },
+ "Entregas": {
+  "en-US": "Deliveries",
+  "es-ES": "Entregas"
+ },
+ "Entregas com falha": {
+  "en-US": "Failed deliveries",
+  "es-ES": "Entregas fallidas"
+ },
+ "Entregas com sucesso": {
+  "en-US": "Successful deliveries",
+  "es-ES": "Entregas correctas"
+ },
+ "Entregue": {
+  "en-US": "Delivered",
+  "es-ES": "Entregada"
+ },
+ "Entrou em": {
+  "en-US": "Signed in on",
+  "es-ES": "Inició sesión el"
+ },
+ "Enviando": {
+  "en-US": "Sending",
+  "es-ES": "Enviando"
+ },
+ "Enviar e-mail para": {
+  "en-US": "Send email to",
+  "es-ES": "Enviar correo a"
+ },
+ "Enviar teste para": {
+  "en-US": "Send test to",
+  "es-ES": "Enviar prueba a"
+ },
+ "Envie as vendas da SphexPay para os seus sistemas assim que acontecem.": {
+  "en-US": "Send SphexPay sales to your systems as soon as they happen.",
+  "es-ES": "Envía las ventas de SphexPay a tus sistemas en cuanto se producen."
+ },
+ "Envie o código de rastreio ao comprador pelo e-mail dele. Vendas de teste não aparecem aqui.": {
+  "en-US": "Send the tracking code to the buyer by email. Test sales don't appear here.",
+  "es-ES": "Envía el código de seguimiento al comprador por correo. Las ventas de prueba no aparecen aquí."
+ },
+ "Equipe": {
+  "en-US": "Team",
+  "es-ES": "Equipo"
+ },
+ "Escolha": {
+  "en-US": "Choose",
+  "es-ES": "Elige"
+ },
+ "Estado": {
+  "en-US": "State",
+  "es-ES": "Estado"
+ },
+ "Estas ferramentas recebem webhooks. Gere a URL nelas e cadastre aqui para levar suas vendas a planilhas, CRMs e mensagens.": {
+  "en-US": "These tools receive webhooks. Generate the URL in them and register it here to send your sales to spreadsheets, CRMs and messages.",
+  "es-ES": "Estas herramientas reciben webhooks. Genera la URL en ellas y regístrala aquí para llevar tus ventas a hojas de cálculo, CRM y mensajes."
+ },
+ "Este aparelho": {
+  "en-US": "This device",
+  "es-ES": "Este dispositivo"
+ },
+ "Estilo das mensagens": {
+  "en-US": "Message style",
+  "es-ES": "Estilo de los mensajes"
+ },
+ "Eventos:": {
+  "en-US": "Events:",
+  "es-ES": "Eventos:"
+ },
+ "Ex.: Entrega padrão": {
+  "en-US": "E.g.: Standard delivery",
+  "es-ES": "Ej.: Entrega estándar"
+ },
+ "Ex.: Mentoria individual de outubro": {
+  "en-US": "E.g.: October one-on-one mentoring",
+  "es-ES": "Ej.: Mentoría individual de octubre"
+ },
+ "Ex.: Planilha de vendas": {
+  "en-US": "E.g.: Sales spreadsheet",
+  "es-ES": "Ej.: Hoja de ventas"
+ },
+ "Excluir frete": {
+  "en-US": "Delete shipping rate",
+  "es-ES": "Eliminar tarifa de envío"
+ },
+ "Excluir o frete": {
+  "en-US": "Delete shipping rate",
+  "es-ES": "Eliminar la tarifa de envío"
+ },
+ "Exemplo de evento": {
+  "en-US": "Sample event",
+  "es-ES": "Ejemplo de evento"
+ },
+ "Exemplo: numa venda de": {
+  "en-US": "Example: on a sale of",
+  "es-ES": "Ejemplo: en una venta de"
+ },
+ "Facebook": {
+  "en-US": "Facebook",
+  "es-ES": "Facebook"
+ },
+ "Falhou": {
+  "en-US": "Failed",
+  "es-ES": "Fallida"
+ },
+ "Faturado": {
+  "en-US": "Revenue",
+  "es-ES": "Facturado"
+ },
+ "Filtrar clientes": {
+  "en-US": "Filter customers",
+  "es-ES": "Filtrar clientes"
+ },
+ "Filtrar comissões": {
+  "en-US": "Filter commissions",
+  "es-ES": "Filtrar comisiones"
+ },
+ "Filtrar cupons": {
+  "en-US": "Filter coupons",
+  "es-ES": "Filtrar cupones"
+ },
+ "Filtrar pedidos": {
+  "en-US": "Filter requests",
+  "es-ES": "Filtrar solicitudes"
+ },
+ "Filtrar por método": {
+  "en-US": "Filter by method",
+  "es-ES": "Filtrar por método"
+ },
+ "Filtrar por produto": {
+  "en-US": "Filter by product",
+  "es-ES": "Filtrar por producto"
+ },
+ "Filtrar por status do envio": {
+  "en-US": "Filter by shipping status",
+  "es-ES": "Filtrar por estado del envío"
+ },
+ "Filtrar repasses por status": {
+  "en-US": "Filter payouts by status",
+  "es-ES": "Filtrar transferencias por estado"
+ },
+ "Finanças": {
+  "en-US": "Finance",
+  "es-ES": "Finanzas"
+ },
+ "Fixar menu aberto": {
+  "en-US": "Keep menu open",
+  "es-ES": "Mantener menú abierto"
+ },
+ "Formas de pagamento": {
+  "en-US": "Payment methods",
+  "es-ES": "Métodos de pago"
+ },
+ "Frete": {
+  "en-US": "Shipping rate",
+  "es-ES": "Tarifa de envío"
+ },
+ "Fretes": {
+  "en-US": "Shipping",
+  "es-ES": "Envíos"
+ },
+ "Gerar um novo segredo? O anterior deixa de valer imediatamente.": {
+  "en-US": "Generate a new secret? The previous one stops working immediately.",
+  "es-ES": "¿Generar un nuevo secreto? El anterior deja de ser válido de inmediato."
+ },
+ "Google": {
+  "en-US": "Google",
+  "es-ES": "Google"
+ },
+ "Grátis": {
+  "en-US": "Free",
+  "es-ES": "Gratis"
+ },
+ "Guarde este segredo no seu sistema para validar a assinatura de cada entrega. Você pode consultá-lo de novo ou gerar outro quando quiser.": {
+  "en-US": "Store this secret in your system to validate the signature of each delivery. You can view it again or generate a new one whenever you want.",
+  "es-ES": "Guarda este secreto en tu sistema para validar la firma de cada entrega. Puedes consultarlo de nuevo o generar otro cuando quieras."
+ },
+ "HMAC-SHA256 por webhook": {
+  "en-US": "HMAC-SHA256 per webhook",
+  "es-ES": "HMAC-SHA256 por webhook"
+ },
+ "Histórico de repasses": {
+  "en-US": "Payout history",
+  "es-ES": "Historial de transferencias"
+ },
+ "Horário da prévia": {
+  "en-US": "Preview time",
+  "es-ES": "Hora de la vista previa"
+ },
+ "Horários": {
+  "en-US": "Times",
+  "es-ES": "Horarios"
+ },
+ "ID da conta": {
+  "en-US": "Account ID",
+  "es-ES": "ID de la cuenta"
+ },
+ "Indicador": {
+  "en-US": "Referrer",
+  "es-ES": "Referente"
+ },
+ "Indicação": {
+  "en-US": "Referral",
+  "es-ES": "Recomendación"
+ },
+ "Indicações": {
+  "en-US": "Referrals",
+  "es-ES": "Referidos"
+ },
+ "Indique outros vendedores e receba 10% da taxa SphexPay de cada venda aprovada deles durante 12 meses. O valor sai da taxa da plataforma: quem você indica não paga nada a mais. A SphexPay paga uma vez por mês.": {
+  "en-US": "Refer other sellers and earn 10% of the SphexPay fee on each of their approved sales for 12 months. The amount comes from the platform fee: whoever you refer pays nothing extra. SphexPay pays once a month.",
+  "es-ES": "Recomienda a otros vendedores y recibe el 10% de la comisión de SphexPay de cada venta aprobada suya durante 12 meses. El importe sale de la comisión de la plataforma: quien recomiendas no paga nada más. SphexPay paga una vez al mes."
+ },
+ "Infoprodutos": {
+  "en-US": "Digital products",
+  "es-ES": "Infoproductos"
+ },
+ "Informe este ID ao suporte quando precisar de ajuda com a sua conta.": {
+  "en-US": "Share this ID with support when you need help with your account.",
+  "es-ES": "Indica este ID al soporte cuando necesites ayuda con tu cuenta."
+ },
+ "Instagram": {
+  "en-US": "Instagram",
+  "es-ES": "Instagram"
+ },
+ "Integrações indisponíveis": {
+  "en-US": "Integrations unavailable",
+  "es-ES": "Integraciones no disponibles"
+ },
+ "Ir para a visão geral": {
+  "en-US": "Go to overview",
+  "es-ES": "Ir a la vista general"
+ },
+ "Ir para o painel": {
+  "en-US": "Go to dashboard",
+  "es-ES": "Ir al panel"
+ },
+ "Jornada indisponível": {
+  "en-US": "Journey unavailable",
+  "es-ES": "Trayectoria no disponible"
+ },
+ "Lembretes de faturamento": {
+  "en-US": "Revenue reminders",
+  "es-ES": "Recordatorios de facturación"
+ },
+ "Lembretes salvos": {
+  "en-US": "Reminders saved",
+  "es-ES": "Recordatorios guardados"
+ },
+ "Link copiado.": {
+  "en-US": "Link copied.",
+  "es-ES": "Enlace copiado."
+ },
+ "Links indisponíveis": {
+  "en-US": "Links unavailable",
+  "es-ES": "Enlaces no disponibles"
+ },
+ "Loja virtual": {
+  "en-US": "Online store",
+  "es-ES": "Tienda online"
+ },
+ "Marcar todas como pagas": {
+  "en-US": "Mark all as paid",
+  "es-ES": "Marcar todas como pagadas"
+ },
+ "Menu lateral": {
+  "en-US": "Side menu",
+  "es-ES": "Menú lateral"
+ },
+ "Migrar de plataforma": {
+  "en-US": "Switch platforms",
+  "es-ES": "Migrar de plataforma"
+ },
+ "Minha conta": {
+  "en-US": "My account",
+  "es-ES": "Mi cuenta"
+ },
+ "Minhas taxas": {
+  "en-US": "My fees",
+  "es-ES": "Mis comisiones"
+ },
+ "Métodos e prazos": {
+  "en-US": "Methods and timelines",
+  "es-ES": "Métodos y plazos"
+ },
+ "Métrica do gráfico": {
+  "en-US": "Chart metric",
+  "es-ES": "Métrica del gráfico"
+ },
+ "Mês": {
+  "en-US": "Month",
+  "es-ES": "Mes"
+ },
+ "Na sua conta": {
+  "en-US": "In your account",
+  "es-ES": "En tu cuenta"
+ },
+ "Nada a pagar neste mês": {
+  "en-US": "Nothing to pay this month",
+  "es-ES": "Nada que pagar este mes"
+ },
+ "Nenhum afiliado com venda aprovada no período.": {
+  "en-US": "No affiliate with an approved sale in this period.",
+  "es-ES": "Ningún afiliado con venta aprobada en el periodo."
+ },
+ "Nenhum indicado teve venda aprovada no mês escolhido.": {
+  "en-US": "No referral had an approved sale in the selected month.",
+  "es-ES": "Ningún referido tuvo ventas aprobadas en el mes elegido."
+ },
+ "Nenhum link ainda": {
+  "en-US": "No links yet",
+  "es-ES": "Todavía no hay enlaces"
+ },
+ "Nenhum pedido aqui": {
+  "en-US": "No requests here",
+  "es-ES": "Ninguna solicitud aquí"
+ },
+ "Nenhum repasse programado": {
+  "en-US": "No payout scheduled",
+  "es-ES": "Ninguna transferencia programada"
+ },
+ "Nenhum webhook configurado. Crie um para receber suas vendas no seu sistema, planilha ou automação.": {
+  "en-US": "No webhook configured. Create one to receive your sales in your system, spreadsheet or automation.",
+  "es-ES": "Ningún webhook configurado. Crea uno para recibir tus ventas en tu sistema, hoja de cálculo o automatización."
+ },
+ "Nenhuma cobrança ainda": {
+  "en-US": "No charges yet",
+  "es-ES": "Todavía no hay cobros"
+ },
+ "Nenhuma comissão no período": {
+  "en-US": "No commissions in this period",
+  "es-ES": "Ninguna comisión en el periodo"
+ },
+ "Nenhuma contestação": {
+  "en-US": "No disputes",
+  "es-ES": "Ninguna disputa"
+ },
+ "Nenhuma entrega ainda. Use \"Enviar teste\" em um webhook para conferir a integração.": {
+  "en-US": "No deliveries yet. Use \"Send test\" on a webhook to check the integration.",
+  "es-ES": "Todavía no hay entregas. Usa \"Enviar prueba\" en un webhook para comprobar la integración."
+ },
+ "Nenhuma movimentação no período": {
+  "en-US": "No activity in this period",
+  "es-ES": "Ningún movimiento en el periodo"
+ },
+ "Nenhuma venda aprovada no período.": {
+  "en-US": "No approved sales in this period.",
+  "es-ES": "Ninguna venta aprobada en el periodo."
+ },
+ "Nenhuma venda de afiliado": {
+  "en-US": "No affiliate sales",
+  "es-ES": "Ninguna venta de afiliado"
+ },
+ "Ninguém na equipe ainda": {
+  "en-US": "No one on the team yet",
+  "es-ES": "Todavía no hay nadie en el equipo"
+ },
+ "No período:": {
+  "en-US": "In this period:",
+  "es-ES": "En el periodo:"
+ },
+ "Nome do cliente": {
+  "en-US": "Customer name",
+  "es-ES": "Nombre del cliente"
+ },
+ "Nome do frete": {
+  "en-US": "Shipping rate name",
+  "es-ES": "Nombre de la tarifa de envío"
+ },
+ "Nome ou e-mail...": {
+  "en-US": "Name or email...",
+  "es-ES": "Nombre o correo..."
+ },
+ "Nome, e-mail ou produto...": {
+  "en-US": "Name, email or product...",
+  "es-ES": "Nombre, correo o producto..."
+ },
+ "Nova cobrança": {
+  "en-US": "New charge",
+  "es-ES": "Nuevo cobro"
+ },
+ "Nova tentativa": {
+  "en-US": "Retry",
+  "es-ES": "Reintentar"
+ },
+ "Novo afiliado": {
+  "en-US": "New affiliate",
+  "es-ES": "Nuevo afiliado"
+ },
+ "Novo frete": {
+  "en-US": "New shipping rate",
+  "es-ES": "Nueva tarifa de envío"
+ },
+ "Nutra / Suplementos": {
+  "en-US": "Nutra / Supplements",
+  "es-ES": "Nutra / Suplementos"
+ },
+ "O frete só aparece em pedidos a partir do pedido mínimo. Use preço 0 para frete grátis.": {
+  "en-US": "The shipping rate only appears on orders at or above the minimum order. Use price 0 for free shipping.",
+  "es-ES": "La tarifa de envío solo aparece en pedidos a partir del pedido mínimo. Usa precio 0 para envío gratis."
+ },
+ "Opcional": {
+  "en-US": "Optional",
+  "es-ES": "Opcional"
+ },
+ "Opções de entrega": {
+  "en-US": "Delivery options",
+  "es-ES": "Opciones de entrega"
+ },
+ "Opções de entrega cobradas no checkout de produtos do tipo Físico. Com um frete ativo, o comprador informa o endereço e escolhe a entrega.": {
+  "en-US": "Delivery options charged at checkout for Physical products. With an active shipping rate, the buyer enters their address and chooses delivery.",
+  "es-ES": "Opciones de entrega cobradas en el checkout de productos de tipo Físico. Con una tarifa de envío activa, el comprador indica la dirección y elige la entrega."
+ },
+ "Organizar o financeiro": {
+  "en-US": "Organize finances",
+  "es-ES": "Organizar las finanzas"
+ },
+ "Os convites e as pessoas com acesso aparecem aqui.": {
+  "en-US": "Invites and people with access show up here.",
+  "es-ES": "Las invitaciones y las personas con acceso aparecen aquí."
+ },
+ "Os números consideram apenas vendas reais. Vendas de teste não entram nos relatórios.": {
+  "en-US": "Numbers only include real sales. Test sales are excluded from reports.",
+  "es-ES": "Las cifras solo consideran ventas reales. Las ventas de prueba no se incluyen en los informes."
+ },
+ "Os pedidos de plaquinha aparecem nesta lista assim que os vendedores solicitam.": {
+  "en-US": "Plaque requests show up in this list as soon as sellers submit them.",
+  "es-ES": "Las solicitudes de placa aparecen en esta lista en cuanto los vendedores las envían."
+ },
+ "Os repasses são automáticos. Não é preciso solicitar saque.": {
+  "en-US": "Payouts are automatic. No need to request a withdrawal.",
+  "es-ES": "Las transferencias son automáticas. No es necesario solicitar un retiro."
+ },
+ "Outros": {
+  "en-US": "Other",
+  "es-ES": "Otros"
+ },
+ "Paga ao afiliado": {
+  "en-US": "Paid to affiliate",
+  "es-ES": "Pagada al afiliado"
+ },
+ "Pagamentos de indicação (equipe)": {
+  "en-US": "Referral payments (team)",
+  "es-ES": "Pagos de referidos (equipo)"
+ },
+ "Pagamentos recebidos": {
+  "en-US": "Payments received",
+  "es-ES": "Pagos recibidos"
+ },
+ "Pago": {
+  "en-US": "Paid",
+  "es-ES": "Pagado"
+ },
+ "Pedido mínimo": {
+  "en-US": "Minimum order",
+  "es-ES": "Pedido mínimo"
+ },
+ "Pedido mínimo (R$)": {
+  "en-US": "Minimum order (R$)",
+  "es-ES": "Pedido mínimo (R$)"
+ },
+ "Pedidos de premiação (equipe)": {
+  "en-US": "Award requests (team)",
+  "es-ES": "Solicitudes de premios (equipo)"
+ },
+ "Pedidos indisponíveis": {
+  "en-US": "Requests unavailable",
+  "es-ES": "Solicitudes no disponibles"
+ },
+ "Pendentes": {
+  "en-US": "Pending",
+  "es-ES": "Pendientes"
+ },
+ "Percentual": {
+  "en-US": "Percentage",
+  "es-ES": "Porcentaje"
+ },
+ "Pessoa": {
+  "en-US": "Person",
+  "es-ES": "Persona"
+ },
+ "Pessoas da equipe": {
+  "en-US": "Team members",
+  "es-ES": "Miembros del equipo"
+ },
+ "Pix e boleto só aceitam reais. Pix: de R$ 0,50 até o limite da Stripe por pagamento. Boleto: de R$ 5,00 a R$ 49.999,99. Assinaturas são cobradas no cartão. Para ativar Pix ou boleto, use Configurações → Métodos de pagamento no painel da Stripe.": {
+  "en-US": "Pix and Boleto only accept reais. Pix: from R$ 0,50 up to Stripe's per-payment limit. Boleto: from R$ 5,00 to R$ 49.999,99. Subscriptions are charged to card. To enable Pix or Boleto, go to Settings → Payment methods in the Stripe dashboard.",
+  "es-ES": "Pix y Boleto solo aceptan reales. Pix: desde R$ 0,50 hasta el límite de Stripe por pago. Boleto: de R$ 5,00 a R$ 49.999,99. Las suscripciones se cobran con tarjeta. Para activar Pix o Boleto, usa Configuración → Métodos de pago en el panel de Stripe."
+ },
+ "Pix gerado": {
+  "en-US": "Pix generated",
+  "es-ES": "Pix generado"
+ },
+ "Pix pago": {
+  "en-US": "Pix paid",
+  "es-ES": "Pix pagado"
+ },
+ "Por venda aprovada, igual para cartão, Pix, boleto e cada cobrança de assinatura. Sem mensalidade.": {
+  "en-US": "Per approved sale, the same for card, Pix, Boleto and each subscription charge. No monthly fee.",
+  "es-ES": "Por venta aprobada, igual para tarjeta, Pix, Boleto y cada cobro de suscripción. Sin cuota mensual."
+ },
+ "Prazo": {
+  "en-US": "Delivery time",
+  "es-ES": "Plazo"
+ },
+ "Prazo informado pelo vendedor": {
+  "en-US": "Delivery time provided by the seller",
+  "es-ES": "Plazo indicado por el vendedor"
+ },
+ "Prazo máximo (dias úteis)": {
+  "en-US": "Maximum time (business days)",
+  "es-ES": "Plazo máximo (días hábiles)"
+ },
+ "Prazo mínimo (dias úteis)": {
+  "en-US": "Minimum time (business days)",
+  "es-ES": "Plazo mínimo (días hábiles)"
+ },
+ "Prazo para reembolsar": {
+  "en-US": "Refund window",
+  "es-ES": "Plazo para reembolsar"
+ },
+ "Prazo para responder": {
+  "en-US": "Response deadline",
+  "es-ES": "Plazo para responder"
+ },
+ "Preço (R$)": {
+  "en-US": "Price (R$)",
+  "es-ES": "Precio (R$)"
+ },
+ "Primeira compra": {
+  "en-US": "First purchase",
+  "es-ES": "Primera compra"
+ },
+ "Produtos físicos": {
+  "en-US": "Physical products",
+  "es-ES": "Productos físicos"
+ },
+ "Produtos que mais vendem": {
+  "en-US": "Top-selling products",
+  "es-ES": "Productos más vendidos"
+ },
+ "Prévia com valores de exemplo": {
+  "en-US": "Preview with sample values",
+  "es-ES": "Vista previa con valores de ejemplo"
+ },
+ "Prêmio principal": {
+  "en-US": "Grand prize",
+  "es-ES": "Premio principal"
+ },
+ "Próxima página de": {
+  "en-US": "Next page of",
+  "es-ES": "Página siguiente de"
+ },
+ "Próximo repasse": {
+  "en-US": "Next payout",
+  "es-ES": "Próxima transferencia"
+ },
+ "Publique este checkout para ativar o link.": {
+  "en-US": "Publish this checkout to activate the link.",
+  "es-ES": "Publica este checkout para activar el enlace."
+ },
+ "Página anterior de": {
+  "en-US": "Previous page of",
+  "es-ES": "Página anterior de"
+ },
+ "Quando suas vendas forem aprovadas, o gráfico mostra a evolução aqui.": {
+  "en-US": "When your sales are approved, the chart shows the trend here.",
+  "es-ES": "Cuando se aprueben tus ventas, el gráfico mostrará aquí la evolución."
+ },
+ "Quando um comprador contestar uma compra no banco, ela aparece aqui com o prazo para responder.": {
+  "en-US": "When a buyer disputes a purchase with their bank, it shows up here with the response deadline.",
+  "es-ES": "Cuando un comprador dispute una compra con su banco, aparecerá aquí con el plazo para responder."
+ },
+ "Quanto custa cada venda e quando o dinheiro fica disponível.": {
+  "en-US": "How much each sale costs and when the money becomes available.",
+  "es-ES": "Cuánto cuesta cada venta y cuándo está disponible el dinero."
+ },
+ "Quem comprou de você, com histórico de compras. Vendas de teste não entram.": {
+  "en-US": "People who bought from you, with purchase history. Test sales are excluded.",
+  "es-ES": "Quienes te compraron, con historial de compras. Las ventas de prueba no se incluyen."
+ },
+ "Razão social, documento e endereço vêm da verificação da conta, que também libera os pagamentos. Para conferir ou corrigir, abra a Verificação.": {
+  "en-US": "Legal name, tax ID and address come from account verification, which also enables payments. To review or correct them, open Verification.",
+  "es-ES": "La razón social, el documento y la dirección provienen de la verificación de la cuenta, que también habilita los pagos. Para revisarlos o corregirlos, abre Verificación."
+ },
+ "Receba no celular e no computador quanto você já faturou no dia, nos horários que escolher (horário de Brasília). À meia-noite chega o fechamento do dia anterior.": {
+  "en-US": "Get how much you've earned today on your phone and computer, at the times you choose (Brasília time). At midnight you get the previous day's closing.",
+  "es-ES": "Recibe en el móvil y en el ordenador cuánto has facturado en el día, en los horarios que elijas (hora de Brasilia). A medianoche llega el cierre del día anterior."
+ },
+ "Recebimentos com Stripe Connect. Configure sua conta no Financeiro; ao habilitar, conferimos se a Stripe já liberou o método. Cobranças reais só começam depois da verificação da conta aprovada.": {
+  "en-US": "Payouts with Stripe Connect. Set up your account in Finance; when you enable a method, we check whether Stripe has already approved it. Real charges only start after account verification is approved.",
+  "es-ES": "Cobros con Stripe Connect. Configura tu cuenta en Finanzas; al habilitar, comprobamos si Stripe ya ha liberado el método. Los cobros reales solo empiezan después de que se apruebe la verificación de la cuenta."
+ },
+ "Recolher menu": {
+  "en-US": "Collapse menu",
+  "es-ES": "Contraer menú"
+ },
+ "Recorrentes": {
+  "en-US": "Returning",
+  "es-ES": "Recurrentes"
+ },
+ "Reembolsar venda": {
+  "en-US": "Refund sale",
+  "es-ES": "Reembolsar venta"
+ },
+ "Reembolso": {
+  "en-US": "Refund",
+  "es-ES": "Reembolso"
+ },
+ "Reembolso não realizado": {
+  "en-US": "Refund failed",
+  "es-ES": "Reembolso no realizado"
+ },
+ "Reembolso solicitado": {
+  "en-US": "Refund requested",
+  "es-ES": "Reembolso solicitado"
+ },
+ "Rejeite entregas com assinatura inválida ou horário com mais de 5 minutos de diferença.": {
+  "en-US": "Reject deliveries with an invalid signature or a timestamp more than 5 minutes off.",
+  "es-ES": "Rechaza las entregas con firma no válida o con una hora que difiera más de 5 minutos."
+ },
+ "Relacionamento": {
+  "en-US": "Relationships",
+  "es-ES": "Relaciones"
+ },
+ "Relatório de afiliados": {
+  "en-US": "Affiliate report",
+  "es-ES": "Informe de afiliados"
+ },
+ "Relatório indisponível": {
+  "en-US": "Report unavailable",
+  "es-ES": "Informe no disponible"
+ },
+ "Remover este webhook e o histórico de entregas?": {
+  "en-US": "Remove this webhook and its delivery history?",
+  "es-ES": "¿Eliminar este webhook y el historial de entregas?"
+ },
+ "Remover o acesso de": {
+  "en-US": "Remove access for",
+  "es-ES": "Quitar el acceso de"
+ },
+ "Remover produto": {
+  "en-US": "Remove product",
+  "es-ES": "Quitar producto"
+ },
+ "Renda extra": {
+  "en-US": "Extra income",
+  "es-ES": "Ingresos extra"
+ },
+ "Repasses automáticos da Stripe para a sua conta bancária.": {
+  "en-US": "Automatic Stripe payouts to your bank account.",
+  "es-ES": "Transferencias automáticas de Stripe a tu cuenta bancaria."
+ },
+ "Repasses indisponíveis": {
+  "en-US": "Payouts unavailable",
+  "es-ES": "Transferencias no disponibles"
+ },
+ "Responder na Stripe": {
+  "en-US": "Respond on Stripe",
+  "es-ES": "Responder en Stripe"
+ },
+ "SaaS / Software": {
+  "en-US": "SaaS / Software",
+  "es-ES": "SaaS / Software"
+ },
+ "Sair de todos os outros": {
+  "en-US": "Sign out of all others",
+  "es-ES": "Cerrar sesión en todos los demás"
+ },
+ "Saldo futuro": {
+  "en-US": "Future balance",
+  "es-ES": "Saldo futuro"
+ },
+ "Saldos, repasses, extrato, cobranças e taxas da operação.": {
+  "en-US": "Balances, payouts, statement, charges and fees for your operation.",
+  "es-ES": "Saldos, transferencias, extracto, cobros y comisiones de la operación."
+ },
+ "Saque concluído": {
+  "en-US": "Withdrawal completed",
+  "es-ES": "Retiro completado"
+ },
+ "Saúde e bem-estar": {
+  "en-US": "Health and wellness",
+  "es-ES": "Salud y bienestar"
+ },
+ "Segredo de": {
+  "en-US": "Secret for",
+  "es-ES": "Secreto de"
+ },
+ "Segredo de assinatura": {
+  "en-US": "Signing secret",
+  "es-ES": "Secreto de firma"
+ },
+ "Sem mínimo": {
+  "en-US": "No minimum",
+  "es-ES": "Sin mínimo"
+ },
+ "Sem vendas no período": {
+  "en-US": "No sales in this period",
+  "es-ES": "Sin ventas en el periodo"
+ },
+ "Serviços": {
+  "en-US": "Services",
+  "es-ES": "Servicios"
+ },
+ "Seu link de indicação": {
+  "en-US": "Your referral link",
+  "es-ES": "Tu enlace de referido"
+ },
+ "Situação": {
+  "en-US": "Status",
+  "es-ES": "Estado"
+ },
+ "Social": {
+  "en-US": "Social",
+  "es-ES": "Social"
+ },
+ "Somente vendas reais aprovadas": {
+  "en-US": "Real approved sales only",
+  "es-ES": "Solo ventas reales aprobadas"
+ },
+ "Somente vendas reais aprovadas entram no extrato. Os repasses são feitos pela Stripe para a conta bancária cadastrada.": {
+  "en-US": "Only real approved sales are included in the statement. Payouts are made by Stripe to the registered bank account.",
+  "es-ES": "Solo las ventas reales aprobadas entran en el extracto. Stripe realiza las transferencias a la cuenta bancaria registrada."
+ },
+ "Status do envio": {
+  "en-US": "Shipping status",
+  "es-ES": "Estado del envío"
+ },
+ "Status do envio de": {
+  "en-US": "Shipping status of",
+  "es-ES": "Estado del envío de"
+ },
+ "Status do pedido de": {
+  "en-US": "Request status of",
+  "es-ES": "Estado de la solicitud de"
+ },
+ "Só afiliados ativos recebem comissão. O e-mail do afiliado não ganha comissão comprando pelo próprio link.": {
+  "en-US": "Only active affiliates earn commission. The affiliate's email does not earn commission when buying through their own link.",
+  "es-ES": "Solo los afiliados activos reciben comisión. El correo del afiliado no gana comisión al comprar con su propio enlace."
+ },
+ "Taxa SphexPay": {
+  "en-US": "SphexPay fee",
+  "es-ES": "Comisión de SphexPay"
+ },
+ "Taxa de processamento": {
+  "en-US": "Processing fee",
+  "es-ES": "Comisión de procesamiento"
+ },
+ "Taxas": {
+  "en-US": "Fees",
+  "es-ES": "Comisiones"
+ },
+ "Taxas indisponíveis": {
+  "en-US": "Fees unavailable",
+  "es-ES": "Comisiones no disponibles"
+ },
+ "Tecnologia": {
+  "en-US": "Technology",
+  "es-ES": "Tecnología"
+ },
+ "Tentativas": {
+  "en-US": "Attempts",
+  "es-ES": "Intentos"
+ },
+ "Todas as vendas": {
+  "en-US": "All sales",
+  "es-ES": "Todas las ventas"
+ },
+ "Todos os cupons dos seus produtos. O comprador digita o código no checkout e o desconto é conferido no servidor; o uso só conta quando o pagamento é aprovado.": {
+  "en-US": "All coupons for your products. The buyer enters the code at checkout and the discount is validated on the server; usage only counts when payment is approved.",
+  "es-ES": "Todos los cupones de tus productos. El comprador introduce el código en el checkout y el descuento se valida en el servidor; el uso solo cuenta cuando se aprueba el pago."
+ },
+ "Top afiliados": {
+  "en-US": "Top affiliates",
+  "es-ES": "Mejores afiliados"
+ },
+ "Top indicados": {
+  "en-US": "Top referrals",
+  "es-ES": "Mejores referidos"
+ },
+ "Totais em reais; exporte o CSV para ver vendas em outras moedas.": {
+  "en-US": "Totals in reais; export the CSV to see sales in other currencies.",
+  "es-ES": "Totales en reales; exporta el CSV para ver las ventas en otras monedas."
+ },
+ "Totais em reais; vendas em outras moedas aparecem no extrato.": {
+  "en-US": "Totals in reais; sales in other currencies appear in the statement.",
+  "es-ES": "Totales en reales; las ventas en otras monedas aparecen en el extracto."
+ },
+ "Transações": {
+  "en-US": "Transactions",
+  "es-ES": "Transacciones"
+ },
+ "Transportadora": {
+  "en-US": "Carrier",
+  "es-ES": "Transportista"
+ },
+ "Trocar de conta": {
+  "en-US": "Switch account",
+  "es-ES": "Cambiar de cuenta"
+ },
+ "Usos": {
+  "en-US": "Uses",
+  "es-ES": "Usos"
+ },
+ "Vale para contas novas criadas por este link. Autoindicação não conta.": {
+  "en-US": "Valid for new accounts created through this link. Self-referrals don't count.",
+  "es-ES": "Válido para cuentas nuevas creadas con este enlace. La autorrecomendación no cuenta."
+ },
+ "Validade": {
+  "en-US": "Expiration",
+  "es-ES": "Validez"
+ },
+ "Validar a assinatura (Node.js)": {
+  "en-US": "Validate the signature (Node.js)",
+  "es-ES": "Validar la firma (Node.js)"
+ },
+ "Valide a assinatura antes de processar o evento.": {
+  "en-US": "Validate the signature before processing the event.",
+  "es-ES": "Valida la firma antes de procesar el evento."
+ },
+ "Valor (R$)": {
+  "en-US": "Amount (R$)",
+  "es-ES": "Importe (R$)"
+ },
+ "Valor reembolsado": {
+  "en-US": "Amount refunded",
+  "es-ES": "Importe reembolsado"
+ },
+ "Vence em": {
+  "en-US": "Due on",
+  "es-ES": "Vence el"
+ },
+ "Venda": {
+  "en-US": "Sale",
+  "es-ES": "Venta"
+ },
+ "Venda aprovada": {
+  "en-US": "Sale approved",
+  "es-ES": "Venta aprobada"
+ },
+ "Venda aprovada.": {
+  "en-US": "Sale approved.",
+  "es-ES": "Venta aprobada."
+ },
+ "Venda fora da SphexPay": {
+  "en-US": "Sale outside SphexPay",
+  "es-ES": "Venta fuera de SphexPay"
+ },
+ "Venda pendente": {
+  "en-US": "Sale pending",
+  "es-ES": "Venta pendiente"
+ },
+ "Venda reembolsada": {
+  "en-US": "Sale refunded",
+  "es-ES": "Venta reembolsada"
+ },
+ "Vendas aprovadas, reembolsos e repasses aparecem aqui assim que acontecerem.": {
+  "en-US": "Approved sales, refunds and payouts show up here as soon as they happen.",
+  "es-ES": "Las ventas aprobadas, los reembolsos y las transferencias aparecen aquí en cuanto se producen."
+ },
+ "Vendas feitas pelos links dos seus afiliados e as comissões de cada um. Em assinaturas, a comissão vale para a primeira cobrança.": {
+  "en-US": "Sales made through your affiliates' links and each one's commissions. For subscriptions, the commission applies to the first charge.",
+  "es-ES": "Ventas realizadas por los enlaces de tus afiliados y las comisiones de cada uno. En suscripciones, la comisión se aplica al primer cobro."
+ },
+ "Vendas realizadas por afiliados": {
+  "en-US": "Sales made by affiliates",
+  "es-ES": "Ventas realizadas por afiliados"
+ },
+ "Vender para o exterior": {
+  "en-US": "Sell internationally",
+  "es-ES": "Vender al extranjero"
+ },
+ "Ver repasses": {
+  "en-US": "View payouts",
+  "es-ES": "Ver transferencias"
+ },
+ "Ver tabela da Stripe": {
+  "en-US": "View Stripe pricing",
+  "es-ES": "Ver tabla de Stripe"
+ },
+ "Verificado em duas etapas": {
+  "en-US": "Two-step verified",
+  "es-ES": "Verificado en dos pasos"
+ },
+ "Via webhook": {
+  "en-US": "Via webhook",
+  "es-ES": "Vía webhook"
+ },
+ "Vincular": {
+  "en-US": "Link",
+  "es-ES": "Vincular"
+ },
+ "Vincule um produto para gerar o link de divulgação.": {
+  "en-US": "Link a product to generate the promotion link.",
+  "es-ES": "Vincula un producto para generar el enlace de promoción."
+ },
+ "Visitas e vendas consideram apenas pagamentos reais aprovados. Vendas de teste não entram nesses números.": {
+  "en-US": "Visits and sales only count real approved payments. Test sales are not included in these numbers.",
+  "es-ES": "Las visitas y ventas solo consideran pagos reales aprobados. Las ventas de prueba no se incluyen en estas cifras."
+ },
+ "Visível só para administradores. O vendedor é avisado a cada mudança de status.": {
+  "en-US": "Visible to admins only. The seller is notified on each status change.",
+  "es-ES": "Visible solo para administradores. El vendedor recibe un aviso en cada cambio de estado."
+ },
+ "Visível só para administradores. Pague por Pix ou transferência e registre aqui.": {
+  "en-US": "Visible to admins only. Pay via Pix or bank transfer and record it here.",
+  "es-ES": "Visible solo para administradores. Paga por Pix o transferencia y regístralo aquí."
+ },
+ "Viu um aparelho que não reconhece? Use Sair de todos os outros e troque sua senha.": {
+  "en-US": "See a device you don't recognize? Use Sign out of all others and change your password.",
+  "es-ES": "¿Ves un dispositivo que no reconoces? Usa Cerrar sesión en todos los demás y cambia tu contraseña."
+ },
+ "Você está na conta de": {
+  "en-US": "You're in the account of",
+  "es-ES": "Estás en la cuenta de"
+ },
+ "Você está na sua conta": {
+  "en-US": "You're in your own account",
+  "es-ES": "Estás en tu cuenta"
+ },
+ "Voltar para o início": {
+  "en-US": "Back to home",
+  "es-ES": "Volver al inicio"
+ },
+ "Webhook criado:": {
+  "en-US": "Webhook created:",
+  "es-ES": "Webhook creado:"
+ },
+ "Webhooks assinados para enviar suas vendas a outros sistemas e as integrações disponíveis ficam na página Integrações.": {
+  "en-US": "Signed webhooks to send your sales to other systems and the available integrations are on the Integrations page.",
+  "es-ES": "Los webhooks firmados para enviar tus ventas a otros sistemas y las integraciones disponibles están en la página Integraciones."
+ },
+ "YouTube": {
+  "en-US": "YouTube",
+  "es-ES": "YouTube"
+ },
+ "ao comprador? O valor sai do seu saldo na Stripe e as taxas de processamento não são devolvidas. Esta ação não pode ser desfeita.": {
+  "en-US": "to the buyer? The amount comes out of your Stripe balance and processing fees are not returned. This action cannot be undone.",
+  "es-ES": "al comprador? El importe sale de tu saldo en Stripe y las comisiones de procesamiento no se devuelven. Esta acción no se puede deshacer."
+ },
+ "aplicado:": {
+  "en-US": "applied:",
+  "es-ES": "aplicado:"
+ },
+ "cadastrados": {
+  "en-US": "registered",
+  "es-ES": "registrados"
+ },
+ "carrinhos": {
+  "en-US": "carts",
+  "es-ES": "carritos"
+ },
+ "clientes": {
+  "en-US": "customers",
+  "es-ES": "clientes"
+ },
+ "com o segredo do webhook": {
+  "en-US": "with the webhook secret",
+  "es-ES": "con el secreto del webhook"
+ },
+ "comissão": {
+  "en-US": "commission",
+  "es-ES": "comisión"
+ },
+ "como": {
+  "en-US": "as",
+  "es-ES": "como"
+ },
+ "contestação(ões) somando": {
+  "en-US": "dispute(s) totaling",
+  "es-ES": "disputa(s) por un total de"
+ },
+ "desde": {
+  "en-US": "since",
+  "es-ES": "desde"
+ },
+ "dia(s)": {
+  "en-US": "day(s)",
+  "es-ES": "día(s)"
+ },
+ "dia(s) após a aprovação.": {
+  "en-US": "day(s) after approval.",
+  "es-ES": "día(s) después de la aprobación."
+ },
+ "dias úteis": {
+  "en-US": "business days",
+  "es-ES": "días hábiles"
+ },
+ "em vendas reais aprovadas": {
+  "en-US": "in real approved sales",
+  "es-ES": "en ventas reales aprobadas"
+ },
+ "frete": {
+  "en-US": "shipping",
+  "es-ES": "envío"
+ },
+ "horas": {
+  "en-US": "hours",
+  "es-ES": "horas"
+ },
+ "liberação em": {
+  "en-US": "released in",
+  "es-ES": "liberación en"
+ },
+ "min": {
+  "en-US": "min",
+  "es-ES": "min"
+ },
+ "para ignorar repetições.": {
+  "en-US": "to ignore repeats.",
+  "es-ES": "para ignorar repeticiones."
+ },
+ "pedido em": {
+  "en-US": "requested on",
+  "es-ES": "solicitado el"
+ },
+ "reembolso": {
+  "en-US": "refund",
+  "es-ES": "reembolso"
+ },
+ "reembolso(s) somando": {
+  "en-US": "refund(s) totaling",
+  "es-ES": "reembolso(s) por un total de"
+ },
+ "seg": {
+  "en-US": "sec",
+  "es-ES": "seg"
+ },
+ "teste": {
+  "en-US": "test",
+  "es-ES": "prueba"
+ },
+ "vendas": {
+  "en-US": "sales",
+  "es-ES": "ventas"
+ },
+ "Área fora do seu cargo": {
+  "en-US": "Area outside your role",
+  "es-ES": "Área fuera de tu rol"
+ },
+ "Áreas de Vendas": {
+  "en-US": "Sales areas",
+  "es-ES": "Áreas de ventas"
+ },
+ "Últimas 50 entregas": {
+  "en-US": "Last 50 deliveries",
+  "es-ES": "Últimas 50 entregas"
+ },
+ "Últimas 50 entregas. Falhas são reenviadas com espera crescente (2, 4, 8, 16, 32 e 64 minutos).": {
+  "en-US": "Last 50 deliveries. Failures are retried with increasing delays (2, 4, 8, 16, 32 and 64 minutes).",
+  "es-ES": "Últimas 50 entregas. Los fallos se reenvían con espera creciente (2, 4, 8, 16, 32 y 64 minutos)."
+ },
+ "Último acesso": {
+  "en-US": "Last access",
+  "es-ES": "Último acceso"
+ },
+ "Últimos repasses enviados pela Stripe para sua conta.": {
+  "en-US": "Latest payouts sent by Stripe to your account.",
+  "es-ES": "Últimas transferencias enviadas por Stripe a tu cuenta."
+ },
+ "— horário do envio, em segundos": {
+  "en-US": "— send time, in seconds",
+  "es-ES": "— hora del envío, en segundos"
+ },
+ "— identificador da entrega (use para evitar duplicidade)": {
+  "en-US": "— delivery identifier (use it to avoid duplicates)",
+  "es-ES": "— identificador de la entrega (úsalo para evitar duplicados)"
+ },
+ "— tipo do evento": {
+  "en-US": "— event type",
+  "es-ES": "— tipo de evento"
  }
 }

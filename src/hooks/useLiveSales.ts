@@ -14,7 +14,7 @@ export function useLiveSales(userId:string|undefined,period:PeriodFilter){
   if(demo.active){
    const current=periodBounds(period),before=previousPeriodBounds(period),inRange=(start:Date,end:Date)=>demo.ledger.filter(item=>{const date=new Date(item.occurredAt);return date>=start&&date<=end})
    setSales(normalizeTransactions(inRange(current.start,current.end)));setPrevious(normalizeTransactions(inRange(before.start,before.end)))
-   setEligibleRevenueCents(demo.ledger.filter(item=>item.status==='approved').reduce((sum,item)=>sum+convertDemoCents(item.amountCents,item.currency,'BRL'),0));setLoading(false);setError('');setRealtime('unavailable');setUpdatedAt(new Date().toISOString());return
+   setEligibleRevenueCents(demo.ledger.filter(item=>item.status==='approved').reduce((sum,item)=>sum+convertDemoCents(item.amountCents,item.currency,'BRL'),0));setLoading(false);setError('');setRealtime('live');setUpdatedAt(new Date().toISOString());return
   }
   if(!userId){setSales([]);setPrevious([]);setLoading(false);return}
   setError('')
