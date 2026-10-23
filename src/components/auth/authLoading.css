@@ -1,34 +1,56 @@
-/* Abertura do SphexPay (validação de sessão). Escuro por padrão, com variante clara pelo tema. */
-.auth-loading{--al-bg:#050505;--al-text:#f4f4f4;--al-muted:#8a8a8a;--al-line:#ffffff14;--al-mark:#ffffff;--al-shine:#9fd2ff;--al-grid:#ffffff0a;--al-aura:.48;position:relative;isolation:isolate;min-height:100dvh;display:grid;place-items:center;overflow:hidden;background:var(--al-bg);color:var(--al-text);font-family:SphexGraphik,Inter,'Helvetica Neue',Arial,sans-serif;animation:al-appear .45s ease-out .12s both}
-:root[data-theme=light] .auth-loading{--al-bg:#ffffff;--al-text:#0a0a0a;--al-muted:#6b6b6b;--al-line:#0000000f;--al-mark:#0a0a0a;--al-shine:#0080ff;--al-grid:#0000000a;--al-aura:.2}
-.auth-loading-aura{position:absolute;z-index:-2;left:50%;top:50%;width:min(560px,120vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#38b8ff 0%,#135fff 34%,#1246ed00 68%);filter:blur(60px);opacity:var(--al-aura);transform:translate(-50%,-56%) scale(.85);animation:al-breathe 4.8s ease-in-out infinite}
-.auth-loading-grid{position:absolute;z-index:-1;inset:0;background-image:linear-gradient(var(--al-grid) 1px,transparent 1px),linear-gradient(90deg,var(--al-grid) 1px,transparent 1px);background-size:44px 44px;-webkit-mask:radial-gradient(circle at 50% 46%,#000 0,transparent 55%);mask:radial-gradient(circle at 50% 46%,#000 0,transparent 55%)}
-.auth-loading-stage{display:grid;justify-items:center;gap:0;padding:24px 16px}
-.auth-loading-core{position:relative;width:132px;height:132px;display:grid;place-items:center;animation:al-rise .9s cubic-bezier(.2,.9,.25,1) .12s both}
-.auth-loading-orbit{position:absolute;inset:0;width:100%;height:100%;animation:al-spin 1.6s linear infinite}
+/* Abertura do SphexPay. Sempre escura, como a superfície pública da marca (DESIGN.md), nos dois temas;
+   respeita movimento reduzido. */
+@property --al-hole{syntax:'<length-percentage>';inherits:false;initial-value:0%}
+.auth-loading{--al-bg:#030304;--al-text:#f4f4f4;--al-muted:#8a8a8a;--al-line:#ffffff14;--al-mark:#ffffff;--al-shine:#9fd2ff;--al-grid:#ffffff09;--al-aura:.36;--al-spark:#9fd8ff;--al-ease:cubic-bezier(.16,1,.3,1);position:relative;isolation:isolate;min-height:100dvh;display:grid;place-items:center;overflow:hidden;background:var(--al-bg);color:var(--al-text);font-family:SphexGraphik,Inter,'Helvetica Neue',Arial,sans-serif;animation:al-appear .35s ease-out both}
+/* Aurora azul girando atrás do símbolo, que se intensifica no impacto. */
+.auth-loading-aurora{position:absolute;z-index:-2;inset:0 0 8% 0;margin:auto;width:min(620px,150vw);height:min(620px,150vw);border-radius:50%;background:radial-gradient(circle,#38b8ff 0%,#135fff 30%,transparent 62%),conic-gradient(from 0deg,#1d51ff,#53ddff,#135fff,#38b8ff,#1d51ff);filter:blur(64px);opacity:0;transform:scale(.5);animation:al-aurora-in 1.4s var(--al-ease) .1s forwards,al-aurora-spin 9s linear infinite}
+.auth-loading-aurora::after{content:'';position:absolute;inset:-20%;border-radius:50%;background:radial-gradient(circle,transparent 55%,var(--al-bg) 80%)}
+.auth-loading-grid{position:absolute;z-index:-1;inset:0;background-image:linear-gradient(var(--al-grid) 1px,transparent 1px),linear-gradient(90deg,var(--al-grid) 1px,transparent 1px);background-size:44px 44px;-webkit-mask:radial-gradient(circle at 50% 46%,#000 0,transparent 55%);mask:radial-gradient(circle at 50% 46%,#000 0,transparent 55%);opacity:0;animation:al-fade-in 1s ease-out .5s forwards}
+.auth-loading-stage{display:grid;justify-items:center;padding:24px 16px}
+.auth-loading-core{position:relative;width:140px;height:140px;display:grid;place-items:center}
+/* Partículas em espiral convergindo para o centro. */
+.auth-loading-particles{position:absolute;inset:50%;width:0;height:0}
+.auth-loading-particles i{position:absolute;left:calc(var(--s) / -2);top:calc(var(--s) / -2);width:var(--s);height:var(--s);border-radius:50%;background:var(--al-spark);box-shadow:0 0 10px var(--al-spark),0 0 2px #fff;opacity:0;animation:al-converge 1.05s cubic-bezier(.55,0,.75,.4) var(--d) both}
+/* Ondas de energia no momento em que o símbolo se completa. */
+.auth-loading-wave{position:absolute;inset:20px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--al-spark) 80%,transparent);box-shadow:0 0 24px color-mix(in srgb,var(--al-spark) 50%,transparent),inset 0 0 18px color-mix(in srgb,var(--al-spark) 35%,transparent);opacity:0;animation:al-wave 1.1s var(--al-ease) 1.15s both}
+.auth-loading-wave.is-late{animation-delay:1.32s;border-width:1px}
+.auth-loading-orbit{position:absolute;inset:0;width:100%;height:100%;opacity:0;animation:al-fade-in .4s ease-out 1.2s forwards,al-spin 1.5s linear 1.2s infinite}
 .auth-loading-track{fill:none;stroke:var(--al-line);stroke-width:1.5}
 .auth-loading-arc{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:110 340;filter:drop-shadow(0 0 6px #0080ffaa)}
-.auth-loading-ring{position:absolute;inset:18px;border:1px solid var(--al-line);border-radius:50%;animation:al-ping 2.4s cubic-bezier(.2,.6,.3,1) infinite}
-.auth-loading-mark{width:46px;height:66px;background:linear-gradient(115deg,var(--al-mark) 0%,var(--al-mark) 38%,var(--al-shine) 50%,var(--al-mark) 62%,var(--al-mark) 100%);background-size:260% 100%;-webkit-mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;animation:al-shine 2.6s ease-in-out .6s infinite;filter:drop-shadow(0 0 18px #0080ff55)}
-.auth-loading-word{display:flex;margin-top:26px;font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1}
-.auth-loading-word span{display:inline-block;opacity:0;transform:translateY(10px);filter:blur(6px);animation:al-letter .7s cubic-bezier(.2,.9,.25,1) both}
-.auth-loading-line{position:relative;width:168px;height:2px;margin-top:22px;overflow:hidden;border-radius:2px;background:var(--al-line);animation:al-fade .5s ease-out .8s both}
-.auth-loading-line i{position:absolute;inset:0;width:40%;border-radius:inherit;background:linear-gradient(90deg,transparent,#0080ff 40%,#53ddff 70%,transparent);box-shadow:0 0 12px #0080ff99;animation:al-scan 1.4s cubic-bezier(.45,0,.2,1) infinite}
+.auth-loading-glow{position:absolute;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#ffffff 0%,#9fd8ff 30%,#0080ff00 70%);opacity:0;animation:al-flash .9s ease-out 1.1s both;mix-blend-mode:screen}
+/* O símbolo se constrói de baixo para cima, guiado por uma linha de luz. */
+.auth-loading-mark{position:relative;width:50px;height:72px;background:linear-gradient(115deg,var(--al-mark) 0%,var(--al-mark) 38%,var(--al-shine) 50%,var(--al-mark) 62%,var(--al-mark) 100%);background-size:260% 100%;background-position:100% 0;-webkit-mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;clip-path:inset(100% 0 0 0);filter:drop-shadow(0 0 18px #0080ff66);animation:al-build .75s cubic-bezier(.7,0,.3,1) .45s forwards,al-pulse .5s var(--al-ease) 1.15s,al-shine 2.6s ease-in-out 1.6s infinite}
+.auth-loading-scan{position:absolute;left:-20%;right:-20%;height:3px;bottom:0;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 14px #53ddff,0 0 4px #fff;opacity:0;animation:al-scan-up .75s cubic-bezier(.7,0,.3,1) .45s both}
+/* Nome: letras chegam do desfoque com espaçamento que se fecha. */
+.auth-loading-word{display:flex;margin-top:28px;font-size:24px;font-weight:500;letter-spacing:-.02em;line-height:1}
+.auth-loading-word span{display:inline-block;opacity:0;transform:translateY(14px) scale(.9);filter:blur(10px);animation:al-letter .8s var(--al-ease) calc(1.25s + var(--l) * 55ms) both}
+.auth-loading-line{position:relative;width:168px;height:2px;margin-top:22px;overflow:hidden;border-radius:2px;background:var(--al-line);transform-origin:center;animation:al-line-in .6s var(--al-ease) 1.55s both}
+.auth-loading-line i{position:absolute;inset:0;width:40%;border-radius:inherit;background:linear-gradient(90deg,transparent,#0080ff 40%,#53ddff 70%,transparent);box-shadow:0 0 12px #0080ff99;animation:al-bar 1.3s cubic-bezier(.45,0,.2,1) infinite}
 .auth-loading-status{min-height:14px;margin-top:14px;color:var(--al-muted);font-size:11px;letter-spacing:.14em;text-transform:uppercase;animation:al-status .5s ease-out both}
-/* Abertura obrigatória por cima do painel, que já carrega por baixo. */
+.auth-loading-status.is-first{animation-delay:1.6s}
+/* Sobreposição obrigatória: na saída a tela se abre do centro e o símbolo avança até a câmera. */
 .auth-loading-overlay{position:fixed;inset:0;z-index:2147483000}
-.auth-loading-overlay.is-leaving{pointer-events:none;animation:al-leave .45s cubic-bezier(.4,0,.2,1) both}
-.auth-loading-overlay.is-leaving .auth-loading-stage{animation:al-leave-stage .45s cubic-bezier(.4,0,.2,1) both}
-@keyframes al-leave{to{opacity:0}}
-@keyframes al-leave-stage{to{opacity:0;transform:scale(1.06);filter:blur(6px)}}
+.auth-loading-overlay.is-leaving{pointer-events:none;-webkit-mask:radial-gradient(circle at 50% 46%,transparent var(--al-hole),#000 calc(var(--al-hole) + 8%));mask:radial-gradient(circle at 50% 46%,transparent var(--al-hole),#000 calc(var(--al-hole) + 8%));animation:al-iris .7s cubic-bezier(.7,0,.2,1) both}
+.auth-loading-overlay.is-leaving .auth-loading-core{animation:al-zoom .7s cubic-bezier(.7,0,.2,1) both}
+.auth-loading-overlay.is-leaving .auth-loading-word,.auth-loading-overlay.is-leaving .auth-loading-line,.auth-loading-overlay.is-leaving .auth-loading-status{animation:al-out .3s ease-in both}
+@supports not (mask:radial-gradient(circle,#000,#000)){.auth-loading-overlay.is-leaving{animation:al-out .6s ease-in both}}
 @keyframes al-appear{from{opacity:0}to{opacity:1}}
-@keyframes al-breathe{0%,100%{transform:translate(-50%,-56%) scale(.85);opacity:calc(var(--al-aura) * .75)}50%{transform:translate(-50%,-56%) scale(1.05);opacity:var(--al-aura)}}
-@keyframes al-rise{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+@keyframes al-fade-in{to{opacity:1}}
+@keyframes al-out{to{opacity:0}}
+@keyframes al-aurora-in{0%{opacity:0;transform:scale(.4)}70%{opacity:calc(var(--al-aura) * 1.35);transform:scale(1.05)}100%{opacity:var(--al-aura);transform:scale(.92)}}
+@keyframes al-aurora-spin{to{rotate:360deg}}
+@keyframes al-converge{0%{opacity:0;transform:rotate(var(--a)) translateX(var(--r)) scale(1.4)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:rotate(calc(var(--a) + 140deg)) translateX(0) scale(.3)}}
+@keyframes al-build{to{clip-path:inset(0 0 0 0)}}
+@keyframes al-scan-up{0%{opacity:0;bottom:0}10%{opacity:1}90%{opacity:1}100%{opacity:0;bottom:100%}}
+@keyframes al-pulse{0%{transform:scale(1)}40%{transform:scale(1.14)}100%{transform:scale(1)}}
+@keyframes al-flash{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.4)}100%{opacity:0;transform:scale(2.6)}}
+@keyframes al-wave{0%{opacity:0;transform:scale(.6)}12%{opacity:1}100%{opacity:0;transform:scale(2.8)}}
 @keyframes al-spin{to{transform:rotate(360deg)}}
-@keyframes al-ping{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.45);opacity:0}}
-@keyframes al-shine{0%{background-position:100% 0}60%,100%{background-position:0 0}}
-@keyframes al-letter{to{opacity:1;transform:none;filter:none}}
-@keyframes al-fade{from{opacity:0;transform:scaleX(.4)}to{opacity:1;transform:none}}
-@keyframes al-scan{from{transform:translateX(-110%)}to{transform:translateX(260%)}}
+@keyframes al-shine{0%{background-position:100% 0}55%,100%{background-position:0 0}}
+@keyframes al-letter{60%{text-shadow:0 0 18px var(--al-spark)}to{opacity:1;transform:none;filter:none;text-shadow:none}}
+@keyframes al-line-in{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:none}}
+@keyframes al-bar{from{transform:translateX(-110%)}to{transform:translateX(260%)}}
 @keyframes al-status{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.auth-loading,.auth-loading *{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important}.auth-loading-word span{opacity:1;transform:none;filter:none}}
+@keyframes al-iris{from{--al-hole:0%}to{--al-hole:150%}}
+@keyframes al-zoom{0%{transform:none;opacity:1;filter:none}100%{transform:scale(7);opacity:0;filter:blur(8px)}}
+@media (prefers-reduced-motion:reduce){.auth-loading,.auth-loading *{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important}.auth-loading-mark{clip-path:none}.auth-loading-word span{opacity:1;transform:none;filter:none}.auth-loading-particles,.auth-loading-wave,.auth-loading-glow{display:none}}

@@ -1,0 +1,48 @@
+/* Menu flutuante do celular. Monocromático como o painel (claro e escuro), com vidro fosco,
+   indicador que desliza com mola, entrada com impulso e troca animada para o modo Social. */
+.floating-nav{display:none}
+@media(max-width:767px){
+ .floating-nav{--fn-item:48px;--fn-pad:5px;--fn-gap:2px;--fn-spring:cubic-bezier(.34,1.56,.64,1);--fn-ease:cubic-bezier(.22,1,.36,1);--fn-surface:color-mix(in srgb,var(--panel) 80%,transparent);--fn-border:color-mix(in srgb,var(--text) 12%,transparent);--fn-icon:color-mix(in srgb,var(--text) 62%,transparent);position:fixed;z-index:50;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));display:block;transform:translateX(-50%);animation:fn-enter .7s var(--fn-spring) .15s both;pointer-events:none}
+ .floating-nav.is-social{--fn-item:44px}
+ .floating-nav-bar{position:relative;display:flex;align-items:center;gap:var(--fn-gap);width:calc(var(--nav-count) * var(--fn-item) + (var(--nav-count) - 1) * var(--fn-gap) + var(--fn-pad) * 2);height:calc(44px + var(--fn-pad) * 2);padding:var(--fn-pad);border:1px solid var(--fn-border);border-radius:999px;background:var(--fn-surface);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 14px 34px color-mix(in srgb,#000 22%,transparent),0 3px 10px color-mix(in srgb,#000 10%,transparent),inset 0 1px 0 color-mix(in srgb,#fff 18%,transparent);transition:width .55s var(--fn-spring);pointer-events:auto;overflow:hidden}
+ .floating-nav-bar::before{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 30%,color-mix(in srgb,#fff 22%,transparent) 48%,transparent 66%);background-size:250% 100%;background-position:120% 0;opacity:0;pointer-events:none}
+ .floating-nav.phase-in .floating-nav-bar::before{animation:fn-sheen .8s ease-out both}
+ .floating-nav-pill{position:absolute;z-index:0;top:var(--fn-pad);left:0;height:44px;border-radius:999px;background:var(--text);box-shadow:0 6px 16px color-mix(in srgb,#000 24%,transparent);transition:transform .5s var(--fn-spring),width .5s var(--fn-spring),opacity .25s ease;will-change:transform}
+ .floating-nav-pill[data-visible=false]{opacity:0}
+ .floating-nav-item{position:relative;z-index:1;flex:0 0 var(--fn-item);display:grid;place-items:center;height:44px;padding:0;border:0;border-radius:999px;background:transparent;color:var(--fn-icon);-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .3s ease,transform .25s var(--fn-spring)}
+ .floating-nav-item svg{width:20px;height:20px;stroke-width:1.9;transition:transform .45s var(--fn-spring)}
+ .floating-nav-item:active{transform:scale(.86)}
+ .floating-nav-item.is-active{color:var(--panel)}
+ .floating-nav-item.is-active svg{transform:translateY(-1px) scale(1.08);animation:fn-pop .5s var(--fn-spring)}
+ .floating-nav-item:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+ .floating-nav.is-main .floating-nav-item:nth-child(3) svg{width:22px;height:22px}
+ .floating-nav-item.is-primary{color:var(--text)}
+ .floating-nav-item.is-primary::before{content:'';position:absolute;inset:5px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--text) 55%,transparent)}
+ .floating-nav-item.is-exit{color:var(--text)}
+ .floating-nav-item.is-exit::after{content:'';position:absolute;right:-2px;top:12px;bottom:12px;width:1px;background:var(--fn-border)}
+ .floating-nav-badge{position:absolute;top:5px;right:5px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#e5484d;color:#fff;font-size:9px;font-weight:700;line-height:16px;text-align:center;box-shadow:0 0 0 2px var(--panel);animation:fn-pop .5s var(--fn-spring)}
+ /* Troca de modo: ícones saem com desfoque, o menu se comprime e os novos entram em cascata. */
+ .floating-nav.phase-out .floating-nav-item{animation:fn-item-out .23s ease-in both;animation-delay:calc(var(--i) * 18ms)}
+ .floating-nav.phase-out .floating-nav-pill{opacity:0;transform:scale(.6)}
+ .floating-nav.phase-out .floating-nav-bar{animation:fn-squash .23s ease-in both}
+ .floating-nav.phase-in .floating-nav-bar{animation:fn-stretch .6s var(--fn-spring) both}
+ .floating-nav.phase-in .floating-nav-item{animation:fn-item-in .5s var(--fn-spring) both;animation-delay:calc(60ms + var(--i) * 45ms)}
+ :root[data-theme=dark] .floating-nav{--fn-surface:color-mix(in srgb,var(--panel-2,#141414) 78%,transparent);--fn-border:color-mix(in srgb,#fff 14%,transparent);--fn-icon:color-mix(in srgb,#fff 64%,transparent)}
+ :root[data-theme=dark] .floating-nav-bar{box-shadow:0 16px 40px #000a,0 2px 8px #0006,inset 0 1px 0 #ffffff1a}
+ :root[data-theme=dark] .floating-nav-pill{box-shadow:0 0 18px #ffffff30,0 6px 16px #0008}
+ /* Espaço para o menu não cobrir o fim das páginas, e o botão de ajuda sobe acima dele. */
+ .internal-app-shell .internal-page-content{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+ .internal-app-shell .reference-help{bottom:calc(80px + env(safe-area-inset-bottom))!important}
+ /* No Social o menu flutuante substitui a barra própria do celular. */
+ .internal-app-shell .social-mobile-nav{display:none!important}
+ /* Os três atalhos saem da barra de módulos do topo no celular. */
+ .internal-app-shell .reference-navigation .reference-nav-item[data-dock]{display:none!important}
+}
+@keyframes fn-enter{from{opacity:0;transform:translate(-50%,40px) scale(.7);filter:blur(6px)}to{opacity:1;transform:translateX(-50%);filter:none}}
+@keyframes fn-pop{0%{transform:scale(.6)}60%{transform:translateY(-1px) scale(1.18)}100%{transform:translateY(-1px) scale(1.08)}}
+@keyframes fn-item-out{to{opacity:0;transform:scale(.4) translateY(6px);filter:blur(4px)}}
+@keyframes fn-item-in{from{opacity:0;transform:scale(.3) translateY(10px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes fn-squash{to{transform:scaleX(.82) scaleY(.92)}}
+@keyframes fn-stretch{0%{transform:scaleX(.82) scaleY(.92)}55%{transform:scaleX(1.04) scaleY(1.02)}100%{transform:none}}
+@keyframes fn-sheen{0%{opacity:1;background-position:120% 0}100%{opacity:0;background-position:-30% 0}}
+@media(prefers-reduced-motion:reduce){.floating-nav,.floating-nav *,.floating-nav *::before{animation:none!important;transition:none!important}}

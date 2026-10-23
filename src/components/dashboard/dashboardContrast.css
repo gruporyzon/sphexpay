@@ -1,0 +1,29 @@
+/* Dashboard: gráfico de faturamento logo abaixo de "Receita por dia" e contraste mais firme nos
+   números, rótulos e bordas (sem chegar ao preto pesado). Vale para o modo claro e o escuro. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-overview-grid.is-single{grid-template-columns:minmax(0,1fr)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-details-grid.has-wave{grid-auto-flow:row dense}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-details-grid.has-wave>.revenue-wave{grid-column:1/-1;min-height:0}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard{--dash-line:color-mix(in srgb,var(--line) 55%,var(--line-strong));--dash-muted:color-mix(in srgb,var(--muted) 70%,var(--text))}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-card,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-connection-card,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-progress-card{border-color:var(--dash-line)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-revenue>strong{font-weight:500;color:var(--text)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-metric>strong{font-weight:500}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-revenue>span,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-metric>span{font-weight:500;color:var(--dash-muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-metric.positive>span{color:var(--success)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-revenue>small,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-metric>small{font-weight:400;color:var(--dash-muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-card h2{font-weight:600}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-card header>span,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-card header p{color:var(--dash-muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-daily-rows span{font-weight:500;color:var(--dash-muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-daily-rows strong,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-sale b,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-sale strong,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-operation-summary dd{font-weight:600;color:var(--text)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-operation-summary dt,
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-sale small{font-weight:500;color:var(--dash-muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .revenue-wave-foot span{font-weight:500;color:var(--dash-muted)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .revenue-wave-foot b{font-weight:600;color:var(--text)}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .revenue-wave-chart .recharts-area-curve{stroke-width:2.8}

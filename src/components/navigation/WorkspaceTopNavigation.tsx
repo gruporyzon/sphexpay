@@ -16,6 +16,8 @@ const workspaceTopItems = [
   competitionNavigation,
   {id:'settings',label:'Configurações',path:'/app/configuracoes',icon:Settings},
 ]
+// No celular estes três ficam no menu flutuante e saem desta barra (ver floating-nav.css).
+const DOCKED=new Set(['dashboard','live-sales','finance'])
 export function WorkspaceTopNavigation({navigationRoot='/app'}:{navigationRoot?:string}){
  const {t}=useTranslation(),role=useActiveSeller().workspace?.role
 
@@ -38,6 +40,6 @@ export function WorkspaceTopNavigation({navigationRoot='/app'}:{navigationRoot?:
  }}>{workspaceTopItems.filter(item=>memberCanOpen(role,item.path)).map(item=>{
   const path=item.path.replace(/^\/app/,navigationRoot)
   const active=item.id==='products'?appPath==='/app/produtos':'exact' in item&&item.exact?appPath===item.path:appPath===item.path||appPath.startsWith(`${item.path}/`)
-  return <Link key={item.id} to={path} aria-current={active?'page':undefined} className={`reference-nav-item${active?' active':''}`}><item.icon aria-hidden="true"/><span>{t(item.label)}</span></Link>
+  return <Link key={item.id} to={path} data-dock={DOCKED.has(item.id)?'':undefined} aria-current={active?'page':undefined} className={`reference-nav-item${active?' active':''}`}><item.icon aria-hidden="true"/><span>{t(item.label)}</span></Link>
  })}</nav></div>
 }
