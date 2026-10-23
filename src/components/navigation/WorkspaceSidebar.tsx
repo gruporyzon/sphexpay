@@ -1,6 +1,6 @@
 import { useEffect,useState } from 'react'
 import { Link,useLocation } from 'react-router-dom'
-import { BadgePercent,Gift,ChevronDown,CreditCard,Crown,FileBarChart,Handshake,Home,Landmark,LayoutDashboard,Link2,MessageCircle,Package,PanelLeftClose,PanelLeftOpen,Pin,PinOff,PlugZap,RadioTower,RefreshCcw,Send,Settings,ShieldAlert,ShieldCheck,ShoppingBag,ShoppingCart,Store,TicketPercent,Trophy,Truck,UserRoundCheck,Users,WalletCards,Bell,PackageCheck,type LucideIcon } from 'lucide-react'
+import { BadgePercent,Gift,ChevronDown,CreditCard,Crown,FileBarChart,Handshake,Landmark,LayoutDashboard,Link2,MessageCircle,Package,PanelLeftClose,PanelLeftOpen,Pin,PinOff,PlugZap,RadioTower,RefreshCcw,Send,Settings,ShieldAlert,ShieldCheck,ShoppingBag,ShoppingCart,Store,TicketPercent,Trophy,Truck,UserRoundCheck,Users,WalletCards,Bell,PackageCheck,type LucideIcon } from 'lucide-react'
 import { useTranslation } from '../../i18n'
 import { useActiveSeller } from '../../hooks/useActiveSeller'
 import { memberCanOpen } from '../../lib/teamAccess'
@@ -10,7 +10,7 @@ type Group={id:string;label:string;icon:LucideIcon;items:Item[]}
 
 // Menu lateral do computador: agrupa todas as áreas do painel, pode ser recolhido em ícones e
 // fixado aberto. No celular segue o dock inferior; em telas médias, a barra superior.
-const START:Item[]=[{id:'home',label:'Início',to:'/',icon:Home,exact:true},{id:'dashboard',label:'Visão geral',to:'/app',icon:LayoutDashboard,exact:true},{id:'competition',label:'Competição',to:'/app/competicao',icon:Crown}]
+const START:Item[]=[{id:'dashboard',label:'Dashboard',to:'/app',icon:LayoutDashboard,exact:true},{id:'competition',label:'Competição',to:'/app/competicao',icon:Crown}]
 const GROUPS:Group[]=[
  {id:'sales',label:'Vendas',icon:ShoppingBag,items:[{id:'transactions',label:'Transações',to:'/app/vendas',icon:ShoppingBag},{id:'shipments',label:'Encomendas',to:'/app/vendas?aba=encomendas',icon:PackageCheck},{id:'disputes',label:'Contestações',to:'/app/vendas?aba=contestacoes',icon:ShieldAlert},{id:'subscriptions',label:'Assinaturas',to:'/app/assinaturas',icon:RefreshCcw},{id:'live',label:'Vendas ao vivo',to:'/app/vendas-ao-vivo',icon:RadioTower}]},
  {id:'products',label:'Produtos',icon:Package,items:[{id:'products',label:'Produtos',to:'/app/produtos',icon:Package,exact:true},{id:'checkout',label:'Checkouts',to:'/app/produtos/checkout',icon:CreditCard},{id:'links',label:'Links de pagamento',to:'/app/produtos/links',icon:Link2},{id:'coupons',label:'Cupons',to:'/app/produtos/cupons',icon:TicketPercent},{id:'shipping',label:'Fretes',to:'/app/produtos/fretes',icon:Truck},{id:'showcase',label:'Vitrine',to:'/app/vitrine',icon:Store}]},
@@ -36,9 +36,9 @@ export function WorkspaceSidebar({navigationRoot='/app'}:{navigationRoot?:string
  useEffect(()=>{try{localStorage.setItem(STORAGE,JSON.stringify(prefs))}catch{/* Preferência só desta sessão. */}},[prefs])
  const expanded=prefs.pinned||hover
  // Colaborador vê só as áreas do cargo na conta de quem convidou.
- const role=useActiveSeller().workspace?.role,allowed=(item:Item)=>item.id==='home'||memberCanOpen(role,item.to.split('?')[0],item.to.includes('?')?`?${item.to.split('?')[1]}`:'')
+ const role=useActiveSeller().workspace?.role,allowed=(item:Item)=>memberCanOpen(role,item.to.split('?')[0],item.to.includes('?')?`?${item.to.split('?')[1]}`:'')
  const groups=GROUPS.map(group=>({...group,items:group.items.filter(allowed)})).filter(group=>group.items.length)
- const link=(item:Item)=>{const active=item.id!=='home'&&isSidebarItemActive(item,appPath,search);return <Link key={`${item.id}:${item.to}`} to={item.to.replace(/^\/app/,navigationRoot)} aria-current={active?'page':undefined} className={`workspace-sidebar-link${active?' active':''}`} title={expanded?undefined:t(item.label)}><item.icon aria-hidden="true"/><span>{t(item.label)}</span></Link>}
+ const link=(item:Item)=>{const active=isSidebarItemActive(item,appPath,search);return <Link key={`${item.id}:${item.to}`} to={item.to.replace(/^\/app/,navigationRoot)} aria-current={active?'page':undefined} className={`workspace-sidebar-link${active?' active':''}`} title={expanded?undefined:t(item.label)}><item.icon aria-hidden="true"/><span>{t(item.label)}</span></Link>}
  const toggleGroup=(id:string)=>setPrefs(current=>({...current,closed:current.closed.includes(id)?current.closed.filter(item=>item!==id):[...current.closed,id]}))
  return <aside className={`workspace-sidebar${expanded?' expanded':' collapsed'}${prefs.pinned?' pinned':''}`} aria-label={t('Menu lateral')} onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)} onFocus={()=>setHover(true)} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setHover(false)}}>
   <nav className="workspace-sidebar-scroll" aria-label={t('Navegação principal')}>

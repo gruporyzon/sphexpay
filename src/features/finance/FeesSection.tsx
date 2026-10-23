@@ -1,9 +1,11 @@
-import { useCallback,useEffect,useState } from 'react'
+import { useCallback,useEffect,useRef,useState } from 'react'
 import { BadgePercent,CalendarClock,CreditCard,ExternalLink,FileText,QrCode,RotateCcw } from 'lucide-react'
 import { T,translate as uiText } from '../../i18n'
 import { useAppLocale } from '../../i18n/localeStore'
 import { Card,Loading,StateMessage } from '../../components/ui'
 import { stripeConnectService,type StripeConnectFinance } from '../../services/stripeConnectService'
+import { useOptionalDashboardData } from '../../providers/DashboardDataProvider'
+import { demoFinance } from '../../demo/demoFinance'
 import { centsMoney,scheduleLabel } from './financeSummary'
 
 // Taxas reais: a taxa da SphexPay vem da regra configurada no servidor; a taxa de
@@ -17,7 +19,8 @@ const METHODS=[
 
 export function FeesSection(){useAppLocale(state=>state.locale)
  const [finance,setFinance]=useState<StripeConnectFinance|null>(null),[error,setError]=useState(''),[loading,setLoading]=useState(true)
- const load=useCallback(()=>{setLoading(true);setError('');stripeConnectService.finance().then(setFinance).catch(reason=>{setFinance(null);setError(reason instanceof Error?reason.message:'Não foi possível consultar suas taxas agora.')}).finally(()=>setLoading(false))},[])
+ const demo=useOptionalDashboardData(),demoActive=Boolean(demo?.active),demoLedger=useRef(demo?.ledger);demoLedger.current=demo?.ledger
+ const load=useCallback(()=>{setLoading(true);setError('');(demoActive&&demoLedger.current?Promise.resolve(demoFinance(demoLedger.current)):stripeConnectService.finance()).then(setFinance).catch(reason=>{setFinance(null);setError(reason instanceof Error?reason.message:'Não foi possível consultar suas taxas agora.')}).finally(()=>setLoading(false))},[demoActive])
  useEffect(()=>{load()},[load])
  const bps=finance?.platformFeeBps??null,percent=bps==null?null:(bps/100).toLocaleString('pt-BR',{maximumFractionDigits:2})
  const delay=finance?.schedule?.delayDays

@@ -42,7 +42,7 @@ export function DemoControlPanel(){useAppLocale(state=>state.locale);
  if(!demo.allowed)return null
  const status=demo.paused?'Pausado':demo.active?'Ativo':'Inativo'
  return <section className="mode-settings" aria-labelledby="mode-settings-title">
-  <header className="mode-settings-header"><div><span><T>CONTROLE DA OPERAÇÃO</T></span><h2 id="mode-settings-title"><T>Modo</T></h2><p><T>Configure uma operação dinâmica para visualizar o funcionamento da plataforma.</T></p></div><strong className={`mode-status ${status.toLowerCase()}`}><i/>{status}</strong></header>
+  <header className="mode-settings-header"><div><span><T>CONTROLE DA OPERAÇÃO</T></span><h2 id="mode-settings-title"><T>Demo</T></h2><p><T>Ative para gerar uma operação completa no painel: faturamento, vendas ao vivo, clientes, produtos e metas. Os dados ficam só neste navegador e nunca entram no financeiro real.</T></p></div><strong className={`mode-status ${status.toLowerCase()}`}><i/>{status}</strong></header>
   <div className="mode-overview">
    <div className="mode-command-card" aria-labelledby="mode-control-title">
     <span><T>CONTROLE DA OPERAÇÃO</T></span><h3 id="mode-control-title"><T>Controle da operação</T></h3>

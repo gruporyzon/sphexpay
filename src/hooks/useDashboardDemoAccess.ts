@@ -1,7 +1,6 @@
-import {useDashboardAdmin} from './useDashboardAdmin'
-import {canAccessDemo,isDemoEmailAllowed} from '../lib/demoAccess'
+import {canAccessDemo} from '../lib/demoAccess'
 
-export function useDashboardDemoAccess(userId:string|undefined,email:string|undefined){
- const admin=useDashboardAdmin(userId),emailAllowed=isDemoEmailAllowed(email)
- return{allowed:canAccessDemo(email,admin.allowed),loading:emailAllowed?false:admin.loading,error:emailAllowed?'':admin.error}
+// Acesso ao modo Demo: decidido só pelo e-mail da conta (ver lib/demoAccess).
+export function useDashboardDemoAccess(_userId:string|undefined,email:string|undefined){
+ return{allowed:canAccessDemo(email),loading:false,error:''}
 }

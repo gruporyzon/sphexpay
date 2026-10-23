@@ -19,8 +19,10 @@ export function LanguagePicker(){
   document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape)
   return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape)}
  },[open])
+ // Safari (iPhone e Mac) não dá foco a botão no toque: o blur chega sem relatedTarget e fechava o
+ // menu antes do clique valer. Clique fora já fecha pelo pointerdown; o blur só fecha via teclado.
  const choose=(next:AppLocale)=>{setLocale(next);setOpen(false);trigger.current?.focus()}
- return <div className="workspace-language" ref={root} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setOpen(false)}}>
+ return <div className="workspace-language" ref={root} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget))setOpen(false)}}>
   <button ref={trigger} type="button" className="workspace-language-trigger" aria-label={`${t('Idioma do aplicativo')}: ${selected.name}`} aria-haspopup="menu" aria-expanded={open} aria-controls={open?id:undefined} onClick={()=>setOpen(value=>!value)} onKeyDown={event=>{if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();setOpen(true)}}}><img src={selected.flag} alt="" width="24" height="18"/><span>{selected.code}</span><ChevronDown aria-hidden="true"/></button>
   {open&&<div ref={menu} id={id} role="menu" aria-label={t('Idioma do aplicativo')} className="workspace-language-menu" onKeyDown={event=>{
    if(!['ArrowDown','ArrowUp','Home','End'].includes(event.key))return

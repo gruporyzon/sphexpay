@@ -16,11 +16,20 @@ export const demoCountries:Record<DemoCountryCode,{name:string;city:string}>={
  NL:{name:'Países Baixos',city:'Amsterdã'},IE:{name:'Irlanda',city:'Dublin'},CH:{name:'Suíça',city:'Zurique'}
 }
 export const demoExchangeRates={BRL:1,USD:0.19,EUR:0.17} as const
+// Catálogo da operação Demo: SaaS com mensalidade e infoprodutos, em faixas de preço reais.
 export const fallbackDemoProducts:DemoProduct[]=[
- {id:'demo-product-start',name:'Curso Sphex Start',priceCents:9700,currency:'BRL',active:true,fallback:true},
- {id:'demo-product-escala',name:'Mentoria Escala',priceCents:49700,currency:'BRL',active:true,fallback:true},
- {id:'demo-product-premium',name:'Comunidade Premium',priceCents:19700,currency:'BRL',active:true,fallback:true},
- {id:'demo-product-performance',name:'Plano Performance',priceCents:29700,currency:'BRL',active:true,fallback:true}
+ {id:'demo-product-crm',name:'Sphex CRM Pro',priceCents:9700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-agenda',name:'Agenda Inteligente',priceCents:4990,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-automacao',name:'Automação de WhatsApp',priceCents:14700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-analytics',name:'Analytics Suite',priceCents:29700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-escala',name:'Método Escala Digital',priceCents:49700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-mentoria',name:'Mentoria Black',priceCents:199700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-trafego',name:'Curso Tráfego Pago',priceCents:29700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-comunidade',name:'Comunidade Premium',priceCents:9700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-funil',name:'E-book Funil de Vendas',priceCents:2990,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-copy',name:'Workshop Copy que Converte',priceCents:6700,currency:'BRL',active:true,fallback:true},
+ {id:'demo-product-global',name:'Global Sales Kit',priceCents:4900,currency:'USD',active:true,fallback:true},
+ {id:'demo-product-europe',name:'Europe Launch Pack',priceCents:5900,currency:'EUR',active:true,fallback:true}
 ]
 
 const weighted=<T extends string>(ids:readonly T[],weights:number[]):DemoWeightedOption<T>[]=>ids.map((id,index)=>({id,enabled:weights[index]>0,weight:weights[index]}))
