@@ -15,6 +15,12 @@
 .auth-loading-line{position:relative;width:168px;height:2px;margin-top:22px;overflow:hidden;border-radius:2px;background:var(--al-line);animation:al-fade .5s ease-out .8s both}
 .auth-loading-line i{position:absolute;inset:0;width:40%;border-radius:inherit;background:linear-gradient(90deg,transparent,#0080ff 40%,#53ddff 70%,transparent);box-shadow:0 0 12px #0080ff99;animation:al-scan 1.4s cubic-bezier(.45,0,.2,1) infinite}
 .auth-loading-status{min-height:14px;margin-top:14px;color:var(--al-muted);font-size:11px;letter-spacing:.14em;text-transform:uppercase;animation:al-status .5s ease-out both}
+/* Abertura obrigatória por cima do painel, que já carrega por baixo. */
+.auth-loading-overlay{position:fixed;inset:0;z-index:2147483000}
+.auth-loading-overlay.is-leaving{pointer-events:none;animation:al-leave .45s cubic-bezier(.4,0,.2,1) both}
+.auth-loading-overlay.is-leaving .auth-loading-stage{animation:al-leave-stage .45s cubic-bezier(.4,0,.2,1) both}
+@keyframes al-leave{to{opacity:0}}
+@keyframes al-leave-stage{to{opacity:0;transform:scale(1.06);filter:blur(6px)}}
 @keyframes al-appear{from{opacity:0}to{opacity:1}}
 @keyframes al-breathe{0%,100%{transform:translate(-50%,-56%) scale(.85);opacity:calc(var(--al-aura) * .75)}50%{transform:translate(-50%,-56%) scale(1.05);opacity:var(--al-aura)}}
 @keyframes al-rise{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}

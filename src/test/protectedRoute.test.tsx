@@ -1,7 +1,7 @@
-import { render,screen } from '@testing-library/react'
+import { act,render,screen } from '@testing-library/react'
 import { MemoryRouter,Route,Routes,useLocation } from 'react-router-dom'
 import { beforeEach,describe,expect,it,vi } from 'vitest'
-import { ProtectedRoute } from '../routes/ProtectedRoute'
+import { LAUNCH_SPLASH_EXIT_MS,LAUNCH_SPLASH_MS,ProtectedRoute } from '../routes/ProtectedRoute'
 
 const mocks=vi.hoisted(()=>({auth:{user:null as null|{id:string},loading:false}}))
 vi.mock('../hooks/useAuth',()=>({useAuth:()=>mocks.auth}))
@@ -12,12 +12,18 @@ function ProtectedDashboard(){return <MemoryRouter initialEntries={['/app?period
 describe('entrada direta na rota protegida',()=>{
  beforeEach(()=>{mocks.auth={user:null,loading:false}})
  it('disponibiliza o Dashboard imediatamente após validar a sessão',()=>{
+  vi.useFakeTimers()
   mocks.auth={user:{id:'user'},loading:true}
   const view=render(<ProtectedDashboard/>)
   expect(screen.getByText('Validando acesso seguro')).toBeInTheDocument()
   expect(screen.queryByRole('button')).not.toBeInTheDocument()
   mocks.auth={user:{id:'user'},loading:false}
   view.rerender(<ProtectedDashboard/>)
+  // O painel já monta por baixo da abertura, que é obrigatória e sai depois do tempo mínimo.
+  expect(screen.getByRole('button',{name:'Dashboard disponível',hidden:true})).toBeInTheDocument()
+  expect(screen.getByText('Validando acesso seguro').closest('.auth-loading-overlay')).not.toBeNull()
+  act(()=>{vi.advanceTimersByTime(LAUNCH_SPLASH_MS+LAUNCH_SPLASH_EXIT_MS)})
+  vi.useRealTimers()
   const dashboard=screen.getByRole('button',{name:'Dashboard disponível'})
   expect(dashboard).toBeVisible()
   expect(dashboard.closest('[inert]')).toBeNull()
