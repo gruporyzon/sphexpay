@@ -1221,7 +1221,7 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .push-preview-device .sphexpay-brand img,
 .simple-push-preview article>.sphexpay-brand img,
 .auth-preview-head .sphexpay-brand img,
-.auth-loading .sphexpay-brand img{height:auto;border-radius:0;object-fit:contain;object-position:center}
+
 
 .header-profile{display:flex;align-items:center;gap:4px;padding:3px;border:1px solid transparent;border-radius:13px;background:transparent;color:var(--text)}.header-profile:hover,.header-profile:focus-within{border-color:var(--line);background:var(--panel);box-shadow:var(--shadow-xs)}.header-profile-trigger{min-height:34px;display:flex;align-items:center;gap:8px;padding:2px 6px;border:0;border-radius:10px;background:transparent;color:var(--text)}.header-profile-trigger>span{display:grid;min-width:0;text-align:left}.header-profile-trigger b{max-width:130px;overflow:hidden;font-size:.6875rem;text-overflow:ellipsis;white-space:nowrap}.header-profile-trigger small{margin-top:1px;color:var(--muted);font-size:.5625rem}.header-profile-trigger>svg{width:14px;color:var(--muted);transition:transform var(--duration-fast)}.header-profile-trigger>svg.rotated{transform:rotate(180deg)}
 @media(max-width:767px){.header-profile{padding:1px;border:0}.header-profile-trigger{width:12px;min-width:12px;padding:0}.header-profile-trigger>span,.header-profile-trigger>svg{display:none}}
@@ -3393,7 +3393,7 @@ html,body,.scrollbar,.table-wrap,.competition-table-wrap,.sales-list,.notificati
 .internal-app-shell .internal-sidebar .sidebar-brand .sphexpay-brand img{width:36px}
 .internal-app-shell.sidebar-collapsed .internal-sidebar .sidebar-brand .sphexpay-brand img{width:36px}
 .internal-app-shell .internal-topbar .header-brand img{width:30px;height:auto}
-.auth-shell .sphexpay-brand img,.auth-loading .sphexpay-brand img{filter:none!important}
+.auth-shell .sphexpay-brand img{filter:none!important}
 
 /* Navigation cleanup: the desktop sidebar owns its collapse control. */
 .internal-app-shell .internal-sidebar .sidebar-brand{gap:8px}

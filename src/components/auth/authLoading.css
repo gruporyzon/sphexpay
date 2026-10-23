@@ -1,0 +1,28 @@
+/* Abertura do SphexPay (validação de sessão). Escuro por padrão, com variante clara pelo tema. */
+.auth-loading{--al-bg:#050505;--al-text:#f4f4f4;--al-muted:#8a8a8a;--al-line:#ffffff14;--al-mark:#ffffff;--al-shine:#9fd2ff;--al-grid:#ffffff0a;--al-aura:.48;position:relative;isolation:isolate;min-height:100dvh;display:grid;place-items:center;overflow:hidden;background:var(--al-bg);color:var(--al-text);font-family:SphexGraphik,Inter,'Helvetica Neue',Arial,sans-serif;animation:al-appear .45s ease-out .12s both}
+:root[data-theme=light] .auth-loading{--al-bg:#ffffff;--al-text:#0a0a0a;--al-muted:#6b6b6b;--al-line:#0000000f;--al-mark:#0a0a0a;--al-shine:#0080ff;--al-grid:#0000000a;--al-aura:.2}
+.auth-loading-aura{position:absolute;z-index:-2;left:50%;top:50%;width:min(560px,120vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#38b8ff 0%,#135fff 34%,#1246ed00 68%);filter:blur(60px);opacity:var(--al-aura);transform:translate(-50%,-56%) scale(.85);animation:al-breathe 4.8s ease-in-out infinite}
+.auth-loading-grid{position:absolute;z-index:-1;inset:0;background-image:linear-gradient(var(--al-grid) 1px,transparent 1px),linear-gradient(90deg,var(--al-grid) 1px,transparent 1px);background-size:44px 44px;-webkit-mask:radial-gradient(circle at 50% 46%,#000 0,transparent 55%);mask:radial-gradient(circle at 50% 46%,#000 0,transparent 55%)}
+.auth-loading-stage{display:grid;justify-items:center;gap:0;padding:24px 16px}
+.auth-loading-core{position:relative;width:132px;height:132px;display:grid;place-items:center;animation:al-rise .9s cubic-bezier(.2,.9,.25,1) .12s both}
+.auth-loading-orbit{position:absolute;inset:0;width:100%;height:100%;animation:al-spin 1.6s linear infinite}
+.auth-loading-track{fill:none;stroke:var(--al-line);stroke-width:1.5}
+.auth-loading-arc{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-dasharray:110 340;filter:drop-shadow(0 0 6px #0080ffaa)}
+.auth-loading-ring{position:absolute;inset:18px;border:1px solid var(--al-line);border-radius:50%;animation:al-ping 2.4s cubic-bezier(.2,.6,.3,1) infinite}
+.auth-loading-mark{width:46px;height:66px;background:linear-gradient(115deg,var(--al-mark) 0%,var(--al-mark) 38%,var(--al-shine) 50%,var(--al-mark) 62%,var(--al-mark) 100%);background-size:260% 100%;-webkit-mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;mask:url('/brand/sphex-symbol-mask.png') center/contain no-repeat;animation:al-shine 2.6s ease-in-out .6s infinite;filter:drop-shadow(0 0 18px #0080ff55)}
+.auth-loading-word{display:flex;margin-top:26px;font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1}
+.auth-loading-word span{display:inline-block;opacity:0;transform:translateY(10px);filter:blur(6px);animation:al-letter .7s cubic-bezier(.2,.9,.25,1) both}
+.auth-loading-line{position:relative;width:168px;height:2px;margin-top:22px;overflow:hidden;border-radius:2px;background:var(--al-line);animation:al-fade .5s ease-out .8s both}
+.auth-loading-line i{position:absolute;inset:0;width:40%;border-radius:inherit;background:linear-gradient(90deg,transparent,#0080ff 40%,#53ddff 70%,transparent);box-shadow:0 0 12px #0080ff99;animation:al-scan 1.4s cubic-bezier(.45,0,.2,1) infinite}
+.auth-loading-status{min-height:14px;margin-top:14px;color:var(--al-muted);font-size:11px;letter-spacing:.14em;text-transform:uppercase;animation:al-status .5s ease-out both}
+@keyframes al-appear{from{opacity:0}to{opacity:1}}
+@keyframes al-breathe{0%,100%{transform:translate(-50%,-56%) scale(.85);opacity:calc(var(--al-aura) * .75)}50%{transform:translate(-50%,-56%) scale(1.05);opacity:var(--al-aura)}}
+@keyframes al-rise{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
+@keyframes al-spin{to{transform:rotate(360deg)}}
+@keyframes al-ping{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.45);opacity:0}}
+@keyframes al-shine{0%{background-position:100% 0}60%,100%{background-position:0 0}}
+@keyframes al-letter{to{opacity:1;transform:none;filter:none}}
+@keyframes al-fade{from{opacity:0;transform:scaleX(.4)}to{opacity:1;transform:none}}
+@keyframes al-scan{from{transform:translateX(-110%)}to{transform:translateX(260%)}}
+@keyframes al-status{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.auth-loading,.auth-loading *{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important}.auth-loading-word span{opacity:1;transform:none;filter:none}}
