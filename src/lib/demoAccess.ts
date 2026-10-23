@@ -1,7 +1,8 @@
-// Modo Demo: exclusivo do e-mail administrador do gateway. Roda só no navegador e nunca grava
+// Modo Demo: exclusivo dos e-mails autorizados abaixo (qualquer forma de login, inclusive Google). Roda só no navegador e nunca grava
 // em tabelas financeiras reais.
 export const DEMO_EMAIL_ALLOWLIST=new Set([
  'gruporyzon@gmail.com',
+ 'ironaldydriguez@gmail.com',
 ])
 
 export const normalizeDemoEmail=(email:string|undefined|null)=>email?.trim().toLowerCase()??''
