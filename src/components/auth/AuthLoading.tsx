@@ -1,15 +1,15 @@
 import { useEffect,useState } from 'react'
 import './authLoading.css'
 
-// Abertura enquanto a sessão é validada: símbolo com brilho azul, anel orbital, nome revelado letra a
-// letra e etapas que avançam. Aparece com um pequeno atraso para não piscar em carregamentos rápidos.
+// Abertura do aplicativo e da validação de sessão: símbolo com brilho azul, anel orbital, nome revelado
+// letra a letra e etapas que avançam. Como sobreposição (overlay), cobre o painel enquanto ele carrega.
 const STEPS=['Validando acesso seguro','Protegendo sua sessão','Preparando seu painel']
 const WORD='SphexPay'
 
-export function AuthLoading(){
+export function AuthLoading({overlay=false,leaving=false}:{overlay?:boolean;leaving?:boolean}){
  const [step,setStep]=useState(0)
- useEffect(()=>{const timer=window.setInterval(()=>setStep(current=>Math.min(current+1,STEPS.length-1)),1500);return()=>clearInterval(timer)},[])
- return <main className="auth-loading" aria-busy="true">
+ useEffect(()=>{const timer=window.setInterval(()=>setStep(current=>Math.min(current+1,STEPS.length-1)),900);return()=>clearInterval(timer)},[])
+ return <main className={`auth-loading${overlay?' auth-loading-overlay':''}${leaving?' is-leaving':''}`} aria-busy={!leaving}>
   <div className="auth-loading-aura" aria-hidden="true"/>
   <div className="auth-loading-grid" aria-hidden="true"/>
   <div className="auth-loading-stage">

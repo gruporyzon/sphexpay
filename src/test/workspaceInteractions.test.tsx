@@ -14,6 +14,14 @@ const mount=()=>render(<MemoryRouter><WorkspaceSelectMenu/><Form/></MemoryRouter
 beforeEach(()=>{document.documentElement.dataset.topSurface='app';act(()=>useAppLocale.getState().setLocale('pt-BR'))})
 
 describe('seletores compartilhados do workspace',()=>{
+ it('no toque deixa só o seletor nativo do sistema, sem abrir uma segunda lista',async()=>{
+  mount();const user=userEvent.setup(),select=screen.getByRole('combobox',{name:'Status'})
+  const touch=new Event('pointerdown',{bubbles:true,cancelable:true});Object.defineProperty(touch,'pointerType',{value:'touch'});Object.defineProperty(touch,'button',{value:0})
+  fireEvent(select,touch)
+  expect(touch.defaultPrevented).toBe(false);expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+  fireEvent.click(screen.getByText('Status',{selector:'label'}));expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+  await user.click(select);expect(screen.getByRole('listbox',{name:'Status'})).toBeVisible()
+ })
  it('abre pelo rótulo e permite cancelar por um segundo clique sem afetar botões',async()=>{
   mount();const user=userEvent.setup(),label=screen.getByText('Status',{selector:'label'})
   await user.click(label);expect(screen.getByRole('listbox',{name:'Status'})).toBeVisible()

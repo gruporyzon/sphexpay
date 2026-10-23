@@ -25,7 +25,7 @@ export function WorkspaceSelectMenu(){
  const {pathname}=useLocation(),locale=useAppLocale(state=>state.locale),id=useId()
  const [menu,setMenu]=useState<Menu|null>(null),current=useRef<Menu|null>(null),panel=useRef<HTMLDivElement>(null)
  const [position,setPosition]=useState({left:0,top:0,width:220,maxHeight:280,above:false,ready:false})
- const search=useRef({text:'',at:0}),revealActive=useRef(true)
+ const search=useRef({text:'',at:0}),revealActive=useRef(true),touchInput=useRef(false)
  const close=useCallback(()=>{
   const previous=current.current
   if(previous)for(const attribute of managedAttributes){const value=previous.attributes[attribute];if(value===null)previous.select.removeAttribute(attribute);else previous.select.setAttribute(attribute,value)}
@@ -62,12 +62,17 @@ export function WorkspaceSelectMenu(){
    const target=event.target instanceof Element?event.target:null
    if(panel.current?.contains(target))return
    closeAdvancedFilters(target)
+   // No toque (celular e tablet) o seletor nativo do sistema abre de qualquer jeito; abrir o menu
+   // próprio junto mostrava duas listas. Lá fica só o nativo.
+   touchInput.current=event.pointerType==='touch'||event.pointerType==='pen'
+   if(touchInput.current){close();return}
    const label=target?.closest('label')
    const select=target?.closest('select')||(!target?.closest('button,a,input,textarea')?label?.control:null)
    if(select instanceof HTMLSelectElement&&isEligible(select)&&event.button===0){event.preventDefault();if(current.current?.select===select)close();else open(select)}else close()
   }
   const click=(event:MouseEvent)=>{
    const target=event.target instanceof Element?event.target:null
+   if(touchInput.current)return
    const control=target?.closest('label')?.control
    // Label activation forwards a second native click unless its default is cancelled.
    if(control instanceof HTMLSelectElement&&isEligible(control)&&target!==control&&!target?.closest('button,a,input,textarea'))event.preventDefault()
