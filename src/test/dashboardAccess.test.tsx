@@ -28,7 +28,10 @@ describe('autorização administrativa do Dashboard',()=>{
   expect(screen.getAllByRole('button',{name:'Editar layout'})).toHaveLength(1)
   expect(view.container.querySelector('.dashboard-filter-bar')).not.toContainElement(action)
   expect(mobileAction).toContainElement(action)
-  expect(payment?.nextElementSibling).toBe(mobileAction)
+  // Conta de pagamentos logo abaixo dos meios de pagamento; a ação de layout vem em seguida.
+  const connection=view.container.querySelector('.reference-connection-card')
+  expect(payment?.nextElementSibling).toBe(connection)
+  expect(connection?.nextElementSibling).toBe(mobileAction)
   await user.click(action);expect(screen.getByLabelText('Ferramentas do editor')).toBeInTheDocument()
   await user.click(screen.getByRole('button',{name:'Cancelar'}));expect(screen.queryByLabelText('Ferramentas do editor')).not.toBeInTheDocument()
   await user.click(screen.getByRole('button',{name:'Editar layout'}));expect(screen.getByLabelText('Ferramentas do editor')).toBeInTheDocument()

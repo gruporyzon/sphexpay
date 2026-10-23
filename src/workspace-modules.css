@@ -285,3 +285,63 @@
 :root[data-top-surface=app] .internal-app-shell.workspace-reference.has-sidebar .products-hub>.module-tabs,
 :root[data-top-surface=app] .internal-app-shell.workspace-reference.has-sidebar .financial-module-tabs,
 :root[data-top-surface=app] .internal-app-shell.workspace-reference.has-sidebar .reports-module-tabs{display:none}
+
+/* Gráfico de ondas do Dashboard (no lugar do ranking). Segue o cabeçalho dos demais cartões e usa a
+   cor do texto do tema, então funciona no claro e no escuro. */
+.revenue-wave{display:flex;flex-direction:column;color:var(--text);overflow:hidden;min-height:100%}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .revenue-wave>header{display:flex;align-items:center;gap:10px}
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .revenue-wave>header h2{font-size:13px;font-weight:600}
+.revenue-wave-total{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:17px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.revenue-wave-pulse{position:relative;width:7px;height:7px;border-radius:999px;background:var(--text)}
+.revenue-wave-pulse::after{content:'';position:absolute;inset:-4px;border-radius:999px;border:2px solid var(--text);opacity:0;animation:revenue-wave-pulse 2.2s ease-out infinite}
+.revenue-wave-chart{position:relative;height:190px;padding:10px 4px 0}
+.revenue-wave-chart .recharts-area-area{filter:drop-shadow(0 10px 18px color-mix(in srgb,var(--text) 10%,transparent))}
+.revenue-wave-shine{position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 0%,color-mix(in srgb,var(--panel) 55%,transparent) 48%,transparent 60%);transform:translateX(-100%);animation:revenue-wave-shine 5.5s ease-in-out 1.8s infinite;mix-blend-mode:soft-light}
+.revenue-wave-empty{position:absolute;inset:0;display:grid;place-items:center;padding:0 24px;text-align:center;font-size:12px;color:var(--muted);pointer-events:none}
+.revenue-wave-skeleton{height:100%;border-radius:12px;background:linear-gradient(90deg,var(--panel-2),var(--panel-3),var(--panel-2));background-size:200% 100%;animation:revenue-wave-loading 1.4s linear infinite}
+.revenue-wave-tooltip{display:grid;gap:2px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);box-shadow:0 8px 24px rgb(0 0 0/.12);font-size:12px}
+.revenue-wave-tooltip span,.revenue-wave-tooltip small{color:var(--muted)}
+.revenue-wave-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid var(--line);padding:10px 15px 12px;margin-top:auto}
+.revenue-wave-foot span{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--muted)}
+.revenue-wave-foot b{font-size:14px;color:var(--text);font-weight:600}
+@keyframes revenue-wave-pulse{0%{transform:scale(.6);opacity:.7}100%{transform:scale(1.9);opacity:0}}
+@keyframes revenue-wave-shine{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+@keyframes revenue-wave-loading{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.revenue-wave-pulse::after,.revenue-wave-shine,.revenue-wave-skeleton{animation:none}}
+@media (max-width:640px){.revenue-wave-chart{height:160px}.revenue-wave-total{font-size:16px}}
+
+/* Gerador rápido de notificações (Configurações > Notificações): poucas escolhas e prévia ao lado. */
+.quick-push{display:grid;gap:16px;margin:0 0 16px;padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--panel);color:var(--text)}
+.quick-push-head{display:flex;gap:12px;align-items:flex-start}
+.quick-push-head>svg{width:20px;height:20px;margin-top:2px}
+.quick-push-head h3{font-size:16px;font-weight:700}
+.quick-push-head p{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.5}
+.quick-push-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:20px;align-items:start}
+.quick-push-controls{display:grid;gap:14px;min-width:0}
+.quick-push-field{display:grid;gap:6px}
+.quick-push-field>span{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.quick-push-field>small{font-size:12px;color:var(--muted)}
+.quick-push-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.quick-push-row button{display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--text);font-size:13px;font-weight:600;cursor:pointer}
+.quick-push-row button[aria-checked=true],.quick-push-row button[aria-pressed=true]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.quick-push-row button:disabled{opacity:.55;cursor:not-allowed}
+.quick-push-row button:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.quick-push-money{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.quick-push-money input{width:110px;min-height:34px;padding-block:4px}
+.quick-push-side{display:grid;gap:10px}
+.quick-push-preview{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--panel-2)}
+.quick-push-preview>img{width:32px;height:32px;border-radius:8px}
+.quick-push-preview b{font-size:13px}
+.quick-push-preview p{font-size:13px;color:var(--muted)}
+.quick-push-preview small{font-size:11px;color:var(--muted);align-self:start}
+.quick-push-side .btn{width:100%;justify-content:center}
+.quick-push-status{min-height:18px;font-size:12px;color:var(--muted)}
+.quick-push-error{color:var(--danger,var(--text))}
+.advanced-push{margin-top:4px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.advanced-push>summary{cursor:pointer;padding:14px 18px;font-size:14px;font-weight:600;color:var(--text);list-style:none}
+.advanced-push>summary::-webkit-details-marker{display:none}
+.advanced-push>summary::after{content:'+';float:right;color:var(--muted)}
+.advanced-push[open]>summary::after{content:'−'}
+.advanced-push[open]>summary{border-bottom:1px solid var(--line)}
+.advanced-push>:not(summary){padding:16px}
+@media (max-width:760px){.quick-push{padding:16px}.quick-push-body{grid-template-columns:1fr}}

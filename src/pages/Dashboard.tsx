@@ -22,7 +22,7 @@ import { LiveOperationsPanel } from '../components/dashboard/LiveOperationsPanel
 import { demoExchangeRates } from '../demo/demoSimulationEngine'
 import { useDashboardLayout } from '../hooks/useDashboardLayout'
 import { DashboardLayoutButton,DashboardLayoutEditor } from '../components/dashboard/DashboardLayoutEditor'
-import { ReferenceDashboardView,ReferenceOperationLinks } from '../components/dashboard/ReferenceDashboardView'
+import { ConnectionOverview,ReferenceDashboardView,ReferenceOperationLinks } from '../components/dashboard/ReferenceDashboardView'
 import type { DashboardWidgetId } from '../lib/dashboardLayout'
 
 const number=(value:number)=>Math.round(value).toLocaleString('pt-BR')
@@ -83,6 +83,8 @@ export default function Dashboard(){
   <section className="dashboard-payment-section">
    <Card className="dashboard-payment-card"><div className="insight-heading"><div><span className="section-eyebrow"><Wallet/><T> MEIOS DE PAGAMENTO</T></span><h2><T>Desempenho por canal</T></h2></div>{!planning&&paymentStats.length>0&&<div className="payment-performance-summary"><div><span><T>Total processado</T></span><strong>{formatCents(paymentStats.reduce((sum,item)=>sum+item.total,0),currency)}</strong></div><div><span><T>Método líder</T></span><strong>{paymentStats[0].method}</strong><small>{paymentStats[0].share.toFixed(1)}<T>% do total</T></small></div></div>}</div>{planning?<div className="dashboard-inline-empty"><T>Canais reais não são misturados ao planejamento.</T></div>:<div className="payment-performance">{paymentStats.map(item=><div className="payment-performance-row" key={item.method}><div className="payment-performance-title"><b>{item.method}</b><span>{item.count}<T> transações · </T>{item.approved}<T> aprovadas</T></span></div><div className="payment-performance-track" role="progressbar" aria-label={`Participação de ${item.method}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(item.share)}><i style={{width:`${item.share}%`}}/></div><div className="payment-performance-value"><strong>{formatCents(item.total,currency)}</strong><span>{item.share.toFixed(1)}%</span></div></div>)}{!paymentStats.length&&<div className="dashboard-inline-empty"><T>Nenhuma venda registrada neste período.</T></div>}</div>}</Card>
   </section>
+  {/* Conta de pagamentos logo abaixo dos meios de pagamento. */}
+  <ConnectionOverview userId={user?.id} connected={live.demo} financePath={`${window.location.pathname.startsWith('/dev/workspace-preview')?'/dev/workspace-preview':'/app'}/financeiro`}/>
   {admin&&mobileLayout&&<div className="dashboard-layout-mobile-action"><DashboardLayoutButton editor={layoutEditor}/></div>}
   {admin&&planning&&<LiveOperationsPanel/>}
   <ReferenceOperationLinks/>

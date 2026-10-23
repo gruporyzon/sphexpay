@@ -8058,5 +8058,121 @@
  "— tipo do evento": {
   "en-US": "— event type",
   "es-ES": "— tipo de evento"
+ },
+ "Faturamento": {
+  "en-US": "Revenue",
+  "es-ES": "Facturación"
+ },
+ "Faturamento do período": {
+  "en-US": "Revenue for the period",
+  "es-ES": "Facturación del período"
+ },
+ "Gráfico de faturamento": {
+  "en-US": "Revenue chart",
+  "es-ES": "Gráfico de facturación"
+ },
+ "Melhor momento": {
+  "en-US": "Best moment",
+  "es-ES": "Mejor momento"
+ },
+ "As vendas aprovadas do período aparecem aqui em tempo real.": {
+  "en-US": "Approved sales for the period appear here in real time.",
+  "es-ES": "Las ventas aprobadas del período aparecen aquí en tiempo real."
+ },
+ "Gerador rápido": {
+  "en-US": "Quick generator",
+  "es-ES": "Generador rápido"
+ },
+ "Avisos no padrão dos gateways, com valores automáticos. Chegam nos aparelhos conectados.": {
+  "en-US": "Gateway-style alerts with automatic amounts. They reach your connected devices.",
+  "es-ES": "Avisos al estilo de las pasarelas, con importes automáticos. Llegan a los dispositivos conectados."
+ },
+ "Tipo de aviso": {
+  "en-US": "Alert type",
+  "es-ES": "Tipo de aviso"
+ },
+ "Saque": {
+  "en-US": "Withdrawal",
+  "es-ES": "Retiro"
+ },
+ "Automático": {
+  "en-US": "Automatic",
+  "es-ES": "Automático"
+ },
+ "Fixo": {
+  "en-US": "Fixed",
+  "es-ES": "Fijo"
+ },
+ "Ritmo": {
+  "en-US": "Pace",
+  "es-ES": "Ritmo"
+ },
+ "Natural": {
+  "en-US": "Natural",
+  "es-ES": "Natural"
+ },
+ "Rápido": {
+  "en-US": "Fast",
+  "es-ES": "Rápido"
+ },
+ "1 por minuto": {
+  "en-US": "1 per minute",
+  "es-ES": "1 por minuto"
+ },
+ "15 a 75 s, como vendas reais": {
+  "en-US": "15 to 75 s, like real sales",
+  "es-ES": "15 a 75 s, como ventas reales"
+ },
+ "a cada 8 s": {
+  "en-US": "every 8 s",
+  "es-ES": "cada 8 s"
+ },
+ "a cada 60 s": {
+  "en-US": "every 60 s",
+  "es-ES": "cada 60 s"
+ },
+ "Prévia da notificação": {
+  "en-US": "Notification preview",
+  "es-ES": "Vista previa de la notificación"
+ },
+ "Informe um valor": {
+  "en-US": "Enter an amount",
+  "es-ES": "Introduce un importe"
+ },
+ "Ativar notificações neste aparelho": {
+  "en-US": "Turn on notifications on this device",
+  "es-ES": "Activar notificaciones en este dispositivo"
+ },
+ "Ativando...": {
+  "en-US": "Turning on...",
+  "es-ES": "Activando..."
+ },
+ "Enviar agora": {
+  "en-US": "Send now",
+  "es-ES": "Enviar ahora"
+ },
+ "Enviando. Mantenha esta página aberta.": {
+  "en-US": "Sending. Keep this page open.",
+  "es-ES": "Enviando. Mantén esta página abierta."
+ },
+ "aviso enviado": {
+  "en-US": "alert sent",
+  "es-ES": "aviso enviado"
+ },
+ "avisos enviados": {
+  "en-US": "alerts sent",
+  "es-ES": "avisos enviados"
+ },
+ "aparelho conectado": {
+  "en-US": "device connected",
+  "es-ES": "dispositivo conectado"
+ },
+ "aparelhos conectados": {
+  "en-US": "devices connected",
+  "es-ES": "dispositivos conectados"
+ },
+ "Gerador avançado e aparelhos": {
+  "en-US": "Advanced generator and devices",
+  "es-ES": "Generador avanzado y dispositivos"
  }
 }

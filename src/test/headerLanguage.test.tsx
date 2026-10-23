@@ -55,7 +55,7 @@ describe('idioma e preferências do cabeçalho',()=>{
  it('traduz o dashboard preservando nomes de pessoas, produtos e valores',()=>{
   mount(<ReferenceDashboardView name="Produtos" period={{preset:'7d'}} setPeriod={()=>undefined} currency="BRL" setCurrency={()=>undefined} metrics={{approvedRevenueCents:0,approvedSales:0,averageTicketCents:0,feesCents:0,approvalRate:0,chargebacks:0}} series={[]} sales={[{transactionId:'qa',buyerName:'QA Teste',productName:'Produtos',paymentMethod:'Pix',status:'approved',amountCents:12345,feeCents:0,currency:'BRL',occurredAt:'2026-10-20T00:00:00Z'}]} rates={[]} eligibleRevenueCents={0} loading={false} error=""/> )
   expect(screen.getByRole('heading',{name:'Olá, Produtos'})).toBeVisible();const value=screen.getByText(/123,45/).textContent
-  act(()=>useAppLocale.getState().setLocale('en-US'));expect(screen.getByRole('heading',{name:'Hello, Produtos'})).toBeVisible();expect(screen.getByRole('heading',{name:'No connection yet'})).toBeVisible();expect(screen.getByText('Produtos',{exact:true})).toBeVisible();expect(screen.getByText(/123,45/).textContent).toBe(value)
+  act(()=>useAppLocale.getState().setLocale('en-US'));expect(screen.getByRole('heading',{name:'Hello, Produtos'})).toBeVisible();expect(screen.getByRole('heading',{name:'Revenue'})).toBeVisible();expect(screen.getByText('Produtos',{exact:true})).toBeVisible();expect(screen.getByText(/123,45/).textContent).toBe(value)
   act(()=>useAppLocale.getState().setLocale('es-ES'));expect(screen.getByRole('heading',{name:'Hola, Produtos'})).toBeVisible();expect(screen.getByText(/123,45/).textContent).toBe(value)
  })
 })
