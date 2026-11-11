@@ -1,9 +1,10 @@
 import { audioManager } from '../services/audioManager'
+import { useTabBarPreferences } from '../store/useTabBarPreferences'
 
 // Retorno de toque da barra de navegação do celular: vibração leve e um clique curto.
 // No Android (Chrome) a vibração usa a API do navegador. O Safari do iPhone não tem essa API; lá o toque
 // háptico vem de um interruptor nativo (input com atributo switch, iOS 17.4 ou mais novo) acionado
-// dentro do gesto da pessoa. O clique de som só toca se o som estiver ativado nas configurações.
+// dentro do gesto da pessoa. A vibração pode ser desligada nas Configurações. O clique de som só toca se o som estiver ativado nas configurações.
 let iosSwitch:HTMLLabelElement|undefined
 const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)
 
@@ -23,7 +24,7 @@ function iosHaptic(){
 }
 
 export function tapFeedback(){
- try{
+ if(useTabBarPreferences.getState().haptics)try{
   if(typeof navigator.vibrate==='function')navigator.vibrate(10)
   else if(isIOS())iosHaptic()
  }catch{

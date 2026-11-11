@@ -3,6 +3,7 @@ import {MemoryRouter,Route,Routes,useLocation} from 'react-router-dom'
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest'
 import {MobileFloatingNav} from '../components/mobile-navigation/MobileFloatingNav'
 import {MobileTabBar} from '../components/mobile-navigation/MobileTabBar'
+import {useTabBarPreferences} from '../store/useTabBarPreferences'
 
 // O CSS não é aplicado no jsdom: a busca é pelos atributos, como no teste do menu flutuante.
 function Where(){return <output>{useLocation().pathname}</output>}
@@ -16,7 +17,7 @@ describe('barra de abas do celular',()=>{
  beforeEach(()=>mobile(true))
  afterEach(()=>{mobile(false);Reflect.deleteProperty(navigator,'vibrate');vi.useRealTimers()})
 
- it('mostra Início, Vendas, Financeiro, Produtos e Mais, com a aba da tela atual em destaque',()=>{
+ it('mostra Início, Vendas, Financeiro, Produtos e a foto (Mais), com a aba da tela atual em destaque',()=>{
   mount('/app/financeiro')
   expect(bar()).toHaveAttribute('aria-label','Navegação principal')
   expect(labels()).toEqual(['Início','Vendas','Financeiro','Produtos','Mais módulos'])
@@ -62,11 +63,20 @@ describe('barra de abas do celular',()=>{
   expect(within(sheet).queryByRole('button',{name:'Vendas',hidden:true})).toBeNull()
   expect(within(sheet).queryByRole('button',{name:'Financeiro',hidden:true})).toBeNull()
  })
- it('mostra o ponto de aviso em Mais quando há novidades no Social',()=>{
+ it('mostra o contador de avisos na foto do perfil quando há novidades no Social',()=>{
   mount('/app')
-  expect(bar()!.querySelector('.mobile-tab-dot')).toBeNull()
+  expect(bar()!.querySelector('.mobile-tab-badge')).toBeNull()
   act(()=>{window.dispatchEvent(new CustomEvent('social:unread',{detail:2}))})
-  expect(bar()!.querySelector('.mobile-tab-dot')).not.toBeNull()
+  expect(bar()!.querySelector('.mobile-tab-badge')).toHaveTextContent('2')
+ })
+ it('não vibra quando a vibração está desligada nas Configurações',()=>{
+  const vibrate=vi.fn()
+  Object.defineProperty(navigator,'vibrate',{value:vibrate,configurable:true})
+  useTabBarPreferences.getState().setHaptics(false)
+  mount('/app')
+  fireEvent.click(tab('Vendas'))
+  expect(vibrate).not.toHaveBeenCalled()
+  useTabBarPreferences.getState().setHaptics(true)
  })
  it('não aparece fora do celular, no Social nem nas telas de edição em tela cheia',()=>{
   mobile(false);const view=mount('/app')

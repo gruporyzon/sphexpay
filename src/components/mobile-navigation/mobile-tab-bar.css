@@ -1,23 +1,32 @@
-/* Barra de abas do celular. Monocromática como o painel (claro e escuro), de ponta a ponta no rodapé,
-   com a aba ativa em destaque e retorno visual ao toque. */
+/* Barra do celular em cápsula de vidro flutuante: cinco ícones, pílula que desliza até a aba ativa,
+   foto do perfil com contador de avisos. A transparência vem de --tb-alpha (Configurações → Preferências).
+   Segue os modos claro e escuro e respeita movimento reduzido. */
 .mobile-tab-bar{display:none}
 @media(max-width:767px){
- /* O fim das páginas ganha o espaço da barra (substitui a reserva do dock flutuante). */
- html:root{--tab-bar-height:58px;--mobile-dock-reserve:calc(var(--tab-bar-height) + var(--safe-bottom) + 20px)}
- .mobile-tab-bar{--tb-bg:color-mix(in srgb,var(--panel) 94%,transparent);--tb-line:var(--line);--tb-idle:var(--muted);--tb-active:var(--text-strong);position:fixed;z-index:50;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));padding:0 var(--safe-right) var(--safe-bottom) var(--safe-left);border-top:1px solid var(--tb-line);background:var(--tb-bg);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 -6px 24px color-mix(in srgb,#000 6%,transparent);transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.2,1)}
- .mobile-tab{position:relative;display:flex;min-width:0;height:var(--tab-bar-height);flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 2px 4px;border:0;background:transparent;color:var(--tb-idle);font:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .2s ease}
- .mobile-tab-icon{position:relative;display:grid;place-items:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
- .mobile-tab svg{width:24px;height:24px;stroke-width:1.7;transition:stroke-width .2s ease,fill .2s ease}
- .mobile-tab>span:not(.mobile-tab-icon){max-width:100%;overflow:hidden;font-size:11px;font-weight:500;line-height:1;letter-spacing:-.005em;text-overflow:ellipsis;white-space:nowrap}
- .mobile-tab:active .mobile-tab-icon{transform:scale(.86)}
+ html:root{--tab-bar-height:64px;--mobile-dock-reserve:calc(var(--tab-bar-height) + max(14px,var(--safe-bottom)) + 28px)}
+ .mobile-tab-bar{--tb-base:#ffffff;--tb-edge:rgba(255,255,255,.85);--tb-idle:#8e8e93;--tb-active:#000;--tb-pill:rgba(118,118,128,.16);--tb-shadow:0 14px 40px rgba(0,0,0,.16),0 2px 6px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.9);--tb-spring:cubic-bezier(.34,1.56,.64,1);--tb-pad:6px;
+  position:fixed;z-index:50;left:max(14px,var(--safe-left));right:max(14px,var(--safe-right));bottom:max(14px,var(--safe-bottom));display:grid;grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));height:var(--tab-bar-height);padding:var(--tb-pad);border:1px solid var(--tb-edge);border-radius:999px;background:color-mix(in srgb,var(--tb-base) calc(var(--tb-alpha,.6) * 100%),transparent);-webkit-backdrop-filter:blur(28px) saturate(1.8);backdrop-filter:blur(28px) saturate(1.8);box-shadow:var(--tb-shadow);animation:tb-in .6s cubic-bezier(.2,.9,.25,1) backwards;transition:transform .45s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+ :root[data-theme=dark] .mobile-tab-bar{--tb-base:#1c1c1e;--tb-edge:rgba(255,255,255,.13);--tb-idle:rgba(235,235,245,.55);--tb-active:#fff;--tb-pill:rgba(255,255,255,.14);--tb-shadow:0 18px 48px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.12)}
+ .mobile-tab-bar.is-hidden{transform:translate3d(0,calc(100% + 28px),0);opacity:0;pointer-events:none}
+ :root[data-mobile-keyboard] .mobile-tab-bar{transform:translate3d(0,calc(100% + 28px),0);opacity:0;pointer-events:none}
+
+ /* Pílula que desliza até a aba ativa. */
+ .mobile-tab-pill{position:absolute;top:var(--tb-pad);bottom:var(--tb-pad);left:var(--tb-pad);width:calc((100% - var(--tb-pad) * 2) / var(--tab-count));border-radius:999px;background:var(--tb-pill);transform:translateX(calc(var(--tab-index) * 100%));transition:transform .5s var(--tb-spring);pointer-events:none}
+
+ .mobile-tab{position:relative;z-index:1;display:grid;place-items:center;min-width:0;padding:0;border:0;border-radius:999px;background:transparent;color:var(--tb-idle);font:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .25s ease,transform .3s var(--tb-spring)}
+ .mobile-tab>svg{width:27px;height:27px;stroke-width:1.9;transition:stroke-width .2s ease}
  .mobile-tab.is-active{color:var(--tb-active)}
- .mobile-tab.is-active svg{stroke-width:2.2;fill:color-mix(in srgb,currentColor 16%,transparent)}
- .mobile-tab.is-active .mobile-tab-icon{animation:tb-pop .32s cubic-bezier(.34,1.56,.64,1)}
- .mobile-tab.is-active>span:not(.mobile-tab-icon){font-weight:700}
- .mobile-tab:focus-visible{outline:2px solid var(--tb-active);outline-offset:-4px;border-radius:10px}
- .mobile-tab-dot{position:absolute;top:-2px;right:-4px;width:9px;height:9px;border-radius:50%;background:#e5484d;box-shadow:0 0 0 2px var(--panel)}
- :root[data-theme=dark] .mobile-tab-bar{--tb-bg:color-mix(in srgb,var(--panel-2,#141414) 94%,transparent);--tb-line:color-mix(in srgb,#fff 10%,transparent);--tb-idle:color-mix(in srgb,#fff 56%,transparent);--tb-active:#fff;box-shadow:0 -8px 28px #0007}
- :root[data-mobile-keyboard] .mobile-tab-bar{opacity:0;pointer-events:none;transform:translate3d(0,100%,0)}
+ .mobile-tab.is-active>svg{stroke-width:2.3;animation:tb-pop .45s var(--tb-spring)}
+ .mobile-tab:active{transform:scale(.86)}
+ .mobile-tab:focus-visible{outline:2px solid #0080ff;outline-offset:-2px}
+
+ /* Foto do perfil com o contador de avisos. */
+ .mobile-tab-avatar{display:grid;place-items:center;width:40px;height:40px;overflow:hidden;border-radius:50%;background:var(--tb-pill);color:var(--tb-idle);box-shadow:0 0 0 2px var(--tb-edge)}
+ .mobile-tab-avatar img{width:100%;height:100%;object-fit:cover}
+ .mobile-tab-avatar svg{width:22px;height:22px;stroke-width:1.9}
+ .mobile-tab-profile.is-active .mobile-tab-avatar{box-shadow:0 0 0 2px var(--tb-active)}
+ .mobile-tab-badge{position:absolute;top:-1px;left:calc(50% + 6px);min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#0080ff;color:#fff;font-size:11px;font-weight:700;line-height:20px;text-align:center;box-shadow:0 0 0 2px var(--tb-base),0 4px 10px rgba(0,128,255,.35);animation:tb-pop .45s var(--tb-spring)}
 }
-@keyframes tb-pop{0%{transform:scale(.8)}55%{transform:scale(1.14)}100%{transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){.mobile-tab-bar,.mobile-tab,.mobile-tab-icon,.mobile-tab svg{transition:none!important}.mobile-tab.is-active .mobile-tab-icon{animation:none!important}}
+@keyframes tb-in{from{opacity:0;transform:translate3d(0,40px,0) scale(.92)}}
+@keyframes tb-pop{0%{transform:scale(.7)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.mobile-tab-bar,.mobile-tab-pill,.mobile-tab,.mobile-tab>svg,.mobile-tab-badge{animation:none!important;transition-duration:1ms!important}}

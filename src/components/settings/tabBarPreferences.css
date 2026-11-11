@@ -1,0 +1,38 @@
+/* Seção da barra de menu do celular nas Configurações, no estilo dos ajustes do iOS. */
+.tab-bar-preferences{--tbp-blue:#0080ff;--tbp-cyan:#53ddff;--tbp-green:#34c759;margin:0 0 22px;padding:22px 20px 6px;border:1px solid var(--line);border-radius:24px;background:var(--panel);min-width:0}
+.tbp-row{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.tbp-row h3{margin:0;color:var(--text);font-size:16px;font-weight:600;letter-spacing:-.02em}
+.tbp-row p{margin:4px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+.tbp-value{flex:0 0 auto;padding:7px 14px;border-radius:999px;background:color-mix(in srgb,var(--tbp-blue) 12%,transparent);color:var(--tbp-blue);font-size:14px;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* Prévia: a mini barra sobre um fundo colorido mostra o efeito da transparência. */
+.tbp-preview{position:relative;display:grid;place-items:center;height:136px;margin:18px 0 22px;overflow:hidden;border-radius:22px;background:linear-gradient(120deg,#0b1a4d,var(--tbp-blue) 38%,var(--tbp-cyan) 62%,#141414)}
+.tbp-blob{position:absolute;border-radius:50%}
+.tbp-blob.one{top:22px;left:22%;width:80px;height:80px;background:rgba(255,255,255,.7)}
+.tbp-blob.two{top:40px;left:48%;width:130px;height:34px;border-radius:12px;background:rgba(0,0,0,.45)}
+.tbp-bar{position:relative;display:grid;grid-template-columns:repeat(5,1fr);align-items:center;justify-items:center;width:88%;height:66px;border:1px solid rgba(255,255,255,.8);border-radius:999px;background:color-mix(in srgb,#fff calc(var(--tbp-alpha) * 100%),transparent);-webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);box-shadow:0 10px 26px rgba(0,0,0,.22);transition:background .15s linear}
+.tbp-bar span{width:32px;height:32px;border-radius:9px;background:rgba(60,60,67,.42)}
+.tbp-bar span.on{background:#111}
+.tbp-bar span.round{border-radius:50%}
+:root[data-theme=dark] .tbp-bar{border-color:rgba(255,255,255,.18);background:color-mix(in srgb,#1c1c1e calc(var(--tbp-alpha) * 100%),transparent)}
+:root[data-theme=dark] .tbp-bar span{background:rgba(235,235,245,.4)}
+:root[data-theme=dark] .tbp-bar span.on{background:#fff}
+
+/* Controle deslizante com trilho preenchido e botão branco, como no iOS. */
+.tbp-slider{width:100%;height:30px;margin:0 0 20px;background:transparent;-webkit-appearance:none;appearance:none;cursor:pointer}
+.tbp-slider::-webkit-slider-runnable-track{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--tbp-blue) var(--tbp-fill),color-mix(in srgb,#787880 22%,transparent) var(--tbp-fill))}
+.tbp-slider::-moz-range-track{height:8px;border-radius:999px;background:linear-gradient(90deg,var(--tbp-blue) var(--tbp-fill),color-mix(in srgb,#787880 22%,transparent) var(--tbp-fill))}
+.tbp-slider::-webkit-slider-thumb{width:30px;height:30px;margin-top:-11px;border:0;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2),0 0 0 .5px rgba(0,0,0,.06);-webkit-appearance:none;appearance:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+.tbp-slider::-moz-range-thumb{width:30px;height:30px;border:0;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.tbp-slider:active::-webkit-slider-thumb{transform:scale(1.12)}
+.tbp-slider:focus-visible{outline:2px solid var(--tbp-blue);outline-offset:4px;border-radius:999px}
+
+/* Interruptores do iOS. */
+.tbp-toggle{position:relative;padding:18px 0;border-top:1px solid var(--line);cursor:pointer}
+.tbp-toggle>input{position:absolute;opacity:0;pointer-events:none}
+.tbp-toggle>i{position:relative;flex:0 0 52px;width:52px;height:32px;border-radius:999px;background:color-mix(in srgb,#787880 28%,transparent);transition:background .25s ease}
+.tbp-toggle>i::after{content:'';position:absolute;top:2px;left:2px;width:28px;height:28px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.18);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.tbp-toggle>input:checked+i{background:var(--tbp-green)}
+.tbp-toggle>input:checked+i::after{transform:translateX(20px)}
+.tbp-toggle>input:focus-visible+i{outline:2px solid var(--tbp-blue);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.tbp-toggle>i,.tbp-toggle>i::after,.tbp-slider::-webkit-slider-thumb,.tbp-bar{transition:none}}
