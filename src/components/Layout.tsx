@@ -14,6 +14,7 @@ import { WorkspaceTopNavigation } from './navigation/WorkspaceTopNavigation'
 import { WorkspaceSidebar } from './navigation/WorkspaceSidebar'
 import { WorkspaceSelectMenu } from './navigation/WorkspaceSelectMenu'
 import { MobileFloatingNav } from './mobile-navigation/MobileFloatingNav'
+import { MobileTabBar } from './mobile-navigation/MobileTabBar'
 import { KycCompletionPrompt } from '../features/kyc/KycCompletionPrompt'
 import { referralService } from '../services/referralService'
 import { MemberRouteGuard,WorkspaceSwitcher } from '../features/team/WorkspaceSwitcher'
@@ -38,6 +39,6 @@ export function Layout({ navigationRoot = '/app' }: { navigationRoot?: string })
       <div className="reference-brand-row"><SphexPayLogo showName priority adaptiveTheme wordmarkText="SphexPay"/><div className="reference-header-actions"><LanguagePicker/><NotificationBell/><ProfileMenu name={name} email={user?.email} onSignOut={logout}/></div></div>
     </header>
     <WorkspaceTopNavigation navigationRoot={navigationRoot}/>
-    <div className="workspace-body">{wide&&<WorkspaceSidebar navigationRoot={navigationRoot}/>}<main id="workspace-content" className="internal-page-content reference-page" tabIndex={-1}><WorkspaceSwitcher navigationRoot={navigationRoot}/><MemberRouteGuard navigationRoot={navigationRoot}><Outlet/></MemberRouteGuard></main></div><MobileFloatingNav navigationRoot={navigationRoot}/><WorkspaceHelp/>
+    <div className="workspace-body">{wide&&<WorkspaceSidebar navigationRoot={navigationRoot}/>}<main id="workspace-content" className="internal-page-content reference-page" tabIndex={-1}><WorkspaceSwitcher navigationRoot={navigationRoot}/><MemberRouteGuard navigationRoot={navigationRoot}><Outlet/></MemberRouteGuard></main></div><MobileTabBar navigationRoot={navigationRoot}/><MobileFloatingNav navigationRoot={navigationRoot} mainShortcuts={false}/><WorkspaceHelp/>
   </div>
 }
