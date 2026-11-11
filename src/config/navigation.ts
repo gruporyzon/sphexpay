@@ -15,6 +15,9 @@ export const navigationItems=navigationGroups.flatMap(group=>group.items).filter
 const primaryOrder=['reports','finance','dashboard','social']
 export const primaryMobileNavigation=primaryOrder.map(id=>navigationItems.find(item=>item.id===id)!).filter(Boolean)
 export const remainingMobileNavigation=[competitionNavigation,...navigationItems.filter(item=>!primaryMobileNavigation.some(primary=>primary.id===item.id))]
+// Barra de abas do celular: Início (Dashboard), Vendas, Financeiro e Produtos ficam fixos; o resto vai no "Mais".
+const tabBarModules=['dashboard','sales','finance','products']
+export const remainingTabBarNavigation=[competitionNavigation,...navigationItems.filter(item=>!tabBarModules.includes(item.id))]
 
 export function navigationItemForPath(pathname:string){return navigationItems.find(item=>item.exact?pathname===item.path:pathname===item.path||pathname.startsWith(`${item.path}/`))||null}
 export function mobileNavigationIndex(pathname:string){const index=primaryMobileNavigation.findIndex(item=>item.exact?pathname===item.path:pathname===item.path||pathname.startsWith(`${item.path}/`));return index>=0?index:4}

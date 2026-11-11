@@ -161,6 +161,27 @@ class AudioManager{
   }
  }
 
+ // Clique curto e discreto da barra de navegação do celular. Não usa a fila nem o limite de repetição:
+ // só toca se o som estiver ativado nas configurações e o áudio já tiver sido liberado por um toque.
+ tap(){
+  const context=this.context,output=this.master
+  if(!this.state.enabled||!context||!output||context.state!=='running')return
+  try{
+   const start=context.currentTime+.002,oscillator=context.createOscillator(),gain=context.createGain()
+   oscillator.type='sine'
+   oscillator.frequency.setValueAtTime(1180,start)
+   oscillator.frequency.exponentialRampToValueAtTime(760,start+.045)
+   gain.gain.setValueAtTime(.001,start)
+   gain.gain.exponentialRampToValueAtTime(.05,start+.006)
+   gain.gain.exponentialRampToValueAtTime(.001,start+.05)
+   oscillator.connect(gain).connect(output)
+   oscillator.start(start)
+   oscillator.stop(start+.06)
+  }catch{
+   // O clique é opcional: se falhar, a navegação segue normalmente.
+  }
+ }
+
  vibrate(pattern:number[]=[180,80,180]){
   if('vibrate'in navigator)return navigator.vibrate(pattern)
   return false

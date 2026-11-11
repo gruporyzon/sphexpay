@@ -1,0 +1,23 @@
+/* Barra de abas do celular. Monocromática como o painel (claro e escuro), de ponta a ponta no rodapé,
+   com a aba ativa em destaque e retorno visual ao toque. */
+.mobile-tab-bar{display:none}
+@media(max-width:767px){
+ /* O fim das páginas ganha o espaço da barra (substitui a reserva do dock flutuante). */
+ html:root{--tab-bar-height:58px;--mobile-dock-reserve:calc(var(--tab-bar-height) + var(--safe-bottom) + 20px)}
+ .mobile-tab-bar{--tb-bg:color-mix(in srgb,var(--panel) 94%,transparent);--tb-line:var(--line);--tb-idle:var(--muted);--tb-active:var(--text-strong);position:fixed;z-index:50;right:0;bottom:0;left:0;display:grid;grid-template-columns:repeat(var(--tab-count),minmax(0,1fr));padding:0 var(--safe-right) var(--safe-bottom) var(--safe-left);border-top:1px solid var(--tb-line);background:var(--tb-bg);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 -6px 24px color-mix(in srgb,#000 6%,transparent);transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.2,1)}
+ .mobile-tab{position:relative;display:flex;min-width:0;height:var(--tab-bar-height);flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:6px 2px 4px;border:0;background:transparent;color:var(--tb-idle);font:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:color .2s ease}
+ .mobile-tab-icon{position:relative;display:grid;place-items:center;transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+ .mobile-tab svg{width:24px;height:24px;stroke-width:1.7;transition:stroke-width .2s ease,fill .2s ease}
+ .mobile-tab>span:not(.mobile-tab-icon){max-width:100%;overflow:hidden;font-size:11px;font-weight:500;line-height:1;letter-spacing:-.005em;text-overflow:ellipsis;white-space:nowrap}
+ .mobile-tab:active .mobile-tab-icon{transform:scale(.86)}
+ .mobile-tab.is-active{color:var(--tb-active)}
+ .mobile-tab.is-active svg{stroke-width:2.2;fill:color-mix(in srgb,currentColor 16%,transparent)}
+ .mobile-tab.is-active .mobile-tab-icon{animation:tb-pop .32s cubic-bezier(.34,1.56,.64,1)}
+ .mobile-tab.is-active>span:not(.mobile-tab-icon){font-weight:700}
+ .mobile-tab:focus-visible{outline:2px solid var(--tb-active);outline-offset:-4px;border-radius:10px}
+ .mobile-tab-dot{position:absolute;top:-2px;right:-4px;width:9px;height:9px;border-radius:50%;background:#e5484d;box-shadow:0 0 0 2px var(--panel)}
+ :root[data-theme=dark] .mobile-tab-bar{--tb-bg:color-mix(in srgb,var(--panel-2,#141414) 94%,transparent);--tb-line:color-mix(in srgb,#fff 10%,transparent);--tb-idle:color-mix(in srgb,#fff 56%,transparent);--tb-active:#fff;box-shadow:0 -8px 28px #0007}
+ :root[data-mobile-keyboard] .mobile-tab-bar{opacity:0;pointer-events:none;transform:translate3d(0,100%,0)}
+}
+@keyframes tb-pop{0%{transform:scale(.8)}55%{transform:scale(1.14)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.mobile-tab-bar,.mobile-tab,.mobile-tab-icon,.mobile-tab svg{transition:none!important}.mobile-tab.is-active .mobile-tab-icon{animation:none!important}}

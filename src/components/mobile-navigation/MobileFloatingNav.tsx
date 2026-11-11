@@ -23,22 +23,24 @@ const SOCIAL:Item[]=[
 export const MOBILE_NAV_QUERY='(max-width:767px)'
 const SWAP_MS=230
 // Telas de edição em tela cheia já têm barras próprias no rodapé.
-const HIDDEN=/\/checkout\/[^/]+\/(builder|preview)$/
+export const HIDDEN=/\/checkout\/[^/]+\/(builder|preview)$/
 
 const isActive=(item:Item,path:string)=>!!item.to&&(item.exact?path===item.to:path===item.to||path.startsWith(`${item.to}/`))
 
-function useMobileViewport(){
+export function useMobileViewport(){
  const [mobile,setMobile]=useState(()=>typeof matchMedia==='function'&&matchMedia(MOBILE_NAV_QUERY).matches)
  useEffect(()=>{if(typeof matchMedia!=='function')return;const media=matchMedia(MOBILE_NAV_QUERY),sync=()=>setMobile(media.matches);sync();media.addEventListener?.('change',sync);return()=>media.removeEventListener?.('change',sync)},[])
  return mobile
 }
 
-export function MobileFloatingNav({navigationRoot='/app'}:{navigationRoot?:string}){
+// Com mainShortcuts=false o menu só aparece no modo Social: os atalhos do painel ficam por conta da
+// barra de abas (MobileTabBar).
+export function MobileFloatingNav({navigationRoot='/app',mainShortcuts=true}:{navigationRoot?:string;mainShortcuts?:boolean}){
  const mobile=useMobileViewport()
- return mobile?<FloatingNav navigationRoot={navigationRoot}/>:null
+ return mobile?<FloatingNav navigationRoot={navigationRoot} mainShortcuts={mainShortcuts}/>:null
 }
 
-function FloatingNav({navigationRoot}:{navigationRoot:string}){
+function FloatingNav({navigationRoot,mainShortcuts}:{navigationRoot:string;mainShortcuts:boolean}){
  const {t}=useTranslation(),{pathname}=useLocation()
  const path=pathname.startsWith(navigationRoot)?`/app${pathname.slice(navigationRoot.length)}`:pathname
  const mode=path==='/app/social'||path.startsWith('/app/social/')?'social':'main'
@@ -65,6 +67,7 @@ function FloatingNav({navigationRoot}:{navigationRoot:string}){
   const observer=new ResizeObserver(place);observer.observe(bar.current);return()=>observer.disconnect()
  },[activeIndex,shown,phase])
  if(HIDDEN.test(path))return null
+ if(!mainShortcuts&&shown==='main')return null
  const target=(to:string)=>to.replace(/^\/app/,navigationRoot)
  return <nav className={`floating-nav is-${shown} phase-${phase}`} aria-label={t(shown==='social'?'Navegação do Social':'Atalhos do painel')} style={{'--nav-count':items.length} as React.CSSProperties}>
   <div className="floating-nav-bar" ref={bar}>
