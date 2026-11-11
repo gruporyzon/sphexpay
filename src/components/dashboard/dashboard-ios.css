@@ -1,0 +1,111 @@
+/* Dashboard no estilo dos apps do iPhone: título grande, cartões translúcidos de cantos bem redondos,
+   controle segmentado com "polegar", entradas em cascata com mola e resposta ao toque. Mantém preto,
+   branco e azul da marca, nos modos claro e escuro, e respeita movimento reduzido. É só uma camada
+   visual: não muda estrutura nem funções. */
+
+/* No computador o Dashboard ocupa a largura toda da tela. */
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page:has(.reference-dashboard){max-width:none}
+@media(min-width:1100px){:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-page:has(.reference-dashboard){padding-inline:clamp(28px,3vw,56px)}}
+
+:root[data-top-surface=app][data-theme=dark] .internal-app-shell.workspace-reference .reference-dashboard{--ios-card:color-mix(in srgb,#1c1c1e 78%,transparent);--ios-card-line:color-mix(in srgb,#fff 9%,transparent);--ios-shadow:0 1px 0 #ffffff0f inset,0 18px 44px #0009;--ios-shadow-hover:0 1px 0 #ffffff14 inset,0 26px 60px #000c;--ios-track:#ffffff14;--ios-thumb:#636366;--ios-thumb-text:#fff;--ios-aura:.2}
+
+:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard{
+ --ios-blue:#0080ff;--ios-cyan:#53ddff;--ios-card:color-mix(in srgb,var(--panel) 82%,transparent);--ios-card-line:color-mix(in srgb,#000 7%,transparent);--ios-shadow:0 1px 0 #fff inset,0 1px 2px #0000000a,0 14px 36px #00000012;--ios-shadow-hover:0 1px 0 #fff inset,0 2px 4px #0000000d,0 24px 54px #0000001f;--ios-track:color-mix(in srgb,#787880 14%,transparent);--ios-thumb:#fff;--ios-thumb-text:#000;--ios-aura:.13;--ios-spring:cubic-bezier(.34,1.56,.64,1);--ios-ease:cubic-bezier(.22,1,.36,1);--ios-radius:24px;
+ background:radial-gradient(ellipse 55% 380px at 22% 40px,color-mix(in srgb,var(--ios-blue) calc(var(--ios-aura) * 100%),transparent),transparent 72%),radial-gradient(ellipse 40% 300px at 82% 120px,color-mix(in srgb,var(--ios-cyan) calc(var(--ios-aura) * 55%),transparent),transparent 70%);background-repeat:no-repeat;
+
+ /* Título grande, como nas telas iniciais do iOS. */
+ & .reference-greeting{margin-bottom:22px!important;animation:ios-rise .7s var(--ios-ease) backwards}
+ & .reference-greeting h1{font-size:clamp(26px,2.6vw,38px);line-height:1.12;font-weight:700;letter-spacing:-.04em}
+
+ /* Controle segmentado: trilho cinza translúcido e opção ativa em "polegar" com sombra. */
+ & .reference-filter-bar{animation:ios-fade .6s ease .08s backwards}
+ & .reference-segments{padding:3px;border:0;background:var(--ios-track)}
+ & .reference-segments button{min-height:30px;padding:0 14px;font-size:12px;font-weight:500;color:var(--text);transition:background .28s var(--ios-ease),color .2s ease,box-shadow .28s ease,transform .2s var(--ios-spring)}
+ & .reference-segments button:active{transform:scale(.94)}
+ & .reference-segments button[aria-pressed=true]{background:var(--ios-thumb);color:var(--ios-thumb-text);font-weight:600;box-shadow:0 3px 8px #0000001f,0 1px 1px #0000000a}
+ & .reference-custom-period>summary{transition:transform .2s var(--ios-spring)}
+ & .reference-custom-period>summary:active{transform:scale(.9)}
+
+ /* Cartões: translúcidos, sem linha dura, com sombra macia em camadas. */
+ & .reference-card,& .reference-progress-card,& .reference-connection-card,& .dashboard-payment-card{border:1px solid var(--ios-card-line);border-radius:var(--ios-radius);background:var(--ios-card);box-shadow:var(--ios-shadow)}
+ & .reference-card h2{font-size:15px;font-weight:600;letter-spacing:-.02em}
+
+ /* Entradas em cascata. O preenchimento "backwards" não deixa transformação residual nos cartões. */
+ & .reference-progress-card{padding:16px 18px;animation:ios-rise .7s var(--ios-ease) .12s backwards}
+ & .reference-revenue{animation:ios-rise .75s var(--ios-ease) .18s backwards}
+ & .reference-secondary-metrics>*{animation:ios-rise .75s var(--ios-ease) backwards}
+ & .reference-secondary-metrics>:nth-child(1){animation-delay:.24s}
+ & .reference-secondary-metrics>:nth-child(2){animation-delay:.29s}
+ & .reference-secondary-metrics>:nth-child(3){animation-delay:.34s}
+ & .reference-secondary-metrics>:nth-child(4){animation-delay:.39s}
+ & .reference-details-grid>*{animation:ios-rise .8s var(--ios-ease) backwards}
+ & .reference-details-grid>:nth-child(1){animation-delay:.42s}
+ & .reference-details-grid>:nth-child(2){animation-delay:.47s}
+ & .reference-details-grid>:nth-child(3){animation-delay:.52s}
+ & .reference-details-grid>:nth-child(4){animation-delay:.57s}
+ & .dashboard-payment-section,& .reference-connection-card,& .reference-operation-links{animation:ios-rise .8s var(--ios-ease) .6s backwards}
+
+ /* Receita em destaque, com brilho azul discreto, e indicadores que respondem ao ponteiro e ao toque. */
+ & .reference-revenue{position:relative;min-height:132px;padding:22px}
+ & .reference-revenue::after{content:'';position:absolute;right:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--ios-blue) 34%,transparent),transparent 68%);filter:blur(20px);opacity:.75;pointer-events:none;animation:ios-drift 9s ease-in-out infinite alternate}
+ & .reference-revenue>*{position:relative;z-index:1}
+ & .reference-revenue>span,& .reference-metric>span{font-size:12px;font-weight:500}
+ & .reference-revenue>strong{font-size:clamp(34px,3.4vw,54px);font-weight:700;letter-spacing:-.045em;font-variant-numeric:lining-nums tabular-nums}
+ & .reference-metric{min-height:118px;padding:18px}
+ & .reference-metric>strong{font-size:clamp(22px,1.9vw,30px);font-weight:600;font-variant-numeric:lining-nums tabular-nums}
+ & .reference-revenue,& .reference-metric{transition:transform .35s var(--ios-spring),box-shadow .35s ease}
+ & .reference-revenue:active,& .reference-metric:active{transform:scale(.975)}
+
+ /* Barras de progresso mais cheias, em azul, com brilho que percorre. */
+ & .reference-progress>span{height:7px;background:var(--ios-track)}
+ & .reference-progress i{position:relative;overflow:hidden;background:linear-gradient(90deg,var(--ios-blue),var(--ios-cyan));transition:width 1.1s var(--ios-ease)}
+ & .reference-progress i::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff8c 50%,transparent 70%);transform:translateX(-100%);animation:ios-sheen 2.8s ease-in-out 1s infinite}
+ & .reference-progress small{font-size:10px;font-weight:500}
+ & .reference-progress-card p{font-size:12px;font-weight:400}
+ & .payment-performance-track{height:8px;background:var(--ios-track)}
+ & .payment-performance-track>i{transform-origin:left center;animation:ios-grow 1.1s var(--ios-ease) .7s backwards}
+ & .reference-daily-rows i{height:2px;border-radius:2px;background:linear-gradient(90deg,var(--ios-blue),var(--ios-cyan));transition:width .9s var(--ios-ease)}
+
+ /* Ícones em "ladrilho" arredondado, como ícones de app. */
+ & .reference-card-icon,& .reference-connection-icon{width:36px;height:36px;flex:0 0 36px;border:0;border-radius:11px;background:linear-gradient(160deg,color-mix(in srgb,var(--ios-cyan) 55%,var(--ios-blue)),var(--ios-blue));color:#fff;box-shadow:0 6px 14px color-mix(in srgb,var(--ios-blue) 36%,transparent),0 1px 0 #ffffff59 inset}
+ & .reference-card-icon svg,& .reference-connection-icon svg{width:18px;height:18px;stroke-width:1.9}
+
+ /* Listas e ações com retorno ao toque. */
+ & .reference-sale{padding:14px 18px;border-bottom-color:var(--ios-card-line);font-size:12px;transition:background .2s ease,transform .25s var(--ios-spring)}
+ & .reference-sale:active{transform:scale(.985)}
+ & .reference-daily-rows{padding:8px 18px}
+ & .reference-daily-rows>div{min-height:36px;font-size:11px;border-bottom-color:var(--ios-card-line)}
+ & .reference-card-footer{padding:12px 18px;font-size:12px;font-weight:500;color:var(--ios-blue)}
+ & .reference-card-footer>svg{transition:transform .3s var(--ios-spring)}
+ & .reference-card-footer:hover>svg{transform:translateX(4px)}
+ & .reference-button{min-height:46px;font-size:14px;font-weight:600;transition:filter .2s,transform .25s var(--ios-spring),box-shadow .25s ease}
+ & .reference-button:active{transform:scale(.96)}
+ & .reference-operation-links>div{border-color:var(--ios-card-line);border-radius:var(--ios-radius);background:var(--ios-card);box-shadow:var(--ios-shadow)}
+ & .reference-operation-links>div>a{border-right-color:var(--ios-card-line);transition:background .25s ease}
+ & .reference-operation-links>div>a>svg{transition:transform .3s var(--ios-spring)}
+ & .reference-operation-links>div>a:hover>svg{transform:translateX(5px)}
+}
+
+@media(hover:hover){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard :is(.reference-revenue,.reference-metric):hover{transform:translateY(-4px);box-shadow:var(--ios-shadow-hover)}
+}
+/* Em telas largas a receita vira um cartão alto ao lado dos quatro indicadores. */
+@media(min-width:1280px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-metrics{grid-template-columns:minmax(300px,1fr) minmax(0,2.4fr);gap:16px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-secondary-metrics{gap:16px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-details-grid{gap:24px}
+}
+@media(max-width:767px){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard{--ios-radius:20px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-segments button{min-height:28px;padding:0 9px;font-size:11px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-revenue{min-height:116px;padding:18px}
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard .reference-metric{min-height:104px;padding:15px}
+}
+@keyframes ios-rise{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes ios-fade{from{opacity:0}to{opacity:1}}
+@keyframes ios-grow{from{transform:scaleX(0)}to{transform:none}}
+@keyframes ios-sheen{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+@keyframes ios-drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-36px,26px) scale(1.15)}}
+@media(prefers-reduced-motion:reduce){
+ :root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard,:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard *,:root[data-top-surface=app] .internal-app-shell.workspace-reference .reference-dashboard *::after{animation:none!important;transition-duration:1ms!important}
+}
