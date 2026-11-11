@@ -1,0 +1,52 @@
+/* Folha "Mais módulos" do celular em vidro: cartão flutuante translúcido com desfoque forte, módulos como
+   ícones de app em ladrilhos azuis, entrada com mola e ícones que "pulam" em cascata. Vale nos modos claro
+   e escuro; o movimento reduzido já é tratado em mobile-navigation.css. */
+:root[data-theme=dark] div.mobile-more-layer{--mm-glass:rgba(22,22,26,.62);--mm-edge:rgba(255,255,255,.14);--mm-text:#f5f5f7;--mm-muted:rgba(235,235,245,.6);--mm-tile:rgba(255,255,255,.07);--mm-tile-edge:rgba(255,255,255,.1);--mm-tile-press:rgba(255,255,255,.14);--mm-handle:rgba(255,255,255,.28);--mm-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.16);--mm-dim:rgba(0,0,0,.5)}
+@media(max-width:767px){
+ :root div.mobile-more-layer{
+  --mm-blue:#0080ff;--mm-cyan:#53ddff;--mm-glass:rgba(250,250,252,.66);--mm-edge:rgba(255,255,255,.75);--mm-text:#111114;--mm-muted:rgba(60,60,67,.62);--mm-tile:rgba(255,255,255,.55);--mm-tile-edge:rgba(255,255,255,.8);--mm-tile-press:rgba(255,255,255,.85);--mm-handle:rgba(60,60,67,.3);--mm-shadow:0 30px 80px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.9);--mm-dim:rgba(0,0,0,.28);--mm-spring:cubic-bezier(.34,1.56,.64,1);
+
+  & .mobile-more-backdrop{background:var(--mm-dim);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);animation:mobile-more-fade .35s ease both}
+
+  /* Cartão flutuante, descolado das bordas da tela. */
+  & .mobile-more-sheet{right:max(8px,var(--safe-right));bottom:max(8px,var(--safe-bottom));left:max(8px,var(--safe-left));max-height:min(84dvh,720px);padding:6px 16px 16px;border:1px solid var(--mm-edge);border-radius:34px;background:radial-gradient(ellipse 80% 200px at 20% 0,color-mix(in srgb,var(--mm-blue) 20%,transparent),transparent 70%),radial-gradient(ellipse 60% 160px at 95% 8%,color-mix(in srgb,var(--mm-cyan) 12%,transparent),transparent 70%),var(--mm-glass);-webkit-backdrop-filter:blur(40px) saturate(1.9);backdrop-filter:blur(40px) saturate(1.9);box-shadow:var(--mm-shadow);color:var(--mm-text);animation:mm-sheet-in .62s cubic-bezier(.2,.9,.25,1) backwards}
+  & .mobile-more-handle{width:44px;margin-bottom:4px;background:linear-gradient(transparent 8px,var(--mm-handle) 8px 13px,transparent 13px)}
+
+  /* Cabeçalho enxuto: só o título e o botão de fechar redondo. */
+  & .mobile-more-sheet header{position:relative;display:flex;align-items:center;min-height:36px;padding:0 44px 16px 4px}
+  & .mobile-more-sheet header>span,& .mobile-more-sheet header>p{display:none}
+  & .mobile-more-sheet header h2{margin:0;color:var(--mm-text);font-size:1.5rem;font-weight:700;letter-spacing:-.04em;animation:mm-fade-up .5s ease .12s backwards}
+  & .mobile-more-close{position:absolute;top:0;right:0;display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--mm-tile-edge);border-radius:50%;background:var(--mm-tile);color:var(--mm-muted);-webkit-tap-highlight-color:transparent;transition:transform .3s var(--mm-spring),background .2s ease}
+  & .mobile-more-close svg{width:16px;height:16px;stroke-width:2.6}
+  & .mobile-more-close:active{transform:scale(.86);background:var(--mm-tile-press)}
+
+  /* Módulos: ladrilho de vidro com ícone de app em azul e o nome embaixo. */
+  & .mobile-more-grid{gap:10px}
+  & .mobile-more-grid button{min-height:104px;align-items:center;justify-content:center;gap:10px;padding:14px 6px 12px;border:1px solid var(--mm-tile-edge);border-radius:24px;background:var(--mm-tile);box-shadow:inset 0 1px 0 var(--mm-tile-edge);color:var(--mm-text);text-align:center;-webkit-tap-highlight-color:transparent;animation:mm-pop .55s var(--mm-spring) backwards;animation-delay:calc(var(--module-index) * 32ms + 140ms);transition:transform .32s var(--mm-spring),background .2s ease}
+  & .mobile-more-grid button:active{transform:scale(.92);border-color:var(--mm-tile-edge);background:var(--mm-tile-press);box-shadow:inset 0 1px 0 var(--mm-tile-edge)}
+  & .mobile-more-icon{display:grid;place-items:center;width:46px;height:46px;flex:0 0 46px;border-radius:14px;background:linear-gradient(160deg,color-mix(in srgb,var(--mm-cyan) 60%,var(--mm-blue)),var(--mm-blue) 70%);box-shadow:0 8px 18px color-mix(in srgb,var(--mm-blue) 40%,transparent),inset 0 1px 0 rgba(255,255,255,.45);transition:transform .32s var(--mm-spring)}
+  & .mobile-more-grid svg,& .mobile-more-settings .mobile-more-icon svg{width:22px;height:22px;margin:0;color:#fff;stroke-width:1.9}
+  & .mobile-more-grid button:active .mobile-more-icon{transform:scale(1.08)}
+  & .mobile-more-grid button:active svg{transform:none}
+  & .mobile-more-grid span{font-size:.72rem;font-weight:600;letter-spacing:-.01em}
+  & .mobile-more-grid small{display:none}
+
+  /* Configurações como linha de lista do iOS. */
+  & .mobile-more-settings{display:flex;width:100%;align-items:center;gap:12px;min-height:56px;margin-top:10px;padding:8px 14px 8px 10px;border:1px solid var(--mm-tile-edge);border-radius:20px;background:var(--mm-tile);box-shadow:inset 0 1px 0 var(--mm-tile-edge);color:var(--mm-text);font:inherit;font-size:.86rem;font-weight:600;text-align:left;-webkit-tap-highlight-color:transparent;animation:mm-fade-up .5s ease .42s backwards;transition:transform .3s var(--mm-spring),background .2s ease}
+  & .mobile-more-settings>span{flex:1;min-width:0}
+  & .mobile-more-settings .mobile-more-icon{width:38px;height:38px;flex-basis:38px;border-radius:12px;background:linear-gradient(160deg,#a2a2a8,#636366);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+  & .mobile-more-settings .mobile-more-icon svg{width:19px;height:19px}
+  & .mobile-more-settings>svg{width:18px;height:18px;color:var(--mm-muted)}
+  & .mobile-more-settings:active{transform:scale(.97);background:var(--mm-tile-press)}
+  & :is(.mobile-more-close,.mobile-more-settings):focus-visible{outline:2px solid var(--mm-blue);outline-offset:2px}
+ }
+ :root div.mobile-more-layer.is-closing .mobile-more-sheet{animation:mm-sheet-out .34s cubic-bezier(.4,0,.8,.3) both}
+ :root div.mobile-more-layer.is-closing :is(.mobile-more-grid button,.mobile-more-settings,.mobile-more-sheet header h2){animation:none}
+ /* O botão de ajuda sai da frente enquanto a folha está aberta. */
+ body:has(.mobile-more-layer) .reference-help{opacity:0;pointer-events:none;transition:opacity .2s ease}
+}
+@keyframes mm-sheet-in{0%{opacity:0;transform:translate3d(0,105%,0) scale(.96)}60%{opacity:1;transform:translate3d(0,-8px,0) scale(1)}}
+@keyframes mm-sheet-out{to{opacity:0;transform:translate3d(0,105%,0) scale(.96)}}
+@keyframes mm-pop{0%{opacity:0;transform:translateY(16px) scale(.6)}}
+@keyframes mm-fade-up{from{opacity:0;transform:translateY(8px)}}
+@media(prefers-reduced-motion:reduce){:root div.mobile-more-layer :is(.mobile-more-sheet,.mobile-more-grid button,.mobile-more-settings,.mobile-more-close,.mobile-more-icon,.mobile-more-sheet header h2){animation:none!important;transition-duration:1ms!important}}
