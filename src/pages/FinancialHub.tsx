@@ -3,7 +3,7 @@ import {useAppLocale} from '../i18n/localeStore'
 import {T} from '../i18n'
 import {useMemo} from 'react'
 import {NavLink,Outlet,useLocation} from 'react-router-dom'
-import {BadgePercent,CalendarDays,Download,Landmark,RotateCcw,Send,TrendingUp,WalletCards} from 'lucide-react'
+import {BadgePercent,CalendarDays,Download,Landmark,PiggyBank,RotateCcw,Send,TrendingUp,WalletCards} from 'lucide-react'
 import {Card,Empty,Loading,PageTitle,StateMessage,StatusBadge} from '../components/ui'
 import {PeriodSelector} from '../components/common/PeriodSelector'
 import {StripeConnectCard} from '../components/finance/StripeConnectCard'
@@ -15,8 +15,8 @@ import {useOptionalDashboardData} from '../providers/DashboardDataProvider'
 import {downloadCsv,shortDate} from '../lib/utils'
 
 export default function FinancialHub(){useAppLocale(state=>state.locale);
- const {pathname}=useLocation(),withdrawalsActive=pathname.endsWith('/saques'),chargesActive=pathname.endsWith('/cobrancas'),feesActive=pathname.endsWith('/taxas')
- return <div className="financial-module page-enter"><PageTitle title={uiText("Financeiro")} subtitle={uiText("Saldos, repasses, extrato, cobranças e taxas da operação.")}/><nav className="financial-module-tabs" aria-label={uiText("Áreas do Financeiro")} role="tablist"><NavLink end to="/app/financeiro" role="tab" aria-selected={!withdrawalsActive&&!chargesActive&&!feesActive}><Landmark/><T> Visão geral</T></NavLink><NavLink to="/app/financeiro/saques" role="tab" aria-selected={withdrawalsActive}><WalletCards/><T> Saques</T></NavLink><NavLink to="/app/financeiro/cobrancas" role="tab" aria-selected={chargesActive}><Send/><T> Cobranças</T></NavLink><NavLink to="/app/financeiro/taxas" role="tab" aria-selected={feesActive}><BadgePercent/><T> Minhas taxas</T></NavLink></nav><Outlet/></div>
+ const {pathname}=useLocation(),withdrawalsActive=pathname.endsWith('/saques'),chargesActive=pathname.endsWith('/cobrancas'),feesActive=pathname.endsWith('/taxas'),taxesActive=pathname.endsWith('/impostos')
+ return <div className="financial-module page-enter"><PageTitle title={uiText("Financeiro")} subtitle={uiText("Saldos, repasses, extrato, cobranças, taxas e impostos da operação.")}/><nav className="financial-module-tabs" aria-label={uiText("Áreas do Financeiro")} role="tablist"><NavLink end to="/app/financeiro" role="tab" aria-selected={!withdrawalsActive&&!chargesActive&&!feesActive&&!taxesActive}><Landmark/><T> Visão geral</T></NavLink><NavLink to="/app/financeiro/saques" role="tab" aria-selected={withdrawalsActive}><WalletCards/><T> Saques</T></NavLink><NavLink to="/app/financeiro/cobrancas" role="tab" aria-selected={chargesActive}><Send/><T> Cobranças</T></NavLink><NavLink to="/app/financeiro/taxas" role="tab" aria-selected={feesActive}><BadgePercent/><T> Minhas taxas</T></NavLink><NavLink to="/app/financeiro/impostos" role="tab" aria-selected={taxesActive}><PiggyBank/><T> Impostos</T></NavLink></nav><Outlet/></div>
 }
 
 export function FinancialOverview(){useAppLocale(state=>state.locale);
